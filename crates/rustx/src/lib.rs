@@ -104,3 +104,21 @@ pub mod bytes {
 
     pub use ::bytes::*;
 }
+
+#[cfg(feature = "cc")]
+pub mod cc {
+    //! A basic cross-platform C compiler driver.
+    //!
+    //! See crate [`::cc`].
+
+    pub use ::cc::*;
+}
+
+#[cfg(feature = "chrono")]
+pub mod chrono {
+    //! Dates and time.
+    //!
+    //! See crate [`::chrono`].
+
+    pub use ::chrono::*;
+}
