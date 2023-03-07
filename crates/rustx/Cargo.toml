@@ -21,6 +21,8 @@ rx-crates-core = [
   "blake3",
   "byteorder",
   "bytes",
+  "chrono",
+  "clap",
 ]
 
 
@@ -67,10 +69,12 @@ rx-feature-std = [
   "byteorder/std",
   "bytes/std",
   "chrono/std",
+  "clap/std",
 ]
 
 rx-feature-default = [
   "chrono/default",
+  "clap/default",
 ]
 
 rx-feature-serde = [
@@ -117,7 +121,7 @@ byteorder = {version = "1.4.3", optional = true, default-features = false }
 bytes = { version = "1.4.0", optional = true, default-features = false }
 cc = { version = "1.0.79", optional = true, default-features = false }
 chrono = { version = "0.4.23", optional = true, default-features = false }
-clap = "4.1.8"
+clap = { version = "4.1.8", optional = true, default-features = false }
 crossbeam = "0.8.2"
 cxx = "1.0.92"
 derive_more = "0.99.17"

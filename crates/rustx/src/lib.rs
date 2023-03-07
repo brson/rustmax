@@ -122,3 +122,12 @@ pub mod chrono {
 
     pub use ::chrono::*;
 }
+
+#[cfg(feature = "clap")]
+pub mod clap {
+    //! Command line parsing.
+    //!
+    //! See crate [`::clap`].
+
+    pub use ::clap::*;
+}
