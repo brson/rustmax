@@ -257,3 +257,12 @@ pub mod og_fmt {
 
     pub use ::og_fmt::*;
 }
+
+#[cfg(feature = "once_cell")]
+pub mod once_cell {
+    //! Values that are lazily initialized.
+    //!
+    //! See crate [`::once_cell`].
+
+    pub use ::once_cell::*;
+}
