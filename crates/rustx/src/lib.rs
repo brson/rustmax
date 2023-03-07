@@ -12,7 +12,17 @@
 //!   - `anyhow/backtrace`
 //! - `all-crates`
 
+#![no_std]
 
+pub extern crate core;
+
+pub extern crate alloc;
+
+#[cfg(feature = "rx-std")]
+pub extern crate std;
+
+
+      
 #[cfg(feature = "anyhow")]
 pub use anyhow;
 

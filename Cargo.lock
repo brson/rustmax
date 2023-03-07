@@ -1444,6 +1444,7 @@ name = "rustx"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "backtrace",
  "big_s",
  "blake3",
  "byteorder",
