@@ -38,6 +38,7 @@ rx-profile-no-std = [
 rx-profile-std-plus = [
   "rx-rustlibs-std",
   "rx-crates-core",
+  "rx-feature-std",
   "rx-feature-default",
 ]
 
@@ -52,6 +53,7 @@ rx-profile-async = [
 rx-profile-build-script = [
   "rx-profile-std-plus",
   "cc",
+  "cxx",
 ]
 
 rx-profile-everything = [
@@ -72,6 +74,7 @@ rx-feature-std = [
   "chrono/std",
   "clap/std",
   "crossbeam/std",
+  "cxx/std",
 ]
 
 rx-feature-default = [
@@ -125,7 +128,7 @@ cc = { version = "1.0.79", optional = true, default-features = false }
 chrono = { version = "0.4.23", optional = true, default-features = false }
 clap = { version = "4.1.8", optional = true, default-features = false }
 crossbeam = { version = "0.8.2", optional = true, default-features = false }
-cxx = "1.0.92"
+cxx = { version = "1.0.92", optional = true, default-features = false }
 derive_more = "0.99.17"
 env_logger = "0.10.0"
 extension-trait = "1.0.1"

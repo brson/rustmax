@@ -140,3 +140,12 @@ pub mod crossbeam {
 
     pub use ::crossbeam::*;
 }
+
+#[cfg(feature = "cxx")]
+pub mod cxx {
+    //! C++ bindings generator.
+    //!
+    //! See crate [`::cxx`].
+
+    pub use ::cxx::*;
+}
