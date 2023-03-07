@@ -32,6 +32,8 @@ rx-crates-core = [
   "num_enum",
   "once_cell",
   "rand",
+  "rand_chacha",
+  "rand_pcg",
 ]
 
 
@@ -103,6 +105,7 @@ rx-feature-std = [
   "once_cell/std",
   "rand/std",
   "rand/std_rng",
+  "rand_chacha/std",
 ]
 
 rx-feature-default = [
@@ -115,8 +118,9 @@ rx-feature-serde = [
   "backtrace/serde",
   "bytes/serde",
   "log/serde",
-  "rand/serde",
   "rand/serde1",
+  "rand_chacha/serde1",
+  "rand_pcg/serde1",
 ]
 
 rx-feature-backtrace = [
@@ -180,8 +184,8 @@ num_enum = { version = "0.5.11", optional = true, default-features = false }
 og_fmt = { version = "1.0.4", optional = true, default-features = false }
 once_cell = { version = "1.17.1", optional = true, default-features = false }
 rand = { version = "0.8.5", optional = true, default-features = false }
-rand_chacha = "0.3.1"
-rand_pcg = "0.3.1"
+rand_chacha = { version = "0.3.1", optional = true, default-features = false }
+rand_pcg = { version = "0.3.1", optional = true, default-features = false }
 rayon = "1.7.0"
 regex = "1.7.1"
 reqwest = "0.11.14"

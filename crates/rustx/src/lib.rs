@@ -275,3 +275,21 @@ pub mod rand {
 
     pub use ::rand::*;
 }
+
+#[cfg(feature = "rand_chacha")]
+pub mod rand_chacha {
+    //! The ChaCha cryptographically-secure random number generators.
+    //!
+    //! See crate [`::rand_chacha`].
+
+    pub use ::rand_chacha::*;
+}
+
+#[cfg(feature = "rand_pcg")]
+pub mod rand_pcg {
+    //! The PCG non-cryptographically-secure random number generators.
+    //!
+    //! See crate [`::rand_pcg`].
+
+    pub use ::rand_pcg::*;
+}
