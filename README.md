@@ -28,6 +28,8 @@ Pull requests adding crates are not welcome and will be closed.**
 All libraries included as dependencies of the `rustx` crate
 are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
 
+Tools installed by the `rustx` command may have other licenses.
+
 
 ## TODO
 
