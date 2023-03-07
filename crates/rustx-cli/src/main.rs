@@ -1,11 +1,12 @@
 fn main() {
-    println!("Hello, world!");
+    let _opts = <CliOpts as clap::Parser>::parse();
 }
 
-#[derive(Clone)]
+#[derive(clap::ValueEnum)]
+#[derive(clap::Subcommand)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "kebab-case")]
-#[derive(clap::ValueEnum)]
+#[derive(Clone)]
 enum CargoPlugins {
     CargoAudit,
     CargoBenchcmp,
@@ -23,13 +24,14 @@ enum CargoPlugins {
     CargoTree,
     CargoWatch,
     CargoWorkspace,
-    RustSemverver,
+    CargoSemver, // rust-semversemver
 }
 
-#[derive(Clone)]
+#[derive(clap::ValueEnum)]
+#[derive(clap::Subcommand)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "kebab-case")]
-#[derive(clap::ValueEnum)]
+#[derive(Clone)]
 enum CargoExes {
     BasicHttpServer,
     Eva,
@@ -52,6 +54,15 @@ enum CargoExes {
     Xsv,
 }
 
+#[derive(clap::Subcommand)]
+#[derive(Clone)]
+enum Tool {
+    #[command(flatten)]
+    Plugin(CargoPlugins),
+    #[command(flatten)]
+    Exe(CargoExes),
+}
+
 #[derive(clap::Parser)]
 struct CliOpts {
     #[command(subcommand)]
@@ -61,8 +72,17 @@ struct CliOpts {
 #[derive(clap::Subcommand)]
 enum CliCmd {
     InstallTools(CliCmdInstallTools),
+    INstallTool(CliCmdInstallTool),
 }
 
 #[derive(clap::Args)]
 struct CliCmdInstallTools {
+    #[command(subcommand)]
+    tools: Tool,
+}
+
+#[derive(clap::Args)]
+struct CliCmdInstallTool {
+    #[command(subcommand)]
+    tool: Tool,
 }
