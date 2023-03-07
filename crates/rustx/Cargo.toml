@@ -9,13 +9,22 @@ default = [
   "rx-std",
 ]
 
+rx-core = [
+  "rx-rustlib-core",
+  "rx-rustlib-alloc",
+]
 rx-std = [
+  "rx-rustlib-core",
+  "rx-rustlib-alloc",
+  "rx-rustlib-std",
+  "rx-rustlib-proc_macro",
   "anyhow/std",
   "backtrace/std",
   "blake3/std",
   "byteorder/std",
   "bytes/std",
 ]
+
 rx-serde = [
   "backtrace/serde",
   "bytes/serde",
@@ -26,6 +35,11 @@ rx-backtrace = [
 ]
 rx-nightly = [
 ]
+
+rx-rustlib-core = []
+rx-rustlib-alloc = []
+rx-rustlib-std = []
+rx-rustlib-proc_macro = []
 
 rx-crates-core = [
   "anyhow",

@@ -33,8 +33,6 @@
 pub mod prelude {
     //! The `rustx` prelude.
 
-    /* ---------- */
-
     #[cfg(feature = "big_s")]
     pub use big_s::S;
 
@@ -46,12 +44,17 @@ pub mod prelude {
 /* ---------- */
 
 
+#[cfg(feature = "rx-rustlib-core")]
 pub extern crate core;
 
+#[cfg(feature = "rx-rustlib-alloc")]
 pub extern crate alloc;
 
-#[cfg(feature = "rx-std")]
+#[cfg(feature = "rx-rustlib-std")]
 pub extern crate std;
+
+#[cfg(feature = "rx-rustlib-proc_macro")]
+pub extern crate proc_macro;
 
 
 /* ---------- */
