@@ -185,3 +185,12 @@ pub mod fnv {
 
     pub use ::fnv::*;
 }
+
+#[cfg(feature = "futures")]
+pub mod futures {
+    //! Abstractions for asynchronous programming.
+    //!
+    //! See crate [`::futures`].
+
+    pub use ::futures::*;
+}
