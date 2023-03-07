@@ -12,9 +12,10 @@ default = [
 rx-std = [
   "anyhow/std",
   "backtrace/std",
+  "blake3/std",
 ]
 rx-serde = [
-  "backtrace/serialize-serde",
+  "backtrace/serde",
 ]
 rx-backtrace = [
   "rx-std",
