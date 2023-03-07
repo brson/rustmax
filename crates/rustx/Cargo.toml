@@ -68,7 +68,7 @@ rx-profile-build-script = [
   "cxx",
 ]
 
-rx-profile-everything = [
+rx-profile-full = [
   "rx-profile-cli",
   "rx-profile-async",
   "rx-profile-build-script",
