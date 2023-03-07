@@ -60,3 +60,4 @@ are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
 - include_dir
 - scripting languages
   - RustPython
+- rustyline / termion?
