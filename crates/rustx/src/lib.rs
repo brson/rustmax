@@ -62,33 +62,37 @@ pub extern crate proc_macro;
 
 #[cfg(feature = "anyhow")]
 pub mod anyhow {
-    //! TODO
+    //! Easy error handling.
     //!
     //! See crate [`::anyhow`].
+
     pub use ::anyhow::*;
 }
 
 #[cfg(feature = "big_s")]
 pub mod big_s {
-    //! TODO
+    //! Succinct `String` "literals".
     //!
     //! See crate [`::big_s`].
+
     pub use ::big_s::*;
 }
 
 #[cfg(feature = "blake3")]
 pub mod blake3 {
-    //! TODO
+    //! The BLAKE3 cryptographic hash function.
     //!
     //! See crate [`::blake3`].
+
     pub use ::blake3::*;
 }
 
 #[cfg(feature = "byteorder")]
 pub mod byteorder {
-    //! TODO
+    //! Big-endian and little-endian encoding.
     //!
     //! See crate [`::byteorder`].
+
     pub use ::byteorder::*;
 }
 
@@ -96,6 +100,7 @@ pub mod byteorder {
 pub mod bytes {
     //! Abstractions for working with byte buffers: [`Bytes`], [`Buf`], and [`BufMut`].
     //!
-    //! See crate [`bytes`].
+    //! See crate [`::bytes`].
+
     pub use ::bytes::*;
 }
