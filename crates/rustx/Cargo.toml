@@ -44,6 +44,7 @@ rx-profile-std-plus = [
   "rx-crates-core",
   "rx-feature-std",
   "rx-feature-default",
+  "http",
 ]
 
 rx-profile-cli = [
@@ -142,7 +143,7 @@ env_logger = { version = "0.10.0", optional = true, default-features = false }
 extension-trait = { version = "1.0.1", optional = true, default-features = false }
 fnv = { version = "1.0.7", optional = true, default-features = false }
 futures = { version = "0.3.26", optional = true, default-features = false }
-http = "0.2.9"
+http = { version = "0.2.9", optional = true, default-features = false }
 hyper = "0.14.24"
 itertools = "0.10.5"
 json5 = "0.4.1"

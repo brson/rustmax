@@ -194,3 +194,12 @@ pub mod futures {
 
     pub use ::futures::*;
 }
+
+#[cfg(feature = "http")]
+pub mod http {
+    //! Shared definitions related to the HTTP protocol.
+    //!
+    //! See crate [`::http`].
+
+    pub use ::http::*;
+}
