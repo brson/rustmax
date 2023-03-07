@@ -293,3 +293,12 @@ pub mod rand_pcg {
 
     pub use ::rand_pcg::*;
 }
+
+#[cfg(feature = "rayon")]
+pub mod rayon {
+    //! Parallel iterators and other parallel processing tools.
+    //!
+    //! See crate [`::rayon`].
+
+    pub use ::rayon::*;
+}

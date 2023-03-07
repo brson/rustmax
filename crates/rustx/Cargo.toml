@@ -52,6 +52,7 @@ rx-profile-std-plus = [
   "rx-feature-default",
   "big_s",
   "og_fmt",
+  "rayon",
 ]
 
 rx-profile-net = [
@@ -186,7 +187,7 @@ once_cell = { version = "1.17.1", optional = true, default-features = false }
 rand = { version = "0.8.5", optional = true, default-features = false }
 rand_chacha = { version = "0.3.1", optional = true, default-features = false }
 rand_pcg = { version = "0.3.1", optional = true, default-features = false }
-rayon = "1.7.0"
+rayon = { version = "1.7.0", optional = true, default-features = false }
 regex = "1.7.1"
 reqwest = "0.11.14"
 serde = "1.0.152"
