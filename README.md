@@ -6,6 +6,7 @@ A collection of useful Rust tools.
 
 - libs
   - terminal handling
+  - fs2 - unmaintained?
 - cli
 - workspace template
 - documentation

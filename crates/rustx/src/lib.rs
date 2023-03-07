@@ -167,3 +167,21 @@ pub mod env_logger {
 
     pub use ::env_logger::*;
 }
+
+#[cfg(feature = "extension-trait")]
+pub mod extension_trait {
+    //! A macro for defining extension methods to foreign types.
+    //!
+    //! See crate [`::extension_trait`].
+
+    pub use ::extension_trait::*;
+}
+
+#[cfg(feature = "fnv")]
+pub mod fnv {
+    //! A fast non-cryptographic hash function for use with `HashMap`.
+    //!
+    //! See crate [`::fnv`].
+
+    pub use ::fnv::*;
+}
