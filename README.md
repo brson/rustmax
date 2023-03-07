@@ -5,12 +5,23 @@ A collection of useful Rust crates and tools.
 
 ## The `rustx` crate
 
-The only thing here presently is the `rustx` crate,
-which documents and reexports selected high-quality
-Rust crates for typical Rust usage.
+The `rustx` crate documents and reexports selected high-quality Rust crates
+suitable for typical Rust programs.
 It can be thought of as a "batteries-included" standard library.
 
 [Documentation](https://docs.rs/rustx).
+
+
+## The `rustx` tool
+
+Install with
+
+    cargo install rustx-cli
+
+
+## More documentation
+
+The `rustx-doc` tool produces TODO
 
 
 ## Do not contribute
@@ -44,10 +55,13 @@ Tools installed by the `rustx` command may have other licenses.
   - where tool
   - build docs
   - search docs
+  - initialize dep-frozen rustx project
 - workspace template
+  - overflow on
 - documentation
   - crate docs
   - tool docs
+  - tool --help pages
   - rustup components
   - toolchain descriptions
   - dev tool tutorial
@@ -76,3 +90,5 @@ Tools installed by the `rustx` command may have other licenses.
 - rustyline / termion?
 - semver
 - home directory
+- grpc / protoc
+- mold setup
