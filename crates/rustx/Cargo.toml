@@ -110,7 +110,7 @@ rx-feature-std = [
 ]
 
 rx-feature-default = [
-  "chrono/default",
+  "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
   "futures/default",
 ]
