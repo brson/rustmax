@@ -1477,8 +1477,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustx-bin"
+name = "rustx-cli"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "serde",
+ "xshell",
+]
 
 [[package]]
 name = "ryu"

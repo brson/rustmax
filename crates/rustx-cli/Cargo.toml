@@ -1,0 +1,10 @@
+[package]
+name = "rustx-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.69"
+clap = "4.1.8"
+serde = { version = "1.0.152", features = ["derive"] }
+xshell = "0.2.3"
