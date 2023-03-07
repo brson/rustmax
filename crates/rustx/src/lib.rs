@@ -266,3 +266,12 @@ pub mod once_cell {
 
     pub use ::once_cell::*;
 }
+
+#[cfg(feature = "rand")]
+pub mod rand {
+    //! Random number generators.
+    //!
+    //! See crate [`::rand`].
+
+    pub use ::rand::*;
+}
