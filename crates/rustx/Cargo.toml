@@ -13,9 +13,12 @@ rx-std = [
   "anyhow/std",
   "backtrace/std",
   "blake3/std",
+  "byteorder/std",
+  "bytes/std",
 ]
 rx-serde = [
   "backtrace/serde",
+  "bytes/serde",
 ]
 rx-backtrace = [
   "rx-std",
@@ -24,13 +27,16 @@ rx-backtrace = [
 rx-nightly = [
 ]
 
-rx-crates-std = [
+rx-crates-core = [
   "anyhow",
   "backtrace",
   "big_s",
   "blake3",
   "byteorder",
   "bytes",
+]
+rx-crates-std = [
+  "rx-crates-core",
 ]
 
 [dependencies]
