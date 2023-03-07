@@ -37,3 +37,4 @@ Pull requests adding crates are not welcome and will be closed.**
 - wasm-bindgen
 - build-script profile improvements
 - unix/linux/macos/windows profiles?
+- compression
