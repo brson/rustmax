@@ -248,3 +248,12 @@ pub mod log {
 
     pub use ::log::*;
 }
+
+#[cfg(feature = "og_fmt")]
+pub mod og_fmt {
+    //! The `fmt!` synonym for `format!`.
+    //!
+    //! See crate [`::og_fmt`].
+
+    pub use ::og_fmt::*;
+}
