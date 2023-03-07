@@ -29,6 +29,7 @@ rx-crates-core = [
   "fnv",
   "futures",
   "itertools",
+  "log",
 ]
 
 
@@ -93,6 +94,7 @@ rx-feature-std = [
   "fnv/std",
   "futures/std",
   "itertools/use_std",
+  "log/std",
 ]
 
 rx-feature-default = [
@@ -104,6 +106,7 @@ rx-feature-default = [
 rx-feature-serde = [
   "backtrace/serde",
   "bytes/serde",
+  "log/serde",
 ]
 
 rx-feature-backtrace = [
@@ -161,7 +164,7 @@ hyper = { version = "0.14.24", optional = true, default-features = false }
 itertools = { version = "0.10.5", optional = true, default-features = false }
 json5 = { version ="0.4.1", optional = true, default-features = false }
 lazy_static = { version = "1.4.0", optional = true, default-features = false }
-log = "0.4.17"
+log = { version = "0.4.17", optional = true, default-features = false }
 num_enum = "0.5.11"
 og_fmt = "1.0.4"
 once_cell = "1.17.1"

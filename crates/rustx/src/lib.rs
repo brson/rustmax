@@ -239,3 +239,12 @@ pub mod lazy_static {
 
     pub use ::lazy_static::*;
 }
+
+#[cfg(feature = "log")]
+pub mod log {
+    //! A simple logging framework.
+    //!
+    //! See crate [`::log`].
+
+    pub use ::log::*;
+}
