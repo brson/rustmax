@@ -203,3 +203,12 @@ pub mod http {
 
     pub use ::http::*;
 }
+
+#[cfg(feature = "hyper")]
+pub mod hyper {
+    //! HTTP, versions 1 and 2.
+    //!
+    //! See crate [`::hyper`].
+
+    pub use ::hyper::*;
+}
