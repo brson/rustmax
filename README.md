@@ -35,6 +35,13 @@ are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
 - cli
 - workspace template
 - documentation
+  - crate docs
+  - tool docs
+  - dev tool tutorial
+  - easy-mode rust
+  - official docs
+- documentation generator
+- documentation search
 - tracing
 - tungstenite / tungstenite-tokio?
 - charting / graphing?
@@ -47,4 +54,9 @@ are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
 - unix/linux/macos/windows profiles?
 - compression
 - tests
-  - cargo-license
+  - cargo-license / cargo-deny
+- datatest_stable
+- criterion
+- include_dir
+- scripting languages
+  - RustPython
