@@ -19,6 +19,14 @@ It can be thought of as a "batteries-included" standard library.
 Pull requests adding crates are not welcome and will be closed.**
 
 
+## License
+
+`rustx` is licensed Apache-2.0 OR CC0-1.0 OR MIT.
+
+All libraries included as dependencies of the `rustx` crate
+are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
+
+
 ## TODO
 
 - xtask
@@ -38,3 +46,5 @@ Pull requests adding crates are not welcome and will be closed.**
 - build-script profile improvements
 - unix/linux/macos/windows profiles?
 - compression
+- tests
+  - cargo-license

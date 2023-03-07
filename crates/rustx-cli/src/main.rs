@@ -12,7 +12,11 @@ enum CargoPlugins {
     CargoEdit,
     CargoExpand,
     CargoFuzz,
+    CargoOutdated,
+    CargoUdeps,
     CargoTree,
+    CargoWatch,
+    CargoWorkspace,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -23,6 +27,7 @@ enum CargoExes {
     FdFind,
     Gist,
     Hyperfine,
+    Just,
     Parol,
     Ripgrep,
     Tokei,
