@@ -2,12 +2,8 @@
 
 A collection of useful Rust tools.
 
-
-## Candidates
-
-
-
 ## TODO
 
+- cli
 - workspace template
-
+- documentation
