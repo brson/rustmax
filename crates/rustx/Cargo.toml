@@ -28,6 +28,7 @@ rx-crates-core = [
   "extension-trait",
   "fnv",
   "futures",
+  "itertools",
 ]
 
 
@@ -51,6 +52,8 @@ rx-profile-net = [
   "http",
   "hyper",
   "hyper/full",
+  "json5",
+  "lazy_static",
 ]
 
 rx-profile-cli = [
@@ -89,6 +92,7 @@ rx-feature-std = [
   "cxx/std",
   "fnv/std",
   "futures/std",
+  "itertools/use_std",
 ]
 
 rx-feature-default = [
@@ -154,9 +158,9 @@ fnv = { version = "1.0.7", optional = true, default-features = false }
 futures = { version = "0.3.26", optional = true, default-features = false }
 http = { version = "0.2.9", optional = true, default-features = false }
 hyper = { version = "0.14.24", optional = true, default-features = false }
-itertools = "0.10.5"
-json5 = "0.4.1"
-lazy_static = "1.4.0"
+itertools = { version = "0.10.5", optional = true, default-features = false }
+json5 = { version ="0.4.1", optional = true, default-features = false }
+lazy_static = { version = "1.4.0", optional = true, default-features = false }
 log = "0.4.17"
 num_enum = "0.5.11"
 og_fmt = "1.0.4"

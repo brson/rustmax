@@ -212,3 +212,30 @@ pub mod hyper {
 
     pub use ::hyper::*;
 }
+
+#[cfg(feature = "itertools")]
+pub mod itertools {
+    //! Additional methods for iterators.
+    //!
+    //! See crate [`::itertools`].
+
+    pub use ::itertools::*;
+}
+
+#[cfg(feature = "json5")]
+pub mod json5 {
+    //! JSON5, a superset of JSON with expanded syntax.
+    //!
+    //! See crate [`::json5`].
+
+    pub use ::json5::*;
+}
+
+#[cfg(feature = "lazy_static")]
+pub mod lazy_static {
+    //! Lazy initialization of static variables.
+    //!
+    //! See crate [`::lazy_static`].
+
+    pub use ::lazy_static::*;
+}
