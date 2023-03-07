@@ -33,10 +33,19 @@ are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
 - more terminal crates
 - fs2 - unmaintained?
 - cli
+  - list tools
+  - install tools
+  - show tool status
+  - show rustup proxies status
+  - where tool
+  - build docs
+  - search docs
 - workspace template
 - documentation
   - crate docs
   - tool docs
+  - rustup components
+  - toolchain descriptions
   - dev tool tutorial
   - easy-mode rust
   - official docs

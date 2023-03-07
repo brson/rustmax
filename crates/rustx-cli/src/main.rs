@@ -8,6 +8,30 @@ fn main() {
 #[serde(rename_all = "kebab-case")]
 #[derive(Clone)]
 enum Tool {
+    /* rustup itself */
+
+    Rustup,
+
+    /* rustup proxies */
+
+    Cargo,
+    CargoClippy,
+    CargoFmt,
+    CargoMiri,
+    Rustc,
+    Rustdoc,
+    Rustfmt,
+    RustGdbGui,
+    RustGdb,
+    RustLldb,
+
+    /* other tools from rustup components */
+
+    RustAnalyzer,
+    Miri,
+    Clippy,
+    LlvmTools,
+    
     /* cargo plugins */
 
     CargoAudit,
@@ -47,6 +71,7 @@ enum Tool {
     Sd,
     Tokei,
     WasmOpt,
+    WasmPack,
     WasmTools,
     Xsv,
 }
