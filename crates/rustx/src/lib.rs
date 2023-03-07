@@ -131,3 +131,12 @@ pub mod clap {
 
     pub use ::clap::*;
 }
+
+#[cfg(feature = "crossbeam")]
+pub mod crossbeam {
+    //! Concurrency tools.
+    //!
+    //! See crate [`::crossbeam`].
+
+    pub use ::crossbeam::*;
+}
