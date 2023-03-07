@@ -8,8 +8,13 @@ default = [
   "rx-crates-std",
   "rx-std",
 ]
+
 rx-std = [
   "anyhow/std",
+  "backtrace/std",
+]
+rx-serde = [
+  "backtrace/serialize-serde",
 ]
 rx-backtrace = [
   "rx-std",
@@ -17,6 +22,7 @@ rx-backtrace = [
 ]
 rx-nightly = [
 ]
+
 rx-crates-std = [
   "anyhow",
   "backtrace",
