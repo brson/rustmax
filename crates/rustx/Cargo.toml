@@ -24,6 +24,7 @@ rx-crates-core = [
   "chrono",
   "clap",
   "crossbeam",
+  "derive_more",
 ]
 
 
@@ -44,6 +45,7 @@ rx-profile-std-plus = [
 
 rx-profile-cli = [
   "rx-profile-std-plus",
+  "env_logger",
 ]
 
 rx-profile-async = [
@@ -129,8 +131,8 @@ chrono = { version = "0.4.23", optional = true, default-features = false }
 clap = { version = "4.1.8", optional = true, default-features = false }
 crossbeam = { version = "0.8.2", optional = true, default-features = false }
 cxx = { version = "1.0.92", optional = true, default-features = false }
-derive_more = "0.99.17"
-env_logger = "0.10.0"
+derive_more = { version = "0.99.17", optional = true, default-features = false }
+env_logger = { version = "0.10.0", optional = true, default-features = false }
 extension-trait = "1.0.1"
 fs2 = "0.4.3"
 fxhash = "0.2.1"

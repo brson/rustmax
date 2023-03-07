@@ -149,3 +149,21 @@ pub mod cxx {
 
     pub use ::cxx::*;
 }
+
+#[cfg(feature = "derive_more")]
+pub mod derive_more {
+    //! `derive` for more standard traits.
+    //!
+    //! See crate [`::derive_more`].
+
+    pub use ::derive_more::*;
+}
+
+#[cfg(feature = "env_logger")]
+pub mod env_logger {
+    //! A basic logger to use with the `log` crate.
+    //!
+    //! See crate [`::env_logger`].
+
+    pub use ::env_logger::*;
+}
