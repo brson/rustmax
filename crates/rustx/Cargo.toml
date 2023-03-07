@@ -3,43 +3,16 @@ name = "rustx"
 version = "0.1.0"
 edition = "2021"
 
+
 [features]
+
 default = [
-  "rx-crates-std",
-  "rx-std",
+  "rx-profile-std-plus",
 ]
 
-rx-core = [
-  "rx-rustlib-core",
-  "rx-rustlib-alloc",
-]
-rx-std = [
-  "rx-rustlib-core",
-  "rx-rustlib-alloc",
-  "rx-rustlib-std",
-  "rx-rustlib-proc_macro",
-  "anyhow/std",
-  "backtrace/std",
-  "blake3/std",
-  "byteorder/std",
-  "bytes/std",
-]
 
-rx-serde = [
-  "backtrace/serde",
-  "bytes/serde",
-]
-rx-backtrace = [
-  "rx-std",
-  "anyhow/backtrace",
-]
-rx-nightly = [
-]
+## ---------- ##
 
-rx-rustlib-core = []
-rx-rustlib-alloc = []
-rx-rustlib-std = []
-rx-rustlib-proc_macro = []
 
 rx-crates-core = [
   "anyhow",
@@ -49,9 +22,85 @@ rx-crates-core = [
   "byteorder",
   "bytes",
 ]
-rx-crates-std = [
+
+
+## ---------- ##
+
+
+rx-profile-no-std = [
+  "rx-rustlibs-core",
   "rx-crates-core",
 ]
+
+rx-profile-std-plus = [
+  "rx-rustlibs-std",
+  "rx-crates-core",
+]
+
+rx-profile-cli = [
+  "rx-profile-std-plus",
+]
+
+rx-profile-async = [
+  "rx-profile-std-plus",
+]
+
+rx-profile-build-script = [
+  "rx-profile-std-plus",
+]
+
+rx-profile-everything = [
+  "rx-profile-cli",
+  "rx-profile-async",
+  "rx-profile-build-script",
+]
+
+
+## ---------- ##
+
+
+rx-feature-std = [  
+  "anyhow/std",
+  "backtrace/std",
+  "blake3/std",
+  "byteorder/std",
+  "bytes/std",
+]
+
+rx-feature-serde = [
+  "backtrace/serde",
+  "bytes/serde",
+]
+
+rx-feature-backtrace = [
+  "rx-feature-std",
+  "anyhow/backtrace",
+]
+
+rx-feature-nightly = [
+]
+
+
+## ---------- ##
+
+
+rx-rustlibs-core = [
+  "rx-rustlib-core",
+  "rx-rustlib-alloc",
+]
+
+rx-rustlibs-std = [
+  "rx-rustlib-core",
+  "rx-rustlib-alloc",
+  "rx-rustlib-std",
+  "rx-rustlib-proc_macro",
+]
+
+rx-rustlib-core = []
+rx-rustlib-alloc = []
+rx-rustlib-std = []
+rx-rustlib-proc_macro = []
+
 
 [dependencies]
 anyhow = { version = "1.0.69", optional = true, default-features = false }
@@ -64,6 +113,7 @@ cc = "1.0.79"
 chrono = "0.4.23"
 clap = "4.1.8"
 crossbeam = "0.8.2"
+cxx = "1.0.92"
 derive_more = "0.99.17"
 env_logger = "0.10.0"
 extension-trait = "1.0.1"

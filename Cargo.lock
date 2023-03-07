@@ -1468,6 +1468,7 @@ dependencies = [
  "chrono",
  "clap",
  "crossbeam",
+ "cxx",
  "derive_more",
  "env_logger",
  "extension-trait",
