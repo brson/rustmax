@@ -31,6 +31,7 @@ enum Tool {
     Miri,
     Clippy,
     LlvmTools,
+    LlvmCov,
     
     /* cargo plugins */
 
