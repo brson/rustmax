@@ -687,6 +687,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fed44880c466736ef9a5c5b5facefb5ed0785676d0c02d612db14e54f0d84286"
 
 [[package]]
+name = "hex"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+
+[[package]]
 name = "http"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1419,11 +1425,14 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "backtrace",
+ "base64",
  "big_s",
+ "bitflags",
  "blake3",
  "byteorder",
  "bytes",
  "cc",
+ "cfg-if",
  "chrono",
  "clap",
  "crossbeam",
@@ -1433,15 +1442,20 @@ dependencies = [
  "extension-trait",
  "fnv",
  "futures",
+ "hex",
  "http",
  "hyper",
  "itertools",
  "json5",
  "lazy_static",
  "log",
+ "mime",
+ "num_cpus",
  "num_enum",
  "og_fmt",
  "once_cell",
+ "proc-macro2",
+ "quote",
  "rand",
  "rand_chacha",
  "rand_pcg",
@@ -1452,8 +1466,10 @@ dependencies = [
  "serde_json",
  "socket2 0.5.1",
  "static_assertions",
+ "syn",
  "tempfile",
  "tera",
+ "termcolor",
  "thiserror",
  "tokio",
  "toml",

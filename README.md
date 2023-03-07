@@ -22,9 +22,18 @@ Pull requests adding crates are not welcome and will be closed.**
 ## TODO
 
 - xtask
-- libs
-  - terminal handling
-  - fs2 - unmaintained?
+- more terminal crates
+- fs2 - unmaintained?
 - cli
 - workspace template
 - documentation
+- tracing
+- tungstenite / tungstenite-tokio?
+- charting / graphing?
+- fuzzing / profiling / flamegraphs
+- notify
+- time
+- wasm profile
+- wasm-bindgen
+- build-script profile improvements
+- unix/linux/macos/windows profiles?
