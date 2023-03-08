@@ -1490,6 +1490,7 @@ dependencies = [
  "itertools",
  "json5",
  "lazy_static",
+ "libc",
  "log",
  "mime",
  "num_cpus",

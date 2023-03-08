@@ -28,6 +28,7 @@ rx-crates-core = [
   "fnv",
   "futures",
   "itertools",
+  "libc",
   "log",
   "num_enum",
   "once_cell",
@@ -101,6 +102,7 @@ rx-feature-std = [
   "fnv/std",
   "futures/std",
   "itertools/use_std",
+  "libc/std",
   "log/std",
   "num_enum/std",
   "once_cell/std",
@@ -184,6 +186,7 @@ hyper = { version = "0.14.24", optional = true, default-features = false }
 itertools = { version = "0.10.5", optional = true, default-features = false }
 json5 = { version ="0.4.1", optional = true, default-features = false }
 lazy_static = { version = "1.4.0", optional = true, default-features = false }
+libc = { version = "0.2.139", optional = true, default-features = false }
 log = { version = "0.4.17", optional = true, default-features = false }
 mime = "0.3.16"
 num_cpus = "1.15.0"
