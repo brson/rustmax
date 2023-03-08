@@ -467,3 +467,12 @@ pub mod tempfile {
 
     pub use ::tempfile::*;
 }
+
+#[cfg(feature = "termcolor")]
+pub mod termcolor {
+    //! Cross-platform library for writing colored output to the terminal.
+    //!
+    //! See crate [`::termcolor`].
+
+    pub use ::termcolor::*;
+}
