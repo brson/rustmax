@@ -402,6 +402,15 @@ pub mod regex {
     pub use ::regex::*;
 }
 
+#[cfg(feature = "reqwest")]
+pub mod reqwest {
+    //! Simple HTTP requests.
+    //!
+    //! See crate [`::reqwest`].
+
+    pub use ::reqwest::*;
+}
+
 #[cfg(feature = "serde")]
 pub mod serde {
     //! The standard Rust serialization framework.
