@@ -429,6 +429,15 @@ pub mod serde_json {
     pub use ::serde_json::*;
 }
 
+#[cfg(feature = "socket2")]
+pub mod socket2 {
+    //! Low-level network socket programming.
+    //!
+    //! See crate [`::socket2`].
+
+    pub use ::socket2::*;
+}
+
 #[cfg(feature = "syn")]
 pub mod syn {
     //! A Rust parser used by procedural macros.

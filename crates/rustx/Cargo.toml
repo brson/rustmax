@@ -73,6 +73,7 @@ rx-profile-net = [
   "hyper/full",
   "mime",
   "reqwest",
+  "socket2",
 ]
 
 rx-profile-cli = [
@@ -255,7 +256,7 @@ regex = { version = "1.7.1", optional = true, default-features = false }
 reqwest = { version = "0.11.14", optional = true, default-features = false }
 serde = { version = "1.0.152", optional = true, default-features = false }
 serde_json = { version = "1.0.94", optional = true, default-features = false }
-socket2 = "0.5.1"
+socket2 = { version = "0.5.1", optional = true, default-features = false }
 static_assertions = "1.1.0"
 syn = { version = "1.0.109", optional = true, default-features = false }
 tempfile = "3.4.0"
