@@ -494,3 +494,12 @@ pub mod thiserror {
 
     pub use ::thiserror::*;
 }
+
+#[cfg(feature = "tokio")]
+pub mod tokio {
+    //! An async task runtime and I/O library.
+    //!
+    //! See crate [`::tokio`].
+
+    pub use ::tokio::*;
+}
