@@ -11,7 +11,7 @@ Pull requests adding crates are not welcome and will be closed.**
 
 ## License
 
-`rustx` is licensed
+Rust Extra is licensed
 
     Apache-2.0 OR Apache-2.0 with LLVM-exception OR MIT OR CC0-1.0
 
