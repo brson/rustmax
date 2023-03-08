@@ -468,6 +468,15 @@ pub mod tempfile {
     pub use ::tempfile::*;
 }
 
+#[cfg(feature = "tera")]
+pub mod tera {
+    //! A text template engine based on Jinja2.
+    //!
+    //! See crate [`::tera`].
+
+    pub use ::tera::*;
+}
+
 #[cfg(feature = "termcolor")]
 pub mod termcolor {
     //! Cross-platform library for writing colored output to the terminal.
