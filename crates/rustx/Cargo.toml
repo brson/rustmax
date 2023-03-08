@@ -71,6 +71,7 @@ rx-profile-std-plus = [
   "thiserror",
   "toml",
   "unicode-segmentation",
+  "walkdir",
 ]
 
 rx-profile-net = [
@@ -277,5 +278,5 @@ tokio = { version = "1.26.0", optional = true, default-features = false }
 toml = { version = "0.7.2", optional = true, default-features = false }
 unicode-segmentation = { version = "1.10.1", optional = true, default-features = false }
 url = { version = "2.3.1", optional = true, default-features = false }
-walkdir = "2.3.2"
+walkdir = { version = "2.3.2", optional = true, default-features = false }
 xshell = "0.2.3"

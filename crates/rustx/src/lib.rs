@@ -530,3 +530,12 @@ pub mod url {
 
     pub use ::url::*;
 }
+
+#[cfg(feature = "walkdir")]
+pub mod walkdir {
+    //! Efficient directory traversal.
+    //!
+    //! See crate [`::walkdir`].
+
+    pub use ::walkdir::*;
+}
