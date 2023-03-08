@@ -96,6 +96,15 @@ pub mod big_s {
     pub use ::big_s::*;
 }
 
+#[cfg(feature = "bitflags")]
+pub mod bitflags {
+    //! A macro that generates structs that behave as bitflags.
+    //!
+    //! See crate [`::bitflags`].
+
+    pub use ::bitflags::*;
+}
+
 #[cfg(feature = "blake3")]
 pub mod blake3 {
     //! The BLAKE3 cryptographic hash function.

@@ -82,6 +82,7 @@ Tools installed by the `rustx` command may have other licenses.
 - compression
 - tests
   - cargo-license / cargo-deny
+  - cargo-audit
 - datatest_stable
 - criterion
 - include_dir
