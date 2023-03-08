@@ -69,6 +69,24 @@ pub mod anyhow {
     pub use ::anyhow::*;
 }
 
+#[cfg(feature = "backtrace")]
+pub mod backtrace {
+    //! Callstack backtraces.
+    //!
+    //! See crate [`::backtrace`].
+
+    pub use ::backtrace::*;
+}
+
+#[cfg(feature = "base64")]
+pub mod base64 {
+    //! Base-64 encoding and decoding.
+    //!
+    //! See crate [`::base64`].
+
+    pub use ::base64::*;
+}
+
 #[cfg(feature = "big_s")]
 pub mod big_s {
     //! Succinct `String` "literals".
