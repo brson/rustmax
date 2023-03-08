@@ -141,6 +141,15 @@ pub mod cc {
     pub use ::cc::*;
 }
 
+#[cfg(feature = "cfg-if")]
+pub mod cfg_if {
+    //! A macro for writing conditional compilation as `if` / `else` blocks.
+    //!
+    //! See crate [`::cfg_if`].
+
+    pub use ::cfg_if::*;
+}
+
 #[cfg(feature = "chrono")]
 pub mod chrono {
     //! Dates and time.
