@@ -425,7 +425,7 @@ pub mod serde {
 
 #[cfg(feature = "serde_json")]
 pub mod serde_json {
-    //! JSON serialization / deserialization.
+    //! JSON serialization / deserialization with `serde`.
     //!
     //! See crate [`::serde_json`].
 
@@ -502,4 +502,13 @@ pub mod tokio {
     //! See crate [`::tokio`].
 
     pub use ::tokio::*;
+}
+
+#[cfg(feature = "toml")]
+pub mod toml {
+    //! TOML serialization / deserialization with `serde`.
+    //!
+    //! See crate [`::toml`].
+
+    pub use ::toml::*;
 }

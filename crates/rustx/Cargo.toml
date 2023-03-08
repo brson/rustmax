@@ -43,6 +43,7 @@ rx-crates-core = [
   "serde",
   "serde_json",
   "static_assertions",
+  "toml",
 ]
 
 
@@ -68,6 +69,7 @@ rx-profile-std-plus = [
   "tempfile",
   "tera",
   "thiserror",
+  "toml",
 ]
 
 rx-profile-net = [
@@ -153,6 +155,7 @@ rx-feature-default = [
   "serde_json/default",
   "tera/default",
   "tokio/default",
+  "toml/default",
 ]
 
 rx-feature-derive = [
@@ -267,7 +270,7 @@ tera = { version = "1.17.1", optional = true, default-features = false }
 termcolor = { version = "1.2.0", optional = true, default-features = false }
 thiserror = { version = "1.0.39", optional = true, default-features = false }
 tokio = { version = "1.26.0", optional = true, default-features = false }
-toml = "0.7.2"
+toml = { version = "0.7.2", optional = true, default-features = false }
 unicode-segmentation = "1.10.1"
 url = "2.3.1"
 walkdir = "2.3.2"
