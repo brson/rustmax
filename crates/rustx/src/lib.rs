@@ -485,3 +485,12 @@ pub mod termcolor {
 
     pub use ::termcolor::*;
 }
+
+#[cfg(feature = "thiserror")]
+pub mod thiserror {
+    //! Tools for defining custom error types.
+    //!
+    //! See crate [`::thiserror`].
+
+    pub use ::thiserror::*;
+}
