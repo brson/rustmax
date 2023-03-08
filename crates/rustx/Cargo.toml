@@ -39,6 +39,7 @@ rx-crates-core = [
   "rand",
   "rand_chacha",
   "rand_pcg",
+  "regex",
   "serde",
 ]
 
@@ -127,6 +128,7 @@ rx-feature-std = [
   "rand/std",
   "rand/std_rng",
   "rand_chacha/std",
+  "regex/std",
   "quote/proc-macro",
   "serde/std",
 ]
@@ -137,6 +139,7 @@ rx-feature-default = [
   "futures/default",
   "proc-macro2/default",
   "quote/default",
+  "regex/default",
 ]
 
 rx-feature-derive = [
@@ -238,7 +241,7 @@ rand = { version = "0.8.5", optional = true, default-features = false }
 rand_chacha = { version = "0.3.1", optional = true, default-features = false }
 rand_pcg = { version = "0.3.1", optional = true, default-features = false }
 rayon = { version = "1.7.0", optional = true, default-features = false }
-regex = "1.7.1"
+regex = { version = "1.7.1", optional = true, default-features = false }
 reqwest = "0.11.14"
 serde = { version = "1.0.152", optional = true, default-features = false }
 serde_json = "1.0.94"

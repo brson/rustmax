@@ -393,6 +393,15 @@ pub mod rayon {
     pub use ::rayon::*;
 }
 
+#[cfg(feature = "regex")]
+pub mod regex {
+    //! Regular expressions.
+    //!
+    //! See crate [`::regex`].
+
+    pub use ::regex::*;
+}
+
 #[cfg(feature = "serde")]
 pub mod serde {
     //! The standard Rust serialization framework.
