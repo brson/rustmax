@@ -149,6 +149,14 @@ rx-feature-nightly = [
 ## ---------- ##
 
 
+rx-rand-x-small_rng = [
+  "rand/small_rng",
+]
+
+
+## ---------- ##
+
+
 rx-rustlibs-core = [
   "rx-rustlib-core",
   "rx-rustlib-alloc",
