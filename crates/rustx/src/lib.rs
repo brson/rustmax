@@ -38,6 +38,9 @@ pub mod prelude {
 
     #[cfg(feature = "og_fmt")]
     pub use og_fmt::fmt;
+
+    #[cfg(feature = "static_assertions")]
+    pub use static_assertions::*;
 }
 
 
@@ -436,6 +439,15 @@ pub mod socket2 {
     //! See crate [`::socket2`].
 
     pub use ::socket2::*;
+}
+
+#[cfg(feature = "static_assertions")]
+pub mod static_assertions {
+    //! Assertions about constants, types, and more.
+    //!
+    //! See crate [`::static_assertions`].
+
+    pub use ::static_assertions::*;
 }
 
 #[cfg(feature = "syn")]
