@@ -9,6 +9,7 @@ name = "rustx"
 path = "src/main.rs"
 
 [dependencies]
+rustx = { path = "../rustx", features = ["rx-feature-derive"] }
 anyhow = "1.0.69"
 clap = { version = "4.1.8", features = ["derive"] }
 serde = { version = "1.0.152", features = ["derive"] }

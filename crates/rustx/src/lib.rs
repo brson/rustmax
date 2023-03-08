@@ -240,6 +240,15 @@ pub mod lazy_static {
     pub use ::lazy_static::*;
 }
 
+#[cfg(feature = "libc")]
+pub mod libc {
+    //! Bindings to the C standard library.
+    //!
+    //! See crate [`::libc`].
+
+    pub use ::libc::*;
+}
+
 #[cfg(feature = "log")]
 pub mod log {
     //! A simple logging framework.
@@ -301,4 +310,13 @@ pub mod rayon {
     //! See crate [`::rayon`].
 
     pub use ::rayon::*;
+}
+
+#[cfg(feature = "serde")]
+pub mod serde {
+    //! The standard Rust serialization framework.
+    //!
+    //! See crate [`::serde`].
+
+    pub use ::serde::*;
 }

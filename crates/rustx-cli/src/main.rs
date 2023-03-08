@@ -1,3 +1,8 @@
+use rustx::{
+    clap,
+    serde,
+};
+
 fn main() {
     let _opts = <CliOpts as clap::Parser>::parse();
 }
