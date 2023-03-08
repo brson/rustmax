@@ -1,0 +1,51 @@
+## TODO
+
+- xtask
+- more terminal crates
+- fs2 - unmaintained?
+- cli
+  - list tools
+  - install tools
+  - show tool status
+  - show rustup proxies status
+  - where tool
+  - build docs
+  - search docs
+  - initialize dep-frozen rustx project
+- workspace template
+  - overflow on
+- documentation
+  - crate docs
+  - tool docs
+  - tool --help pages
+  - rustup components
+  - toolchain descriptions
+  - dev tool tutorial
+  - easy-mode rust
+  - official docs
+- documentation generator
+- documentation search
+- tracing
+- tungstenite / tungstenite-tokio?
+- charting / graphing?
+- fuzzing / profiling / flamegraphs
+- notify
+- time
+- wasm profile
+- wasm-bindgen
+- build-script profile improvements
+- unix/linux/macos/windows profiles?
+- compression
+- tests
+  - cargo-license / cargo-deny
+  - cargo-audit
+- datatest_stable
+- criterion
+- include_dir
+- scripting languages
+  - RustPython
+- rustyline / termion?
+- semver
+- home directory
+- grpc / protoc
+- mold setup
