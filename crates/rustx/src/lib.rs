@@ -512,3 +512,12 @@ pub mod toml {
 
     pub use ::toml::*;
 }
+
+#[cfg(feature = "unicode-segmentation")]
+pub mod unicode_segmentation {
+    //! Splitting strings on grapheme cluster, word, and sentence boundaries.
+    //!
+    //! See crate [`::unicode_segmentation`].
+
+    pub use ::unicode_segmentation::*;
+}

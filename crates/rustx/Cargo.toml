@@ -70,6 +70,7 @@ rx-profile-std-plus = [
   "tera",
   "thiserror",
   "toml",
+  "unicode-segmentation",
 ]
 
 rx-profile-net = [
@@ -271,7 +272,7 @@ termcolor = { version = "1.2.0", optional = true, default-features = false }
 thiserror = { version = "1.0.39", optional = true, default-features = false }
 tokio = { version = "1.26.0", optional = true, default-features = false }
 toml = { version = "0.7.2", optional = true, default-features = false }
-unicode-segmentation = "1.10.1"
+unicode-segmentation = { version = "1.10.1", optional = true, default-features = false }
 url = "2.3.1"
 walkdir = "2.3.2"
 xshell = "0.2.3"
