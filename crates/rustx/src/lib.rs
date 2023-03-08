@@ -420,6 +420,15 @@ pub mod serde {
     pub use ::serde::*;
 }
 
+#[cfg(feature = "serde_json")]
+pub mod serde_json {
+    //! JSON serialization / deserialization.
+    //!
+    //! See crate [`::serde_json`].
+
+    pub use ::serde_json::*;
+}
+
 #[cfg(feature = "syn")]
 pub mod syn {
     //! A Rust parser used by procedural macros.
