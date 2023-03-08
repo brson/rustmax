@@ -458,3 +458,12 @@ pub mod syn {
 
     pub use ::syn::*;
 }
+
+#[cfg(feature = "tempfile")]
+pub mod tempfile {
+    //! Temporary files and directories.
+    //!
+    //! See crate [`::tempfile`].
+
+    pub use ::tempfile::*;
+}
