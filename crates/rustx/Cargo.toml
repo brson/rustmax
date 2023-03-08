@@ -57,6 +57,7 @@ rx-profile-std-plus = [
   "rx-feature-std",
   "rx-feature-default",
   "big_s",
+  "num_cpus",
   "og_fmt",
   "rayon",
 ]
@@ -212,7 +213,7 @@ lazy_static = { version = "1.4.0", optional = true, default-features = false }
 libc = { version = "0.2.139", optional = true, default-features = false }
 log = { version = "0.4.17", optional = true, default-features = false }
 mime = { version = "0.3.16", optional = true, default-features = false }
-num_cpus = "1.15.0"
+num_cpus = { version = "1.15.0", optional = true, default-features = false }
 num_enum = { version = "0.5.11", optional = true, default-features = false }
 og_fmt = { version = "1.0.4", optional = true, default-features = false }
 once_cell = { version = "1.17.1", optional = true, default-features = false }

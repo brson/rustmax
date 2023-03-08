@@ -312,6 +312,15 @@ pub mod mime {
     pub use ::mime::*;
 }
 
+#[cfg(feature = "num_cpus")]
+pub mod num_cpus {
+    //! Get the number of CPUS on a machine.
+    //!
+    //! See crate [`::num_cpus`].
+
+    pub use ::num_cpus::*;
+}
+
 #[cfg(feature = "og_fmt")]
 pub mod og_fmt {
     //! The `fmt!` synonym for `format!`.
