@@ -303,6 +303,15 @@ pub mod log {
     pub use ::log::*;
 }
 
+#[cfg(feature = "mime")]
+pub mod mime {
+    //! MIME media types.
+    //!
+    //! See crate [`::mime`].
+
+    pub use ::mime::*;
+}
+
 #[cfg(feature = "og_fmt")]
 pub mod og_fmt {
     //! The `fmt!` synonym for `format!`.
