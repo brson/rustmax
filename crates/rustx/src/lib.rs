@@ -339,6 +339,24 @@ pub mod once_cell {
     pub use ::once_cell::*;
 }
 
+#[cfg(feature = "proc-macro2")]
+pub mod proc_macro2 {
+    //! A preferred wrapper around the standard `proc_macro` crate.
+    //!
+    //! See crate [`::proc_macro2`].
+
+    pub use ::proc_macro2::*;
+}
+
+#[cfg(feature = "quote")]
+pub mod quote {
+    //! The `quote!` macro for turning code blocks into source tokens.
+    //!
+    //! See crate [`::quote`].
+
+    pub use ::quote::*;
+}
+
 #[cfg(feature = "rand")]
 pub mod rand {
     //! Random number generators.

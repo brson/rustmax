@@ -91,6 +91,7 @@ rx-profile-proc-macro = [
   "rx-profile-std-plus",
   "rx-rustlibs-proc-macro",
   "proc-macro2",
+  "quote",
 ]
 
 rx-profile-full = [
@@ -133,6 +134,7 @@ rx-feature-default = [
   "clap/default",
   "futures/default",
   "proc-macro2/proc-macro",
+  "quote/proc-macro",
 ]
 
 rx-feature-derive = [
@@ -229,7 +231,7 @@ num_enum = { version = "0.5.11", optional = true, default-features = false }
 og_fmt = { version = "1.0.4", optional = true, default-features = false }
 once_cell = { version = "1.17.1", optional = true, default-features = false }
 proc-macro2 = { version = "1.0.51", optional = true, default-features = false }
-quote = "1.0.23"
+quote = { version = "1.0.23", optional = true, default-features = false }
 rand = { version = "0.8.5", optional = true, default-features = false }
 rand_chacha = { version = "0.3.1", optional = true, default-features = false }
 rand_pcg = { version = "0.3.1", optional = true, default-features = false }
