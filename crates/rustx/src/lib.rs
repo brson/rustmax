@@ -401,3 +401,12 @@ pub mod serde {
 
     pub use ::serde::*;
 }
+
+#[cfg(feature = "syn")]
+pub mod syn {
+    //! A Rust parser used by procedural macros.
+    //!
+    //! See crate [`::syn`].
+
+    pub use ::syn::*;
+}
