@@ -87,6 +87,12 @@ rx-profile-build-script = [
   "cxx",
 ]
 
+rx-profile-proc-macro = [
+  "rx-profile-std-plus",
+  "rx-rustlibs-proc-macro",
+  "proc-macro2",
+]
+
 rx-profile-full = [
   "rx-profile-cli",
   "rx-profile-async",
@@ -115,6 +121,7 @@ rx-feature-std = [
   "log/std",
   "num_enum/std",
   "once_cell/std",
+  "proc-macro2/proc-macro",
   "rand/std",
   "rand/std_rng",
   "rand_chacha/std",
@@ -125,6 +132,7 @@ rx-feature-default = [
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
   "futures/default",
+  "proc-macro2/proc-macro",
 ]
 
 rx-feature-derive = [
@@ -175,6 +183,9 @@ rx-rustlibs-std = [
   "rx-rustlib-core",
   "rx-rustlib-alloc",
   "rx-rustlib-std",
+]
+
+rx-rustlibs-proc-macro = [
   "rx-rustlib-proc_macro",
 ]
 
@@ -217,7 +228,7 @@ num_cpus = { version = "1.15.0", optional = true, default-features = false }
 num_enum = { version = "0.5.11", optional = true, default-features = false }
 og_fmt = { version = "1.0.4", optional = true, default-features = false }
 once_cell = { version = "1.17.1", optional = true, default-features = false }
-proc-macro2 = "1.0.51"
+proc-macro2 = { version = "1.0.51", optional = true, default-features = false }
 quote = "1.0.23"
 rand = { version = "0.8.5", optional = true, default-features = false }
 rand_chacha = { version = "0.3.1", optional = true, default-features = false }
