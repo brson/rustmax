@@ -231,6 +231,15 @@ pub mod futures {
     pub use ::futures::*;
 }
 
+#[cfg(feature = "hex")]
+pub mod hex {
+    //! Encoding and decoding hexidecimal strings.
+    //!
+    //! See crate [`::hex`].
+
+    pub use ::hex::*;
+}
+
 #[cfg(feature = "http")]
 pub mod http {
     //! Shared definitions related to the HTTP protocol.
