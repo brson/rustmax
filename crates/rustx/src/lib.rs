@@ -539,3 +539,12 @@ pub mod walkdir {
 
     pub use ::walkdir::*;
 }
+
+#[cfg(feature = "xshell")]
+pub mod xshell {
+    //! A Swiss-army knife for writing shell-style scripts in Rust.
+    //!
+    //! See crate [`::xshell`].
+
+    pub use ::xshell::*;
+}
