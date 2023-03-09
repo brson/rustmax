@@ -14,6 +14,8 @@
   - initialize dep-frozen rustx project
 - workspace template
   - overflow on
+  - clippy settings
+  - rustfmt settings
 - documentation
   - crate docs
   - tool docs
