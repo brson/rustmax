@@ -118,13 +118,16 @@ pub mod prelude {
     //! The `rustx` prelude.
 
     #[cfg(feature = "big_s")]
-    pub use big_s::S;
+    pub use ::big_s::S;
+
+    #[cfg(feature = "extension-trait")]
+    pub use ::extension_trait::extension_trait;
 
     #[cfg(feature = "og_fmt")]
-    pub use og_fmt::fmt;
+    pub use ::og_fmt::fmt;
 
     #[cfg(feature = "static_assertions")]
-    pub use static_assertions::*;
+    pub use ::static_assertions::*;
 }
 
 
