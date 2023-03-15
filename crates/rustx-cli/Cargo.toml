@@ -9,8 +9,14 @@ name = "rustx"
 path = "src/main.rs"
 
 [dependencies]
-rustx = { path = "../rustx", features = ["rx-feature-derive"] }
-anyhow = "1.0.69"
-clap = { version = "4.1.8", features = ["derive"] }
-serde = { version = "1.0.152", features = ["derive"] }
-xshell = "0.2.3"
+rustx.path = "../rustx"
+rustx.default-features = false
+rustx.features = [
+  "rx-feature-std",
+  "rx-feature-derive",
+  "anyhow",
+  "clap",
+  "serde",
+  "xshell",
+]
+serde.version = "1"
