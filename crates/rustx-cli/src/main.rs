@@ -1,3 +1,5 @@
+mod impls;
+
 use rustx::{
     clap,
     serde,
@@ -90,8 +92,13 @@ struct CliOpts {
 
 #[derive(clap::Subcommand)]
 enum CliCmd {
+    ListTools(CliCmdListTools),
     InstallTools(CliCmdInstallTools),
     InstallTool(CliCmdInstallTool),
+}
+
+#[derive(clap::Args)]
+struct CliCmdListTools {
 }
 
 #[derive(clap::Args)]
