@@ -1,0 +1,25 @@
+[workspace.package]
+description = "{{description}}"
+version = "0.1.0"
+license = "Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT OR CC0-1.0"
+authors = ["{{authors}}"]
+documentation = "todo"
+edition = "2021"
+
+[workspace]
+resolver = "2"
+
+members = [
+  "crates/*",
+]
+
+default-members = [
+  "crates/{{project_name}}-cli",
+]
+
+[dependencies]
+rstx.path = "../rustx/crates/rustx"
+rstx.package = "rustx"
+rstx.features = [
+  "rx-feature-std",
+]
