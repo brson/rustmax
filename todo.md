@@ -12,6 +12,9 @@
   - build docs
   - search docs
   - initialize dep-frozen rustx project
+  - change rustx lib features
+- clippy settings
+- rustfmt settings
 - workspace template
   - overflow on
   - clippy settings
