@@ -91,6 +91,9 @@ rx-profile-net = [
 rx-profile-cli = [
   "rx-profile-std-plus",
   "env_logger",
+  "console",
+  "dialoguer",
+  "indicatif",
   "termcolor",
 ]
 
@@ -150,7 +153,10 @@ rx-feature-std = [
 rx-feature-default = [
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
+  "console/default",
+  "dialoguer/default",
   "futures/default",
+  "indicatif/default",
   "proc-macro2/default",
   "quote/default",
   "regex/default",
@@ -185,6 +191,7 @@ rx-feature-backtrace = [
 ]
 
 rx-feature-tokio = [
+  "indicatif/tokio",
 ]
 
 rx-feature-nightly = [
@@ -238,9 +245,11 @@ cc = { version = "1.0.79", optional = true, default-features = false }
 cfg-if = { version = "1.0.0", optional = true, default-features = false }
 chrono = { version = "0.4.23", optional = true, default-features = false }
 clap = { version = "4.1.8", optional = true, default-features = false }
+console = { version = "0.15.5", optional = true, default-features = false }
 crossbeam = { version = "0.8.2", optional = true, default-features = false }
 cxx = { version = "1.0.92", optional = true, default-features = false }
 derive_more = { version = "0.99.17", optional = true, default-features = false }
+dialoguer = { version = "0.10.4", optional = true, default-features = false }
 env_logger = { version = "0.10.0", optional = true, default-features = false }
 extension-trait = { version = "1.0.1", optional = true, default-features = false }
 fnv = { version = "1.0.7", optional = true, default-features = false }
@@ -248,6 +257,7 @@ futures = { version = "0.3.26", optional = true, default-features = false }
 http = { version = "0.2.9", optional = true, default-features = false }
 hex = { version = "0.4.3", optional = true, default-features = false }
 hyper = { version = "0.14.24", optional = true, default-features = false }
+indicatif = { version = "0.17.3", optional = true, default-features = false }
 itertools = { version = "0.10.5", optional = true, default-features = false }
 json5 = { version ="0.4.1", optional = true, default-features = false }
 lazy_static = { version = "1.4.0", optional = true, default-features = false }

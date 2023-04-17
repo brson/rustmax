@@ -285,6 +285,15 @@ pub mod derive_more {
     pub use ::derive_more::*;
 }
 
+#[cfg(feature = "dialoguer")]
+pub mod dialoguer {
+    //! Command-line confirmation prompts, text inputs, and more.
+    //!
+    //! See crate [`::dialoguer`].
+
+    pub use ::dialoguer::*;
+}
+
 #[cfg(feature = "env_logger")]
 pub mod env_logger {
     //! A basic logger to use with the `log` crate.
@@ -346,6 +355,14 @@ pub mod hyper {
     //! See crate [`::hyper`].
 
     pub use ::hyper::*;
+}
+
+#[cfg(feature = "indicatif")]
+pub mod indicatif {
+    //! Command-line progress bars.
+    //!
+    //! See crate [`::indicatif`].
+    pub use ::indicatif::*;
 }
 
 #[cfg(feature = "itertools")]
