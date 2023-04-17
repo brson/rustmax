@@ -518,6 +518,15 @@ pub mod reqwest {
     pub use ::reqwest::*;
 }
 
+#[cfg(feature = "rustyline")]
+pub mod rustyline {
+    //! Command-line input reading with history.
+    //!
+    //! See crate [`::rustyline`].
+    
+    pub use ::rustyline::*;
+}
+
 #[cfg(feature = "serde")]
 pub mod serde {
     //! The standard Rust serialization framework.

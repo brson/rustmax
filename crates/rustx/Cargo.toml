@@ -95,6 +95,7 @@ rx-profile-cli = [
   "dialoguer",
   "indicatif",
   "termcolor",
+  "rustyline",
 ]
 
 rx-profile-build-script = [
@@ -161,6 +162,7 @@ rx-feature-default = [
   "quote/default",
   "regex/default",
   "reqwest/default",
+  "rustyline/default",
   "serde/default",
   "serde_json/default",
   "tera/default",
@@ -276,6 +278,7 @@ rand_pcg = { version = "0.3.1", optional = true, default-features = false }
 rayon = { version = "1.7.0", optional = true, default-features = false }
 regex = { version = "1.7.1", optional = true, default-features = false }
 reqwest = { version = "0.11.14", optional = true, default-features = false }
+rustyline = { version = "11.0.0", optional = true, default-features = false }
 serde = { version = "1.0.152", optional = true, default-features = false }
 serde_json = { version = "1.0.94", optional = true, default-features = false }
 socket2 = { version = "0.5.1", optional = true, default-features = false }
