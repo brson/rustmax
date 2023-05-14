@@ -8,7 +8,7 @@ edition.workspace = true
 
 default = [
   "rx-profile-no-std",
-  #"rx-profile-std-plus",
+  #"rx-profile-std",
 ]
 
 
@@ -25,7 +25,6 @@ rx-crates-core = [
   "bytes",
   "cfg-if",
   "chrono",
-  "clap",
   "crossbeam",
   "derive_more",
   "extension-trait",
@@ -40,7 +39,6 @@ rx-crates-core = [
   "rand",
   "rand_chacha",
   "rand_pcg",
-  "regex",
   "serde",
   "serde_json",
   "static_assertions",
@@ -54,19 +52,22 @@ rx-crates-core = [
 rx-profile-no-std = [
   "rx-rustlibs-core",
   "rx-crates-core",
+  "rx-feature-no-std",
 ]
 
-rx-profile-std-plus = [
+rx-profile-std = [
   "rx-rustlibs-std",
   "rx-crates-core",
   "rx-feature-std",
   "rx-feature-default",
   "big_s",
+  "clap",
   "json5",
   "lazy_static",
   "num_cpus",
   "og_fmt",
   "rayon",
+  "regex",
   "tempfile",
   "tera",
   "thiserror",
@@ -77,7 +78,7 @@ rx-profile-std-plus = [
 ]
 
 rx-profile-net = [
-  "rx-profile-std-plus",
+  "rx-profile-std",
   "http",
   "hyper",
   "hyper/full",
@@ -90,7 +91,7 @@ rx-profile-net = [
 ]
 
 rx-profile-cli = [
-  "rx-profile-std-plus",
+  "rx-profile-std",
   "env_logger",
   "console",
   "dialoguer",
@@ -100,13 +101,13 @@ rx-profile-cli = [
 ]
 
 rx-profile-build-script = [
-  "rx-profile-std-plus",
+  "rx-profile-std",
   "cc",
   "cxx",
 ]
 
 rx-profile-proc-macro = [
-  "rx-profile-std-plus",
+  "rx-profile-std",
   "rx-rustlibs-proc-macro",
   "proc-macro2",
   "quote",
@@ -122,6 +123,10 @@ rx-profile-full = [
 
 
 ## ---------- ##
+
+rx-feature-no-std = [
+  "serde_json/alloc",
+]
 
 rx-feature-std = [  
   "anyhow/std",

@@ -39,7 +39,7 @@
 //! The main way of configuring the `rustx` crates is by enabling
 //! the appropriate _profile_ cargo features.
 //!
-//! The default profile feature is `rx-profile-std-plus`.
+//! The default profile feature is `rx-profile-std`.
 //! This feature augments the Rust `std` library with crates
 //! that are widely used with a variety of Rust programs,
 //! as well as minor helpers missing from the standard library.
@@ -71,7 +71,7 @@
 //!
 //! - [`anyhow`]
 //!
-//! ## Profile: `rx-profile-std-plus`
+//! ## Profile: `rx-profile-std`
 //!
 //! ## Profile: `rx-profile-net`
 //!
