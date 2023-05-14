@@ -14,5 +14,6 @@ members = [
 ]
 
 default-members = [
+  "crates/rustx",
   "crates/rustx-cli",
 ]
