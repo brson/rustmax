@@ -167,6 +167,7 @@ rx-feature-default = [
   "dialoguer/default",
   "futures/default",
   "indicatif/default",
+  "nom/default",
   "proc-macro2/default",
   "quote/default",
   "regex/default",
