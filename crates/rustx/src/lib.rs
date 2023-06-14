@@ -2,7 +2,6 @@
 //!
 //! This crate documents and reexports selected high-quality Rust crates
 //! suitable for typical Rust programs.
-//! It can be thought of as a "batteries-included" standard library.
 //!
 //! # Using `rustx` for crate discovery.
 //!
@@ -417,6 +416,15 @@ pub mod mime {
     //! See crate [`::mime`].
 
     pub use ::mime::*;
+}
+
+#[cfg(feature = "nom")]
+pub mod nom {
+    //! An efficient parser combinator.
+    //!
+    //! See crate [`::nom`].
+
+    pub use ::nom::*;
 }
 
 #[cfg(feature = "num_cpus")]
