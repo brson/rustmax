@@ -3,10 +3,23 @@ A collection of useful Rust crates.
 This crate documents and reexports selected high-quality Rust crates
 suitable for typical Rust programs.
 
+- [Using `rustx` for crate discovery]
+- [Using `rustx` as a library]
+- [Feature profiles]
+  - [Profile: `rx-profile-no-std`]
+  - [Profile: `rx-profile-std`]
+  - [Profile: `rx-profile-net`]
+  - [Profile: `rx-profile-cli`]
+  - [Profile: `rx-profile-build-script`]
+  - [Profile: `rx-profile-proc-macro`]
+  - [Profile: `rx-profile-full`]
+
+
 # Using `rustx` for crate discovery.
 
 If you just need to know decent crates for common programming tasks,
 read this documentation to find them.
+
 
 # Using `rustx` as a library.
 
@@ -32,6 +45,7 @@ And in your manifest `Cargo.toml`
 [dependencies]
 rustx.workspace = true
 ```
+
 
 # Feature profiles
 
@@ -61,6 +75,7 @@ rustx.default-features = false
 rustx.features = ["rx-profile-no-std"]
 ```
 
+
 ## Profile: `rx-profile-no-std`
 
 This profile includes crates that do not require Rust `std`,
@@ -69,16 +84,25 @@ and provide features used by many Rust programs.
 Crates in this profile:
 
 - [`anyhow`]
+- [`backtrace`]
+- [`base64`]
+- [
+
 
 ## Profile: `rx-profile-std`
 
+
 ## Profile: `rx-profile-net`
+
 
 ## Profile: `rx-profile-cli`
 
+
 ## Profile: `rx-profile-build-script`
 
+
 ## Profile: `rx-profile-proc-macro`
+
 
 ## Profile: `rx-profile-full`
 
@@ -101,4 +125,4 @@ todo
 # TODO
 
 - update big_s and og_fmt to be no_std
-- update big_s to `use format as fmt`
+- update fmt to `use format as fmt`
