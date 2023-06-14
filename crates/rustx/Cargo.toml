@@ -14,7 +14,6 @@ default = [
 
 ## ---------- ##
 
-
 rx-crates-core = [
   "anyhow",
   "backtrace",
@@ -116,6 +115,7 @@ rx-profile-proc-macro = [
 ]
 
 rx-profile-full = [
+  "rx-profile-std",
   "rx-profile-net",
   "rx-profile-cli",
   "rx-profile-build-script",
@@ -242,6 +242,14 @@ rx-rustlib-core = []
 rx-rustlib-alloc = []
 rx-rustlib-std = []
 rx-rustlib-proc_macro = []
+
+
+## ---------- ##
+
+
+anyhow = ["dep:anyhow"]
+# todo
+
 
 
 [dependencies]

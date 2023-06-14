@@ -16,6 +16,9 @@
   - search docs
   - initialize dep-frozen rustx project
   - change rustx lib features
+  - set up sccache
+  - list all relevant environment variables
+  - apropos
 - clippy settings
 - rustfmt settings
 - workspace template
