@@ -7,7 +7,7 @@ edition.workspace = true
 [features]
 
 default = [
-  "rx-profile-no-std",
+  #"rx-profile-no-std",
   #"rx-profile-std",
 ]
 
