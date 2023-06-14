@@ -13,9 +13,9 @@ Pull requests adding crates are not welcome and will be closed.**
 
 Rust Extra is licensed
 
-    Apache-2.0 OR Apache-2.0 with LLVM-exception OR MIT OR CC0-1.0
+   CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 
 All libraries included as dependencies of the `rustx` crate
-are permissively licensed under Apache-2.0 or weaker (e.g. MIT).
+are permissively licensed under BSD-3-Clause, MIT, or weaker.
 
 Tools installed by the `rustx` command may have other licenses.
