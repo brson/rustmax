@@ -62,6 +62,7 @@ rx-profile-std = [
   "rx-feature-default",
   "big_s",
   "clap",
+  "env_logger",
   "json5",
   "lazy_static",
   "num_cpus",
@@ -92,7 +93,6 @@ rx-profile-net = [
 
 rx-profile-cli = [
   "rx-profile-std",
-  "env_logger",
   "console",
   "dialoguer",
   "indicatif",
