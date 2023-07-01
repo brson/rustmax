@@ -1,5 +1,10 @@
 A collection of useful Rust crates.
 
+**⚠️
+WARNING:
+Do not use this project.
+⚠️**
+
 This crate documents and reexports selected high-quality Rust crates
 suitable for typical Rust programs.
 
@@ -86,7 +91,31 @@ Crates in this profile:
 - [`anyhow`]
 - [`backtrace`]
 - [`base64`]
-- [
+- [`bitflags`]
+- [`blake3`]
+- [`byteorder`]
+- [`bytes`]
+- [`cfg-if`]
+- [`chrono`]
+- [`crossbeam`]
+- [`derive_more`]
+- [`extension-trait`]
+- [`fnv`]
+- [`futures`]
+- [`hex`]
+- [`itertools`]
+- [`libc`]
+- [`log`]
+- [`nom`]
+- [`num_enum`]
+- [`once_cell`]
+- [`rand`]
+- [`rand_chacha`]
+- [`rand_pcg`]
+- [`serde`]
+- [`serde_json`]
+- [`static_assertions`]
+- [`toml`]
 
 
 ## Profile: `rx-profile-std`
