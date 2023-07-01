@@ -14,7 +14,7 @@ default = [
 
 ## ---------- ##
 
-rx-crates-core = [
+rx-crates-no-std = [
   "anyhow",
   "backtrace",
   "base64",
@@ -52,14 +52,14 @@ rx-crates-core = [
 rx-profile-no-std = [
   "rx-rustlibs-no-std",
   "rx-feature-no-std",
-  "rx-crates-core",
+  "rx-crates-no-std",
 ]
 
 rx-profile-std = [
   "rx-rustlibs-std",
   "rx-feature-std",
   "rx-feature-default",
-  "rx-crates-core",
+  "rx-crates-no-std",
   "big_s",
   "clap",
   "env_logger",
