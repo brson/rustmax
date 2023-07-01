@@ -10,7 +10,8 @@ suitable for typical Rust programs.
 
 - [Using `rustx` for crate discovery](#using-rustx-for-crate-discovery)
 - [Using `rustx` as a library](#using-rustx-as-a-library)
-- [Feature profiles](#feature-profiles)
+- [`rustx` and cargo features](#rustx-and-cargo-features)
+- [Profiles](#profiles)
   - [Profile: `rx-profile-no-std`](#profile-rx-profile-no-std)
   - [Profile: `rx-profile-std`](#profile-rx-profile-std)
   - [Profile: `rx-profile-net`](#profile-rx-profile-net)
@@ -18,6 +19,7 @@ suitable for typical Rust programs.
   - [Profile: `rx-profile-build-script`](#profile-rx-profile-build-script)
   - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
   - [Profile: `rx-profile-full`](#profile-rx-profile-full)
+- [
 
 
 # Using `rustx` for crate discovery.
@@ -50,7 +52,9 @@ rustx.workspace = true
 ```
 
 
-# Feature profiles
+# `rustx` and cargo features
+
+todo
 
 The main way of configuring the `rustx` crates is by enabling
 the appropriate _profile_ cargo features.
@@ -79,10 +83,22 @@ rustx.features = ["rx-profile-no-std"]
 ```
 
 
+## Profiles
+
+todo
+
+
 ## Profile: `rx-profile-no-std`
 
 This profile includes crates that do not require Rust `std`,
 and provide features used by many Rust programs.
+
+This profile allows use of the Rust allocator,
+and enables any allocator related features of its crates.
+
+This profile enables the following features:
+
+- [`rx-feature-no-std`](#feature-rx-feature-no-std)
 
 Crates in this profile:
 
@@ -136,17 +152,25 @@ Crates in this profile:
 
 # Features
 
+`rustx` organizes its crates features
+
 todo
 
-- `default`
-  - `all-crates`
-  - `std`
-- `std`
-  - `anyhow/std`
-- `backtrace`
-  - `std`
-  - `anyhow/backtrace`
-- `all-crates`
+
+## Crate features
+
+For every included crate `rustx` exposes a feature with the same name.
+
+Example: todo.
+
+
+## Feature: `rx-feature-no-std`
+
+This feature is enabled by `rx-profile-no-std`.
+It does not typically need to be set manually.
+
+todo
+
 
 
 # TODO

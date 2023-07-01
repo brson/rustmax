@@ -45,20 +45,7 @@ rx-crates-no-std = [
   "toml",
 ]
 
-
-## ---------- ##
-
-
-rx-profile-no-std = [
-  "rx-rustlibs-no-std",
-  "rx-feature-no-std",
-  "rx-crates-no-std",
-]
-
-rx-profile-std = [
-  "rx-rustlibs-std",
-  "rx-feature-std",
-  "rx-feature-default",
+rx-crates-std = [
   "rx-crates-no-std",
   "big_s",
   "clap",
@@ -78,8 +65,8 @@ rx-profile-std = [
   "xshell",
 ]
 
-rx-profile-net = [
-  "rx-profile-std",
+rx-crates-net = [
+  "rx-crates-std",
   "http",
   "hyper",
   "hyper/full",
@@ -91,8 +78,8 @@ rx-profile-net = [
   "url",
 ]
 
-rx-profile-cli = [
-  "rx-profile-std",
+rx-crates-cli = [
+  "rx-crates-std",
   "console",
   "dialoguer",
   "indicatif",
@@ -100,18 +87,55 @@ rx-profile-cli = [
   "rustyline",
 ]
 
-rx-profile-build-script = [
-  "rx-profile-std",
+rx-crates-build-script = [
+  "rx-crates-std",
   "cc",
   "cxx",
+]
+
+rx-crates-proc-macro = [
+  "rx-crates-std",
+  "proc-macro2",
+  "quote",
+  "syn",
+]
+
+
+## ---------- ##
+
+
+rx-profile-no-std = [
+  "rx-rustlibs-no-std",
+  "rx-feature-no-std",
+  "rx-crates-no-std",
+]
+
+rx-profile-std = [
+  "rx-rustlibs-std",
+  "rx-feature-std",
+  "rx-feature-default",
+  "rx-crates-std",
+]
+
+rx-profile-net = [
+  "rx-profile-std",
+  "rx-crates-net",
+]
+
+rx-profile-cli = [
+  "rx-profile-std",
+  "rx-crates-cli",
+]
+
+rx-profile-build-script = [
+  "rx-profile-std",
+  "rx-crates-build-script",
 ]
 
 rx-profile-proc-macro = [
   "rx-profile-std",
   "rx-rustlibs-proc-macro",
-  "proc-macro2",
-  "quote",
-  "syn",
+  "rx-crates-proc-macro",
 ]
 
 rx-profile-full = [
