@@ -28,8 +28,6 @@ read this documentation to find them.
 
 # Using `rustx` as a library.
 
-todo
-
 In your manifest `Cargo.toml`:
 
 ```toml
