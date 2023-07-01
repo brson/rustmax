@@ -3,16 +3,16 @@ A collection of useful Rust crates.
 This crate documents and reexports selected high-quality Rust crates
 suitable for typical Rust programs.
 
-- [Using `rustx` for crate discovery]
-- [Using `rustx` as a library]
-- [Feature profiles]
-  - [Profile: `rx-profile-no-std`]
-  - [Profile: `rx-profile-std`]
-  - [Profile: `rx-profile-net`]
-  - [Profile: `rx-profile-cli`]
-  - [Profile: `rx-profile-build-script`]
-  - [Profile: `rx-profile-proc-macro`]
-  - [Profile: `rx-profile-full`]
+- [Using `rustx` for crate discovery](#using-rustx-for-crate-discovery)
+- [Using `rustx` as a library](#using-rustx-as-a-library)
+- [Feature profiles](#feature-profiles)
+  - [Profile: `rx-profile-no-std`](#profile-rx-profile-no-std)
+  - [Profile: `rx-profile-std`](#profile-rx-profile-std)
+  - [Profile: `rx-profile-net`](#profile-rx-profile-net)
+  - [Profile: `rx-profile-cli`](#profile-rx-profile-cli)
+  - [Profile: `rx-profile-build-script`](#profile-rx-profile-build-script)
+  - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
+  - [Profile: `rx-profile-full`](#profile-rx-profile-full)
 
 
 # Using `rustx` for crate discovery.

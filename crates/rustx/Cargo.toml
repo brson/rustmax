@@ -50,16 +50,16 @@ rx-crates-core = [
 
 
 rx-profile-no-std = [
-  "rx-rustlibs-core",
-  "rx-crates-core",
+  "rx-rustlibs-no-std",
   "rx-feature-no-std",
+  "rx-crates-core",
 ]
 
 rx-profile-std = [
   "rx-rustlibs-std",
-  "rx-crates-core",
   "rx-feature-std",
   "rx-feature-default",
+  "rx-crates-core",
   "big_s",
   "clap",
   "env_logger",
@@ -224,7 +224,7 @@ rx-rand-x-small_rng = [
 ## ---------- ##
 
 
-rx-rustlibs-core = [
+rx-rustlibs-no-std = [
   "rx-rustlib-core",
   "rx-rustlib-alloc",
 ]
