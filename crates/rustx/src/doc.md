@@ -93,11 +93,11 @@ Crates in this profile:
 - [`blake3`]
 - [`byteorder`]
 - [`bytes`]
-- [`cfg-if`]
+- [`cfg-if`](cfg_if)
 - [`chrono`]
 - [`crossbeam`]
 - [`derive_more`]
-- [`extension-trait`]
+- [`extension-trait`](extension_trait)
 - [`fnv`]
 - [`futures`]
 - [`hex`]
