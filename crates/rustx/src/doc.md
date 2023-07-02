@@ -8,9 +8,6 @@ Do not use this project.
 This crate documents and reexports selected high-quality Rust crates
 suitable for typical Rust programs.
 
-- [Using `rustx` for crate discovery](#using-rustx-for-crate-discovery)
-- [Using `rustx` as a library](#using-rustx-as-a-library)
-- [`rustx` and cargo features](#rustx-and-cargo-features)
 - [Profiles](#profiles)
   - [Profile: `rx-profile-no-std`](#profile-rx-profile-no-std)
   - [Profile: `rx-profile-std`](#profile-rx-profile-std)
@@ -19,7 +16,80 @@ suitable for typical Rust programs.
   - [Profile: `rx-profile-build-script`](#profile-rx-profile-build-script)
   - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
   - [Profile: `rx-profile-full`](#profile-rx-profile-full)
-- [
+- [Using `rustx` for crate discovery](#using-rustx-for-crate-discovery)
+- [Using `rustx` as a library](#using-rustx-as-a-library)
+- [`rustx` and cargo features](#rustx-and-cargo-features)
+- [Features](#feature-selection)
+  - [Crate features](#crate-features)
+  - [Feature: `rx-feature-no-std`](#feature-rx-feature-no-std)
+
+
+## Profiles
+
+todo
+
+
+## Profile: `rx-profile-no-std`
+
+This profile includes crates that do not require Rust `std`,
+and provide features used by many Rust programs.
+It allows use of the Rust allocator,
+and enables allocator-related features of its crates.
+
+### Crates in `rx-profile-no-std`
+
+- [`anyhow`]
+- [`backtrace`]
+- [`base64`]
+- [`bitflags`]
+- [`blake3`]
+- [`byteorder`]
+- [`bytes`]
+- [`cfg-if`](cfg_if)
+- [`chrono`]
+- [`crossbeam`]
+- [`derive_more`]
+- [`extension-trait`](extension_trait)
+- [`fnv`]
+- [`futures`]
+- [`hex`]
+- [`itertools`]
+- [`libc`]
+- [`log`]
+- [`nom`]
+- [`num_enum`]
+- [`once_cell`]
+- [`rand`]
+- [`rand_chacha`]
+- [`rand_pcg`]
+- [`serde`]
+- [`serde_json`]
+- [`static_assertions`]
+- [`toml`]
+
+
+### Features enabled by `rx-profile-no-std`
+
+- [`rx-feature-no-std`](#feature-rx-feature-no-std)
+
+
+## Profile: `rx-profile-std`
+
+
+## Profile: `rx-profile-net`
+
+
+## Profile: `rx-profile-cli`
+
+
+## Profile: `rx-profile-build-script`
+
+
+## Profile: `rx-profile-proc-macro`
+
+
+## Profile: `rx-profile-full`
+
 
 
 # Using `rustx` for crate discovery.
@@ -83,73 +153,6 @@ rustx.features = ["rx-profile-no-std"]
 ```
 
 
-## Profiles
-
-todo
-
-
-## Profile: `rx-profile-no-std`
-
-This profile includes crates that do not require Rust `std`,
-and provide features used by many Rust programs.
-
-This profile allows use of the Rust allocator,
-and enables any allocator related features of its crates.
-
-This profile enables the following features:
-
-- [`rx-feature-no-std`](#feature-rx-feature-no-std)
-
-Crates in this profile:
-
-- [`anyhow`]
-- [`backtrace`]
-- [`base64`]
-- [`bitflags`]
-- [`blake3`]
-- [`byteorder`]
-- [`bytes`]
-- [`cfg-if`](cfg_if)
-- [`chrono`]
-- [`crossbeam`]
-- [`derive_more`]
-- [`extension-trait`](extension_trait)
-- [`fnv`]
-- [`futures`]
-- [`hex`]
-- [`itertools`]
-- [`libc`]
-- [`log`]
-- [`nom`]
-- [`num_enum`]
-- [`once_cell`]
-- [`rand`]
-- [`rand_chacha`]
-- [`rand_pcg`]
-- [`serde`]
-- [`serde_json`]
-- [`static_assertions`]
-- [`toml`]
-
-
-## Profile: `rx-profile-std`
-
-
-## Profile: `rx-profile-net`
-
-
-## Profile: `rx-profile-cli`
-
-
-## Profile: `rx-profile-build-script`
-
-
-## Profile: `rx-profile-proc-macro`
-
-
-## Profile: `rx-profile-full`
-
-
 # Features
 
 `rustx` organizes its crates features
@@ -175,5 +178,6 @@ todo
 
 # TODO
 
+- document rustlibs
 - update big_s and og_fmt to be no_std
 - update fmt to `use format as fmt`
