@@ -9,14 +9,11 @@ name = "rustx"
 path = "src/main.rs"
 
 [dependencies]
-rustx.path = "../rustx"
-rustx.default-features = false
-rustx.features = [
-  "rx-feature-std",
+rx.path = "../rustx"
+rx.package = "rustx"
+rx.default-features = false
+rx.features = [
+  "rx-profile-std",
   "rx-feature-derive",
-  "anyhow",
-  "clap",
-  "serde",
-  "xshell",
 ]
 serde.version = "1"

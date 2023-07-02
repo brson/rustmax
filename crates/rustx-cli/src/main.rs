@@ -1,12 +1,16 @@
+#![allow(unused)]
+
 mod impls;
 
-use rustx::{
+use rx::prelude::*;
+use rx::{
     clap,
     serde,
 };
 
-fn main() {
-    let _opts = <CliOpts as clap::Parser>::parse();
+fn main() -> AnyResult<()> {
+    let opts = <CliOpts as clap::Parser>::parse();
+    opts.run()
 }
 
 #[derive(clap::ValueEnum)]
@@ -109,4 +113,10 @@ struct CliCmdInstallTools {
 #[derive(clap::Args)]
 struct CliCmdInstallTool {
     tool: Tool,
+}
+
+impl CliOpts {
+    fn run(&self) -> AnyResult<()> {
+        todo!()
+    }
 }
