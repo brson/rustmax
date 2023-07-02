@@ -17,8 +17,8 @@ fn main() -> AnyResult<()> {
 #[derive(clap::Subcommand)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(enum_iterator::Sequence)]
-#[serde(rename_all = "kebab-case")]
 #[derive(Clone)]
+#[serde(rename_all = "kebab-case")]
 enum Tool {
     /* rustup itself */
 
