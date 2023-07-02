@@ -117,6 +117,15 @@ struct CliCmdInstallTool {
 
 impl CliOpts {
     fn run(&self) -> AnyResult<()> {
+        match &self.cmd {
+            CliCmd::ListTools(cmd) => cmd.run(),
+            _ => todo!(),
+        }
+    }
+}
+
+impl CliCmdListTools {
+    fn run(&self) -> AnyResult<()> {
         todo!()
     }
 }
