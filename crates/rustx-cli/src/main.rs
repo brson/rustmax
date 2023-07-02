@@ -16,6 +16,7 @@ fn main() -> AnyResult<()> {
 #[derive(clap::ValueEnum)]
 #[derive(clap::Subcommand)]
 #[derive(serde::Serialize, serde::Deserialize)]
+#[derive(enum_iterator::Sequence)]
 #[serde(rename_all = "kebab-case")]
 #[derive(Clone)]
 enum Tool {
@@ -126,6 +127,10 @@ impl CliOpts {
 
 impl CliCmdListTools {
     fn run(&self) -> AnyResult<()> {
-        todo!()
+        for tool in enum_iterator::all::<Tool>() {
+            todo!()
+        }
+
+        Ok(())
     }
 }
