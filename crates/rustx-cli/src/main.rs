@@ -57,6 +57,7 @@ enum Tool {
     CargoFuzz,
     CargoGeiger,
     CargoGenerate,
+    CargoHack,
     CargoLlvmLines,
     CargoOutdated,
     CargoUdeps,
@@ -87,6 +88,10 @@ enum Tool {
     WasmPack,
     WasmTools,
     Xsv,
+}
+
+struct ToolAttrs {
+    display_name: &'static str,
 }
 
 #[derive(clap::Parser)]
@@ -128,7 +133,7 @@ impl CliOpts {
 impl CliCmdListTools {
     fn run(&self) -> AnyResult<()> {
         for tool in enum_iterator::all::<Tool>() {
-            todo!()
+            println!("{}", tool.attrs().display_name);
         }
 
         Ok(())
