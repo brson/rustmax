@@ -1,5 +1,7 @@
 ## TODO
 
+- known bugs
+  - serde derive requires adding a serde dependency
 - why
   - feature management
 - on deck crates
