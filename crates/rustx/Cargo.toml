@@ -244,6 +244,10 @@ rx-rand-x-small_rng = [
   "rand/small_rng",
 ]
 
+rx-serde-x-rc = [
+  "serde/rc",
+]
+
 
 ## ---------- ##
 
