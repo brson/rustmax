@@ -23,9 +23,6 @@ pub mod prelude {
 
     #[cfg(feature = "og_fmt")]
     pub use ::og_fmt::fmt;
-
-    #[cfg(feature = "static_assertions")]
-    pub use ::static_assertions::*;
 }
 
 
