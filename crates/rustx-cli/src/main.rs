@@ -105,6 +105,8 @@ enum CliCmd {
     ListTools(CliCmdListTools),
     InstallTools(CliCmdInstallTools),
     InstallTool(CliCmdInstallTool),
+    ListDocs(CliCmdListDocs),
+    OpenDoc(CliCmdOpenDoc),
 }
 
 #[derive(clap::Args)]
@@ -119,6 +121,14 @@ struct CliCmdInstallTools {
 #[derive(clap::Args)]
 struct CliCmdInstallTool {
     tool: Tool,
+}
+
+#[derive(clap::Args)]
+struct CliCmdListDocs {
+}
+
+#[derive(clap::Args)]
+struct CliCmdOpenDoc {
 }
 
 impl CliOpts {
