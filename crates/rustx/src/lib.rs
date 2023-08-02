@@ -449,6 +449,15 @@ pub mod serde_json {
     pub use ::serde_json::*;
 }
 
+#[cfg(feature = "sha2")]
+pub mod sha2 {
+    //! The SHA2 cryptographic hash functions.
+    //!
+    //! See crate [`::sha2`].
+
+    pub use ::sha2::*;
+}
+
 #[cfg(feature = "socket2")]
 pub mod socket2 {
     //! Low-level network socket programming.
