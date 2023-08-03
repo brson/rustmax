@@ -11,6 +11,12 @@ Issues and pull requests will be closed without consideration.
 **
 
 
+## Do not use
+
+Do not use this project.
+It is neither stable nor supported.
+
+
 ## The library
 
 The [`rustx` crate](todo)
