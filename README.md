@@ -33,7 +33,7 @@ documents and reexports other useful Rust crates.
 
 Rust Extras is licensed
 
-   CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
+    CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 
 All libraries included as dependencies of the `rustx` crate
 are permissively licensed under BSD-3-Clause, MIT, or weaker.
