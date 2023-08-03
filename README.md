@@ -27,7 +27,7 @@ documents and reexports other useful Rust crates.
 
 ## License
 
-Rust  is licensed
+Rust Extras is licensed
 
    CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 
