@@ -5,10 +5,8 @@ A collection of useful Rust crates and tools.
 
 ## Do not contribute
 
-**\
 This project is not open to contribution.
 Issues and pull requests will be closed without consideration.
-**
 
 
 ## Do not use
