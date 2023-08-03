@@ -7,7 +7,7 @@ A collection of useful Rust crates and tools.
 
 **
 This project is not open to contribution.
-Pull requests are not welcome and will be closed.
+Issues and pull requests will be closed without consideration.
 **
 
 
