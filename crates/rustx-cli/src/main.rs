@@ -107,6 +107,8 @@ enum CliCmd {
     InstallTool(CliCmdInstallTool),
     ListDocs(CliCmdListDocs),
     OpenDoc(CliCmdOpenDoc),
+    WriteFmtConfig(CliCmdWriteFmtConfig),
+    WriteClippyConfig(CliCmdWriteClippyConfig),
 }
 
 #[derive(clap::Args)]
@@ -129,6 +131,14 @@ struct CliCmdListDocs {
 
 #[derive(clap::Args)]
 struct CliCmdOpenDoc {
+}
+
+#[derive(clap::Args)]
+struct CliCmdWriteFmtConfig {
+}
+
+#[derive(clap::Args)]
+struct CliCmdWriteClippyConfig {
 }
 
 impl CliOpts {
