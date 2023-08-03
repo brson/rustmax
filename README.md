@@ -1,17 +1,33 @@
-# Rust Extra
+# Rust Extras
 
 A collection of useful Rust crates and tools.
 
 
 ## Do not contribute
 
-**This project is not open to contribution at this time.
-Pull requests adding crates are not welcome and will be closed.**
+**
+This project is not open to contribution.
+Pull requests are not welcome and will be closed.
+**
+
+
+## The library
+
+The [`rustx` crate](todo)
+documents and reexports other useful Rust crates.
+
+
+## The tools
+
+- A collection of useful Rust tools.
+- [An opinionated clippy config file](clippy.toml).
+- [An opinionated rustfmt config file](rustfmt.toml).
+- [The `rustx` CLI tool for managing the above.](todo).
 
 
 ## License
 
-Rust Extra is licensed
+Rust  is licensed
 
    CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 
