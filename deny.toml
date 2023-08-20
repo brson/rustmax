@@ -1,3 +1,7 @@
+# This is the cargo-deny config for rustx itself.
+
+# For the general-purpose deny.toml see configs/deny.toml
+
 # This template contains all of the possible sections and their default values
 
 # Note that all fields that take a lint level have these possible values:
@@ -170,6 +174,9 @@ deny = [
     # Wrapper crates can optionally be specified to allow the crate when it
     # is a direct dependency of the otherwise banned crate
     #{ name = "ansi_term", version = "=0.11.0", wrappers = [] },
+
+    # See https://github.com/serde-rs/serde/issues/2538
+    { name = "serde_derive", version = ">1.0.171" },
 ]
 # Certain crates/versions that will be skipped when doing duplicate detection.
 skip = [
