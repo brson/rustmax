@@ -24,7 +24,6 @@ documents and reexports other useful Rust crates.
 ## The tools
 
 - A collection of useful Rust tools.
-- [An opinionated clippy config file](clippy.toml).
 - [An opinionated rustfmt config file](rustfmt.toml).
 - [An opinionated cargo-deny config file](configs/deny.toml).
 - [The `rustx` CLI tool for managing the above.](todo).
