@@ -1,6 +1,5 @@
 ## TODO
 
-- add notes about serde_derive >1.0.171
 - known bugs
   - serde derive requires adding a serde dependency
 - why

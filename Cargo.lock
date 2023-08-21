@@ -1789,7 +1789,6 @@ dependencies = [
  "reqwest",
  "rustyline",
  "serde",
- "serde_derive",
  "serde_json",
  "sha2",
  "socket2 0.5.3",
