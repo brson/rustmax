@@ -23,9 +23,12 @@ documents and reexports other useful Rust crates.
 
 ## The tools
 
-- A collection of useful Rust tools.
+- [A collection of useful Rust tools](todo).
+- [An opinionated workspace template](tetmplate),
+  for initialization with [cargo-generate](todo).
 - [An opinionated rustfmt config file](rustfmt.toml).
 - [An opinionated cargo-deny config file](configs/deny.toml).
+- [An opinionated clippy-control config file](clippy-control.toml).
 - [The `rustx` CLI tool for managing the above.](todo).
 
 
