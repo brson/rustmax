@@ -108,6 +108,9 @@ enum CliCmd {
     ListDocs(CliCmdListDocs),
     OpenDoc(CliCmdOpenDoc),
     WriteFmtConfig(CliCmdWriteFmtConfig),
+    WriteCargoDenyConfig(CliCmdWriteCargoDenyConfig),
+    NewProject(CliCmdNewProject),
+    RunAllChecks(CliCmdRunAllChecks),
 }
 
 #[derive(clap::Args)]
@@ -136,12 +139,26 @@ struct CliCmdOpenDoc {
 struct CliCmdWriteFmtConfig {
 }
 
+#[derive(clap::Args)]
+struct CliCmdWriteCargoDenyConfig {
+}
+
+#[derive(clap::Args)]
+struct CliCmdNewProject {
+}
+
+#[derive(clap::Args)]
+struct CliCmdRunAllChecks {
+}
+
 impl CliOpts {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
             CliCmd::ListTools(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
+
+            CliCmd::RunAllChecks(cmd) => cmd.run(),
             _ => todo!(),
         }
     }
@@ -159,8 +176,28 @@ impl CliCmdListTools {
 
 impl CliCmdWriteFmtConfig {
     fn run(&self) -> AnyResult<()> {
+        // todo --force
         let contents = include_bytes!("../../../rustfmt.toml");
         rx::std::fs::write("rustfmt.toml", contents)?;
         Ok(())
+    }
+}
+
+impl CliCmdWriteCargoDenyConfig {
+    fn run(&self) -> AnyResult<()> {
+        // todo --force
+        let contents = include_bytes!("../../../configs/deny.toml");
+        rx::std::fs::write("rustfmt.toml", contents)?;
+        Ok(())
+    }
+}
+
+impl CliCmdRunAllChecks {
+    fn run(&self) -> AnyResult<()> {
+        // cargo-clippy-control
+        // cargo-fmt
+        // cargo-deny
+        // cargo-audit
+        todo!()
     }
 }
