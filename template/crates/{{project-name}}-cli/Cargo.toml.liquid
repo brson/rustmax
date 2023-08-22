@@ -1,11 +1,15 @@
 [package]
-name = "{{project-name}}"
+name = "{{project-name}}-cli"
 version.workspace = true
 license.workspace = true
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-rstx.workspace = true
-rstx.features = [
+rx.workspace = true
+rx.features = [
+  "rx-profile-cli",
 ]
+
+[[bin]]
+{{project-name}}.path = "src/main.rs"

@@ -25,6 +25,17 @@ pub mod prelude {
     pub use ::og_fmt::fmt;
 }
 
+pub mod extras {
+    pub fn init() {
+        if cfg!(feature = "env_logger") {
+            crate::env_logger::Builder::new()
+                .filter_level(log::LevelFilter::Info)
+                .parse_default_env()
+                .init();
+        }
+    }
+}
+
 
 /* ---------- */
 

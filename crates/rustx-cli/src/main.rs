@@ -108,7 +108,6 @@ enum CliCmd {
     ListDocs(CliCmdListDocs),
     OpenDoc(CliCmdOpenDoc),
     WriteFmtConfig(CliCmdWriteFmtConfig),
-    WriteClippyConfig(CliCmdWriteClippyConfig),
 }
 
 #[derive(clap::Args)]
@@ -137,17 +136,12 @@ struct CliCmdOpenDoc {
 struct CliCmdWriteFmtConfig {
 }
 
-#[derive(clap::Args)]
-struct CliCmdWriteClippyConfig {
-}
-
 impl CliOpts {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
             CliCmd::ListTools(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
-            CliCmd::WriteClippyConfig(cmd) => cmd.run(),
             _ => todo!(),
         }
     }
@@ -167,14 +161,6 @@ impl CliCmdWriteFmtConfig {
     fn run(&self) -> AnyResult<()> {
         let contents = include_bytes!("../../../rustfmt.toml");
         rx::std::fs::write("rustfmt.toml", contents)?;
-        Ok(())
-    }
-}
-
-impl CliCmdWriteClippyConfig {
-    fn run(&self) -> AnyResult<()> {
-        let contents = include_bytes!("../../../clippy.toml");
-        rx::std::fs::write("clippy.toml", contents)?;
         Ok(())
     }
 }
