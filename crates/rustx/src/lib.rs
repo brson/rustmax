@@ -23,6 +23,9 @@ pub mod prelude {
 
     #[cfg(feature = "og_fmt")]
     pub use ::og_fmt::fmt;
+
+    #[cfg(feature = "log")]
+    pub use ::log::{error, warn, info, debug, trace};
 }
 
 pub mod extras {
