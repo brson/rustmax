@@ -143,12 +143,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4a4ddaa51a5bc52a6948f74c06d20aaaddb71924eab79b8c97a8c556e942d6a"
 
 [[package]]
-name = "big_s"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "199edb7b90631283b10c2422e6a0bc8b7d987bf732995ba1de53b576c97e51a8"
-
-[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1318,12 +1312,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "og_fmt"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "141d253642277334b25e9d4ca582222e8700e31adad2da73267c783da9e3c45c"
-
-[[package]]
 name = "once_cell"
 version = "1.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1746,7 +1734,6 @@ dependencies = [
  "anyhow",
  "backtrace",
  "base64",
- "big_s",
  "bitflags 2.2.1",
  "blake3",
  "byteorder",
@@ -1777,7 +1764,6 @@ dependencies = [
  "nom",
  "num_cpus",
  "num_enum",
- "og_fmt",
  "once_cell",
  "proc-macro2",
  "quote",
