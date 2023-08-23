@@ -17,7 +17,7 @@ It is neither stable nor supported.
 
 ## The library
 
-The [`rustx` crate](todo)
+The [`rstx` crate](https://docs.rs/rstx)
 documents and reexports other useful Rust crates.
 
 
@@ -25,11 +25,11 @@ documents and reexports other useful Rust crates.
 
 - [A collection of useful Rust tools](todo).
 - [An opinionated workspace template](template),
-  for initialization with [cargo-generate](todo).
+  for initialization with [cargo-generate](https://github.com/cargo-generate/cargo-generate).
 - [An opinionated rustfmt config file](rustfmt.toml).
 - [An opinionated cargo-deny config file](configs/deny.toml).
 - [An opinionated clippy-control config file](clippy-control.toml).
-- [The `rustx` CLI tool for managing the above.](todo).
+- [The `rstx` CLI tool for managing the above.](https://docs.rs/rstx-cli).
 
 
 ## License
