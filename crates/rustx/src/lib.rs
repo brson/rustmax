@@ -12,17 +12,17 @@
 pub mod prelude {
     //! The `rustx` prelude.
 
-    #[cfg(feature = "rx-rustlib-alloc")]
-    pub use ::alloc::format as fmt;
-
-    #[cfg(feature = "rx-rustlib-alloc")]
-    pub use ::alloc::format as S;
-
     #[cfg(feature = "anyhow")]
     pub use ::anyhow::Result as AnyResult;
 
+    #[cfg(feature = "big_s")]
+    pub use ::big_s::S;
+
     #[cfg(feature = "extension-trait")]
     pub use ::extension_trait::extension_trait;
+
+    #[cfg(feature = "og_fmt")]
+    pub use ::og_fmt::fmt;
 
     #[cfg(feature = "log")]
     pub use ::log::{error, warn, info, debug, trace};
@@ -84,6 +84,15 @@ pub mod base64 {
     //! See crate [`::base64`].
 
     pub use ::base64::*;
+}
+
+#[cfg(feature = "big_s")]
+pub mod big_s {
+    //! Succinct `String` "literals".
+    //!
+    //! See crate [`::big_s`].
+
+    pub use ::big_s::*;
 }
 
 #[cfg(feature = "bitflags")]
@@ -335,6 +344,15 @@ pub mod num_cpus {
     //! See crate [`::num_cpus`].
 
     pub use ::num_cpus::*;
+}
+
+#[cfg(feature = "og_fmt")]
+pub mod og_fmt {
+    //! The `fmt!` synonym for `format!`.
+    //!
+    //! See crate [`::og_fmt`].
+
+    pub use ::og_fmt::*;
 }
 
 #[cfg(feature = "once_cell")]
