@@ -13,7 +13,11 @@ pub mod prelude {
     //! The `rustx` prelude.
 
     #[cfg(feature = "anyhow")]
-    pub use ::anyhow::Result as AnyResult;
+    pub use ::anyhow::{
+        Result as AnyResult,
+        Context as _,
+        anyhow, bail,
+    };
 
     #[cfg(feature = "big_s")]
     pub use ::big_s::S;
