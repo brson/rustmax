@@ -1,14 +1,15 @@
 # Outline
 
 - Overview of `bsx`
-- Principles
+- Modern Rust in Easy-Mode
+- The tools every Rust developer uses
 - Recommended crates
 - Recommended tools
 - The workspace template
-- Configuring `rustfmt`
-- Configuring `cargo-deny`
-- Configuring `clippy` with `clippy-control`
-- Running all housekeeping checks
-- Advanced Rust tips
+- Opinionated `rustfmt`
+- Opinionated `cargo-deny`
+- Opinionated `clippy` with `clippy-control`
+- Running all housekeeping checks with `bsx`
 - Using the `bsx` supercrate
 - Using the `bsx` tool
+- Advanced Rust tips
