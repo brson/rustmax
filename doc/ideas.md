@@ -2,7 +2,6 @@
 
 - Overview of `bsx`
 - Modern Rust in Easy-Mode
-- The tools every Rust developer uses
 - Recommended crates
 - Recommended tools
 - The workspace template
