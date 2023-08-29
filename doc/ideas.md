@@ -1,10 +1,10 @@
 # Outline
 
 - Overview of `bsx`
-- Modern Rust in Easy-Mode
-- Recommended crates
-- Recommended tools
-- The workspace template
+- Easy-mode Rust
+- Tour of Rust crates
+- Tour of Rust tools
+- An opinionated workspace template
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
 - Opinionated `clippy` with `clippy-control`
