@@ -1,6 +1,6 @@
 # Rust Extras
 
-A collection of useful Rust crates and tools.
+A collection of useful Rust crates, tools, and documentation.
 
 
 ## Do not contribute
