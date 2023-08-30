@@ -2,8 +2,8 @@
 
 - Overview of `bsx`
 - Easy-mode Rust
-- Tour of Rust crates
-- Tour of Rust tools
+- A tour of Rust crates
+- A tour of Rust tools
 - An opinionated workspace template
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
