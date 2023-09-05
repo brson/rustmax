@@ -11,7 +11,7 @@ Do not use this project.
 It is neither stable nor supported.
 
 
-## The library
+## The crates
 
 The [`rstx` crate](https://docs.rs/rstx)
 documents and reexports other useful Rust crates.
@@ -29,6 +29,15 @@ documents and reexports other useful Rust crates.
 - [An opinionated config file](clippy-control.toml)
   for [clippy-control](todo).
 - [The `rstx` CLI for managing the above.](https://docs.rs/rstx-cli).
+
+
+## The documentation
+
+This project is documented as
+
+- [HTML](todo),
+- [Markdown](todo),
+- and [PDF](todo).
 
 
 ## License
