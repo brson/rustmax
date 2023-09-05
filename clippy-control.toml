@@ -1,0 +1,14 @@
+# ## let_and_return = allow
+#
+# Allow patterns like
+#
+#     let foo = {
+#         some_expression
+#     };
+#     
+#     foo
+#
+# ### Rationale
+#
+# Giving variables names can improve readability.
+"let_and_return" = "allow"
