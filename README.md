@@ -25,11 +25,14 @@ documents and reexports other useful Rust crates.
 
 - [A collection of useful Rust tools](todo).
 - [An opinionated workspace template](template),
-  for initialization with [cargo-generate](https://github.com/cargo-generate/cargo-generate).
-- [An opinionated rustfmt config file](rustfmt.toml).
-- [An opinionated cargo-deny config file](configs/deny.toml).
-- [An opinionated clippy-control config file](clippy-control.toml).
-- [The `rstx` CLI tool for managing the above.](https://docs.rs/rstx-cli).
+  for for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
+- [An opinionated config file](rustfmt.toml)
+  for [rustfmt](todo)
+- [An opinionated config file](configs/deny.toml)
+  for [cargo-deny](todo)
+- [An opinionated config file](clippy-control.toml)
+  for [clippy-control](todo)
+- [The `rstx` CLI for managing the above.](https://docs.rs/rstx-cli).
 
 
 ## License
