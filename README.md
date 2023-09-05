@@ -3,14 +3,10 @@
 A collection of useful Rust crates, tools, and documentation.
 
 
-## Do not contribute
+##  Do not contribute, do not use
 
 This project is not open to contribution.
 Issues and pull requests will be closed without consideration.
-
-
-## Do not use
-
 Do not use this project.
 It is neither stable nor supported.
 
