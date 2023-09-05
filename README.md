@@ -21,7 +21,7 @@ documents and reexports other useful Rust crates.
 
 - [A collection of useful Rust tools](todo).
 - [An opinionated workspace template](template),
-  for for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
+  for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
 - [An opinionated config file](rustfmt.toml)
   for [rustfmt](todo)
 - [An opinionated config file](configs/deny.toml)
