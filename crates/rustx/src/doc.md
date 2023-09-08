@@ -98,43 +98,124 @@ to enable standard library features, usually named "std".
 ### Crates in `rx-profile-std`
 
 - [`big_s`]
-- [`clap`],
-- [`env_logger`],
-- [`json5`],
-- [`lazy_static`],
-- [`num_cpus`],
-- [`og_fmt`],
-- [`rayon`],
-- [`regex`],
-- [`tempfile`],
-- [`tera`],
-- [`thiserror`],
-- [`toml`],
-- [`unicode-segmentation`](unicode_segmentation),
-- [`walkdir`],
-- [`xshell`],
+- [`clap`]
+- [`env_logger`]
+- [`json5`]
+- [`lazy_static`]
+- [`num_cpus`]
+- [`og_fmt`]
+- [`rayon`]
+- [`regex`]
+- [`tempfile`]
+- [`tera`]
+- [`thiserror`]
+- [`toml`]
+- [`unicode-segmentation`](unicode_segmentation)
+- [`walkdir`]
+- [`xshell`]
 
 
 ### Features enabled by `rx-profile-std`
 
-- [`rx-feature-std`](#feature-rx-feature-std),
-- [`rx-feature-default`](#feature-rx-feature-default),
+- [`rx-feature-std`](#feature-rx-feature-std)
+- [`rx-feature-default`](#feature-rx-feature-default)
+
 
 
 
 ## Profile: `rx-profile-net`
 
+todo
+
+This profile also enables `rx-profile-std`.
+
+
+### Crates in `rx-profile-net`
+
+- [`http`]
+- [`hyper`]
+- [`mime`]
+- [`reqwest`]
+- [`socket2`]
+- [`tokio`]
+- [`url`]
+
+
+### Features enabled by `rx-profile-net`
+
+None.
+
+
+
 
 ## Profile: `rx-profile-cli`
+
+todo
+
+This profile also enables `rx-profile-std`.
+
+
+### Crates in `rx-profile-cli`
+
+- [`console`]
+- [`dialoguer`]
+- [`indicatif`]
+- [`termcolor`]
+- [`rustyline`]
+
+
+### Features enabled by `rx-profile-cli`
+
+None.
+
+
 
 
 ## Profile: `rx-profile-build-script`
 
+todo
+
+This profile also enables `rx-profile-std`.
+
+
+### Crates in `rx-profile-cli`
+
+- [`cc`]
+- [`cxx`]
+- [`cxx-build`](cxx_build)
+
+
+### Features enabled by `rx-profile-cli`
+
+None.
+
+
+
 
 ## Profile: `rx-profile-proc-macro`
 
+todo
+
+This profile also enables `rx-profile-std`.
+
+
+### Crates in `rx-profile-proc-macro`
+
+- [`proc-macro2`](proc_macro2)
+- [`quote`]
+- [`syn`]
+
+
+### Features enabled by `rx-profile-proc-macro`
+
+None.
+
+
+
 
 ## Profile: `rx-profile-full`
+
+This profile simply enables all other profiles.
 
 
 
