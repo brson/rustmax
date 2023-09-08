@@ -1,12 +1,15 @@
 A collection of useful Rust crates.
 
+
 **⚠️
 WARNING:
 Do not use this project.
 ⚠️**
 
+
 This crate documents and reexports selected high-quality Rust crates
 suitable for typical Rust programs.
+
 
 - [Profiles](#profiles)
   - [Profile: `rx-profile-no-std`](#profile-rx-profile-no-std)
@@ -30,6 +33,8 @@ suitable for typical Rust programs.
 ## Profiles
 
 todo
+
+By default no profile is enabled and no crates are exported.
 
 
 
