@@ -30,9 +30,15 @@ pub mod prelude {
 
     #[cfg(feature = "log")]
     pub use ::log::{error, warn, info, debug, trace};
+
+    pub use crate::extras::default;
 }
 
 pub mod extras {
+    pub fn default<T: Default>() -> T {
+        Default::default()
+    }
+
     pub fn init() {
         if cfg!(feature = "env_logger") {
             crate::env_logger::Builder::new()
