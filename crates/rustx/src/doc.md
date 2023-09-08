@@ -16,17 +16,22 @@ suitable for typical Rust programs.
   - [Profile: `rx-profile-build-script`](#profile-rx-profile-build-script)
   - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
   - [Profile: `rx-profile-full`](#profile-rx-profile-full)
-- [Using `rustx` for crate discovery](#using-rustx-for-crate-discovery)
 - [Using `rustx` as a library](#using-rustx-as-a-library)
+- [The `rustx` prelude(#the-rustx-prelude)
+- [The `extra` module](#the-extra-module)
 - [`rustx` and cargo features](#rustx-and-cargo-features)
 - [Features](#feature-selection)
   - [Crate features](#crate-features)
   - [Feature: `rx-feature-no-std`](#feature-rx-feature-no-std)
 
 
+
+
 ## Profiles
 
 todo
+
+
 
 
 ## Profile: `rx-profile-no-std`
@@ -35,6 +40,7 @@ This profile includes crates that do not require Rust `std`,
 and provide features used by many Rust programs.
 It allows use of the Rust allocator,
 and enables allocator-related features of its crates.
+
 
 ### Crates in `rx-profile-no-std`
 
@@ -73,7 +79,42 @@ and enables allocator-related features of its crates.
 - [`rx-feature-no-std`](#feature-rx-feature-no-std)
 
 
+
+
 ## Profile: `rx-profile-std`
+
+This profile depends on the Rust standard library,
+and includes crates that require the Rust standard library.
+and provide features used by many Rust programs.
+It automatically activates Cargo features of each crate
+to enable standard library features, usually named "std".
+
+
+### Crates in `rx-profile-std`
+
+- [`big_s`]
+- [`clap`],
+- [`env_logger`],
+- [`json5`],
+- [`lazy_static`],
+- [`num_cpus`],
+- [`og_fmt`],
+- [`rayon`],
+- [`regex`],
+- [`tempfile`],
+- [`tera`],
+- [`thiserror`],
+- [`toml`],
+- [`unicode-segmentation`](unicode_segmentation),
+- [`walkdir`],
+- [`xshell`],
+
+
+### Features enabled by `rx-profile-std`
+
+- [`rx-feature-std`](#feature-rx-feature-std),
+- [`rx-feature-default`](#feature-rx-feature-default),
+
 
 
 ## Profile: `rx-profile-net`
@@ -91,11 +132,6 @@ and enables allocator-related features of its crates.
 ## Profile: `rx-profile-full`
 
 
-
-# Using `rustx` for crate discovery.
-
-If you just need to know decent crates for common programming tasks,
-read this documentation to find them.
 
 
 # Using `rustx` as a library.
