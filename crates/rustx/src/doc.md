@@ -20,7 +20,7 @@ suitable for typical Rust programs.
   - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
   - [Profile: `rx-profile-full`](#profile-rx-profile-full)
 - [Using `rustx` as a library](#using-rustx-as-a-library)
-- [The `rustx` prelude(#the-rustx-prelude)
+- [The `rustx` prelude](#the-rustx-prelude)
 - [The `extra` module](#the-extra-module)
 - [`rustx` and cargo features](#rustx-and-cargo-features)
 - [Features](#feature-selection)
@@ -79,11 +79,6 @@ and enables allocator-related features of its crates.
 - [`toml`]
 
 
-### Features enabled by `rx-profile-no-std`
-
-- [`rx-feature-no-std`](#feature-rx-feature-no-std)
-
-
 
 
 ## Profile: `rx-profile-std`
@@ -115,12 +110,6 @@ to enable standard library features, usually named "std".
 - [`xshell`]
 
 
-### Features enabled by `rx-profile-std`
-
-- [`rx-feature-std`](#feature-rx-feature-std)
-- [`rx-feature-default`](#feature-rx-feature-default)
-
-
 
 
 ## Profile: `rx-profile-net`
@@ -141,11 +130,6 @@ This profile also enables `rx-profile-std`.
 - [`url`]
 
 
-### Features enabled by `rx-profile-net`
-
-None.
-
-
 
 
 ## Profile: `rx-profile-cli`
@@ -164,11 +148,6 @@ This profile also enables `rx-profile-std`.
 - [`rustyline`]
 
 
-### Features enabled by `rx-profile-cli`
-
-None.
-
-
 
 
 ## Profile: `rx-profile-build-script`
@@ -185,11 +164,6 @@ This profile also enables `rx-profile-std`.
 - [`cxx-build`](cxx_build)
 
 
-### Features enabled by `rx-profile-cli`
-
-None.
-
-
 
 
 ## Profile: `rx-profile-proc-macro`
@@ -204,11 +178,6 @@ This profile also enables `rx-profile-std`.
 - [`proc-macro2`](proc_macro2)
 - [`quote`]
 - [`syn`]
-
-
-### Features enabled by `rx-profile-proc-macro`
-
-None.
 
 
 
