@@ -20,6 +20,8 @@ suitable for many Rust programs.
   - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
   - [Profile: `rx-profile-full`](#profile-rx-profile-full)
 - [Using `rustx` as a library](#using-rustx-as-a-library)
+- [Crate reexports](#crate-reexports)
+- [Standard library reexports](#standard-library-reepxorts)
 - [The `rustx` prelude](#the-rustx-prelude)
 - [The `extra` module](#the-extra-module)
 - [`rustx` and cargo features](#rustx-and-cargo-features)
@@ -46,12 +48,14 @@ By default no profile is enabled and no crates are exported.
 
 
 
-## Profile: `rx-profile-no-std`
+## 🌎 Profile: `rx-profile-no-std`
 
-This profile includes crates that do not require Rust `std`,
-and provide features used by many Rust programs.
+This profile includes crates that do not require Rust `std`.
 It allows use of the Rust allocator,
 and enables allocator-related features of its crates.
+
+💡 This profile also enables [`rx-feature-no-std`].\
+💡 This profile also enables [`rx-rustlibs-no-std`].\
 
 
 ### Crates in `rx-profile-no-std`
@@ -88,13 +92,15 @@ and enables allocator-related features of its crates.
 
 
 
-## Profile: `rx-profile-std`
+## 🌎 Profile: `rx-profile-std`
 
 This profile depends on the Rust standard library,
-and includes crates that require the Rust standard library.
-and provide features used by many Rust programs.
-It automatically activates Cargo features of each crate
-to enable standard library features, usually named "std".
+and includes crates that require the Rust standard library,
+in addition to the crates provided by [`rx-profile-no-std`].
+
+💡 This profile also enables [`rx-feature-std`].\
+💡 This profile also enables [`rx-feature-default`].\
+💡 This profile also enables [`rx-rustlibs-std`].\
 
 
 ### Crates in `rx-profile-std`
@@ -119,11 +125,16 @@ to enable standard library features, usually named "std".
 
 
 
-## Profile: `rx-profile-net`
+## 🌎 Profile: `rx-profile-net`
 
-todo
+Adds networking crates,
+including the [`tokio`] async runtime.
 
-This profile also enables `rx-profile-std`.
+Not that this profile does not enable `tokio` features
+for other crates; to enable `tokio` features
+apply the [`rx-feature-tokio`] feature.
+
+💡 This profile also enables [`rx-profile-std`].\
 
 
 ### Crates in `rx-profile-net`
@@ -139,11 +150,11 @@ This profile also enables `rx-profile-std`.
 
 
 
-## Profile: `rx-profile-cli`
+## 🌎 Profile: `rx-profile-cli`
 
-todo
+Crates for building commandline interfaces.
 
-This profile also enables `rx-profile-std`.
+💡 This profile also enables [`rx-profile-std`].\
 
 
 ### Crates in `rx-profile-cli`
@@ -157,14 +168,14 @@ This profile also enables `rx-profile-std`.
 
 
 
-## Profile: `rx-profile-build-script`
+## 🌎 Profile: `rx-profile-build-script`
 
-todo
+Crates for writing [Rust build scripts](todo).
 
-This profile also enables `rx-profile-std`.
+💡 This profile also enables [`rx-profile-std`].\
 
 
-### Crates in `rx-profile-cli`
+### Crates in `rx-profile-build-script`
 
 - [`cc`]
 - [`cxx`]
@@ -173,11 +184,11 @@ This profile also enables `rx-profile-std`.
 
 
 
-## Profile: `rx-profile-proc-macro`
+## 🌎 Profile: `rx-profile-proc-macro`
 
-todo
+Crates for writing [Rust procedural macros](todo).
 
-This profile also enables `rx-profile-std`.
+💡 This profile also enables [`rx-profile-std`].\
 
 
 ### Crates in `rx-profile-proc-macro`
@@ -189,7 +200,7 @@ This profile also enables `rx-profile-std`.
 
 
 
-## Profile: `rx-profile-full`
+## 🌎 Profile: `rx-profile-full`
 
 This profile simply enables all other profiles.
 
