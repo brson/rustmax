@@ -8,7 +8,7 @@ Do not use this project.
 
 
 This crate documents and reexports selected high-quality Rust crates
-suitable for typical Rust programs.
+suitable for many Rust programs.
 
 
 - [Profiles](#profiles)
