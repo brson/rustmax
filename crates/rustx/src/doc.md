@@ -23,9 +23,16 @@ suitable for typical Rust programs.
 - [The `rustx` prelude](#the-rustx-prelude)
 - [The `extra` module](#the-extra-module)
 - [`rustx` and cargo features](#rustx-and-cargo-features)
-- [Features](#feature-selection)
-  - [Crate features](#crate-features)
+- [Ecosystem features](#ecosystem-features)
   - [Feature: `rx-feature-no-std`](#feature-rx-feature-no-std)
+  - [Feature: `rx-feature-std`](#feature-rx-feature-std)
+  - [Feature: `rx-feature-default`](#feature-rx-feature-default)
+  - [Feature: `rx-feature-derive`](#feature-rx-feature-derive)
+  - [Feature: `rx-feature-serde`](#feature-rx-feature-serde)
+  - [Feature: `rx-feature-backtrece`](#feature-rx-feature-backtrace)
+  - [Feature: `rx-feature-tokio`](#feature-rx-feature-tokio)
+  - [Feature: `rx-feature-nightly`](#feature-rx-feature-nightly)
+- [Crate features](#crate-features)
 
 
 
