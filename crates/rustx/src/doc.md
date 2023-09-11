@@ -209,26 +209,40 @@ This profile simply enables all other profiles.
 
 # Using `rustx` as a library.
 
+The `rustx` crate name is `rstx`,
+but it is usually renamed `rx` in your Cargo manifest,
+since the crate name will be typed often.
+
 In your manifest `Cargo.toml`:
 
 ```toml
 [dependencies]
-rustx = "0.1.0"
+rx.package = "rstx"
+rx.version = "0.1.0"
+rx.features = [
+  "rx-profile-std",
+]
 ```
 
 Or if using a workspace, in your workspace `Cargo.toml`
 
 ```toml
-[workspace.dependencies]
-rustx = "0.1.0"
+[dependencies]
+rx.package = "rstx"
+rx.version = "0.1.0"
+rx.features = [
+  "rx-profile-std",
+]
 ```
 
 And in your manifest `Cargo.toml`
 
 ```toml
 [dependencies]
-rustx.workspace = true
+rx.workspace = true
 ```
+
+
 
 
 # `rustx` and cargo features
@@ -238,55 +252,113 @@ todo
 The main way of configuring the `rustx` crates is by enabling
 the appropriate _profile_ cargo features.
 
-The default profile feature is `rx-profile-std`.
+`rustx` enables no features by default,
+and reexports no crates;
+but for most uses people will want to enable [`rx-profile-std`].
 This feature augments the Rust `std` library with crates
 that are widely used with a variety of Rust programs,
 as well as minor helpers missing from the standard library.
 
-If the default features are disabled:
-
 ```toml
 [dependencies]
-rustx.version = "0.1.0"
-rustx.default-features = false
-```
-
-Then `rustx` reexports no crates.
-Profiles can then be added by adding cargo features:
-
-```toml
-[dependencies]
-rustx.version = "0.1.0"
-rustx.default-features = false
-rustx.features = ["rx-profile-no-std"]
+rx.package = "rstx"
+rx.version = "0.1.0"
+rx.features = ["rx-profile-std"]
 ```
 
 
-# Features
+
+
+# Crate reexports
+
+
+
+
+# Standard library reexports
+
+
+
+
+# The `rustx` prelude
+
+
+
+
+## The `extra` module
+
+
+
+
+## `rustx` and Cargo features
+
+
+
+
+# Exosystem features
 
 `rustx` organizes its crates features
 
 todo
 
 
-## Crate features
-
-For every included crate `rustx` exposes a feature with the same name.
-
-Example: todo.
-
-
 ## Feature: `rx-feature-no-std`
 
-This feature is enabled by `rx-profile-no-std`.
+This feature is enabled by [`rx-profile-no-std`].
 It does not typically need to be set manually.
 
-todo
+It enables few features,
+particularly enabling allocator support for no-std crates
+that can be compiled without.
 
 
+## Feature: `rx-feature-std`
 
-# TODO
+This feature is enabled by [`rx-profile-std`].
+It does not typically need to be set manually.
 
-- document rustlibs
-- update big_s and og_fmt to be no_std
-- update fmt to `use format as fmt`
+It enables the "std" feature of crates
+and other default features that require the standard library.
+
+
+## Feature: `rx-feature-default`
+
+This feature is enabled by [`rx-profile-std`].
+It does not typically need to be set manually.
+
+It enables the "default" feature of crates.
+
+
+## Feature: `rx-feature-derive`
+
+Enables derive macros of crates where it is optional,
+typically with a feature named "derive".
+
+
+## Feature: `rx-feature-serde`
+
+Enables [`serde`] support for crates where it is optional,
+typically with a feature named "serde".
+
+
+## Feature: `rx-feature-backtrace`
+
+Enables backtrace support for crates where it is optional,
+typically with a feature named "backtrace".
+
+This feature is necessary for backtrace support in [`anyhow`].
+
+This feature also enables `rx-feature-std`.
+
+
+## Feature: `rx-feature-tokio`
+
+Enables [`tokio`] support for crates where it is optional,
+typically with a feature named "tokio".
+
+
+## Feature: `rx-feature-nightly`
+
+Enables features that only compile with the Rust [nightly compiler],
+typically with a feature named "nightly".
+
+
