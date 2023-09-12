@@ -49,6 +49,9 @@ pub mod extras {
 
         maybe_init_env_logger();
     }
+
+    #[cfg(feature = "rx-rustlib-alloc")]
+    pub use ::alloc::format as S;
 }
 
 
