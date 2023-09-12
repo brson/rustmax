@@ -60,7 +60,7 @@ and enables allocator-related features of its crates.
 
 ### Crates in `rx-profile-no-std`
 
-- [`ahash`]
+- [`ahash`] - A fast and DOS-resistent hash function, for use in [`HashMap`]s.
 - [`anyhow`]
 - [`backtrace`]
 - [`base64`]

@@ -71,9 +71,7 @@ pub extern crate proc_macro;
 
 #[cfg(feature = "ahash")]
 pub mod ahash {
-    //! A fast and DOS-resistent hash function.
-    //!
-    //! See crate [`::ahash`].
+    #![doc = include_str!("../../../doc-src/crate-ahash.md")]
 
     pub use ::ahash::*;
 }
