@@ -22,6 +22,9 @@ pub mod prelude {
     #[cfg(feature = "big_s")]
     pub use ::big_s::S;
 
+    #[cfg(feature = "cfg_if")]
+    pub use ::cfg_if::cfg_if;
+
     #[cfg(feature = "extension-trait")]
     pub use ::extension_trait::extension_trait;
 
@@ -40,12 +43,17 @@ pub mod extras {
     }
 
     pub fn init() {
-        if cfg!(feature = "env_logger") {
+        #[cfg(feature = "env_logger")]
+        fn maybe_init_env_logger() {
             crate::env_logger::Builder::new()
                 .filter_level(log::LevelFilter::Info)
                 .parse_default_env()
                 .init();
         }
+        #[cfg(not(feature = "env_logger"))]
+        fn maybe_init_env_logger() { }
+
+        maybe_init_env_logger();
     }
 }
 

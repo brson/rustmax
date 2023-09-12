@@ -1,5 +1,6 @@
 ## TODO
 
+- remove big_s and og_fmt in favor of advanced tips
 - known bugs
   - serde derive requires adding a serde dependency
 - why
