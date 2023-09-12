@@ -54,6 +54,7 @@ By default no profile is enabled and no crates are exported.
 This profile includes crates that do not require Rust `std`.
 It allows use of the Rust allocator,
 and enables allocator-related features of its crates.
+All crates in this profile are also in [`rx-feature-std`].
 
 💡 This profile also enables [`rx-feature-no-std`].\
 💡 This profile also enables [`rx-rustlibs-no-std`].\
