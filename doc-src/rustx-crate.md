@@ -4,6 +4,7 @@ A collection of useful Rust crates.
 **⚠️
 WARNING:
 Do not use this project.
+It is neither stable nor supported.
 ⚠️**
 
 
@@ -20,10 +21,10 @@ suitable for many Rust programs.
   - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
   - [Profile: `rx-profile-full`](#profile-rx-profile-full)
 - [Using `rustx` as a library](#using-rustx-as-a-library)
-- [Crate reexports](#crate-reexports)
-- [Standard library reexports](#standard-library-reepxorts)
-- [The `rustx` prelude](#the-rustx-prelude)
-- [The `extra` module](#the-extra-module)
+  - [Crate reexports](#crate-reexports)
+  - [Standard library reexports](#standard-library-reepxorts)
+  - [The `rustx` prelude](#the-rustx-prelude)
+  - [The `extra` module](#the-extra-module)
 - [`rustx` and cargo features](#rustx-and-cargo-features)
 - [Ecosystem features](#ecosystem-features)
   - [Feature: `rx-feature-no-std`](#feature-rx-feature-no-std)
@@ -208,8 +209,9 @@ This profile simply enables all other profiles.
 # Using `rustx` as a library.
 
 The `rustx` crate name is `rstx`,
-but it is usually renamed `rx` in your Cargo manifest,
-since the crate name will be typed often.
+but it is usually renamed to the shorter `rx` in your Cargo manifest,
+since the crate name will be typed often
+(if `rx` is too awkward to type then the crate can be renamed `rs`).
 
 In your manifest `Cargo.toml`:
 
@@ -243,6 +245,26 @@ rx.workspace = true
 
 
 
+## Crate reexports
+
+
+
+
+## Standard library reexports
+
+
+
+
+## The `rustx` prelude
+
+
+
+
+## The `extra` module
+
+
+
+
 # `rustx` and cargo features
 
 todo
@@ -263,31 +285,6 @@ rx.package = "rstx"
 rx.version = "0.1.0"
 rx.features = ["rx-profile-std"]
 ```
-
-
-
-
-# Crate reexports
-
-
-
-
-# Standard library reexports
-
-
-
-
-# The `rustx` prelude
-
-
-
-
-## The `extra` module
-
-
-
-
-## `rustx` and Cargo features
 
 
 
@@ -360,3 +357,8 @@ Enables features that only compile with the Rust [nightly compiler],
 typically with a feature named "nightly".
 
 
+
+
+# Crate features
+
+todo

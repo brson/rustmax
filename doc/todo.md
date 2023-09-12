@@ -1,12 +1,9 @@
 ## TODO
 
 - known bugs
-  - serde derive requires adding a serde dependency
+  - serde derive requires adding a serde dependency?
 - why
   - feature management
-- on deck crates
-  - notify
-  - time
 - xtask
 - more terminal crates
 - fs2 - unmaintained?
