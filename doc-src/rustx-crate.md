@@ -105,13 +105,11 @@ in addition to the crates provided by [`rx-profile-no-std`].
 
 ### Crates in `rx-profile-std`
 
-- [`big_s`]
 - [`clap`]
 - [`env_logger`]
 - [`json5`]
 - [`lazy_static`]
 - [`num_cpus`]
-- [`og_fmt`]
 - [`rayon`]
 - [`regex`]
 - [`tempfile`]
