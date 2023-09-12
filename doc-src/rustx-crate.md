@@ -60,6 +60,7 @@ and enables allocator-related features of its crates.
 
 ### Crates in `rx-profile-no-std`
 
+- [`ahash`]
 - [`anyhow`]
 - [`backtrace`]
 - [`base64`]
