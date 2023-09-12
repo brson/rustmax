@@ -28,7 +28,6 @@ rx-crates-no-std = [
   "crossbeam",
   "derive_more",
   "extension-trait",
-  "fnv",
   "futures",
   "hex",
   "itertools",
@@ -170,7 +169,6 @@ rx-feature-std = [
   "clap/std",
   "crossbeam/std",
   "cxx/std",
-  "fnv/std",
   "futures/std",
   "hex/std",
   "itertools/use_std",
@@ -311,7 +309,6 @@ derive_more = { version = "0.99.17", optional = true, default-features = false }
 dialoguer = { version = "0.10.4", optional = true, default-features = false }
 env_logger = { version = "0.10.0", optional = true, default-features = false }
 extension-trait = { version = "1.0.1", optional = true, default-features = false }
-fnv = { version = "1.0.7", optional = true, default-features = false }
 futures = { version = "0.3.26", optional = true, default-features = false }
 http = { version = "0.2.9", optional = true, default-features = false }
 hex = { version = "0.4.3", optional = true, default-features = false }

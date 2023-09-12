@@ -1836,7 +1836,6 @@ dependencies = [
  "dialoguer",
  "env_logger",
  "extension-trait",
- "fnv",
  "futures",
  "hex",
  "http",

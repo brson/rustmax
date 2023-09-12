@@ -73,7 +73,6 @@ and enables allocator-related features of its crates.
 - [`crossbeam`]
 - [`derive_more`]
 - [`extension-trait`](extension_trait)
-- [`fnv`]
 - [`futures`]
 - [`hex`]
 - [`itertools`]

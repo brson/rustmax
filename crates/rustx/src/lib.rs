@@ -241,15 +241,6 @@ pub mod extension_trait {
     pub use ::extension_trait::*;
 }
 
-#[cfg(feature = "fnv")]
-pub mod fnv {
-    //! A fast non-cryptographic hash function for use with `HashMap`.
-    //!
-    //! See crate [`::fnv`].
-
-    pub use ::fnv::*;
-}
-
 #[cfg(feature = "futures")]
 pub mod futures {
     //! Abstractions for asynchronous programming.
