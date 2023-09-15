@@ -25,6 +25,8 @@ suitable for many Rust programs.
   - [Standard library reexports](#standard-library-reepxorts)
   - [The `rustx` prelude](#the-rustx-prelude)
   - [The `extra` module](#the-extra-module)
+  - [Starter examples](#starter-examples)
+  - [Starting from a template](#starting-from-a-template)
 - [`rustx` and cargo features](#rustx-and-cargo-features)
 - [Ecosystem features](#ecosystem-features)
   - [Feature: `rx-feature-no-std`](#feature-rx-feature-no-std)

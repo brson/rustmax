@@ -9,10 +9,10 @@
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
 - Opinionated `clippy` with `clippy-control`
-- Running all housekeeping checks with `bsx`
 - Using the `bsx` supercrate
 - Using the `bsx` tool
 - Advanced Rust tips
+- Additional Rust reading
 
 ## Other topics
 
