@@ -6,3 +6,4 @@
 - hashbrown
 - notify
 - time
+- stacker
