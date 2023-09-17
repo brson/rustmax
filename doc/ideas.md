@@ -12,6 +12,7 @@
 - Using the `bsx` supercrate
 - Using the `bsx` tool
 - Advanced Rust tips
+- Quiz
 - Additional Rust reading
 
 ## Other topics
