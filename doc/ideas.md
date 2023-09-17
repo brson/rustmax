@@ -1,6 +1,6 @@
 # Outline
 
-- Overview of `bsx`
+- Overview of `rustx`
 - Easy-mode Rust
 - Intro to the Rust ecosystem
 - A tour of Rust crates
@@ -9,13 +9,14 @@
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
 - Opinionated `clippy` with `clippy-control`
-- Using the `bsx` supercrate
-- Using the `bsx` tool
+- Using the `rstx` supercrate
+- Using the `rstx` tool
 - Advanced Rust tips
 - Quiz
 - Additional Rust reading
 
 ## Other topics
 
+- Forward
 - Async Rust recommendations
 - Async Rust template
