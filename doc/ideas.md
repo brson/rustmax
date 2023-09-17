@@ -1,6 +1,5 @@
 # Outline
 
-- Overview of `rustx`
 - Easy-mode Rust
 - Intro to the Rust ecosystem
 - A tour of Rust crates
@@ -9,6 +8,7 @@
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
 - Opinionated `clippy` with `clippy-control`
+- Introducing `rustx`
 - Using the `rstx` supercrate
 - Using the `rstx` tool
 - Advanced Rust tips
