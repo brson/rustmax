@@ -4,11 +4,10 @@
 - Intro to the Rust ecosystem
 - A tour of Rust crates
 - A tour of Rust tools
-- An opinionated workspace template
+- Workspace templates for `cargo-generate`
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
 - Opinionated `clippy` with `clippy-control`
-- Introducing `rustx`
 - Using the `rstx` supercrate
 - Using the `rstx` tool
 - Advanced Rust tips
@@ -20,3 +19,8 @@
 - Forward
 - Async Rust recommendations
 - Async Rust template
+- The `cargo x` pattern
+- Justfiles
+- GitHub CI tips
+- docs.rs
+- Licensing guidance
