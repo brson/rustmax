@@ -28,7 +28,10 @@ pub mod prelude {
     #[cfg(feature = "log")]
     pub use ::log::{error, warn, info, debug, trace};
 
-    pub use crate::extras::default;
+    pub use crate::extras::{
+        default,
+        S,
+    };
 }
 
 pub mod extras {
