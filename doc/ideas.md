@@ -2,6 +2,7 @@
 
 - Easy-mode Rust
 - Intro to the Rust ecosystem
+- Modern Rust features
 - A tour of Rust crates
 - A tour of Rust tools
 - Workspace templates for `cargo-generate`
