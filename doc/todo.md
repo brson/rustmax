@@ -1,7 +1,7 @@
 ## TODO
 
 - known bugs
-  - serde derive requires adding a serde dependency?
+  - serde derive requires adding a serde dependency
 - why
   - feature management
 - xtask
@@ -28,6 +28,7 @@
   - rustfmt settings
 - documentation
   - crate docs
+  - crate mdbooks
   - tool docs
   - tool --help pages
   - rustup components
