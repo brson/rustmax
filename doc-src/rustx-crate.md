@@ -83,6 +83,7 @@ All crates in this profile are also in [`rx-feature-std`].
 - [`libc`]
 - [`log`]
 - [`nom`]
+- [`num_bigint`]
 - [`num_enum`]
 - [`once_cell`]
 - [`rand`]

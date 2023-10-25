@@ -347,6 +347,15 @@ pub mod nom {
     pub use ::nom::*;
 }
 
+#[cfg(feature = "num_bigint")]
+pub mod num_bigint {
+    //! Arbitrary-sized integers.
+    //!
+    //! See crate [`::num_bigint`].
+
+    pub use ::num_bigint::*;
+}
+
 #[cfg(feature = "num_cpus")]
 pub mod num_cpus {
     //! Get the number of CPUS on a machine.
