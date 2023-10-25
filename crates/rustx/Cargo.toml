@@ -151,10 +151,12 @@ rx-profile-full = [
 
 rx-feature-no-std = [
   "ahash/compile-time-rng",
+  "byteorder/i128",
   "serde_json/alloc",
 ]
 
 rx-feature-std = [
+  "rx-feature-no-std",
   "ahash/std",
   "anyhow/std",
   "backtrace/std",
@@ -188,6 +190,7 @@ rx-feature-std = [
 
 rx-feature-default = [
   "ahash/default",
+  "byteorder/default",
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
   "console/default",
