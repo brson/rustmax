@@ -30,8 +30,10 @@ pub mod prelude {
 
     pub use crate::extras::{
         default,
-        S,
     };
+
+    #[cfg(feature = "rx-rustlib-alloc")]
+    pub use crate::extras::S;
 }
 
 pub mod extras {
