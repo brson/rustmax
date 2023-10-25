@@ -38,6 +38,7 @@ suitable for many Rust programs.
   - [Feature: `rx-feature-tokio`](#feature-rx-feature-tokio)
   - [Feature: `rx-feature-nightly`](#feature-rx-feature-nightly)
 - [Crate features](#crate-features)
+- [Known bugs](#known-bugs)
 
 
 
@@ -366,3 +367,11 @@ typically with a feature named "nightly".
 # Crate features
 
 todo
+
+
+
+
+# Known bugs
+
+## Serde derive only works if the serde crate is an explicit dependency.
+
