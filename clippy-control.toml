@@ -12,3 +12,12 @@
 #
 # Giving variables names can improve readability.
 "let_and_return" = "allow"
+
+# ## arithmetic_side_effects = deny
+#
+# Don't allow implicit arithmetic overflow.
+#
+# ### Rationale
+#
+# Most Rust code should explicitly handle overflow.
+"arithmetic_side_effects" = "deny"
