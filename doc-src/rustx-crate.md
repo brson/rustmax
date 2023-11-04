@@ -164,6 +164,7 @@ Crates for building commandline interfaces.
 ### Crates in `rx-profile-cli`
 
 - [`console`]
+- [`ctrlc`]
 - [`dialoguer`]
 - [`indicatif`]
 - [`termcolor`]

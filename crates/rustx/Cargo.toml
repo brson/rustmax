@@ -81,6 +81,7 @@ rx-crates-net = [
 rx-crates-cli = [
   "rx-crates-std",
   "console",
+  "ctrlc",
   "dialoguer",
   "indicatif",
   "termcolor",
@@ -305,6 +306,7 @@ cfg-if = { version = "1.0.0", optional = true, default-features = false }
 chrono = { version = "0.4.23", optional = true, default-features = false }
 clap = { version = "4.1.8", optional = true, default-features = false }
 console = { version = "0.15.5", optional = true, default-features = false }
+ctrlc = { version = "3.4.1", optional = true, default-features = false }
 crossbeam = { version = "0.8.2", optional = true, default-features = false }
 cxx = { version = "1.0.92", optional = true, default-features = false }
 cxx-build = { version = "1.0.92", optional = true, default-features = false }

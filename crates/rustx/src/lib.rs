@@ -186,6 +186,24 @@ pub mod clap {
     pub use ::clap::*;
 }
 
+#[cfg(feature = "console")]
+pub mod console {
+    //! Access to terminal features.
+    //!
+    //! See crate [`::console`].
+
+    pub use ::console::*;
+}
+
+#[cfg(feature = "ctrlc")]
+pub mod ctrlc {
+    //! Simple handling of CTRL-C for CLI programs.
+    //!
+    //! See crate [`::ctrlc`].
+
+    pub use ::ctrlc::*;
+}
+
 #[cfg(feature = "crossbeam")]
 pub mod crossbeam {
     //! Concurrency tools.
