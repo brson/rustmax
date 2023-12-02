@@ -19,6 +19,7 @@
   - rustc book
   - rustc internals book
   - book of macros
+  - proptest book
 
 ## Other topics
 
