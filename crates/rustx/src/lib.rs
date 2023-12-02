@@ -401,6 +401,15 @@ pub mod proc_macro2 {
     pub use ::proc_macro2::*;
 }
 
+#[cfg(feature = "proptest")]
+pub mod proptest {
+    //! Property testing.
+    //!
+    //! See crate [`::proptest`].
+
+    pub use ::proptest::*;
+}
+
 #[cfg(feature = "quote")]
 pub mod quote {
     //! The `quote!` macro for turning code blocks into source tokens.

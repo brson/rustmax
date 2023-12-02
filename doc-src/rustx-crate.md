@@ -87,6 +87,7 @@ All crates in this profile are also in [`rx-feature-std`].
 - [`num_bigint`]
 - [`num_enum`]
 - [`once_cell`]
+- [`proptest`]
 - [`rand`]
 - [`rand_chacha`]
 - [`rand_pcg`]
