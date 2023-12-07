@@ -56,7 +56,10 @@ pub mod extras {
     }
 
     #[cfg(feature = "rx-rustlib-alloc")]
-    pub use ::alloc::format as S;
+    #[allow(non_snake_case)]
+    pub fn S(s: &'static str) -> crate::alloc::string::String {
+        core::convert::From::from(s)
+    }
 }
 
 
