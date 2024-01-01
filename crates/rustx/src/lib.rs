@@ -15,6 +15,7 @@ pub mod prelude {
     #[cfg(feature = "anyhow")]
     pub use ::anyhow::{
         Result as AnyResult,
+        Error as AnyError,
         Context as _,
         anyhow, bail,
     };
