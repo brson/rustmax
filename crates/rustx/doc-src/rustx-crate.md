@@ -13,43 +13,46 @@ suitable for many Rust programs.
 
 
 - [Profiles](#profiles)
-  - [Profile: `rx-profile-no-std`](#profile-rx-profile-no-std)
-  - [Profile: `rx-profile-std`](#profile-rx-profile-std)
-  - [Profile: `rx-profile-net`](#profile-rx-profile-net)
-  - [Profile: `rx-profile-cli`](#profile-rx-profile-cli)
-  - [Profile: `rx-profile-build-script`](#profile-rx-profile-build-script)
-  - [Profile: `rx-profile-proc-macro`](#profile-rx-proc-macro)
-  - [Profile: `rx-profile-full`](#profile-rx-profile-full)
+  - [🌎 Profile: `rx-profile-no-std`][`rx-profile-no-std`]
+  - [🌎 Profile: `rx-profile-std`][`rx-profile-std`]
+  - [🌎 Profile: `rx-profile-net`][`rx-profile-net`]
+  - [🌎 Profile: `rx-profile-cli`][`rx-profile-cli`]
+  - [🌎 Profile: `rx-profile-build-script`][`rx-profile-build-script`]
+  - [🌎 Profile: `rx-profile-proc-macro`][`rx-profile-proc-macro`]
+  - [🌎 Profile: `rx-profile-full`][`rx-profile-full`]
+- [Ecosystem features](#ecosystem-features)
+  - [⛲ Feature: `rx-feature-no-std`][`rx-feature-no-std`]
+  - [⛲ Feature: `rx-feature-std`][`rx-feature-std`]
+  - [⛲ Feature: `rx-feature-default`][`rx-feature-default`]
+  - [⛲ Feature: `rx-feature-derive`][`rx-feature-derive`]
+  - [⛲ Feature: `rx-feature-serde`][`rx-feature-serde`]
+  - [⛲ Feature: `rx-feature-backtrece`][`rx-feature-backtrace`]
+  - [⛲ Feature: `rx-feature-tokio`][`rx-feature-tokio`]
+  - [⛲ Feature: `rx-feature-nightly`][`rx-feature-nightly`]
+- [Rust system libraries](#rust-system-libraries)
+  - [📙 Rustlib: `rx-rustlibs-no-std`][`rx-rustlibs-no-std`]
+  - [📙 Rustlib: `rx-rustlibs-alloc`][`rx-rustlibs-alloc`]
+  - [📙 Rustlib: `rx-rustlibs-std`][`rx-rustlibs-std`]
+  - [📙 Rustlib: `rx-rustlibs-proc-macro`][`rx-rustlibs-proc-macro`]
 - [Using `rustx` as a library](#using-rustx-as-a-library)
+  - [`rustx` and cargo features](#rustx-and-cargo-features)
   - [Crate reexports](#crate-reexports)
   - [Standard library reexports](#standard-library-reepxorts)
   - [The `rustx` prelude](#the-rustx-prelude)
   - [The `extra` module](#the-extra-module)
   - [Starter examples](#starter-examples)
   - [Starting from a template](#starting-from-a-template)
-- [`rustx` and cargo features](#rustx-and-cargo-features)
-- [Ecosystem features](#ecosystem-features)
-  - [Feature: `rx-feature-no-std`](#feature-rx-feature-no-std)
-  - [Feature: `rx-feature-std`](#feature-rx-feature-std)
-  - [Feature: `rx-feature-default`](#feature-rx-feature-default)
-  - [Feature: `rx-feature-derive`](#feature-rx-feature-derive)
-  - [Feature: `rx-feature-serde`](#feature-rx-feature-serde)
-  - [Feature: `rx-feature-backtrece`](#feature-rx-feature-backtrace)
-  - [Feature: `rx-feature-tokio`](#feature-rx-feature-tokio)
-  - [Feature: `rx-feature-nightly`](#feature-rx-feature-nightly)
-- [Crate features](#crate-features)
-- [Known bugs](#known-bugs)
+  - [Known bugs](#known-bugs)
 
 
 
 
-## Profiles
+# Profiles
 
-todo
+`rustx` organizes crates into _profiles_,
+which correspond to common target environments and application types.
 
 By default no profile is enabled and no crates are exported.
-
-
 
 
 ## 🌎 Profile: `rx-profile-no-std`
@@ -195,6 +198,7 @@ Crates for writing [Rust build scripts](todo).
 Crates for writing [Rust procedural macros](todo).
 
 💡 This profile also enables [`rx-profile-std`].\
+💡 This profile also enables [`rx-rustlibs-proc-macro`].\
 
 
 ### Crates in `rx-profile-proc-macro`
@@ -209,6 +213,93 @@ Crates for writing [Rust procedural macros](todo).
 ## 🌎 Profile: `rx-profile-full`
 
 This profile simply enables all other profiles.
+
+
+
+
+# Ecosystem features
+
+todo
+
+
+## ⛲ Feature: `rx-feature-no-std`
+
+This feature is enabled by [`rx-profile-no-std`].
+It does not typically need to be set manually.
+
+It enables few features,
+particularly enabling allocator support for no-std crates
+that can be compiled without.
+
+
+## ⛲ Feature: `rx-feature-std`
+
+This feature is enabled by [`rx-profile-std`].
+It does not typically need to be set manually.
+
+It enables the "std" feature of crates
+and other default features that require the standard library.
+
+
+## ⛲ Feature: `rx-feature-default`
+
+This feature is enabled by [`rx-profile-std`].
+It does not typically need to be set manually.
+
+It enables the "default" feature of crates.
+
+
+## ⛲ Feature: `rx-feature-derive`
+
+Enables derive macros of crates where it is optional,
+typically with a feature named "derive".
+
+
+## ⛲ Feature: `rx-feature-serde`
+
+Enables [`serde`] support for crates where it is optional,
+typically with a feature named "serde".
+
+
+## ⛲ Feature: `rx-feature-backtrace`
+
+Enables backtrace support for crates where it is optional,
+typically with a feature named "backtrace".
+
+This feature is necessary for backtrace support in [`anyhow`].
+
+This feature also enables `rx-feature-std`.
+
+
+## ⛲ Feature: `rx-feature-tokio`
+
+Enables [`tokio`] support for crates where it is optional,
+typically with a feature named "tokio".
+
+
+## ⛲Feature: `rx-feature-nightly`
+
+Enables features that only compile with the Rust [nightly compiler],
+typically with a feature named "nightly".
+
+
+
+
+# Rust system libraries
+
+todo
+
+
+## 📙 Rustlib: `rx-rustlib-no-std`
+
+
+## 📙 Rustlib: `rx-rustlib-alloc`
+
+
+## 📙 Rustlib: `rx-rustlib-std`
+
+
+## 📙 Rustlib: `rx-rustlib-proc-macro`
 
 
 
@@ -252,27 +343,7 @@ rx.workspace = true
 
 
 
-## Crate reexports
-
-
-
-
-## Standard library reexports
-
-
-
-
-## The `rustx` prelude
-
-
-
-
-## The `extra` module
-
-
-
-
-# `rustx` and cargo features
+## `rustx` and cargo features
 
 todo
 
@@ -296,84 +367,51 @@ rx.features = ["rx-profile-std"]
 
 
 
-# Exosystem features
-
-`rustx` organizes its crates features
-
-todo
-
-
-## Feature: `rx-feature-no-std`
-
-This feature is enabled by [`rx-profile-no-std`].
-It does not typically need to be set manually.
-
-It enables few features,
-particularly enabling allocator support for no-std crates
-that can be compiled without.
-
-
-## Feature: `rx-feature-std`
-
-This feature is enabled by [`rx-profile-std`].
-It does not typically need to be set manually.
-
-It enables the "std" feature of crates
-and other default features that require the standard library.
-
-
-## Feature: `rx-feature-default`
-
-This feature is enabled by [`rx-profile-std`].
-It does not typically need to be set manually.
-
-It enables the "default" feature of crates.
-
-
-## Feature: `rx-feature-derive`
-
-Enables derive macros of crates where it is optional,
-typically with a feature named "derive".
-
-
-## Feature: `rx-feature-serde`
-
-Enables [`serde`] support for crates where it is optional,
-typically with a feature named "serde".
-
-
-## Feature: `rx-feature-backtrace`
-
-Enables backtrace support for crates where it is optional,
-typically with a feature named "backtrace".
-
-This feature is necessary for backtrace support in [`anyhow`].
-
-This feature also enables `rx-feature-std`.
-
-
-## Feature: `rx-feature-tokio`
-
-Enables [`tokio`] support for crates where it is optional,
-typically with a feature named "tokio".
-
-
-## Feature: `rx-feature-nightly`
-
-Enables features that only compile with the Rust [nightly compiler],
-typically with a feature named "nightly".
+## Crate reexports
 
 
 
 
-# Crate features
-
-todo
+## Standard library reexports
 
 
 
 
-# Known bugs
+## The `rustx` prelude
 
-## Serde derive only works if the serde crate is an explicit dependency.
 
+
+
+## The `extra` module
+
+
+
+
+## Known bugs
+
+- serde derive only works if the serde crate is an explicit dependency.
+
+
+
+
+<!-- links -->
+
+[`rx-profile-no-std`]: #-profile-rx-profile-no-std
+[`rx-profile-std`]: #-profile-rx-profile-std
+[`rx-profile-net`]: #-profile-rx-profile-net
+[`rx-profile-cli`]: #-profile-rx-profile-cli
+[`rx-profile-build-script`]: #-profile-rx-profile-build-script
+[`rx-profile-proc-macro`]: #-profile-rx-profile-proc-macro
+[`rx-profile-full`]: #-profile-rx-profile-full
+[`rx-feature-no-std`]: #-feature-rx-feature-no-std
+[`rx-feature-std`]: #-feature-rx-feature-std
+[`rx-feature-default`]: #-feature-rx-feature-default
+[`rx-feature-derive`]: #-feature-rx-feature-derive
+[`rx-feature-serde`]: #-feature-rx-feature-serde
+[`rx-feature-backtrace`]: #-feature-rx-feature-backtrace
+[`rx-feature-tokio`]: #-feature-rx-feature-tokio
+[`rx-feature-nightly`]: #-feature-rx-feature-nightly
+[`rx-rustlibs-no-std`]: #-rustlibs-rx-rustlibs-no-std
+[`rx-rustlibs-alloc`]: #-rustlibs-rx-rustlibs-alloc
+[`rx-rustlibs-std`]: #-rustlibs-rx-rustlibs-std
+[`rx-rustlibs-proc-macro`]: #-rustlibs-rx-rustlibs-proc-macro
