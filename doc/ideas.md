@@ -31,6 +31,7 @@
 
 ## Other topics
 
+- xtask
 - Forward
 - Async Rust recommendations
 - Async Rust template
