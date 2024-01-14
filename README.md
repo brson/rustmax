@@ -46,7 +46,7 @@ Rust Extras is licensed
 
     CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 
-All libraries included as dependencies of the `rustx` crate
+All libraries included as dependencies of the `rstx` crate
 are permissively licensed under BSD-3-Clause, MIT, or weaker.
 
-Tools installed by the `rustx` command may have other licenses.
+Tools installed by the `rstx` command may have other licenses.

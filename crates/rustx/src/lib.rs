@@ -1,4 +1,4 @@
-#![doc = include_str!("../../../doc-src/rustx-crate.md")]
+#![doc = include_str!("../doc-src/rustx-crate.md")]
 
 /* ---------- */
 
@@ -85,7 +85,7 @@ pub extern crate proc_macro;
 
 #[cfg(feature = "ahash")]
 pub mod ahash {
-    #![doc = include_str!("../../../doc-src/crate-ahash.md")]
+    #![doc = include_str!("../doc-src/crate-ahash.md")]
 
     pub use ::ahash::*;
 }
