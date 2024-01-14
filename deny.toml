@@ -1,5 +1,5 @@
-# This is the cargo-deny config for rustx itself.
-
+# THIS IS THE CARGO-DENY CONFIG FOR RUSTX ITSELF.
+#
 # For the general-purpose deny.toml see configs/deny.toml
 
 # This template contains all of the possible sections and their default values

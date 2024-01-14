@@ -3,8 +3,15 @@
 - Easy-mode Rust
 - Intro to the Rust ecosystem
 - Modern Rust features
+  - important features introduced since 1.0
 - A tour of Rust crates
-- A tour of Rust tools
+- [A tour of Rust tools](tools-tour.md)
+  - `cargo add`
+- Rust testing
+  - cargo-fuzz
+  - proptest
+  - criterion etc
+  - libtestmimic
 - Workspace templates for `cargo-generate`
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
@@ -12,6 +19,7 @@
 - Using the `rstx` supercrate
 - Using the `rstx` tool
 - Advanced Rust tips
+- Rust Release History
 - Quiz
 - Additional Rust reading
   - rust toolchain status

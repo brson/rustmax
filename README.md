@@ -19,15 +19,15 @@ documents and reexports other useful Rust crates.
 
 ## The tools
 
-- [A collection of useful Rust tools](todo).
+- [A collection of useful Rust tools](doc/tools.md).
 - [An opinionated workspace template](template),
   for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
 - [An opinionated config file](rustfmt.toml)
-  for [rustfmt](todo).
+  for [rustfmt](https://github.com/rust-lang/rustfmt).
 - [An opinionated config file](configs/deny.toml)
-  for [cargo-deny](todo).
+  for [cargo-deny](https://github.com/EmbarkStudios/cargo-deny).
 - [An opinionated config file](clippy-control.toml)
-  for [clippy-control](todo).
+  for [clippy-control](https://github.com/brson/clippy-control).
 - [The `rstx` CLI for managing the above.](https://docs.rs/rstx-cli).
 
 
