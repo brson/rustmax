@@ -35,8 +35,8 @@ documents and reexports other useful Rust crates.
 
 This project is documented as
 
+- [Markdown](doc/index.md),
 - [HTML](todo),
-- [Markdown](todo),
 - and [PDF](todo).
 
 

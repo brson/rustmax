@@ -1,5 +1,12 @@
 A fast and DOS-resistent hash function, for use in `HashMap`s.
 
+- Crate [`::ahash`].
+- [docs.rs](https://docs.rs/ahash)
+- [cargo.io](https://crates.io/crates/ahash)
+- [GitHub](https://github.com/tkaitchuck/ahash)
+
+---
+
 The Rust standard [`HashMap`] (and [`HashSet`])
 use a pluggable hash function defined by the standard [`Hasher`] trait.
 The default hasher used by Rust's `HashMap` is [SipHash 1-3],
@@ -43,12 +50,6 @@ map.insert(56, 78);
 ```
 
 
-## Additional resources
-
-- Crate [`::ahash`].
-- [docs.rs](https://docs.rs/ahash)
-- [cargo.io](https://crates.io/crates/ahash)
-- [GitHub](https://github.com/tkaitchuck/ahash)
 
 
 [`HashMap`]: crate::std::collections::HashMap
