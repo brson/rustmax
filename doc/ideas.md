@@ -31,11 +31,10 @@
 
 ## Other topics
 
-- xtask
 - Forward
 - Async Rust recommendations
 - Async Rust template
-- The `cargo x` pattern
+- The `cargo x` pattern and xtask
 - Justfiles
 - GitHub CI tips
 - docs.rs
