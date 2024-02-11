@@ -14,6 +14,7 @@
   [`miri`](todo)
   [`cargo-clean-all`](todo)
   [`cargo-license`](todo)
+  [`tokei`](todo)
 - Other Rust tools:
   [`ripgrep`](todo)
 
