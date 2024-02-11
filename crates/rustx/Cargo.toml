@@ -199,6 +199,7 @@ rx-feature-default = [
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
   "console/default",
+  "derive_more/default",
   "dialoguer/default",
   "futures/default",
   "indicatif/default",
