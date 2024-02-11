@@ -15,7 +15,7 @@
   [`cargo-clean-all`](todo)
   [`cargo-license`](todo)
 - Other Rust tools:
-  [`ripegrep`](todo)
+  [`ripgrep`](todo)
 
 ## Key Rust Tools
 
