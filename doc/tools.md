@@ -14,6 +14,8 @@
   [`miri`](todo)
   [`cargo-clean-all`](todo)
   [`cargo-license`](todo)
+- Other Rust tools:
+  [`ripegrep`](todo)
 
 ## Key Rust Tools
 
