@@ -1,5 +1,6 @@
 # crates
 
+- dashmap
 - smallvec
 - num-traits / num, etc
 - sha3/keccak
