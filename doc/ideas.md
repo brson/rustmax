@@ -23,12 +23,6 @@
 - Rust Release History
 - Quiz
 - Additional Rust reading
-  - rust toolchain status
-  - cargo book
-  - rustc book
-  - rustc internals book
-  - book of macros
-  - proptest book
 
 ## Other topics
 

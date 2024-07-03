@@ -8,3 +8,4 @@
 - [Rust Extras: Tools](tools.md)
 - [Modern Rust Features](modern-rust-features.md)
 - [The Rust Extras Quiz](quiz.md)
+- [Additional Rust Resources](resources.md)
