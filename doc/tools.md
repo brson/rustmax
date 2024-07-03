@@ -1,4 +1,4 @@
-# Rust Tools
+# Rust Extras: Tools
 
 - Key Rust Tools:
   [`rustc`](todo)
