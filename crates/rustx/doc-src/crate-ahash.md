@@ -25,7 +25,7 @@ It comes with tradeoffs though,
 which is probably why it is not used in the standard library.
 
 `ahash` does not have a fixed hash function -
-it is fversion- and platform-specific,
+it is version- and platform-specific,
 so it is only suitable for use in-memory,
 and not for making stable comparisons across systems
 (t is primarly for use in Rust's `HashMap` and `HashSet`).
