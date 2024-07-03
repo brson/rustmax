@@ -12,6 +12,7 @@
   - proptest
   - criterion etc
   - libtestmimic
+  - datatest_stable
 - Workspace templates for `cargo-generate`
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
