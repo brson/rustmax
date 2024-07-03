@@ -1,3 +1,3 @@
 # Rust Extras Book
 
-todo
+- [Modern Rust Features](modern-rust-features.md)
