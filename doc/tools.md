@@ -17,6 +17,7 @@
   [`tokei`](todo)
 - Other Rust tools:
   [`ripgrep`](todo)
+  [`jaq`](todo)
 
 ## Key Rust Tools
 
@@ -75,3 +76,4 @@ is built into `cargo` itself.
 - [ripgrep](https://crates.io/crates/ripgrep) - fast and convenient code grep
 - [tokei](https://crates.io/crates/tokei) - count lines of code
 - just
+- [`jaq`](https://crates.io/crates/jaq) - jq clone for querying JSON
