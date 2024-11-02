@@ -1,5 +1,7 @@
 # crates
 
+- backtrace-on-stack-overflow
+- rust-embed
 - dashmap
 - smallvec
 - num-traits / num, etc
