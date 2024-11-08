@@ -1,6 +1,6 @@
 [workspace.package]
 description = "Rust extras"
-version = "0.1.0"
+version = "0.2.0"
 license = "Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT OR CC0-1.0"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
 documentation = "https://github.com/brson/rustx"
