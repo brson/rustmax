@@ -31,6 +31,7 @@ rx-crates-no-std = [
   "futures",
   "hex",
   "itertools",
+  "jiff",
   "libc",
   "log",
   "nom",
@@ -156,6 +157,7 @@ rx-feature-no-std = [
   "ahash/compile-time-rng",
   "byteorder/i128",
   "derive_more/full",
+  "jiff/alloc",
   "serde_json/alloc",
 ]
 
@@ -176,6 +178,7 @@ rx-feature-std = [
   "futures/std",
   "hex/std",
   "itertools/use_std",
+  "jiff/std",
   "libc/std",
   "log/std",
   "nom/std",
@@ -204,6 +207,7 @@ rx-feature-default = [
   "dialoguer/default",
   "futures/default",
   "indicatif/default",
+  "jiff/default",
   "nom/default",
   "proc-macro2/default",
   "proptest/default",
@@ -230,6 +234,7 @@ rx-feature-serde = [
   "bitflags/serde",
   "bytes/serde",
   "hex/serde",
+  "jiff/serde",
   "log/serde",
   "rand/serde1",
   "rand_chacha/serde1",
@@ -325,7 +330,8 @@ hex = { version = "0.4.3", optional = true, default-features = false }
 hyper = { version = "1.5.0", optional = true, default-features = false }
 indicatif = { version = "0.17.8", optional = true, default-features = false }
 itertools = { version = "0.13.0", optional = true, default-features = false }
-json5 = { version ="0.4.1", optional = true, default-features = false }
+jiff = { version = "0.1.14", optional = true, default-features = false }
+json5 = { version = "0.4.1", optional = true, default-features = false }
 lazy_static = { version = "1.5.0", optional = true, default-features = false }
 libc = { version = "0.2.162", optional = true, default-features = false }
 log = { version = "0.4.22", optional = true, default-features = false }
