@@ -21,7 +21,7 @@ suitable for many Rust programs.
   - [🌎 Profile: `rx-profile-proc-macro`][`rx-profile-proc-macro`]
   - **[🌎 Profile: `rx-profile-full`][`rx-profile-full`]**
   - [🌎 Profile: `rx-profile-max`][`rx-profile-max`]
-- - [🌎 Profile: `rx-profile-max-nightly`][`rx-profile-max-nightly`]
+  - [🌎 Profile: `rx-profile-max-nightly`][`rx-profile-max-nightly`]
 - [Ecosystem features](#ecosystem-features)
   - [⛲ Feature: `rx-feature-no-std`][`rx-feature-no-std`]
   - [⛲ Feature: `rx-feature-std`][`rx-feature-std`]
@@ -68,7 +68,7 @@ and enables allocator-related features of its crates.
 All crates in this profile are also in [`rx-feature-std`].
 
 💡 This profile also enables [`rx-feature-no-std`].\
-💡 This profile also enables [`rx-rustlibs-no-std`].\
+💡 This profile also enables [`rx-rustlibs-no-std`].
 
 
 ### Crates in `rx-profile-no-std`
@@ -116,7 +116,7 @@ in addition to the crates provided by [`rx-profile-no-std`].
 
 💡 This profile also enables [`rx-feature-std`].\
 💡 This profile also enables [`rx-feature-default`].\
-💡 This profile also enables [`rx-rustlibs-std`].\
+💡 This profile also enables [`rx-rustlibs-std`].
 
 
 ### Crates in `rx-profile-std`
@@ -148,7 +148,7 @@ Not that this profile does not enable `tokio` features
 for other crates; to enable `tokio` features
 apply the [`rx-feature-tokio`] feature.
 
-💡 This profile also enables [`rx-profile-std`].\
+💡 This profile also enables [`rx-profile-std`].
 
 
 ### Crates in `rx-profile-net`
@@ -204,7 +204,7 @@ Crates for writing [Rust build scripts](todo).
 Crates for writing [Rust procedural macros](todo).
 
 💡 This profile also enables [`rx-profile-std`].\
-💡 This profile also enables [`rx-rustlibs-proc-macro`].\
+💡 This profile also enables [`rx-rustlibs-proc-macro`].
 
 
 ### Crates in `rx-profile-proc-macro`
@@ -224,7 +224,7 @@ This profile simply enables all previous profiles.
 💡 This profile also enables [`rx-profile-net`].\
 💡 This profile also enables [`rx-profile-cli`].\
 💡 This profile also enables [`rx-profile-build-script`].\
-💡 This profile also enables [`rx-profile-proc-macro`].\
+💡 This profile also enables [`rx-profile-proc-macro`].
 
 
 
@@ -239,7 +239,7 @@ This profile simply enables all previous profiles.
 💡 This profile also enables [`rx-feature-backtrace`].\
 💡 This profile also enables [`rx-feature-tokio`].\
 💡 This profile also enables [`rx-rand-x-small_rng`].\
-💡 This profile also enables [`rx-serde-x-rng`].\
+💡 This profile also enables [`rx-serde-x-rc`].
 
 
 
@@ -249,7 +249,7 @@ This profile simply enables all previous profiles.
 `rustx` with all features (including nightly).
 
 💡 This profile also enables [`rx-profile-max`].\
-💡 This profile also enables [`rx-feature-nightly`].\
+💡 This profile also enables [`rx-feature-nightly`].
 
 
 
@@ -332,7 +332,7 @@ todo
 todo
 
 
-## ⛲ Feature: `rx-serde-x-rng`
+## ⛲ Feature: `rx-serde-x-rc`
 
 todo
 
@@ -457,6 +457,8 @@ rx.features = ["rx-profile-std"]
 [`rx-profile-build-script`]: #-profile-rx-profile-build-script
 [`rx-profile-proc-macro`]: #-profile-rx-profile-proc-macro
 [`rx-profile-full`]: #-profile-rx-profile-full
+[`rx-profile-max`]: #-profile-rx-profile-max
+[`rx-profile-max-nightly`]: #-profile-rx-profile-max-nightly
 [`rx-feature-no-std`]: #-feature-rx-feature-no-std
 [`rx-feature-std`]: #-feature-rx-feature-std
 [`rx-feature-default`]: #-feature-rx-feature-default
@@ -465,6 +467,8 @@ rx.features = ["rx-profile-std"]
 [`rx-feature-backtrace`]: #-feature-rx-feature-backtrace
 [`rx-feature-tokio`]: #-feature-rx-feature-tokio
 [`rx-feature-nightly`]: #-feature-rx-feature-nightly
+[`rx-rand-x-small_rng`]: #-feature-rx-rand-x-small_rng
+[`rx-serde-x-rc`]: #-feature-rx-serde-x-rc
 [`rx-rustlibs-no-std`]: #-rustlibs-rx-rustlibs-no-std
 [`rx-rustlibs-alloc`]: #-rustlibs-rx-rustlibs-alloc
 [`rx-rustlibs-std`]: #-rustlibs-rx-rustlibs-std

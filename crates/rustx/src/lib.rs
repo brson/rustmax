@@ -315,6 +315,15 @@ pub mod itertools {
     pub use ::itertools::*;
 }
 
+#[cfg(feature = "jiff")]
+pub mod jiff {
+    //! Dates and time, friendlier than [`chrono`].
+    //!
+    //! See crate [`::jiff`].
+
+    pub use ::jiff::*;
+}
+
 #[cfg(feature = "json5")]
 pub mod json5 {
     //! JSON5, a superset of JSON with expanded syntax.
