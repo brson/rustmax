@@ -6,4 +6,4 @@ check:
   cargo check --features rx-profile-full
 
 doc-crate:
-  cargo doc -p rustx --features rx-profile-full
+  cargo doc -p rustx --features rx-profile-max
