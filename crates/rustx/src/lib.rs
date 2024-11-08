@@ -20,7 +20,7 @@ pub mod prelude {
         anyhow, bail,
     };
 
-    #[cfg(feature = "cfg_if")]
+    #[cfg(feature = "cfg-if")]
     pub use ::cfg_if::cfg_if;
 
     #[cfg(feature = "extension-trait")]
@@ -369,7 +369,7 @@ pub mod nom {
     pub use ::nom::*;
 }
 
-#[cfg(feature = "num_bigint")]
+#[cfg(feature = "num-bigint")]
 pub mod num_bigint {
     //! Arbitrary-sized integers.
     //!
