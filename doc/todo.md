@@ -15,8 +15,8 @@
   - where tool
   - build docs
   - search docs
-  - initialize dep-frozen rustx project
-  - change rustx lib features
+  - initialize dep-frozen rmx project
+  - change rmx lib features
   - set up sccache
   - list all relevant environment variables
   - apropos

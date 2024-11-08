@@ -1,9 +1,9 @@
 [workspace.package]
-description = "Rust extras"
+description = "Rust Max"
 version = "0.2.0"
 license = "Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT OR CC0-1.0"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
-documentation = "https://github.com/brson/rustx"
+documentation = "https://github.com/brson/rmx"
 edition = "2021"
 
 [workspace]
@@ -14,6 +14,6 @@ members = [
 ]
 
 default-members = [
-  "crates/rustx",
-  "crates/rustx-cli",
+  "crates/rmx",
+  "crates/rmx-cli",
 ]

@@ -1,5 +1,5 @@
 [package]
-name = "rustx"
+name = "rmx"
 version.workspace = true
 license.workspace = true
 edition.workspace = true
@@ -7,14 +7,14 @@ edition.workspace = true
 [features]
 
 default = [
-  #"rx-profile-no-std",
-  #"rx-profile-std",
+  #"rmx-profile-no-std",
+  #"rmx-profile-std",
 ]
 
 
 ## ---------- ##
 
-rx-crates-no-std = [
+rmx-crates-no-std = [
   "ahash",
   "anyhow",
   "backtrace",
@@ -49,8 +49,8 @@ rx-crates-no-std = [
   "toml",
 ]
 
-rx-crates-std = [
-  "rx-crates-no-std",
+rmx-crates-std = [
+  "rmx-crates-no-std",
   "clap",
   "env_logger",
   "json5",
@@ -67,8 +67,8 @@ rx-crates-std = [
   "xshell",
 ]
 
-rx-crates-net = [
-  "rx-crates-std",
+rmx-crates-net = [
+  "rmx-crates-std",
   "http",
   "hyper",
   "hyper/full",
@@ -80,8 +80,8 @@ rx-crates-net = [
   "url",
 ]
 
-rx-crates-cli = [
-  "rx-crates-std",
+rmx-crates-cli = [
+  "rmx-crates-std",
   "console",
   "ctrlc",
   "dialoguer",
@@ -90,15 +90,15 @@ rx-crates-cli = [
   "rustyline",
 ]
 
-rx-crates-build-script = [
-  "rx-crates-std",
+rmx-crates-build-script = [
+  "rmx-crates-std",
   "cc",
   "cxx",
   "cxx-build",
 ]
 
-rx-crates-proc-macro = [
-  "rx-crates-std",
+rmx-crates-proc-macro = [
+  "rmx-crates-std",
   "proc-macro2",
   "quote",
   "syn",
@@ -108,67 +108,67 @@ rx-crates-proc-macro = [
 ## ---------- ##
 
 
-rx-profile-no-std = [
-  "rx-rustlibs-no-std",
-  "rx-feature-no-std",
-  "rx-crates-no-std",
+rmx-profile-no-std = [
+  "rmx-rustlibs-no-std",
+  "rmx-feature-no-std",
+  "rmx-crates-no-std",
 ]
 
-rx-profile-std = [
-  "rx-rustlibs-std",
-  "rx-feature-std",
-  "rx-feature-default",
-  "rx-crates-std",
+rmx-profile-std = [
+  "rmx-rustlibs-std",
+  "rmx-feature-std",
+  "rmx-feature-default",
+  "rmx-crates-std",
 ]
 
-rx-profile-net = [
-  "rx-profile-std",
-  "rx-crates-net",
+rmx-profile-net = [
+  "rmx-profile-std",
+  "rmx-crates-net",
 ]
 
-rx-profile-cli = [
-  "rx-profile-std",
-  "rx-crates-cli",
+rmx-profile-cli = [
+  "rmx-profile-std",
+  "rmx-crates-cli",
 ]
 
-rx-profile-build-script = [
-  "rx-profile-std",
-  "rx-crates-build-script",
+rmx-profile-build-script = [
+  "rmx-profile-std",
+  "rmx-crates-build-script",
 ]
 
-rx-profile-proc-macro = [
-  "rx-profile-std",
-  "rx-rustlibs-proc-macro",
-  "rx-crates-proc-macro",
+rmx-profile-proc-macro = [
+  "rmx-profile-std",
+  "rmx-rustlibs-proc-macro",
+  "rmx-crates-proc-macro",
 ]
 
-rx-profile-full = [
-  "rx-profile-std",
-  "rx-profile-net",
-  "rx-profile-cli",
-  "rx-profile-build-script",
-  "rx-profile-proc-macro",
+rmx-profile-full = [
+  "rmx-profile-std",
+  "rmx-profile-net",
+  "rmx-profile-cli",
+  "rmx-profile-build-script",
+  "rmx-profile-proc-macro",
 ]
 
-rx-profile-max = [
-  "rx-profile-full",
-  "rx-feature-derive",
-  "rx-feature-serde",
-  "rx-feature-backtrace",
-  "rx-feature-tokio",
-  "rx-rand-x-small_rng",
-  "rx-serde-x-rc",
+rmx-profile-max = [
+  "rmx-profile-full",
+  "rmx-feature-derive",
+  "rmx-feature-serde",
+  "rmx-feature-backtrace",
+  "rmx-feature-tokio",
+  "rmx-rand-x-small_rng",
+  "rmx-serde-x-rc",
 ]
 
-rx-profile-max-nightly = [
-  "rx-profile-max",
-  "rx-feature-nightly",
+rmx-profile-max-nightly = [
+  "rmx-profile-max",
+  "rmx-feature-nightly",
 ]
 
 
 ## ---------- ##
 
-rx-feature-no-std = [
+rmx-feature-no-std = [
   "ahash/compile-time-rng",
   "byteorder/i128",
   "derive_more/full",
@@ -176,8 +176,8 @@ rx-feature-no-std = [
   "serde_json/alloc",
 ]
 
-rx-feature-std = [
-  "rx-feature-no-std",
+rmx-feature-std = [
+  "rmx-feature-no-std",
   "ahash/std",
   "anyhow/std",
   "backtrace/std",
@@ -212,7 +212,7 @@ rx-feature-std = [
   "sha2/std",
 ]
 
-rx-feature-default = [
+rmx-feature-default = [
   "ahash/default",
   "byteorder/default",
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
@@ -239,12 +239,12 @@ rx-feature-default = [
   "url/default",
 ]
 
-rx-feature-derive = [
+rmx-feature-derive = [
   "clap/derive",
   "serde/derive",
 ]
 
-rx-feature-serde = [
+rmx-feature-serde = [
   "backtrace/serde",
   "bitflags/serde",
   "bytes/serde",
@@ -258,16 +258,16 @@ rx-feature-serde = [
   "url/serde",
 ]
 
-rx-feature-backtrace = [
-  "rx-feature-std",
+rmx-feature-backtrace = [
+  "rmx-feature-std",
   "anyhow/backtrace",
 ]
 
-rx-feature-tokio = [
+rmx-feature-tokio = [
   "indicatif/tokio",
 ]
 
-rx-feature-nightly = [
+rmx-feature-nightly = [
   "rand/nightly",
   "tempfile/nightly",
 ]
@@ -276,11 +276,11 @@ rx-feature-nightly = [
 ## ---------- ##
 
 
-rx-rand-x-small_rng = [
+rmx-rand-x-small_rng = [
   "rand/small_rng",
 ]
 
-rx-serde-x-rc = [
+rmx-serde-x-rc = [
   "serde/rc",
 ]
 
@@ -288,25 +288,25 @@ rx-serde-x-rc = [
 ## ---------- ##
 
 
-rx-rustlibs-no-std = [
-  "rx-rustlib-core",
-  "rx-rustlib-alloc",
+rmx-rustlibs-no-std = [
+  "rmx-rustlib-core",
+  "rmx-rustlib-alloc",
 ]
 
-rx-rustlibs-std = [
-  "rx-rustlib-core",
-  "rx-rustlib-alloc",
-  "rx-rustlib-std",
+rmx-rustlibs-std = [
+  "rmx-rustlib-core",
+  "rmx-rustlib-alloc",
+  "rmx-rustlib-std",
 ]
 
-rx-rustlibs-proc-macro = [
-  "rx-rustlib-proc_macro",
+rmx-rustlibs-proc-macro = [
+  "rmx-rustlib-proc_macro",
 ]
 
-rx-rustlib-core = []
-rx-rustlib-alloc = []
-rx-rustlib-std = []
-rx-rustlib-proc_macro = []
+rmx-rustlib-core = []
+rmx-rustlib-alloc = []
+rmx-rustlib-std = []
+rmx-rustlib-proc_macro = []
 
 
 ## ---------- ##

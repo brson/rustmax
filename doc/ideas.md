@@ -17,8 +17,8 @@
 - Opinionated `rustfmt`
 - Opinionated `cargo-deny`
 - Opinionated `clippy` with `clippy-control`
-- Using the `rstx` supercrate
-- Using the `rstx` tool
+- Using the `rmx` supercrate
+- Using the `rmx` tool
 - Advanced Rust tips
 - Rust Release History
 - Quiz

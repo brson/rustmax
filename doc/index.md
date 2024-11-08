@@ -1,11 +1,11 @@
-# Rust Extras: The Book
+# Rust Max: The Book
 
-- [What is Rust Extras?](what-is-rustx.md)
+- [What is Rust Max?](what-is-rmx.md)
 - [Easy-mode Rust](easy-mode-rust.md)
 - [The Rust Ecosystem](ecosystem-overview.md)
 - [A Rust Tooling Toor](tools-tour.md)
-- [Rust Extras: Crates](crates.md)
-- [Rust Extras: Tools](tools.md)
+- [Rust Max: Crates](crates.md)
+- [Rust Max: Tools](tools.md)
 - [Modern Rust Features](modern-rust-features.md)
-- [The Rust Extras Quiz](quiz.md)
+- [The Rust Max Quiz](quiz.md)
 - [Additional Rust Resources](resources.md)

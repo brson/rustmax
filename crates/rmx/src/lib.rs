@@ -1,4 +1,4 @@
-#![doc = include_str!("../doc-src/rustx-crate.md")]
+#![doc = include_str!("../doc-src/root-docs.md")]
 
 /* ---------- */
 
@@ -10,7 +10,7 @@
 
 
 pub mod prelude {
-    //! The `rustx` prelude.
+    //! The `rmx` prelude.
 
     #[cfg(feature = "anyhow")]
     pub use ::anyhow::{
@@ -33,7 +33,7 @@ pub mod prelude {
         default,
     };
 
-    #[cfg(feature = "rx-rustlib-alloc")]
+    #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::S;
 }
 
@@ -56,7 +56,7 @@ pub mod extras {
         maybe_init_env_logger();
     }
 
-    #[cfg(feature = "rx-rustlib-alloc")]
+    #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
     pub fn S(s: &'static str) -> crate::alloc::string::String {
         core::convert::From::from(s)
@@ -67,16 +67,16 @@ pub mod extras {
 /* ---------- */
 
 
-#[cfg(feature = "rx-rustlib-core")]
+#[cfg(feature = "rmx-rustlib-core")]
 pub extern crate core;
 
-#[cfg(feature = "rx-rustlib-alloc")]
+#[cfg(feature = "rmx-rustlib-alloc")]
 pub extern crate alloc;
 
-#[cfg(feature = "rx-rustlib-std")]
+#[cfg(feature = "rmx-rustlib-std")]
 pub extern crate std;
 
-#[cfg(feature = "rx-rustlib-proc_macro")]
+#[cfg(feature = "rmx-rustlib-proc_macro")]
 pub extern crate proc_macro;
 
 

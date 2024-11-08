@@ -1,20 +1,20 @@
 [package]
-name = "rustx-cli"
+name = "rmx-cli"
 version.workspace = true
 license.workspace = true
 edition.workspace = true
 
 [[bin]]
-name = "rustx"
+name = "rmx"
 path = "src/main.rs"
 
 [dependencies]
-rx.path = "../rustx"
-rx.package = "rustx"
-rx.default-features = false
-rx.features = [
-  "rx-profile-std",
-  "rx-feature-derive",
+rmx.path = "../rmx"
+rmx.package = "rmx"
+rmx.default-features = false
+rmx.features = [
+  "rmx-profile-std",
+  "rmx-feature-derive",
 ]
 serde.version = "1"
 enum-iterator.version = "2.1.0"

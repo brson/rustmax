@@ -2,8 +2,8 @@
 
 mod impls;
 
-use rx::prelude::*;
-use rx::{
+use rmx::prelude::*;
+use rmx::{
     clap,
     serde,
 };
@@ -178,7 +178,7 @@ impl CliCmdWriteFmtConfig {
     fn run(&self) -> AnyResult<()> {
         // todo --force
         let contents = include_bytes!("../../../rustfmt.toml");
-        rx::std::fs::write("rustfmt.toml", contents)?;
+        rmx::std::fs::write("rustfmt.toml", contents)?;
         Ok(())
     }
 }
@@ -187,7 +187,7 @@ impl CliCmdWriteCargoDenyConfig {
     fn run(&self) -> AnyResult<()> {
         // todo --force
         let contents = include_bytes!("../../../configs/deny.toml");
-        rx::std::fs::write("rustfmt.toml", contents)?;
+        rmx::std::fs::write("rustfmt.toml", contents)?;
         Ok(())
     }
 }

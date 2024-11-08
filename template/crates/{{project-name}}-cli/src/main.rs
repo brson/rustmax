@@ -1,9 +1,9 @@
-use rx::prelude::*;
-use rx::clap::{self, Parser as _};
+use rmx::prelude::*;
+use rmx::clap::{self, Parser as _};
 use std::path::PathBuf;
 
 fn main() -> AnyResult<()> {
-    rx::extras::init();
+    rmx::extras::init();
 
     let cli = Cli::parse();
     cli.run()?;
