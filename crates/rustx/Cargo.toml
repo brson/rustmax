@@ -150,6 +150,21 @@ rx-profile-full = [
   "rx-profile-proc-macro",
 ]
 
+rx-profile-max = [
+  "rx-profile-full",
+  "rx-feature-derive",
+  "rx-feature-serde",
+  "rx-feature-backtrace",
+  "rx-feature-tokio",
+  "rx-rand-x-small_rng",
+  "rx-serde-x-rc",
+]
+
+rx-profile-max-nightly = [
+  "rx-profile-max",
+  "rx-feature-nightly",
+]
+
 
 ## ---------- ##
 
