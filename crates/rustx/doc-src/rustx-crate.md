@@ -14,21 +14,26 @@ suitable for many Rust programs.
 
 - [Profiles](#profiles)
   - [🌎 Profile: `rx-profile-no-std`][`rx-profile-no-std`]
-  - [🌎 Profile: `rx-profile-std`][`rx-profile-std`]
+  - **[🌎 Profile: `rx-profile-std`][`rx-profile-std`]**
   - [🌎 Profile: `rx-profile-net`][`rx-profile-net`]
   - [🌎 Profile: `rx-profile-cli`][`rx-profile-cli`]
   - [🌎 Profile: `rx-profile-build-script`][`rx-profile-build-script`]
   - [🌎 Profile: `rx-profile-proc-macro`][`rx-profile-proc-macro`]
-  - [🌎 Profile: `rx-profile-full`][`rx-profile-full`]
+  - **[🌎 Profile: `rx-profile-full`][`rx-profile-full`]**
+  - [🌎 Profile: `rx-profile-max`][`rx-profile-max`]
+- - [🌎 Profile: `rx-profile-max-nightly`][`rx-profile-max-nightly`]
 - [Ecosystem features](#ecosystem-features)
   - [⛲ Feature: `rx-feature-no-std`][`rx-feature-no-std`]
   - [⛲ Feature: `rx-feature-std`][`rx-feature-std`]
   - [⛲ Feature: `rx-feature-default`][`rx-feature-default`]
-  - [⛲ Feature: `rx-feature-derive`][`rx-feature-derive`]
-  - [⛲ Feature: `rx-feature-serde`][`rx-feature-serde`]
-  - [⛲ Feature: `rx-feature-backtrece`][`rx-feature-backtrace`]
-  - [⛲ Feature: `rx-feature-tokio`][`rx-feature-tokio`]
+  - **[⛲ Feature: `rx-feature-derive`][`rx-feature-derive`]**
+  - **[⛲ Feature: `rx-feature-serde`][`rx-feature-serde`]**
+  - [⛲ Feature: `rx-feature-backtrace`][`rx-feature-backtrace`]
+  - **[⛲ Feature: `rx-feature-tokio`][`rx-feature-tokio`]**
   - [⛲ Feature: `rx-feature-nightly`][`rx-feature-nightly`]
+- [Crate Features](#crate-features)
+  - [⛲ Feature: `rx-rand-x-small_rng`][`rx-rand-x-small_rng`]
+  - [⛲ Feature: `rx-serde-x-rc`][`rx-serde-x-rc`]
 - [Rust system libraries](#rust-system-libraries)
   - [📙 Rustlib: `rx-rustlibs-no-std`][`rx-rustlibs-no-std`]
   - [📙 Rustlib: `rx-rustlibs-alloc`][`rx-rustlibs-alloc`]
@@ -37,7 +42,7 @@ suitable for many Rust programs.
 - [Using `rustx` as a library](#using-rustx-as-a-library)
   - [`rustx` and cargo features](#rustx-and-cargo-features)
   - [Crate reexports](#crate-reexports)
-  - [Standard library reexports](#standard-library-reepxorts)
+  - [Standard library reexports](#standard-library-reexports)
   - [The `rustx` prelude](#the-rustx-prelude)
   - [The `extra` module](#the-extra-module)
   - [Starter examples](#starter-examples)
@@ -84,6 +89,7 @@ All crates in this profile are also in [`rx-feature-std`].
 - [`futures`]
 - [`hex`]
 - [`itertools`]
+- [`jiff`]
 - [`libc`]
 - [`log`]
 - [`nom`]
@@ -212,7 +218,38 @@ Crates for writing [Rust procedural macros](todo).
 
 ## 🌎 Profile: `rx-profile-full`
 
-This profile simply enables all other profiles.
+This profile simply enables all previous profiles.
+
+💡 This profile also enables [`rx-profile-std`].\
+💡 This profile also enables [`rx-profile-net`].\
+💡 This profile also enables [`rx-profile-cli`].\
+💡 This profile also enables [`rx-profile-build-script`].\
+💡 This profile also enables [`rx-profile-proc-macro`].\
+
+
+
+
+## 🌎 Profile: `rx-profile-max`
+
+`rustx` with all features (that don't require nightly).
+
+💡 This profile also enables [`rx-profile-full`].\
+💡 This profile also enables [`rx-feature-derive`].\
+💡 This profile also enables [`rx-feature-serde`].\
+💡 This profile also enables [`rx-feature-backtrace`].\
+💡 This profile also enables [`rx-feature-tokio`].\
+💡 This profile also enables [`rx-rand-x-small_rng`].\
+💡 This profile also enables [`rx-serde-x-rng`].\
+
+
+
+
+## 🌎 Profile: `rx-profile-max-nightly`
+
+`rustx` with all features (including nightly).
+
+💡 This profile also enables [`rx-profile-max`].\
+💡 This profile also enables [`rx-feature-nightly`].\
 
 
 
@@ -281,6 +318,23 @@ typically with a feature named "tokio".
 
 Enables features that only compile with the Rust [nightly compiler],
 typically with a feature named "nightly".
+
+
+
+
+# Crate features
+
+todo
+
+
+## ⛲ Feature: `rx-rand-x-small_rng`
+
+todo
+
+
+## ⛲ Feature: `rx-serde-x-rng`
+
+todo
 
 
 
