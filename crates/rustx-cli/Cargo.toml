@@ -17,4 +17,4 @@ rx.features = [
   "rx-feature-derive",
 ]
 serde.version = "1"
-enum-iterator.version = "1.4.1"
+enum-iterator.version = "1.5.0"
