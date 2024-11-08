@@ -1,5 +1,6 @@
 ## TODO
 
+- rename to `max` - crates are reserved
 - known bugs
   - serde derive requires adding a serde dependency
 - why
