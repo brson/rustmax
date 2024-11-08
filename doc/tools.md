@@ -77,3 +77,6 @@ is built into `cargo` itself.
 - [tokei](https://crates.io/crates/tokei) - count lines of code
 - just
 - [`jaq`](https://crates.io/crates/jaq) - jq clone for querying JSON
+- sd
+- jsonxf
+- jaq
