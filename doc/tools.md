@@ -81,3 +81,4 @@ is built into `cargo` itself.
 - jsonxf
 - jaq
 - intentrace?
+- jj-cli
