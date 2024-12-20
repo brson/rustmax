@@ -1,6 +1,3 @@
-A collection of useful Rust crates.
-
-
 **🚧
 WARNING:
 Do not use this project.
@@ -17,87 +14,38 @@ It can be read as reference documentation or
 imported through a Cargo dependency
 as a "batteries included" extendend Rust standard library.
 
-- Crates by category.
-  - error handling and debugging:
-    [`anyhow`],
-    [`backtrace`],
-    [`env_logger`],
-    [`log`],
-    [`thiserror`],
-  - collections:
-    [`ahash`],
-    [`bitflags`],
-    [`bytes`],
-    [`itertools`],
-    [`lazy_static`],
-  - numerics:
-    [`num_bigint`],
-  - encoding, serialization, parsing:
-    [`base64`],
-    [`byteorder`],
-    [`hex`],
-    [`json5`],
-    [`nom`],
-    [`regex`],
-    [`serde`],
-    [`serde_json`],
-    [`tera`],
-    [`toml`],
-  - time:
-    [`chrono`],
-    [`jiff`],
-  - random numbers:
-    [`rand`],
-    [`rand_chacha`],
-    [`rand_pcg`],
-  - cryptography:
-    [`blake3`],
-  - parallelism:
-    [`crossbeam`],
-    [`once_cell`],
-    [`rayon`],
-  - asyncronous I/O:
-    [`futures`],
-    [`tokio`],
-  - networking and web:
-    [`http`],
-    [`hyper`],
-    [`mime`],
-    [`reqwest`],
-    [`socket2`],
-    [`url`],
-  - text / unicode
-    [`unicode_segmentation`],
-  - convenience macros:
-    [`cfg-if`](cfg_if),
-    [`derive_more`],
-    [`extension-trait`](extension_trait),
-    [`num_enum`],
-  - terminal / CLI:
-    [`clap`],
-    [`console`],
-    [`ctrlc`],
-    [`dialoguer`],
-    [`indicatif`],
-    [`termcolor`],
-    [`rustyline`],
-  - system / OS:
-    [`num_cpus`],
-    [`tempfile`],
-    [`walkdir`],
-    [`xshell`],
-  - testing:
-    [`proptest`],
-    [`static_assertions`],
-  - foreign / native interop:
-    [`libc`],
-    [`cc`],
-    [`cxx`],
-    [`cxx-build`](cxx_build),
-  - procedural macros:
-    [`proc-macro2`](proc_macro2),
-    [`quote`],
-    [`syn`],
+<br>
+
+----
+
+<br>
+
+| Category | Crates |
+| --- | --- |
+| error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
+| collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`], [`lazy_static`] |
+| numerics | [`num_bigint`] |
+| encoding, serialization, parsing | [`base64`], [`byteorder`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`tera`], [`toml`] |
+| time | [`chrono`], [`jiff`] |
+| random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
+| cryptography | [`blake3`] |
+| parallelism | [`crossbeam`], [`once_cell`], [`rayon`] |
+| asyncronous I/O | [`futures`], [`tokio`] |
+| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`url`] |
+|  text / unicode | [`unicode_segmentation`] |
+| convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
+| terminal / CLI | [`clap`], [`console`], [`ctrlc`], [`dialoguer`], [`indicatif`], [`termcolor`], [`rustyline`] |
+| system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
+| testing | [`proptest`], [`static_assertions`] |
+| foreign / native interop | [`libc`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
+| procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
+
+<br>
+
+----
+
+<br>
+
 - [Profiles](#profiles).
   `rmx` organizes crates into _profiles_,
   which correspond to common target environments and application types.
@@ -142,6 +90,13 @@ as a "batteries included" extendend Rust standard library.
 - `rmx` crate API docs
   - [Re-exports](#reexports)
   - [Modules](#modules)
+
+<br>
+
+----
+----
+
+<br>
 
 
 
