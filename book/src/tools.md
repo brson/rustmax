@@ -6,6 +6,7 @@
   [`rustup`](todo)
   [`rustfmt`](todo)
   [`clippy`](todo)
+  [`mdbook`](todo)
 - Rust Development Tools:
   [`cargo-edit`](todo)
   [`cargo-deny`](todo)
@@ -21,11 +22,7 @@
 
 ## Key Rust Tools
 
-- rustc
-- cargo
-- rustup
-- rustfmt
-- clippy
+
 
 
 ## Rust Development Tools
@@ -51,6 +48,10 @@ Installing `cargo-edit` provides two `cargo` subcommands:
 [`cargo add`](https://doc.rust-lang.org/cargo/commands/cargo-add.html)
 was once provided by `cargo-edit` but since Rust [`1.62.0`](https://blog.rust-lang.org/2022/06/30/Rust-1.62.0.html)
 is built into `cargo` itself.
+
+
+
+
 
 ### todo
 
@@ -82,3 +83,4 @@ is built into `cargo` itself.
 - jaq
 - intentrace?
 - jj-cli
+- mdbook

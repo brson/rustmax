@@ -1,14 +1,14 @@
 # Easy Mode Rust
 
+
+
 ## Starting a project
 
-## Starting a project with `cargo-generate`
 
-I start a new project with `cargo-generate`:
 
-```
-cargo generate https://github.com/brson/rmx/master/template
-```
+
+
+
 
 
 ## Updating dependencies in lockfile
@@ -16,6 +16,11 @@ cargo generate https://github.com/brson/rmx/master/template
 ```
 cargo update
 ```
+
+
+
+
+
 
 ## Updating dependencies in Cargo.toml
 
@@ -31,9 +36,23 @@ instead of lockfiles.
 
 todo This command is from the `cargo-edit` package.
 
+
+
+
+
+
 ## Upgrading dependencies across minor versions in Cargo.toml
 
 
 ```
 cargo upgrade --incompatible
 ```
+
+
+
+
+
+
+## topics
+
+- anyhow, thiserror
