@@ -10,9 +10,17 @@ It is neither stable nor supported.
 
 This crate documents and reexports selected high-quality Rust crates
 suitable for many Rust programs.
+Through the organization of its [Cargo features]
+into _profiles_ and _ecosystem features_
+this crate is a guide to the Rust crate ecosystem.
+It can be read as reference documentation or
+imported through a Cargo dependency
+as a "batteries included" extendend Rust standard library.
 
 
-- [Profiles](#profiles)
+- [Profiles](#profiles).
+  `rmx` organizes crates into _profiles_,
+  which correspond to common target environments and application types.
   - [🌎 Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
   - **[🌎 Profile: `rmx-profile-std`][`rmx-profile-std`]**
   - [🌎 Profile: `rmx-profile-net`][`rmx-profile-net`]
@@ -20,9 +28,10 @@ suitable for many Rust programs.
   - [🌎 Profile: `rmx-profile-build-script`][`rmx-profile-build-script`]
   - [🌎 Profile: `rmx-profile-proc-macro`][`rmx-profile-proc-macro`]
   - **[🌎 Profile: `rmx-profile-full`][`rmx-profile-full`]**
-  - [🌎 Profile: `rmx-profile-max`][`rmx-profile-max`]
+  - **[🌎 Profile: `rmx-profile-max`][`rmx-profile-max`]**
   - [🌎 Profile: `rmx-profile-max-nightly`][`rmx-profile-max-nightly`]
-- [Ecosystem features](#ecosystem-features)
+- [Ecosystem features](#ecosystem-features).
+  `rmx` identifies Cargo features common across many crates.
   - [⛲ Feature: `rmx-feature-no-std`][`rmx-feature-no-std`]
   - [⛲ Feature: `rmx-feature-std`][`rmx-feature-std`]
   - [⛲ Feature: `rmx-feature-default`][`rmx-feature-default`]
@@ -31,10 +40,12 @@ suitable for many Rust programs.
   - [⛲ Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
   - **[⛲ Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
   - [⛲ Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
-- [Crate features](#crate-features)
+- [Crate features](#crate-features).
+  Some Crate-specific features are re-exported by `rmx`.
   - [⛲ Feature: `rmx-rand-x-small_rng`][`rmx-rand-x-small_rng`]
   - [⛲ Feature: `rmx-serde-x-rc`][`rmx-serde-x-rc`]
-- [Rust system libraries](#rust-system-libraries)
+- [Rust standard libraries](#rust-standard-libraries).
+  `rmx` re-exports the standard Rust libraries for convenience.
   - [📙 Rustlib: `rmx-rustlibs-no-std`][`rmx-rustlibs-no-std`]
   - [📙 Rustlib: `rmx-rustlibs-alloc`][`rmx-rustlibs-alloc`]
   - [📙 Rustlib: `rmx-rustlibs-std`][`rmx-rustlibs-std`]
@@ -48,6 +59,9 @@ suitable for many Rust programs.
   - [Starter examples](#starter-examples)
   - [Starting from a template](#starting-from-a-template)
   - [Known bugs](#known-bugs)
+- [`rmx` crate docs]
+  - [Re-exports]
+  - [Modules]
 
 
 
@@ -256,7 +270,7 @@ This profile simply enables all previous profiles.
 
 # Ecosystem features
 
-todo
+`rmx` identifies Cargo features common across many crates.
 
 
 ## ⛲ Feature: `rmx-feature-no-std`
@@ -324,7 +338,7 @@ typically with a feature named "nightly".
 
 # Crate features
 
-todo
+Some Crate-specific features are re-exported by `rmx`.
 
 
 ## ⛲ Feature: `rmx-rand-x-small_rng`
@@ -339,9 +353,9 @@ todo
 
 
 
-# Rust system libraries
+# Rust standard libraries
 
-todo
+`rmx` re-exports the standard Rust libraries for convenience.
 
 
 ## 📙 Rustlib: `rmx-rustlib-no-std`
@@ -467,3 +481,5 @@ rmx.features = [
 [`rmx-rustlibs-alloc`]: #-rustlibs-rmx-rustlibs-alloc
 [`rmx-rustlibs-std`]: #-rustlibs-rmx-rustlibs-std
 [`rmx-rustlibs-proc-macro`]: #-rustlibs-rmx-rustlibs-proc-macro
+
+[Cargo features]: todo
