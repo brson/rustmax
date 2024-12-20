@@ -12,6 +12,7 @@
   [`cargo-clean-all`](#user-content--cargo-clean-all)
   [`cargo-deny`](#user-content--cargo-deny)
   [`cargo-license`](#user-content--cargo-license)
+  [`cargo-audit`](#user-content--cargo-audit)
   [`cargo-generate`](#user-content--cargo-generate)
 - More Rust-specific tools:
   [`miri`](#user-content--miri)
@@ -72,6 +73,7 @@ is built into `cargo` itself.
 ### 📦 `cargo-clean-all`
 ### 📦 `cargo-deny`
 ### 📦 `cargo-license`
+### 📦 `cargo-audit`
 ### 📦 `cargo-generate`
 
 
