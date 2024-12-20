@@ -1,31 +1,49 @@
 # Rust Max: Tools
 
-- Key Rust Tools:
-  [`rustc`](todo)
-  [`cargo`](todo)
-  [`rustup`](todo)
-  [`rustfmt`](todo)
-  [`clippy`](todo)
-  [`mdbook`](todo)
-- Rust Development Tools:
-  [`cargo-edit`](todo)
-  [`cargo-deny`](todo)
-  [`cargo-generate`](todo)
-  [`clippy-control`](todo)
-  [`miri`](todo)
-  [`cargo-clean-all`](todo)
-  [`cargo-license`](todo)
-  [`tokei`](todo)
-- Other Rust tools:
-  [`ripgrep`](todo)
-  [`jaq`](todo)
+- Core Rust tools:
+  [`rustc`](#user-content--rustc)
+  [`cargo`](#user-content--cargo)
+  [`rustup`](#user-content--rustup)
+  [`rustfmt`](#user-content--rustfmt)
+  [`clippy`](#user-content--clippy)
+  [`mdbook`](#user-content--mdbook)
+- Cargo plugins:
+  [`cargo-edit`](#user-content--cargo-edit)
+  [`cargo-clean-all`](#user-content--cargo-clean-all)
+  [`cargo-deny`](#user-content--cargo-deny)
+  [`cargo-license`](#user-content--cargo-license)
+  [`cargo-generate`](#user-content--cargo-generate)
+- More Rust-specific tools:
+  [`miri`](#user-content--miri)
+  [`clippy-control`](#user-content--clippy-control)
+- More Rust tools:
+  [`ripgrep`](#user-content--ripgrep)
+  [`just`](#user-content--just)
+  [`tokei`](#user-content--tokei)
+  [`basic-http-server`](#user-content--clippy-control)
+  [`gist`](#user-content-gist)
+  [`jaq`](#user-content-jaq)
+  [`jsonxf`](#user-content-jsonxf)
+  [`fd`](#user-content--fd)
+  [`sd`](#user-content--sd)
 
-## Key Rust Tools
+
+
+## Core Rust tools
+
+
+### 📦 `rustc`
+### 📦 `cargo`
+### 📦 `rustup`
+### 📦 `rustfmt`
+### 📦 `clippy`
+### 📦 `mdbook`
 
 
 
 
-## Rust Development Tools
+## Cargo plugins
+
 
 ### 📦 `cargo-edit`
 
@@ -51,36 +69,26 @@ is built into `cargo` itself.
 
 
 
+### 📦 `cargo-clean-all`
+### 📦 `cargo-deny`
+### 📦 `cargo-license`
+### 📦 `cargo-generate`
 
 
-### todo
 
-- [cargo-deny](https://crates.io/crates/cargo-deny) - disallow specific crates, licenses, etc
-- [cargo-generate](https://crates.io/crates/cargo-generate) - create cargo projecs from temtplates
-- [clippy-control](https://crates.io/crates/clippy-control) - todo
-- miri
-- [cargo-clean-all](https://crates.io/crates/cargo-clean-all) - clean all projects, leaving recent files
-- [cargo-license](https://crates.io/crates/cargo-license) - show licenses of dependencies
-- [basic-http-server](https://crates.io/crates/basic-http-server) - serve static HTML and rendered Markdown
-- [cargo-audit](https://crates.io/crates/cargo-audit) - find known security vulnerabilities
-- [cargo-expand](https://github.com/dtolnay/cargo-expand) - expand macros
-- [cargo-hack](https://crates.io/crates/cargo-hack) - build / test with all combinations of cargo features
-- [cargo-tree](https://crates.io/crates/cargo-tree) - show the crate graph as a tree
+## More Rust-specific tools
 
+### 📦 `miri`
+### 📦 `clippy-control`
 
-## Other Tools
+## More Rust tools
 
-- [`basic-http-server`](https://crates.io/crates/basic-http-server) - serve static HTML and rendered Markdown
-- [du-dust](https://crates.io/crates/du-dust) - lik du, disk usage
-- [fd-find](https://crates.io/crates/fd-find) - convenient `find` replacement
-- [gist](https://crates.io/crates/gist) - post gists
-- [ripgrep](https://crates.io/crates/ripgrep) - fast and convenient code grep
-- [tokei](https://crates.io/crates/tokei) - count lines of code
-- just
-- [`jaq`](https://crates.io/crates/jaq) - jq clone for querying JSON
-- sd
-- jsonxf
-- jaq
-- intentrace?
-- jj-cli
-- mdbook
+### 📦 `ripgrep`
+### 📦 `just`
+### 📦 `tokei`
+### 📦 `basic-http-server`
+### 📦 `gist`
+### 📦 `jaq`
+### 📦 `jsonxf`
+### 📦 `fd`
+### 📦 `sd`

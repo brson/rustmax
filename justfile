@@ -14,9 +14,11 @@ doc-crate:
     cargo doc -p rmx --features rmx-profile-max
 
 book:
+    rm -rf book/book
     cd book && mdbook build
 
 build: doc-crate book
+    rm -rf book/yapp~
     rm -rf out
     mkdir -p out/book
     mkdir -p out/api
