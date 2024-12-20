@@ -1,3 +1,7 @@
+clean:
+    cargo clean
+    rm -rf out
+
 check:
     #cargo deny check
     cargo check
@@ -13,9 +17,8 @@ book:
     cd book && mdbook build
 
 build: doc-crate book
+    rm -rf out
     mkdir -p out/book
     mkdir -p out/api
-    rm out/book/* -r
-    rm out/api/* -r
     cp -r book/book/* out/book/
     cp -r target/doc/* out/api/
