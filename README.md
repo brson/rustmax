@@ -19,7 +19,7 @@ documents and reexports other useful Rust crates.
 
 ## The tools
 
-- [A collection of useful Rust tools](doc/tools.md).
+- [A collection of useful Rust tools](book/src/tools.md).
 - [An opinionated workspace template](template),
   for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
 - [An opinionated config file](rustfmt.toml)
@@ -35,7 +35,7 @@ documents and reexports other useful Rust crates.
 
 This project is documented as
 
-- [Markdown](doc/index.md),
+- [Markdown](book/src/SUMMARY.md),
 - [HTML](todo),
 - and [PDF](todo).
 
