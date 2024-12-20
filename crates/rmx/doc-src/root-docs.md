@@ -17,7 +17,51 @@ It can be read as reference documentation or
 imported through a Cargo dependency
 as a "batteries included" extendend Rust standard library.
 
-
+- Crates by category.
+  - todo below: profile-std, etc
+  - error handling and debugging:
+    [`anyhow`],
+    [`backtrace`],
+    [`log`],
+  - collections:
+    [`ahash`],
+    [`bitflags`],
+    [`bytes`],
+    [`itertools`],
+  - numerics:
+    [`num_bigint`],
+  - encoding, serialization, parsing:
+    [`base64`],
+    [`byteorder`],
+    [`hex`],
+    [`nom`],
+    [`serde`],
+    [`serde_json`],
+    [`toml`],
+  - time:
+    [`chrono`],
+    [`jiff`],
+  - random numbers:
+    [`rand`],
+    [`rand_chacha`],
+    [`rand_pcg`],
+  - cryptography:
+    [`blake3`],
+  - parallelism:
+    [`crossbeam`],
+    [`once_cell`],
+  - asyncronous I/O:
+    [`futures`],
+  - convenience macros:
+    [`cfg-if`](cfg_if),
+    [`derive_more`],
+    [`extension-trait`](extension_trait),
+    [`num_enum`],
+  - testing:
+    [`proptest`],
+    [`static_assertions`],
+  - foreign / native interop:
+    [`libc`],
 - [Profiles](#profiles).
   `rmx` organizes crates into _profiles_,
   which correspond to common target environments and application types.
@@ -59,9 +103,9 @@ as a "batteries included" extendend Rust standard library.
   - [Starter examples](#starter-examples)
   - [Starting from a template](#starting-from-a-template)
   - [Known bugs](#known-bugs)
-- [`rmx` crate docs]
-  - [Re-exports]
-  - [Modules]
+- `rmx` crate API docs
+  - [Re-exports](#re-exports)
+  - [Modules](#modules)
 
 
 
