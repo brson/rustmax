@@ -20,5 +20,6 @@ build: doc-crate book
     rm -rf out
     mkdir -p out/book
     mkdir -p out/api
+    cp -r www/* out/
     cp -r book/book/* out/book/
     cp -r target/doc/* out/api/

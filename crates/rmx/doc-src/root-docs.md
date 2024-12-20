@@ -31,7 +31,7 @@ suitable for many Rust programs.
   - [⛲ Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
   - **[⛲ Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
   - [⛲ Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
-- [Crate Features](#crate-features)
+- [Crate features](#crate-features)
   - [⛲ Feature: `rmx-rand-x-small_rng`][`rmx-rand-x-small_rng`]
   - [⛲ Feature: `rmx-serde-x-rc`][`rmx-serde-x-rc`]
 - [Rust system libraries](#rust-system-libraries)
@@ -65,7 +65,7 @@ By default no profile is enabled and no crates are exported.
 This profile includes crates that do not require Rust `std`.
 It allows use of the Rust allocator,
 and enables allocator-related features of its crates.
-All crates in this profile are also in [`rmx-feature-std`].
+All crates in this profile are also in [`rmx-profile-std`].
 
 💡 This profile also enables [`rmx-feature-no-std`].\
 💡 This profile also enables [`rmx-rustlibs-no-std`].
@@ -168,7 +168,7 @@ apply the [`rmx-feature-tokio`] feature.
 
 Crates for building commandline interfaces.
 
-💡 This profile also enables [`rmx-profile-std`].\
+💡 This profile also enables [`rmx-profile-std`].
 
 
 ### Crates in `rmx-profile-cli`
@@ -187,7 +187,7 @@ Crates for building commandline interfaces.
 
 Crates for writing [Rust build scripts](todo).
 
-💡 This profile also enables [`rmx-profile-std`].\
+💡 This profile also enables [`rmx-profile-std`].
 
 
 ### Crates in `rmx-profile-build-script`
