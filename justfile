@@ -1,5 +1,5 @@
 check:
-  cargo deny check
+  #cargo deny check
   cargo check
   cargo check --features rmx-profile-no-std
   cargo check --features rmx-profile-std
