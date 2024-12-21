@@ -9,7 +9,7 @@ This crate documents and reexports selected high-quality Rust crates
 suitable for many Rust programs.
 Through the organization of its [Cargo features]
 into _profiles_ and _ecosystem features_
-this crate is a guide to the Rust crate ecosystem.
+it is a guide to the Rust crate ecosystem.
 It can be read as reference documentation or
 imported through a Cargo dependency
 as a "batteries included" extendend Rust standard library.
