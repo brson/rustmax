@@ -1,18 +1,35 @@
-* {
-    box-sizing: border-box;
-}
-
 :root {
     --black: #444;
     --white: #f8f8f8;
     --blue: #08f;
     --red: #f30;
-    --magenta: #f08;
 
     --b1: #f8d8f8;
     --b2: #f8e8e8;
 
     --emboss: #ecc;
+    --shine: #ffffff;
+    --unshine: #faf4fa
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --black: #f8f8f8;
+        --white: #111;
+        --blue: #2af;
+        --red: #f30;
+
+        --b1: #382828;
+        --b2: #281818;
+
+        --emboss: #866;
+        --shine: #000;
+        --unshine: #1a141a
+    }
+}
+
+* {
+    box-sizing: border-box;
 }
 
 :root {
@@ -77,10 +94,9 @@ header {
 }
 
 #menu {
-    --shine: white;
     background-image: linear-gradient(0deg, var(--shine) 50%, transparent 50%);
     background-size: 1px 2px;
-    background-color: #faf4fa;
+    background-color: var(--unshine);
 }
 
 #menu {
