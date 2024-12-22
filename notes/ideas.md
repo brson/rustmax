@@ -26,6 +26,7 @@
 
 ## Other topics
 
+- Publishing crates
 - Forward
 - Async Rust recommendations
 - Async Rust template
