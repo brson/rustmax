@@ -2,8 +2,13 @@ clean:
     cargo clean
     rm -rf out
 
+lint:
+    cargo deny check
+    cargo audit
+    cargo clippy
+    cargo fmt --check
+
 check:
-    #cargo deny check
     cargo check
     cargo check --features rmx-profile-no-std
     cargo check --features rmx-profile-std
