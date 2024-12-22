@@ -3,17 +3,27 @@
 }
 
 :root {
+    --black: #444;
+    --white: #eee;
+    --blue: #06f;
+    --red: #f40;
+}
+
+:root {
     font-family: "Genos";
     font-family: "Oswald";
+
+    color: var(--black);
+    background-color: var(--white);
 }
 
 a {
-    color: blue;
+    color: var(--blue);
     text-decoration: none;
 }
 
 a:hover {
-    color: red;
+    color: var(--red);
 }
 
 body {
@@ -21,7 +31,6 @@ body {
 }
 
 main {
-    /*border: 1px solid red;*/
     margin: auto;
     max-width: 40em;
 }
@@ -34,7 +43,6 @@ main, hgroup {
 }
 
 main > * {
-    /*border: 1px solid black;*/
     width: 100%;
     padding: 2em;
 }
@@ -45,27 +53,29 @@ h1 {
 }
 
 h1 > span {
-    color: red;
+    color: var(--red);
+}
+
+header {
+    text-align: center;
 }
 
 #warning {
     display: none;
     color: white;
-    background-color: red;
+    background-color: var(--red);
     text-align: center;
 }
 
 #menu {
-    /*border: 20px solid black;*/
-    outline: 4px solid black;
+    outline: 4px solid var(--black);
 }
 
 section.text {
 }
 
 footer {
-    /*outline: 4px solid black;*/
-    border-top: 4px solid black;
+    border-top: 4px solid var(--black);
     text-align: right;
+    font-style: italic;
 }
-
