@@ -7,6 +7,8 @@ lint:
     cargo audit
     cargo clippy
     cargo fmt --check
+    # cargo outdated
+    # cargo duplicates
 
 check:
     cargo check

@@ -11,3 +11,8 @@
 - time
 - stacker
 - tracing / tracing-subscriber
+
+# tools
+
+- cargo-outdated
+- cargo-duplicates
