@@ -42,7 +42,7 @@ doc-book:
     rm -rf book/book
     cd book && mdbook build
 
-doc-build: doc-crate doc-book
+build: doc-crate doc-book
     rm -rf book/yapp~
     rm -rf out
     mkdir -p out/book
