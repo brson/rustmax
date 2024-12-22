@@ -1,9 +1,9 @@
 # Rust Max
 
-A collection of useful Rust crates, tools, and documentation.
+A collection of useful crates, tools, and documentation for the Rust programming language.
 
 
-##  Do not contribute, do not use
+## 🚧 Do not contribute, do not use 🚧
 
 This project is not open to contribution.
 Issues and pull requests will be closed without consideration.
