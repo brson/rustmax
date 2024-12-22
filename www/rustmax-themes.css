@@ -1,0 +1,28 @@
+:root[data-theme="light"], :root:not([data-theme]) {
+    --black: #444;
+    --white: #f8f8f8;
+    --blue: #08f;
+    --red: #f30;
+
+    --b1: #f8d8f8;
+    --b2: #f8e8e8;
+
+    --emboss: #ecc;
+    --shine: #ffffff;
+    --unshine: #faf4fa
+}
+
+:root[data-theme="dark"] {
+    --black: #f8f8f8;
+    --white: #111;
+    --blue: #2af;
+    --red: #f30;
+
+    --b1: #382828;
+    --b2: #281818;
+
+    --emboss: #866;
+    --shine: #000;
+    --unshine: #1a141a
+}
+
