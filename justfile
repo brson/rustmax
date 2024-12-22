@@ -36,7 +36,9 @@ maint-upgrade-incompatible:
 
 
 doc-crate:
-    cargo doc -p rmx --features rmx-profile-max
+    RUSTDOCFLAGS="--html-in-header $(pwd)/www/rustdoc-mixins/mixin-header.html" \
+      cargo doc -p rmx --features rmx-profile-max
+    cp www/rustdoc-mixins/mixin-themes.css target/doc/
 
 doc-book:
     rm -rf book/book
