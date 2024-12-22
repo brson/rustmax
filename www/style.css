@@ -1,14 +1,71 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-family: "Genos";
+    font-family: "Oswald";
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+a:hover {
+    color: red;
+}
+
 body {
     padding: 2em;
 }
 
-section {
+main {
+    /*border: 1px solid red;*/
+    margin: auto;
+    max-width: 40em;
 }
 
-p {
+main, hgroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+}
+
+main > * {
+    /*border: 1px solid black;*/
+    width: 100%;
+    padding: 2em;
+}
+
+h1 {
+    letter-spacing: 0.5em;
+    font-family: "Saira Stencil One";
+}
+
+h1 > span {
+    color: red;
+}
+
+#warning {
+    display: none;
+    color: white;
+    background-color: red;
+    text-align: center;
 }
 
 #menu {
-    background: #eee;
-    border: solid 1px;
+    /*border: 20px solid black;*/
+    outline: 4px solid black;
 }
+
+section.text {
+}
+
+footer {
+    /*outline: 4px solid black;*/
+    border-top: 4px solid black;
+    text-align: right;
+}
+
