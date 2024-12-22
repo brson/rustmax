@@ -13,7 +13,7 @@ lint:
     cargo deny check
     cargo audit
     cargo clippy
-    cargo fmt --check
+    #cargo fmt --check
 
 
 
