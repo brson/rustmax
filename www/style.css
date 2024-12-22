@@ -4,9 +4,11 @@
 
 :root {
     --black: #444;
-    --white: #eee;
+    --white: #f8f8f8;
     --blue: #06f;
     --red: #f40;
+    --b1: #fdf;
+    --b2: #fee;
 }
 
 :root {
@@ -15,6 +17,7 @@
 
     color: var(--black);
     background-color: var(--white);
+    background: linear-gradient(90deg, var(--b1) 0%, var(--b2) 5%, var(--white) 30%, var(--white) 70%, var(--b2) 95%, var(--b1) 100%);
 }
 
 a {
