@@ -44,6 +44,9 @@ doc-crates:
 doc-book:
     rm -rf book/book
     cd book && mdbook build
+    cp www/mdbook-mixins/mixin-style.css book/book/
+    cp www/mdbook-mixins/mixin-script.js book/book/
+    cp www/rustmax-themes.css book/book/
 
 build: doc-crates doc-book
     rm -rf book/yapp~

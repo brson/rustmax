@@ -25,25 +25,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
     
-    <link href='rustmax-theme.css' rel='stylesheet'/>
+    <link href='rustmax-themes.css' rel='stylesheet'/>
     <link href='style.css' rel='stylesheet'/>
-
-    <script>
-      function setTheme() {
-          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-              document.querySelector(':root').setAttribute("data-theme", "dark");
-          } else {
-              document.querySelector(':root').setAttribute("data-theme", "light");
-          }
-      }
-
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-          setTheme();
-      });
-
-      window.addEventListener("load", setTheme);
-
-    </script>
+    <script src='set-theme.js'></script>
 
   </head>
 
