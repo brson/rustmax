@@ -5,10 +5,12 @@ Lots of things need to be kept in sync.
   book/src/what-is-rmx.html,
   README
 - crate names, features in
+  crates/rmx/Cargo.toml
   crates/rmx/src/lib.rs,
-  crates/rmx/doc-src/root-crate.md
+  crates/rmx/doc-src/root-docs.md,
+  www/mixins/mixin-rustdoc-script.js
 - categories in
-  crates/rmx/doc-src/root-crate.md,
+  crates/rmx/doc-src/root-docs.md,
   book/src/how-do-i.md
 - CSS styles in
   www/rustmax-themes.css

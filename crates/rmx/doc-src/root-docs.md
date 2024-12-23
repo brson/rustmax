@@ -28,13 +28,13 @@ as a "batteries included" supercrate.
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`], [`lazy_static`] |
 | numerics | [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`byteorder`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`tera`], [`toml`] |
+| encoding, serialization, parsing | [`base64`], [`byteorder`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
-| cryptography | [`blake3`] |
+| cryptography | [`blake3`], [`sha2`] |
 | parallelism | [`crossbeam`], [`once_cell`], [`rayon`] |
 | asyncronous I/O | [`futures`], [`tokio`] |
-| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`url`] |
+| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], ['tera'], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
 | terminal / CLI | [`clap`], [`console`], [`ctrlc`], [`dialoguer`], [`indicatif`], [`termcolor`], [`rustyline`] |
@@ -157,6 +157,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`rand_pcg`]
 - [`serde`]
 - [`serde_json`]
+- [`sha2`]
 - [`static_assertions`]
 - [`toml`]
 

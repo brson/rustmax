@@ -53,3 +53,7 @@
 - rustup component list
 - full text search
 - classic blog posts
+- build std library with crate docs
+- setup local mold
+- setup local native optimizations
+- keep tools up to date and optimized

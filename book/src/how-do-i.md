@@ -1,7 +1,7 @@
 # How Do I … in Rust?
 
 <!-- note the organization here is similar but not
-     identical to crates/rmx/src-doc/root-crate.md -->
+     identical to crates/rmx/src-doc/root-docs.md -->
 
 ## Project organization
 
