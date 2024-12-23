@@ -3,6 +3,7 @@
 ## topics
 
 - justfiles
+- time - jiff vs chrono vs time
 - xtask and xshell
 - project organization
 - extension_trait

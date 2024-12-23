@@ -1,8 +1,9 @@
 # crates
 
+- nix
 - tera
 - criterion
-- backtrace-on-stack-overflow
+- backtrace-on-stack-overflow?
 - rust-embed
 - dashmap
 - smallvec
@@ -13,6 +14,7 @@
 - time
 - stacker
 - tracing / tracing-subscriber
+- axum
 
 # tools
 
