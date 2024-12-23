@@ -2,7 +2,10 @@
 
 Rust Max,
 also known by its crate name `rmx`,
-is a collection of useful Rust crates, tools, and documentation.
+is a collection of Rust crates, tools, and documentation.
 
-They represent the opinionated current Rust development practices
-of the project's author.
+- `rustup` installation
+- Rust Max: The Crates
+- Rust Max: The Tools
+- The Rust Max Library
+- Rust Max Addons

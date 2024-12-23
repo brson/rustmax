@@ -1,4 +1,4 @@
-# Rust Books
+# The Rust Max Library
 
 - [The Rust Programming Language (The Book)](https://doc.rust-lang.org/book/)
 - [The Rust Reference](https://doc.rust-lang.org/reference/)
