@@ -38,6 +38,7 @@
 - Licensing guidance
 - All compiler suggestions explained
 - All compiler errors explained
+- Toolchain pinning
 
 # More ideas
 
