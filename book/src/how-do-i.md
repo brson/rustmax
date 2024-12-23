@@ -1,5 +1,18 @@
 # How Do I … in Rust?
 
+<!-- note the organization here is similar but not
+     identical to crates/rmx/src-doc/root-crate.md -->
+
+## Project organization
+
+### … organize a Rust workspace?
+
+## Conveniences
+
+### … define "extension" methods on a type in another crate?
+
+### … guarantee a trait is object-safe?
+
 ## Error handling and debugging
 
 ### … handle errors simply and correctly?
@@ -60,10 +73,6 @@
 
 ## Text / unicode
 
-## Convenience macros
-
-### … define "extension" methods on a type in another crate?
-
 ## Terminal / CLI
 
 ### … set up a simple CLI parser with subcommands?
@@ -76,9 +85,11 @@
 
 ### … read environment variables?
 
-## Testing
+### … work with a temporary file?
 
-### … guarantee a trait is object-safe?
+### … work with multiple files in a temporary directory?
+
+## Testing
 
 ### … create a custom test harness?
 

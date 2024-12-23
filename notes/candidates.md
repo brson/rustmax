@@ -1,5 +1,6 @@
 # crates
 
+- tera
 - criterion
 - backtrace-on-stack-overflow
 - rust-embed
