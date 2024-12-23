@@ -353,15 +353,6 @@ pub mod json5 {
     pub use ::json5::*;
 }
 
-#[cfg(feature = "lazy_static")]
-pub mod lazy_static {
-    //! Lazy initialization of static variables.
-    //!
-    //! See crate [`::lazy_static`].
-
-    pub use ::lazy_static::*;
-}
-
 #[cfg(feature = "libc")]
 pub mod libc {
     //! Bindings to the C standard library.
@@ -423,15 +414,6 @@ pub mod num_enum {
     //! See crate [`::num_enum`].
 
     pub use ::num_enum::*;
-}
-
-#[cfg(feature = "once_cell")]
-pub mod once_cell {
-    //! Shared values that are lazily initialized, such as for globals.
-    //!
-    //! See crate [`::once_cell`].
-
-    pub use ::once_cell::*;
 }
 
 #[cfg(feature = "proc-macro2")]

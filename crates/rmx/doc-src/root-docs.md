@@ -26,15 +26,15 @@ as a "batteries included" supercrate.
 | Category | Crates |
 | --- | --- |
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
-| collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`], [`lazy_static`] |
+| collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
 | encoding, serialization, parsing | [`base64`], [`byteorder`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
-| parallelism | [`crossbeam`], [`once_cell`], [`rayon`] |
+| parallelism | [`crossbeam`], [`rayon`] |
 | asyncronous I/O | [`futures`], [`tokio`] |
-| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], ['tera'], [`url`] |
+| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
 | terminal / CLI | [`clap`], [`console`], [`ctrlc`], [`dialoguer`], [`indicatif`], [`termcolor`], [`rustyline`] |
@@ -150,7 +150,6 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`nom`] - An efficient parser combinator.
 - [`num_bigint`] - Arbitrary-sized integers.
 - [`num_enum`] - Conversions between numbers and enums.
-- [`once_cell`] - Shared values that are lazily initialized, such as for globals.
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rand`] - Random number generators.
 - [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
@@ -180,7 +179,6 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 - [`clap`] - Command line parsing.
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
-- [`lazy_static`] - Lazy initialization of static variables.
 - [`num_cpus`] - Get the number of CPUS on a machine.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.
