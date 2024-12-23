@@ -39,6 +39,7 @@
 - All compiler suggestions explained
 - All compiler errors explained
 - Toolchain pinning
+- linking
 
 # More ideas
 

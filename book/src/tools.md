@@ -1,7 +1,7 @@
 # Rust Max: Tools
 
 <!-- order of tools here is same is in library.md -->
-- Core Rust tools:
+- Standard Rust tools:
   [`cargo`](#user-content--cargo)
   [`rustc`](#user-content--rustc)
   [`rustup`](#user-content--rustup)
@@ -33,7 +33,7 @@
 
 
 
-## Core Rust tools
+## Standard Rust tools
 
 ### 📦 `cargo`
 

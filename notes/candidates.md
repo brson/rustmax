@@ -15,5 +15,6 @@
 
 # tools
 
+- rust-analyzer
 - cargo-outdated
 - cargo-duplicates
