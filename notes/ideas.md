@@ -52,3 +52,4 @@
 - Show versions of toolchain, tools, etc
 - rustup component list
 - full text search
+- classic blog posts

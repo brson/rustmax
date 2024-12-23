@@ -2,7 +2,6 @@
 
 - [What is Rust Max?](what-is-rmx.md)
 - [Easy-mode Rust](easy-mode-rust.md)
-- [The Rust Ecosystem](ecosystem.md)
 
 ---
 
@@ -14,6 +13,8 @@
 
 ---
 
+- [The Rust Standard Library Revisited](std.md)
+- [The Rust Ecosystem](ecosystem.md)
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
 - [The Rust Max Quiz](quiz.md)

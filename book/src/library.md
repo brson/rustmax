@@ -6,6 +6,8 @@ The Rust language and its ecosystem is documented in "books"
 ## The Rust language
 
 - **[The Rust Programming Language (The Book)](https://doc.rust-lang.org/book/)**
+- **[The Rust Standard Library](https://doc.rust-lang.org/std/)**
+  - 🔖 [`std::collections`](https://doc.rust-lang.org/std/collections/index.html)
 - [The Rust Reference](https://doc.rust-lang.org/reference/)
   - 🔖 [Behavior considered undefined](https://doc.rust-lang.org/reference/behavior-considered-undefined.html)
 - [The Rust Edition Guide](https://doc.rust-lang.org/edition-guide/index.html)
