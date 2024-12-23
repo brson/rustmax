@@ -1,28 +1,29 @@
-:root[data-theme="light"], :root:not([data-theme]) {
-    --black: #444;
-    --white: #f8f8f8;
-    --blue: #08f;
-    --red: #f30;
+:root[data-theme="light"],
+:root:not([data-theme]) {
+    --rmx-color-fg: #444;      /* black */
+    --rmx-color-bg: #f8f8f8;   /* white */
+    --rmx-color-links: #08f;   /* blue */
+    --rmx-color-accents: #f30; /* red */
 
-    --b1: #f8d8f8;
-    --b2: #f8e8e8;
+    --rmx-color-border1: #f8d8f8;
+    --rmx-color-border2: #f8e8e8;
 
-    --emboss: #ecc;
-    --shine: #ffffff;
-    --unshine: #faf4fa
+    --rmx-color-emboss: #ecc;
+    --rmx-color-shine: #ffffff;
+    --rmx-color-unshine: #faf4fa
 }
 
 :root[data-theme="dark"] {
-    --black: #f8f8f8;
-    --white: #111;
-    --blue: #2af;
-    --red: #f30;
+    --rmx-color-fg: #f8f8f8;
+    --rmx-color-bg: #111;
+    --rmx-color-links: #2af;
+    --rmx-color-accents: #f30;
 
-    --b1: #382828;
-    --b2: #281818;
+    --rmx-color-border1: #382828;
+    --rmx-color-border2: #281818;
 
-    --emboss: #866;
-    --shine: #000;
-    --unshine: #1a141a
+    --rmx-color-emboss: #866;
+    --rmx-color-shine: #000;
+    --rmx-color-unshine: #1a141a
 }
 
