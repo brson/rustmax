@@ -37,7 +37,6 @@ but that are not yet part of Rust Max.
 - [`tracing-tracy`](https://docs.rs/tracing-tracy).
 
 
-
 ## Tools
 
 - [`cargo-duplicates`](https://crates.io/crates/cargo-duplicates)
@@ -52,8 +51,18 @@ but that are not yet part of Rust Max.
 - wasm crates and tools
 
 
+## Graveyard
+
+These projects were once useful or notable,
+but are now deprecated by others.
+
+- [`lazy_static`](https://docs.rs/lazy_static).
+  Use [`std::sync::LazyLock`](https://doc.rust-lang.org/std/sync/struct.LazyLock.html).
+- [`once_cell`](https://docs.rs/once_cell).
+  Use [`std::sync::OnceLock`](https://doc.rust-lang.org/std/sync/struct.OnceLock.html).
+
+
+
 ## Pending Removal
 
-- `lazy_static`
-- `once_cell`
 - `console`, `dialoguer`, `indicatif`

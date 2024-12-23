@@ -67,6 +67,8 @@
 
 ### … initialize a global value?
 
+todo `LazyLock`, `OnceLock`, and `Once`.
+
 ## Asynchronous I/O
 
 ### … set up the `tokio` event loop?
