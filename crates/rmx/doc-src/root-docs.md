@@ -35,11 +35,12 @@ as a "batteries included" supercrate.
 | parallelism | [`crossbeam`], [`once_cell`], [`rayon`] |
 | asyncronous I/O | [`futures`], [`tokio`] |
 | networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`url`] |
-|  text / unicode | [`unicode_segmentation`] |
+| text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
 | terminal / CLI | [`clap`], [`console`], [`ctrlc`], [`dialoguer`], [`indicatif`], [`termcolor`], [`rustyline`] |
 | system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
 | testing | [`proptest`], [`static_assertions`] |
+| build scripts | … |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 

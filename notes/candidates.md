@@ -15,6 +15,7 @@
 
 # tools
 
+- wasm stuff
 - rust-analyzer
 - cargo-outdated
 - cargo-duplicates
