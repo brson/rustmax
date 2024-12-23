@@ -9,7 +9,7 @@ but that are not yet part of Rust Max.
 - [`axum`](https://docs.rs/axum).
   Web server framework based on `tokio` and `tower`.
 - [`backtrace-on-stack-overflow`](https://docs.rs/backtrace-on-stack-overflow).
-  Nice missing feature, but code looks sketchy and platform dependent.
+  Nice missing feature, but code looks underdeveloped.
 - [`criterion`](https://docs.rs/criterion).
   Advanced benchmarking.
 - [`dashmap`](https://docs.rs/dashmap).
