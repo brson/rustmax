@@ -18,4 +18,4 @@
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
 - [The Rust Max Radar](radar.md)
-- [Additional Rust Resources](resources.md)
+- [External Rust Resources](resources.md)

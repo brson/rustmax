@@ -6,19 +6,28 @@ The Rust language and its ecosystem is documented in "books"
 Links with a bookmark icon, 🔖, are to particularly
 notable or useful chapters within a book.
 
+
 ## The Rust language
 
 - **[The Rust Programming Language (The Book)](https://doc.rust-lang.org/book/)**
 - [The Rust Reference](https://doc.rust-lang.org/reference/)
   - 🔖 [Behavior considered undefined](https://doc.rust-lang.org/reference/behavior-considered-undefined.html)
 - [The Rust Edition Guide](https://doc.rust-lang.org/edition-guide/index.html)
-- [The Rust Cookbook](https://rust-lang-nursery.github.io/rust-cookbook/)
 - [The Little Book of Rust Macros](https://veykril.github.io/tlborm/)
 - [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)
 - [The Rustonomicon](https://doc.rust-lang.org/nomicon/)
 - [Rust Unsafe Code Guidelines](https://rust-lang.github.io/unsafe-code-guidelines/)
 - [Rust Error Codes Index](https://doc.rust-lang.org/stable/error_codes/error-index.html)
 - [The Rust Unstable Book](https://doc.rust-lang.org/unstable-book/)
+
+
+## The Rust standard library
+
+- **[`std`](https://doc.rust-lang.org/std/index.html)**
+- [`core`](https://doc.rust-lang.org/core/index.html)
+- [`alloc`](https://doc.rust-lang.org/alloc/index.html)
+- [`proc_macro`](https://doc.rust-lang.org/proc_macro/index.html)
+
 
 ## Standard Rust tools
 
@@ -38,12 +47,13 @@ notable or useful chapters within a book.
 - [The `bindgen` User Guide](https://rust-lang.github.io/rust-bindgen)
 - miri (todo)
 
-## Rust Max crates
+## The Rust crate ecosystem
 
 - [The `rand` Book](https://rust-random.github.io/book/)
 - [The `serde` Book](https://serde.rs/)
+- [The Rust Cookbook](https://rust-lang-nursery.github.io/rust-cookbook/)
 
-## The Rust Project Internals
+## The Rust Project internals
 
 - [Rust Project Goals](https://rust-lang.github.io/rust-project-goals/)
 - [Guide to `rustc` Development](https://rustc-dev-guide.rust-lang.org/)
