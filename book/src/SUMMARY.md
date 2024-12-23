@@ -7,5 +7,6 @@
 - [Rust Max: The Crates](crates.md)
 - [Rust Max: The Tools](tools.md)
 - [Modern Rust Features](modern-rust-features.md)
+- [The Rust Library](library.md)
 - [The Rust Max Quiz](quiz.md)
 - [Additional Rust Resources](resources.md)

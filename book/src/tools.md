@@ -1,12 +1,15 @@
 # Rust Max: Tools
 
 - Core Rust tools:
-  [`rustc`](#user-content--rustc)
   [`cargo`](#user-content--cargo)
+  [`rustc`](#user-content--rustc)
   [`rustup`](#user-content--rustup)
+  [`rustdoc`](#user-content--rustdoc)
   [`rustfmt`](#user-content--rustfmt)
   [`clippy`](#user-content--clippy)
   [`mdbook`](#user-content--mdbook)
+  [`bindgen`](#user-content--bindgen)
+  [`miri`](#user-content--miri)
 - Cargo plugins:
   [`cargo-edit`](#user-content--cargo-edit)
   [`cargo-clean-all`](#user-content--cargo-clean-all)
@@ -14,10 +17,9 @@
   [`cargo-license`](#user-content--cargo-license)
   [`cargo-audit`](#user-content--cargo-audit)
   [`cargo-generate`](#user-content--cargo-generate)
-- More Rust-specific tools:
-  [`miri`](#user-content--miri)
-  [`clippy-control`](#user-content--clippy-control)
 - More Rust tools:
+  [`clippy-control`](#user-content--clippy-control)
+- More tools:
   [`ripgrep`](#user-content--ripgrep)
   [`just`](#user-content--just)
   [`tokei`](#user-content--tokei)
@@ -32,13 +34,22 @@
 
 ## Core Rust tools
 
+### 📦 `cargo`
+
+The Rust build and packaging tool.
+It is the central tool in most Rust development workflows.
+It is part of every Rust toolchain,
+usually managed by `rustup`.
+
+> 👁️  [The `cargo` Book](https://doc.rust-lang.org/cargo/index.html)
+
 
 ### 📦 `rustc`
-### 📦 `cargo`
 ### 📦 `rustup`
 ### 📦 `rustfmt`
-### 📦 `clippy`
 ### 📦 `mdbook`
+### 📦 `bindgen`
+### 📦 `miri`
 
 
 
@@ -80,7 +91,6 @@ is built into `cargo` itself.
 
 ## More Rust-specific tools
 
-### 📦 `miri`
 ### 📦 `clippy-control`
 
 ## More Rust tools
