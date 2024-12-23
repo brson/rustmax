@@ -38,6 +38,8 @@ pub mod prelude {
 }
 
 pub mod extras {
+    //! Additional tidbits defined by `rmx`.
+
     pub fn default<T: Default>() -> T {
         Default::default()
     }
