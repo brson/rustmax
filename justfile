@@ -1,3 +1,8 @@
+default:
+    just --list
+
+
+
 clean:
     cargo clean
     rm -rf out
@@ -15,6 +20,7 @@ lint:
     cargo clippy
     #cargo fmt --check
 
+build: doc-build
 
 
 
@@ -48,7 +54,7 @@ doc-book:
     cp www/mixins/mixin-mdbook-script.js book/book/
     cp www/rustmax-themes.css book/book/
 
-build: doc-crates doc-book
+doc-build: doc-crates doc-book
     rm -rf book/yapp~
     rm -rf out
     mkdir -p out/book

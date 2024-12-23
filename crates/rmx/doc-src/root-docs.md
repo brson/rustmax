@@ -8,17 +8,20 @@ It is neither stable nor supported.
 This crate documents and reexports selected high-quality Rust crates
 suitable for many Rust programs.
 Through the organization of its [Cargo features]
-into _profiles_ and _ecosystem features_
+into _profiles_ and _ecosystem features_,
+with consistent descriptions of individual crates,
 it is a guide to the Rust crate ecosystem.
 It can be read as reference documentation or
 imported through a Cargo dependency
 as a "batteries included" supercrate.
+
 
 <br>
 
 ----
 
 <br>
+
 
 | Category | Crates |
 | --- | --- |
@@ -40,11 +43,13 @@ as a "batteries included" supercrate.
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 
+
 <br>
 
 ----
 
 <br>
+
 
 - [Profiles](#profiles).
   `rmx` organizes crates into _profiles_,
@@ -91,9 +96,9 @@ as a "batteries included" supercrate.
   - [Re-exports](#reexports)
   - [Modules](#modules)
 
+
 <br>
 
-----
 ----
 
 <br>
