@@ -1,6 +1,6 @@
 # Additional Rust Resources
 
-- [The Little Book of Rust Books: Official](https://lborb.github.io/book/official.html)
+- **[The Little Book of Rust Books: Official](https://lborb.github.io/book/official.html)**
 - [`core`](https://doc.rust-lang.org/core/index.html)
 - [`alloc`](https://doc.rust-lang.org/alloc/index.html)
 - [`std`](https://doc.rust-lang.org/std/index.html)
@@ -8,3 +8,21 @@
 - [Rust Component History](https://rust-lang.github.io/rustup-components-history/).
   Toolchain status.
 - [The Little Book of Rust Macros](https://veykril.github.io/tlborm/)
+
+
+# todo
+
+- [The Little Book of Rust Books](https://lborb.github.io/book/)
+- [Rust verification tools 2021](https://alastairreid.github.io/automatic-rust-verification-tools-2021/)
+- [Periodic Table of Rust Types](http://cosmic.mearie.org/2014/01/periodic-table-of-rust-types)
+- [Rust String Conversions Cheat Sheet](https://docs.google.com/spreadsheets/d/19vSPL6z2d50JlyzwxariaYD6EU2QQUQqIDOGbiGQC7Y/pubhtml?gid=0&single=true)
+- [Rust Iterator Cheat Sheet](https://danielkeep.github.io/itercheat_baked.html)
+- [Rust Container Cheet Sheet](https://docs.google.com/presentation/d/1q-c7UAyrUlM-eZyTo1pd8SZ0qwA_wYxmPZVOQkoDmH4/edit)
+- [Rust API Guidelines](https://github.com/brson/rust-api-guidelines)
+- https://caniuse.rs/
+- https://github.com/rust-unofficial/awesome-rust/
+- https://lib.rs
+- https://cheats.rs/
+- https://github.com/rust-secure-code/projects
+- https://github.com/pretzelhammer/rust-blog/blob/master/posts/tour-of-rusts-standard-library-traits.md
+- [Another Container Cheet Sheet](https://i.redd.it/220xo2f6wci51.png)

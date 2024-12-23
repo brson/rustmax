@@ -1,6 +1,7 @@
-# Outline
+# Book Outline
 
 - Easy-mode Rust
+- Installing Rust
 - Intro to the Rust ecosystem
 - Modern Rust features
   - important features introduced since 1.0
@@ -24,7 +25,7 @@
 - Quiz
 - Additional Rust reading
 
-## Other topics
+## Book Other topics
 
 - Publishing crates
 - Forward
@@ -37,3 +38,12 @@
 - Licensing guidance
 - All compiler suggestions explained
 - All compiler errors explained
+
+# More ideas
+
+- Build std docs
+- Build all the official rust books
+- Show a Rust version
+- CI
+- Show all crate versions in a simple table
+- Show versions of toolchain, tools, etc
