@@ -2,7 +2,7 @@
 
 - [What is Rust Max?](what-is-rmx.md)
 - [Easy-mode Rust](easy-mode-rust.md)
-- [The Rust Ecosystem](ecosystem-overview.md)
+- [The Rust Ecosystem](ecosystem.md)
 
 ---
 
