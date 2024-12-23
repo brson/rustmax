@@ -17,5 +17,6 @@
 - [The Rust Ecosystem](ecosystem.md)
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
+- [The Rust Max Radar](radar.md)
 - [The Rust Max Quiz](quiz.md)
 - [Additional Rust Resources](resources.md)

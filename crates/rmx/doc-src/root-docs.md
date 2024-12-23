@@ -129,37 +129,37 @@ All crates in this profile are also in [`rmx-profile-std`].
 ### Crates in `rmx-profile-no-std`
 
 - [`ahash`] - A fast and DOS-resistent hash function, for use in `HashMap`s.
-- [`anyhow`]
-- [`backtrace`]
-- [`base64`]
-- [`bitflags`]
-- [`blake3`]
-- [`byteorder`]
-- [`bytes`]
-- [`cfg-if`](cfg_if)
-- [`chrono`]
-- [`crossbeam`]
-- [`derive_more`]
-- [`extension-trait`](extension_trait)
-- [`futures`]
-- [`hex`]
-- [`itertools`]
-- [`jiff`]
-- [`libc`]
-- [`log`]
-- [`nom`]
-- [`num_bigint`]
-- [`num_enum`]
-- [`once_cell`]
-- [`proptest`]
-- [`rand`]
-- [`rand_chacha`]
-- [`rand_pcg`]
-- [`serde`]
-- [`serde_json`]
-- [`sha2`]
-- [`static_assertions`]
-- [`toml`]
+- [`anyhow`] - Easy error handling.
+- [`backtrace`] - Callstack backtraces on demand.
+- [`base64`] - Base-64 encoding and decoding.
+- [`bitflags`] - Types in which the bits are individually addressable.
+- [`blake3`] - The BLAKE3 cryptographic hash function.
+- [`byteorder`] - Big-endian and little-endian encoding.
+- [`bytes`] - Abstractions for working with byte buffers: [`Bytes`](bytes::Bytes), [`Buf`](bytes::Buf), and [`BufMut`](bytes::BufMut).
+- [`cfg-if`](cfg_if) - A macro for writing conditional compilation as `if` / `else` blocks.
+- [`chrono`] - Dates and time (legacy).
+- [`crossbeam`] - Concurrency tools to supplement [`std::sync`], including fast channels.
+- [`derive_more`] - `derive` for more standard traits.
+- [`extension-trait`](extension_trait) - A macro for defining extension methods to external types.
+- [`futures`] - Abstractions for asynchronous programming.
+- [`hex`] - Encoding and decoding hexidecimal strings.
+- [`itertools`] - Additional methods for iterators.
+- [`jiff`] - Dates and time.
+- [`libc`] - Bindings to the C standard library.
+- [`log`] - A simple logging framework.
+- [`nom`] - An efficient parser combinator.
+- [`num_bigint`] - Arbitrary-sized integers.
+- [`num_enum`] - Conversions between numbers and enums.
+- [`once_cell`] - Shared values that are lazily initialized, such as for globals.
+- [`proptest`] - Testing over generated inputs, ala QuickCheck.
+- [`rand`] - Random number generators.
+- [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
+- [`rand_pcg`] - The PCG non-cryptographically-secure random number generators.
+- [`serde`] - The standard Rust serialization framework.
+- [`serde_json`] - JSON serialization / deserialization with [`serde`].
+- [`sha2`] - The SHA2 cryptographic hash functions.
+- [`static_assertions`] - Compile-time assertions about constants, types, etc.
+- [`toml`] - TOML serialization / deserialization with `serde`.
 
 
 
@@ -177,19 +177,19 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 
 ### Crates in `rmx-profile-std`
 
-- [`clap`]
-- [`env_logger`]
-- [`json5`]
-- [`lazy_static`]
-- [`num_cpus`]
-- [`rayon`]
-- [`regex`]
-- [`tempfile`]
-- [`tera`]
-- [`thiserror`]
-- [`unicode-segmentation`](unicode_segmentation)
-- [`walkdir`]
-- [`xshell`]
+- [`clap`] - Command line parsing.
+- [`env_logger`] - A basic logger to use with the [`log`] crate.
+- [`json5`] - JSON5, a superset of JSON with expanded syntax.
+- [`lazy_static`] - Lazy initialization of static variables.
+- [`num_cpus`] - Get the number of CPUS on a machine.
+- [`rayon`] - Parallel iterators and other parallel processing tools.
+- [`regex`] - Regular expressions.
+- [`tempfile`] - Temporary files and directories.
+- [`tera`] - A text template engine based on Jinja2.
+- [`thiserror`] - Tools for defining custom error types.
+- [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.
+- [`walkdir`] - Efficient directory traversal.
+- [`xshell`] - A Swiss-army knife for writing shell-style scripts in Rust.
 
 
 
@@ -208,13 +208,13 @@ apply the [`rmx-feature-tokio`] feature.
 
 ### Crates in `rmx-profile-net`
 
-- [`http`]
-- [`hyper`]
-- [`mime`]
-- [`reqwest`]
-- [`socket2`]
-- [`tokio`]
-- [`url`]
+- [`http`] - Shared definitions related to the HTTP protocol.
+- [`hyper`] - HTTP, versions 1 and 2.
+- [`mime`] - MIME media types.
+- [`reqwest`] - Simple HTTP requests, synchronous and asynchronous.
+- [`socket2`] - Low-level network socket programming beyond [`std::net`].
+- [`tokio`] - An async task runtime and I/O library.
+- [`url`] - URL parsing and data structures.
 
 
 
@@ -228,12 +228,12 @@ Crates for building commandline interfaces.
 
 ### Crates in `rmx-profile-cli`
 
-- [`console`]
-- [`ctrlc`]
-- [`dialoguer`]
-- [`indicatif`]
-- [`termcolor`]
-- [`rustyline`]
+- [`console`] - Access to terminal features.
+- [`ctrlc`] - Simple handling of CTRL-C for CLI programs.
+- [`dialoguer`] - Command-line confirmation prompts, text inputs, and more.
+- [`indicatif`] - Command-line progress bars.
+- [`termcolor`] - Cross-platform library for writing colored output to the terminal.
+- [`rustyline`] - Command-line input reading with history.
 
 
 
@@ -247,10 +247,10 @@ Crates for writing [Rust build scripts](todo).
 
 ### Crates in `rmx-profile-build-script`
 
-- [`bindgen`]
-- [`cc`]
-- [`cxx`]
-- [`cxx-build`](cxx_build)
+- [`bindgen`] - Generate Rust bindings to C and C++ libraries.
+- [`cc`] - A basic cross-platform C compiler driver.
+- [`cxx`] - C++ bridge runtime support; paired with [`cxx_build`].
+- [`cxx-build`](cxx_build) - C++ bridge generator; paired with [`cxx`].
 
 
 
@@ -265,9 +265,9 @@ Crates for writing [Rust procedural macros](todo).
 
 ### Crates in `rmx-profile-proc-macro`
 
-- [`proc-macro2`](proc_macro2)
-- [`quote`]
-- [`syn`]
+- [`proc-macro2`](proc_macro2) - A preferred wrapper around the standard [`proc_macro`] crate.
+- [`quote`] - The `quote!` macro for turning code blocks into source tokens.
+- [`syn`] - A Rust parser used by procedural macros.
 
 
 

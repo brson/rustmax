@@ -104,7 +104,7 @@ pub mod anyhow {
 
 #[cfg(feature = "backtrace")]
 pub mod backtrace {
-    //! Callstack backtraces.
+    //! Callstack backtraces on demand.
     //!
     //! See crate [`::backtrace`].
 
@@ -131,7 +131,7 @@ pub mod bindgen {
 
 #[cfg(feature = "bitflags")]
 pub mod bitflags {
-    //! A macro that generates structs that behave as bitflags.
+    //! Types in which the bits are individually addressable.
     //!
     //! See crate [`::bitflags`].
 
@@ -185,7 +185,7 @@ pub mod cfg_if {
 
 #[cfg(feature = "chrono")]
 pub mod chrono {
-    //! Dates and time.
+    //! Dates and time (legacy).
     //!
     //! See crate [`::chrono`].
 
@@ -221,7 +221,7 @@ pub mod ctrlc {
 
 #[cfg(feature = "crossbeam")]
 pub mod crossbeam {
-    //! Concurrency tools.
+    //! Concurrency tools to supplement [`std::sync`], including fast channels.
     //!
     //! See crate [`::crossbeam`].
 
@@ -230,7 +230,16 @@ pub mod crossbeam {
 
 #[cfg(feature = "cxx")]
 pub mod cxx {
-    //! C++ bindings generator.
+    //! C++ bridge runtime support; paired with [`cxx_build`](super::cxx_build).
+    //!
+    //! See crate [`::cxx`].
+
+    pub use ::cxx::*;
+}
+
+#[cfg(feature = "cxx-build")]
+pub mod cxx_build {
+    //! C++ bridge generator; paired with [`cxx`](super::cxx).
     //!
     //! See crate [`::cxx`].
 
@@ -257,7 +266,7 @@ pub mod dialoguer {
 
 #[cfg(feature = "env_logger")]
 pub mod env_logger {
-    //! A basic logger to use with the `log` crate.
+    //! A basic logger to use with the [`log`](super::log) crate.
     //!
     //! See crate [`::env_logger`].
 
@@ -266,7 +275,7 @@ pub mod env_logger {
 
 #[cfg(feature = "extension-trait")]
 pub mod extension_trait {
-    //! A macro for defining extension methods to foreign types.
+    //! A macro for defining extension methods to external types.
     //!
     //! See crate [`::extension_trait`].
 
@@ -328,7 +337,7 @@ pub mod itertools {
 
 #[cfg(feature = "jiff")]
 pub mod jiff {
-    //! Dates and time, friendlier than [`chrono`].
+    //! Dates and time.
     //!
     //! See crate [`::jiff`].
 
@@ -407,9 +416,18 @@ pub mod num_cpus {
     pub use ::num_cpus::*;
 }
 
+#[cfg(feature = "num_enum")]
+pub mod num_enum {
+    //! Conversions between numbers and enums.
+    //!
+    //! See crate [`::num_enum`].
+
+    pub use ::num_enum::*;
+}
+
 #[cfg(feature = "once_cell")]
 pub mod once_cell {
-    //! Values that are lazily initialized.
+    //! Shared values that are lazily initialized, such as for globals.
     //!
     //! See crate [`::once_cell`].
 
@@ -418,7 +436,7 @@ pub mod once_cell {
 
 #[cfg(feature = "proc-macro2")]
 pub mod proc_macro2 {
-    //! A preferred wrapper around the standard `proc_macro` crate.
+    //! A preferred wrapper around the standard [`proc_macro`] crate.
     //!
     //! See crate [`::proc_macro2`].
 
@@ -427,7 +445,7 @@ pub mod proc_macro2 {
 
 #[cfg(feature = "proptest")]
 pub mod proptest {
-    //! Property testing.
+    //! Testing over generated inputs, ala QuickCheck.
     //!
     //! See crate [`::proptest`].
 
@@ -490,7 +508,7 @@ pub mod regex {
 
 #[cfg(feature = "reqwest")]
 pub mod reqwest {
-    //! Simple HTTP requests.
+    //! Simple HTTP requests, synchronous and asynchronous.
     //!
     //! See crate [`::reqwest`].
 
@@ -517,7 +535,7 @@ pub mod serde {
 
 #[cfg(feature = "serde_json")]
 pub mod serde_json {
-    //! JSON serialization / deserialization with `serde`.
+    //! JSON serialization / deserialization with [`serde`](super::serde).
     //!
     //! See crate [`::serde_json`].
 
@@ -535,7 +553,7 @@ pub mod sha2 {
 
 #[cfg(feature = "socket2")]
 pub mod socket2 {
-    //! Low-level network socket programming.
+    //! Low-level network socket programming beyond [`std::net`].
     //!
     //! See crate [`::socket2`].
 
@@ -544,7 +562,7 @@ pub mod socket2 {
 
 #[cfg(feature = "static_assertions")]
 pub mod static_assertions {
-    //! Assertions about constants, types, and more.
+    //! Compile-time assertions about constants, types, etc.
     //!
     //! See crate [`::static_assertions`].
 

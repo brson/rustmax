@@ -1,5 +1,8 @@
+todo move this to radar.md
+
 # crates
 
+- datatest_stable
 - nix
 - criterion
 - backtrace-on-stack-overflow?
@@ -14,6 +17,7 @@
 - stacker
 - tracing / tracing-subscriber
 - axum
+- http 3
 
 # tools
 
@@ -21,3 +25,9 @@
 - rust-analyzer
 - cargo-outdated
 - cargo-duplicates
+
+# remove
+
+- lazy_static
+- once_cell
+- console, dialoguer, indicatif
