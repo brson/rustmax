@@ -54,7 +54,6 @@
   - cargo-license / cargo-deny
   - cargo-audit
 - datatest_stable
-- criterion
 - include_dir
 - scripting languages
   - RustPython

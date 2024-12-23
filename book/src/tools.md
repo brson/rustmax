@@ -1,5 +1,6 @@
 # Rust Max: Tools
 
+<!-- order of tools here is same is in library.md -->
 - Core Rust tools:
   [`cargo`](#user-content--cargo)
   [`rustc`](#user-content--rustc)
