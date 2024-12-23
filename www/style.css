@@ -3,13 +3,16 @@
 }
 
 :root {
-    font-family: "Genos";
     font-family: "Oswald";
     font-weight: 300;
     letter-spacing: 0.1em;
 
     color: var(--rmx-color-fg);
     background-color: var(--rmx-color-bg);
+}
+
+b {
+    font-weight: 600;
 }
 
 html {
@@ -47,6 +50,10 @@ main > * {
 
 h1 {
     letter-spacing: 0.5em;
+    font-family: "Saira Stencil One";
+}
+
+h2#mastery {
     font-family: "Saira Stencil One";
 }
 
