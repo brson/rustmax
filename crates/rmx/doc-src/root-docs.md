@@ -12,7 +12,7 @@ into _profiles_ and _ecosystem features_
 it is a guide to the Rust crate ecosystem.
 It can be read as reference documentation or
 imported through a Cargo dependency
-as a "batteries included" extendend Rust standard library.
+as a "batteries included" supercrate.
 
 <br>
 
