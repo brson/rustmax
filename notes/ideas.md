@@ -41,6 +41,7 @@
 - Toolchain pinning
 - linking
 - build scripts
+- benchmarking
 
 # More ideas
 
@@ -57,3 +58,4 @@
 - setup local mold
 - setup local native optimizations
 - keep tools up to date and optimized
+- where to talk about black_box

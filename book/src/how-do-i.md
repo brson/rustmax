@@ -3,6 +3,12 @@
 <!-- note the organization here is similar but not
      identical to crates/rmx/src-doc/root-docs.md -->
 
+## Discovery
+
+### … find a crate for a given purpose?
+
+### … find the latest version of a crate?
+
 ## Project organization
 
 ### … organize a Rust workspace?
