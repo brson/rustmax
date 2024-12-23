@@ -18,10 +18,13 @@ for new and old Rust programmers.
 
 ---
 
-Quick reference links:
+#### Rust mastery awaits
 
-- [`rustup` installation](rustup.md).
-- [Rust Max: The Crates](crates.md)
-- [Rust Max: The Tools](tools.md)
-- [The Rust Max Library](library.md)
-- [Rust Max Addons](addons.md)
+- Step 1: **Install Rust** with [`rustup`](rustup.md).
+- Step 2: **Learn Rust** from [The Rust Max Library](library.md).
+- Step 3: **Build programs** with [Rust crates](crates.md).
+- Step 4: **Maintain programs** with [Rust tools](tools.md).
+
+#### Rust Max addons
+
+todo

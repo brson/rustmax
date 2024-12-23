@@ -43,7 +43,6 @@ main, hgroup {
 
 main > * {
     width: 100%;
-    padding: 2em;
 }
 
 h1 {
@@ -59,11 +58,15 @@ header {
     text-align: center;
 }
 
-#warning {
-    display: none;
+aside, #warning {
     color: white;
+    border-radius: 4px;
     background-color: var(--rmx-color-accents);
     text-align: center;
+}
+
+#menu {
+    padding: 2em;
 }
 
 #menu {
@@ -103,6 +106,10 @@ h1, h2, p {
 }
 
 section.text {
+}
+
+aside {
+    font-style: italic;
 }
 
 .divider {
