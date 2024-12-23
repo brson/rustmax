@@ -36,16 +36,16 @@ maint-upgrade-incompatible:
 
 
 doc-crates:
-    RUSTDOCFLAGS="--html-in-header $(pwd)/www/rustdoc-mixins/mixin-header.html" \
+    RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \
       cargo doc -p rmx --features rmx-profile-max
-    cp www/rustdoc-mixins/mixin-themes.css target/doc/
+    cp www/mixins/mixin-rustdoc-themes.css target/doc/
     cp www/rustmax-themes.css target/doc/
 
 doc-book:
     rm -rf book/book
     cd book && mdbook build
-    cp www/mdbook-mixins/mixin-style.css book/book/
-    cp www/mdbook-mixins/mixin-script.js book/book/
+    cp www/mixins/mixin-mdbook-style.css book/book/
+    cp www/mixins/mixin-mdbook-script.js book/book/
     cp www/rustmax-themes.css book/book/
 
 build: doc-crates doc-book

@@ -1,7 +1,0 @@
-
-@import url("rustmax-themes.css");
-
-:root[data-theme="light"], :root[data-theme="dark"], :root:not([data-theme]) {
-	--main-background-color: var(--white);
-	--main-color: var(--black);
-}
