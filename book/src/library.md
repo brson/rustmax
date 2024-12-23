@@ -29,6 +29,7 @@ The Rust language and its ecosystem is documented in "books"
 - [The `rustdoc` Book](https://doc.rust-lang.org/stable/rustdoc/)
 - rustfmt (todo)
 - [The `clippy` Book](https://doc.rust-lang.org/nightly/clippy/development/infrastructure/book.html)
+- [The `just` Programmer's Manual](https://just.systems/man/en/)
 - [The `mdbook` Book](https://rust-lang.github.io/mdBook/)
 - [The `bindgen` User Guide](https://rust-lang.github.io/rust-bindgen)
 - miri (todo)

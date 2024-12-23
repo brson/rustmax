@@ -10,6 +10,7 @@
   [`rustdoc`](#user-content--rustdoc)
   [`rustfmt`](#user-content--rustfmt)
   [`clippy`](#user-content--clippy)
+  [`just`](#user-content--just)
   [`mdbook`](#user-content--mdbook)
   [`bindgen`](#user-content--bindgen)
   [`miri`](#user-content--miri)
@@ -24,7 +25,6 @@
   [`clippy-control`](#user-content--clippy-control)
 - More tools:
   [`ripgrep`](#user-content--ripgrep)
-  [`just`](#user-content--just)
   [`tokei`](#user-content--tokei)
   [`basic-http-server`](#user-content--clippy-control)
   [`gist`](#user-content-gist)
