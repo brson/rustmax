@@ -10,6 +10,9 @@ but that are not yet part of Rust Max.
   Web server framework based on `tokio` and `tower`.
 - [`backtrace-on-stack-overflow`](https://docs.rs/backtrace-on-stack-overflow).
   Nice missing feature, but code looks underdeveloped.
+- [`console`](https://docs.rs/console),
+  [`dialoguer`](https://docs.rs/dialoguer), and
+  [`indicatif`](https://docs.rs/indicatif).
 - [`criterion`](https://docs.rs/criterion).
   Advanced benchmarking.
 - [`dashmap`](https://docs.rs/dashmap).
@@ -60,9 +63,3 @@ but are now deprecated by others.
   Use [`std::sync::LazyLock`](https://doc.rust-lang.org/std/sync/struct.LazyLock.html).
 - [`once_cell`](https://docs.rs/once_cell).
   Use [`std::sync::OnceLock`](https://doc.rust-lang.org/std/sync/struct.OnceLock.html).
-
-
-
-## Pending Removal
-
-- `console`, `dialoguer`, `indicatif`

@@ -79,10 +79,7 @@ rmx-crates-net = [
 
 rmx-crates-cli = [
   "rmx-crates-std",
-  "console",
   "ctrlc",
-  "dialoguer",
-  "indicatif",
   "termcolor",
   "rustyline",
 ]
@@ -215,11 +212,8 @@ rmx-feature-default = [
   "byteorder/default",
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
-  "console/default",
   "derive_more/default",
-  "dialoguer/default",
   "futures/default",
-  "indicatif/default",
   "jiff/default",
   "nom/default",
   "proc-macro2/default",
@@ -262,7 +256,6 @@ rmx-feature-backtrace = [
 ]
 
 rmx-feature-tokio = [
-  "indicatif/tokio",
 ]
 
 rmx-feature-nightly = [
@@ -329,20 +322,17 @@ cc = { version = "1.2.5", optional = true, default-features = false }
 cfg-if = { version = "1.0.0", optional = true, default-features = false }
 chrono = { version = "0.4.39", optional = true, default-features = false }
 clap = { version = "4.5.23", optional = true, default-features = false }
-console = { version = "0.15.10", optional = true, default-features = false }
 ctrlc = { version = "3.4.5", optional = true, default-features = false }
 crossbeam = { version = "0.8.4", optional = true, default-features = false }
 cxx = { version = "1.0.135", optional = true, default-features = false }
 cxx-build = { version = "1.0.135", optional = true, default-features = false }
 derive_more = { version = "1.0.0", optional = true, default-features = false }
-dialoguer = { version = "0.11.0", optional = true, default-features = false }
 env_logger = { version = "0.11.6", optional = true, default-features = false }
 extension-trait = { version = "1.0.2", optional = true, default-features = false }
 futures = { version = "0.3.31", optional = true, default-features = false }
 http = { version = "1.2.0", optional = true, default-features = false }
 hex = { version = "0.4.3", optional = true, default-features = false }
 hyper = { version = "1.5.2", optional = true, default-features = false }
-indicatif = { version = "0.17.9", optional = true, default-features = false }
 itertools = { version = "0.13.0", optional = true, default-features = false }
 jiff = { version = "0.1.15", optional = true, default-features = false }
 json5 = { version = "0.4.1", optional = true, default-features = false }

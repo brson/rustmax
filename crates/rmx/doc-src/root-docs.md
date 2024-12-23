@@ -37,7 +37,7 @@ as a "batteries included" supercrate.
 | networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
-| terminal / CLI | [`clap`], [`console`], [`ctrlc`], [`dialoguer`], [`indicatif`], [`termcolor`], [`rustyline`] |
+| terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
 | system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
 | testing | [`proptest`], [`static_assertions`] |
 | build scripts | … |
@@ -226,10 +226,7 @@ Crates for building commandline interfaces.
 
 ### Crates in `rmx-profile-cli`
 
-- [`console`] - Access to terminal features.
 - [`ctrlc`] - Simple handling of CTRL-C for CLI programs.
-- [`dialoguer`] - Command-line confirmation prompts, text inputs, and more.
-- [`indicatif`] - Command-line progress bars.
 - [`termcolor`] - Cross-platform library for writing colored output to the terminal.
 - [`rustyline`] - Command-line input reading with history.
 
