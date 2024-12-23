@@ -12,7 +12,7 @@
     background-color: var(--rmx-color-bg);
 }
 
-:root {
+html {
     background: linear-gradient(90deg, var(--rmx-color-border1) 0%, var(--rmx-color-border2) 5%, var(--rmx-color-bg) 20%, var(--rmx-color-bg) 80%, var(--rmx-color-border2) 95%, var(--rmx-color-border1) 100%);
 }
 
