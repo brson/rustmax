@@ -40,6 +40,7 @@
 - All compiler errors explained
 - Toolchain pinning
 - linking
+- build scripts
 
 # More ideas
 
