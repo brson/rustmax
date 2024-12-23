@@ -1,5 +1,7 @@
 # Rust Max: Tools
 
+---
+
 <!-- order of tools here is same is in library.md -->
 - Standard Rust tools:
   [`cargo`](#user-content--cargo)
@@ -31,6 +33,9 @@
   [`fd`](#user-content--fd)
   [`sd`](#user-content--sd)
 
+---
+
+todo say something here
 
 
 ## Standard Rust tools
