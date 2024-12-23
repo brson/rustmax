@@ -12,6 +12,7 @@ notable or useful chapters within a book.
 - [The Rust Reference](https://doc.rust-lang.org/reference/)
   - 🔖 [Behavior considered undefined](https://doc.rust-lang.org/reference/behavior-considered-undefined.html)
 - [The Rust Edition Guide](https://doc.rust-lang.org/edition-guide/index.html)
+- [The Rust Cookbook](https://rust-lang-nursery.github.io/rust-cookbook/)
 - [The Little Book of Rust Macros](https://veykril.github.io/tlborm/)
 - [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)
 - [The Rustonomicon](https://doc.rust-lang.org/nomicon/)
