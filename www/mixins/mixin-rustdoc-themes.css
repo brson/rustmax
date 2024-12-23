@@ -34,9 +34,6 @@ nav.mobile-topbar,
 	--link-color: var(--rmx-color-links);
 	--sidebar-link-color: var(--rmx-color-links);
 
-    /* todo */
-    --code-block-background-color: rgba(0, 0, 0, 0);
     --code-block-background-color: color-mix(in srgb, var(--rmx-color-bg), var(--rmx-color-accents) 10%);
-	--table-alt-row-background-color: rgba(0, 0, 0, 0);
 	--table-alt-row-background-color: color-mix(in srgb, rgba(0, 0, 0, 0), var(--rmx-color-accents) 5%);
 }
