@@ -118,6 +118,15 @@ pub mod base64 {
     pub use ::base64::*;
 }
 
+#[cfg(feature = "bindgen")]
+pub mod bindgen {
+    //! Generate Rust bindings to C and C++ libraries.
+    //!
+    //! See crate [`::bindgen`].
+
+    pub use ::bindgen::*;
+}
+
 #[cfg(feature = "bitflags")]
 pub mod bitflags {
     //! A macro that generates structs that behave as bitflags.

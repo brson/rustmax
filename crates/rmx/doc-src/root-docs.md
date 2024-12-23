@@ -37,7 +37,7 @@ as a "batteries included" extendend Rust standard library.
 | terminal / CLI | [`clap`], [`console`], [`ctrlc`], [`dialoguer`], [`indicatif`], [`termcolor`], [`rustyline`] |
 | system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
 | testing | [`proptest`], [`static_assertions`] |
-| foreign / native interop | [`libc`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
+| FFI / interop) | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 
 <br>
@@ -240,6 +240,7 @@ Crates for writing [Rust build scripts](todo).
 
 ### Crates in `rmx-profile-build-script`
 
+- [`bindgen`]
 - [`cc`]
 - [`cxx`]
 - [`cxx-build`](cxx_build)
