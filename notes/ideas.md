@@ -48,3 +48,4 @@
 - CI
 - Show all crate versions in a simple table
 - Show versions of toolchain, tools, etc
+- rustup component list

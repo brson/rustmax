@@ -39,4 +39,5 @@
 - [Guide to `rustc` Development](https://rustc-dev-guide.rust-lang.org/)
 - [Standard Library Developers Guide](https://std-dev-guide.rust-lang.org/about.html)
 - [Rust Forge](https://forge.rust-lang.org/)
+  - [Alternative Rust Installation Methods](https://forge.rust-lang.org/infra/other-installation-methods.html)
 - [Rust RFCs](https://rust-lang.github.io/rfcs/)
