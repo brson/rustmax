@@ -10,6 +10,7 @@ notable or useful chapters within a book.
 ## The Rust language
 
 - **[The Rust Programming Language (The Book)](https://doc.rust-lang.org/book/)**
+- **[Rust By Example](https://doc.rust-lang.org/rust-by-example/)**
 - [The Rust Reference](https://doc.rust-lang.org/reference/)
   - 🔖 [Behavior considered undefined](https://doc.rust-lang.org/reference/behavior-considered-undefined.html)
 - [The Rust Edition Guide](https://doc.rust-lang.org/edition-guide/index.html)
