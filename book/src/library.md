@@ -21,6 +21,10 @@ notable or useful chapters within a book.
 - [Rust Error Codes Index](https://doc.rust-lang.org/stable/error_codes/error-index.html)
 - [The Rust Unstable Book](https://doc.rust-lang.org/unstable-book/)
 
+> Shout-out to [cheats.rs](https://cheats.rs/),
+  summarizing much of Rust one one big page.
+  Take it all in!
+
 
 ## The Rust standard library
 

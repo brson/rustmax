@@ -14,8 +14,8 @@ as well as cli, web, device, and application development.
 Rust Max is a comprehensive guide to the Rust ecosystem
 for new and old Rust programmers,
 including a "batteries-included" supercrate
-([`rmx`](todo))
-of dozens of selected high-quality Rust crates (libraries).
+of selected high-quality Rust libraries:
+[`rmx`](todo).
 
 > Rust Max is not an official Rust project.
 

@@ -31,7 +31,10 @@ These are not part of Rust Max.
 todo
 
 - rust-lang.org
+- play.rust-lang.org
 - rustup.org
 - crates.io
 - docs.rs
+- query.rs
 - social and forums
+- releases.rs
