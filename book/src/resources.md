@@ -2,6 +2,7 @@
 
 These are not part of Rust Max.
 
+
 ## Tier 1 - looks good 👍
 
 - **[Rust Language Cheat Sheet](https://cheats.rs/)**.
@@ -11,6 +12,7 @@ These are not part of Rust Max.
   Look here to figure out if your nightly toolchain had component build failures.
 - [The Little Book of Rust Books](https://lborb.github.io/book/)
 - ["Can I Use _?"](https://caniuse.rs/)
+
 
 ## Tier 2 - unvetted 😒
 
@@ -22,3 +24,14 @@ These are not part of Rust Max.
 - [List of security-related projects](https://github.com/rust-secure-code/projects)
 - [Tour of Rust's standard library traits](https://github.com/pretzelhammer/rust-blog/blob/master/posts/tour-of-rusts-standard-library-traits.md)
 - [Another Container Cheet Sheet](https://i.redd.it/220xo2f6wci51.png)
+
+
+---
+
+todo
+
+- rust-lang.org
+- rustup.org
+- crates.io
+- docs.rs
+- social and forums
