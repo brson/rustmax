@@ -35,6 +35,8 @@ pub mod prelude {
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::S;
+
+    pub use crate::extras::OptionExpect as _;
 }
 
 pub mod extras {
@@ -62,6 +64,15 @@ pub mod extras {
     #[allow(non_snake_case)]
     pub fn S(s: &'static str) -> crate::alloc::string::String {
         core::convert::From::from(s)
+    }
+
+    #[extension_trait::extension_trait]
+    pub impl<T> OptionExpect<T> for Option<T> {
+        #[track_caller]
+        #[allow(non_snake_case)]
+        fn X(self) -> T {
+            self.expect("impossible `None` option")
+        }
     }
 }
 

@@ -22,7 +22,7 @@ notable or useful chapters within a book.
 - [The Rust Unstable Book](https://doc.rust-lang.org/unstable-book/)
 
 > Shout-out to [cheats.rs](https://cheats.rs/),
-  summarizing much of Rust one one big page.
+  summarizing much of Rust on one big page.
   Take it all in!
 
 
