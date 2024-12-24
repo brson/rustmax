@@ -1,1 +1,16 @@
 @import url("rustmax-themes.css");
+
+#page-wrapper, #sidebar,
+#menu-bar
+{
+    background-color: unset;
+}
+
+:root {
+    background-color: var(--rmx-color-bg);
+    color: red;
+}
+
+#theme-toggle {
+    display: none;
+}
