@@ -19,6 +19,10 @@
 
 ### … guarantee a trait is object-safe?
 
+```
+static_assertions::assert_obj_safe!(MyTrait);
+```
+
 ## Error handling and debugging
 
 ### … handle errors simply and correctly?
