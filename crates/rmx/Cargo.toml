@@ -64,6 +64,9 @@ rmx-crates-std = [
   "xshell",
 ]
 
+# todo what to do about these "/full" features?
+# "/blocking", etc.
+
 rmx-crates-net = [
   "rmx-crates-std",
   "axum",
@@ -72,6 +75,8 @@ rmx-crates-net = [
   "hyper/full",
   "mime",
   "reqwest",
+  "reqwest/blocking",
+  "reqwest/json",
   "socket2",
   "tokio",
   "tokio/full",
