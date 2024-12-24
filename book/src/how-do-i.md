@@ -83,6 +83,8 @@ todo `LazyLock`, `OnceLock`, and `Once`.
 
 ### … make a synchronous HTTP request?
 
+### … configure a basic HTTP server?
+
 ## Text / unicode
 
 ## Terminal / CLI

@@ -6,8 +6,6 @@ but that are not yet part of Rust Max.
 
 ## Crates
 
-- [`axum`](https://docs.rs/axum).
-  Web server framework based on `tokio` and `tower`.
 - [`backtrace-on-stack-overflow`](https://docs.rs/backtrace-on-stack-overflow).
   Nice missing feature, but code looks underdeveloped.
 - [`console`](https://docs.rs/console),
@@ -33,8 +31,6 @@ but that are not yet part of Rust Max.
   Manually-growable call stacks.
 - [`time`](https://docs.rs/time).
   Another time crate.
-- [`tower`](https://docs.rs/tower).
-  Network abstractions for `tokio`, used by `axum`.
 - [`tracing`](https://docs.rs/tracing).
 - [`tracing-subscriber`](https://docs.rs/tracing-subscriber).
 - [`tracing-tracy`](https://docs.rs/tracing-tracy).

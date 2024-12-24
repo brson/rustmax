@@ -113,6 +113,15 @@ pub mod anyhow {
     pub use ::anyhow::*;
 }
 
+#[cfg(feature = "axum")]
+pub mod axum {
+    //! Web application framework based on [`tokio`](super::tokio).
+    //!
+    //! See crate [`::axum`].
+
+    pub use ::axum::*;
+}
+
 #[cfg(feature = "backtrace")]
 pub mod backtrace {
     //! Callstack backtraces on demand.
@@ -588,6 +597,16 @@ pub mod tokio {
     //! See crate [`::tokio`].
 
     pub use ::tokio::*;
+}
+
+#[cfg(feature = "tower")]
+pub mod tower {
+    //! Service request/response abstraction (HTTP middleware)
+    //! for [`tokio`](super::tokio) and [`axum`](super::axum).
+    //!
+    //! See crate [`::tower`].
+
+    pub use ::tower::*;
 }
 
 #[cfg(feature = "toml")]

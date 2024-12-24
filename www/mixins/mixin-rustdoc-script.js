@@ -30,6 +30,7 @@ window.addEventListener("load", () => {
 const crateSet = new Set([
     'ahash',
     'anyhow',
+    'axum',
     'backtrace',
     'base64',
     'bindgen',
@@ -83,6 +84,7 @@ const crateSet = new Set([
     'termcolor',
     'thiserror',
     'tokio',
+    'tower',
     'toml',
     'unicode_segmentation',
     'url',

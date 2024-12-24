@@ -66,6 +66,7 @@ rmx-crates-std = [
 
 rmx-crates-net = [
   "rmx-crates-std",
+  "axum",
   "http",
   "hyper",
   "hyper/full",
@@ -74,6 +75,8 @@ rmx-crates-net = [
   "socket2",
   "tokio",
   "tokio/full",
+  "tower",
+  "tower/full",
   "url",
 ]
 
@@ -206,8 +209,10 @@ rmx-feature-std = [
   "sha2/std",
 ]
 
+# todo should these be e.g. "axum?/default"
 rmx-feature-default = [
   "ahash/default",
+  "axum/default",
   "bindgen/default",
   "byteorder/default",
   "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
@@ -311,6 +316,7 @@ anyhow = ["dep:anyhow"]
 [dependencies]
 ahash = { version = "0.8.11", optional = true, default-features = false }
 anyhow = { version = "1.0.94", optional = true, default-features = false }
+axum = { version = "0.7.9", optional = true, default-features = false }
 backtrace = {version = "0.3.74", optional = true, default-features = false }
 base64 = { version = "0.22.1", optional = true, default-features = false }
 bindgen = { version = "0.71.1", optional = true, default-features = false }
@@ -365,6 +371,7 @@ termcolor = { version = "1.4.1", optional = true, default-features = false }
 thiserror = { version = "2.0.9", optional = true, default-features = false }
 tokio = { version = "1.42.0", optional = true, default-features = false }
 toml = { version = "0.8.19", optional = true, default-features = false }
+tower = { version = "0.5.2", optional = true, default-features = false }
 unicode-segmentation = { version = "1.12.0", optional = true, default-features = false }
 url = { version = "2.5.4", optional = true, default-features = false }
 walkdir = { version = "2.5.0", optional = true, default-features = false }

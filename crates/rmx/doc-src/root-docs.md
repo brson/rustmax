@@ -34,7 +34,7 @@ as a "batteries included" supercrate.
 | cryptography | [`blake3`], [`sha2`] |
 | parallelism | [`crossbeam`], [`rayon`] |
 | asyncronous I/O | [`futures`], [`tokio`] |
-| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`url`] |
+| networking and web | [`axum`], [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`tower`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
@@ -206,12 +206,15 @@ apply the [`rmx-feature-tokio`] feature.
 
 ### Crates in `rmx-profile-net`
 
+- [`axum`] - Web application framework based on [`tokio`].
 - [`http`] - Shared definitions related to the HTTP protocol.
 - [`hyper`] - HTTP, versions 1 and 2.
 - [`mime`] - MIME media types.
 - [`reqwest`] - Simple HTTP requests, synchronous and asynchronous.
 - [`socket2`] - Low-level network socket programming beyond [`std::net`].
 - [`tokio`] - An async task runtime and I/O library.
+- [`tower`] - Service request/response abstraction (HTTP middleware)
+              for [`tokio`] and [`axum`].
 - [`url`] - URL parsing and data structures.
 
 
