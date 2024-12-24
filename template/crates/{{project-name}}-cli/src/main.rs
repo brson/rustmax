@@ -26,7 +26,7 @@ enum Command {
 
 #[derive(clap::Args)]
 struct Args {
-    #[arg(default_value = "clippy-control.toml")]
+    #[arg(default_value = "config.toml")]
     config_path: PathBuf,
 }
 
