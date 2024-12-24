@@ -60,3 +60,5 @@
 - keep tools up to date and optimized
 - where to talk about black_box
 - formal verification
+- glossary / concept index
+  - link to the relevant places in the library for subjects
