@@ -1,14 +1,34 @@
 @import url("rustmax-themes.css");
 
-#page-wrapper, #sidebar,
-#menu-bar
+#page-wrapper, #sidebar
 {
     background-color: unset;
 }
 
-:root {
+:root,
+#menu-bar
+{
     background-color: var(--rmx-color-bg);
-    color: red;
+}
+
+.content,
+.content .header:link,
+blockquote,
+p > code.hljs
+{
+    color: var(--rmx-color-fg);
+}
+
+a > code.hljs,
+a, a:hover, a:link {
+    color: var(--rmx-color-links);
+}
+
+blockquote,
+p code.hljs,
+.mobile-nav-chapters
+{
+    background-color: color-mix(in srgb, var(--rmx-color-bg), var(--rmx-color-accents) 10%)
 }
 
 #theme-toggle {
