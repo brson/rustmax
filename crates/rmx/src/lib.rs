@@ -37,6 +37,7 @@ pub mod prelude {
     pub use crate::extras::S;
 
     pub use crate::extras::OptionExpect as _;
+    pub use crate::extras::ResultExpect as _;
 }
 
 pub mod extras {
@@ -71,7 +72,25 @@ pub mod extras {
         #[track_caller]
         #[allow(non_snake_case)]
         fn X(self) -> T {
-            self.expect("impossible `None` option")
+            match self {
+                Some(v) => v,
+                None => panic!("impossible `None` option"),
+            }
+        }
+    }
+
+    #[cfg(feature = "rmx-rustlib-std")]
+    #[extension_trait::extension_trait]
+    pub impl<T, E> ResultExpect<T, E> for Result<T, E>
+    where E: std::error::Error
+    {
+        #[track_caller]
+        #[allow(non_snake_case)]
+        fn X(self) -> T {
+            match self {
+                Ok(v) => v,
+                Err(e) => panic!("impossible `Err` result: {e}"),
+            }
         }
     }
 }
