@@ -16,6 +16,7 @@ but that are not yet part of Rust Max.
 - [`dashmap`](https://docs.rs/dashmap).
   Concurrent hash map.
 - [`datatest-stable`](https://docs.rs/datatest-stable)
+- [`derive-new`](https://docs.rs/derive-new)
 - [`nix`](https://docs.rs/nix)
 - [`notify`](https://docs.rs/notify).
   File system notification.
