@@ -36,6 +36,7 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::S;
 
+    pub use crate::extras::QuickClone as _;
     pub use crate::extras::OptionExpect as _;
     pub use crate::extras::ResultExpect as _;
 }
@@ -65,6 +66,14 @@ pub mod extras {
     #[allow(non_snake_case)]
     pub fn S(s: &'static str) -> crate::alloc::string::String {
         core::convert::From::from(s)
+    }
+
+    #[extension_trait::extension_trait]
+    pub impl<T> QuickClone<T> for T where T: Clone {
+        #[allow(non_snake_case)]
+        fn C(&self) -> T {
+            self.clone()
+        }
     }
 
     #[extension_trait::extension_trait]
