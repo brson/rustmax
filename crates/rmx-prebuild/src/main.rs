@@ -17,6 +17,7 @@
 use std::{env, fs};
 use anyhow::Result as AnyResult;
 use anyhow::Context;
+use anyhow::anyhow as A;
 
 const CRATES_META: &str = "src/crates.json5";
 const TOOLS_META: &str = "src/tools.json5";
@@ -101,6 +102,34 @@ fn build_crate_info(
     rmx_manifest: &toml::Value,
     examples_dir: &fs::ReadDir,
 ) -> AnyResult<Vec<CrateInfo>> {
+    let manifest_crate_info = get_manifest_crate_info(rmx_manifest)?;
+
     todo!()
 }
 
+struct ManifestCrate {
+    name: String,
+    version: String,
+}
+
+fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
+    let deps = manifest
+        .as_table()
+        .ok_or(A!("toml: manifest table"))?
+        .get("dependencies")
+        .ok_or(A!("toml: dependencies"))?
+        .as_table()
+        .ok_or(A!("toml: dependencies table"))?;
+
+    for (name, dep) in deps.iter() {
+        let version = dep
+            .as_table()
+            .ok_or(A!("toml: dep table"))?
+            .get("version")
+            .ok_or(A!("toml: dep version"))?
+            .as_str()
+            .ok_or(A!("toml: dep version string"))?;
+    }
+
+    todo!()
+}
