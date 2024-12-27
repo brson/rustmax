@@ -80,7 +80,7 @@ pub mod extras {
     pub fn S<S>(
         s: &S,
     ) -> crate::alloc::string::String
-    where S: crate::alloc::string::ToString,
+    where S: crate::alloc::string::ToString + ?Sized,
     {
         crate::alloc::string::ToString::to_string(s)
     }
@@ -90,7 +90,7 @@ pub mod extras {
     pub fn O<O>(
         o: &O,
     ) -> O::Owned
-    where O: crate::alloc::borrow::ToOwned,
+    where O: crate::alloc::borrow::ToOwned + ?Sized,
     {
         crate::alloc::borrow::ToOwned::to_owned(o)
     }
