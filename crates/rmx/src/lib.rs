@@ -36,8 +36,11 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::S;
 
+    #[cfg(feature = "extension-trait")]
     pub use crate::extras::QuickClone as _;
+    #[cfg(feature = "extension-trait")]
     pub use crate::extras::OptionExpect as _;
+    #[cfg(feature = "extension-trait")]
     pub use crate::extras::ResultExpect as _;
 }
 
@@ -68,6 +71,7 @@ pub mod extras {
         core::convert::From::from(s)
     }
 
+    #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T> QuickClone<T> for T where T: Clone {
         #[allow(non_snake_case)]
@@ -76,6 +80,7 @@ pub mod extras {
         }
     }
 
+    #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T> OptionExpect<T> for Option<T> {
         #[track_caller]
@@ -88,10 +93,10 @@ pub mod extras {
         }
     }
 
-    #[cfg(feature = "rmx-rustlib-std")]
+    #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T, E> ResultExpect<T, E> for Result<T, E>
-    where E: std::error::Error
+    where E: core::error::Error
     {
         #[track_caller]
         #[allow(non_snake_case)]

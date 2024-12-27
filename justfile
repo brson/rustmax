@@ -8,11 +8,12 @@ clean:
     rm -rf out
 
 check:
-    cargo check
-    cargo check --features rmx-profile-no-std
-    cargo check --features rmx-profile-std
-    cargo check --features rmx-profile-full
-    cargo check --features rmx-profile-max
+    cargo check -p rmx
+    #cargo check -p rmx --features rmx-profile-no-std
+    cargo check -p rmx --features rmx-profile-std
+    cargo check -p rmx --features rmx-profile-full
+    cargo check -p rmx --features rmx-profile-max
+    cargo check -p rmx-cli
 
 lint:
     cargo deny check
