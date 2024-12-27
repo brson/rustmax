@@ -77,10 +77,22 @@ pub mod extras {
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
-    pub fn S(
-        s: &impl crate::alloc::string::ToString,
-    ) -> crate::alloc::string::String {
+    pub fn S<S>(
+        s: &S,
+    ) -> crate::alloc::string::String
+    where S: crate::alloc::string::ToString,
+    {
         crate::alloc::string::ToString::to_string(s)
+    }
+
+    #[cfg(feature = "rmx-rustlib-alloc")]
+    #[allow(non_snake_case)]
+    pub fn O<O>(
+        o: &O,
+    ) -> O::Owned
+    where O: crate::alloc::borrow::ToOwned,
+    {
+        crate::alloc::borrow::ToOwned::to_owned(o)
     }
 
     #[cfg(feature = "extension-trait")]
