@@ -37,6 +37,7 @@ but that are not yet part of Rust Max.
 - [`num-traits`](https://docs.rs/num-traits)
 - [`ordered-float`](https://docs.rs/ordered-float)
 - [`petgraph`](https://docs.rs/petgraph)
+- [`rustversion`](https://docs.rs/rustversion)
 - [`rust-embed`](https://docs.rs/rust-embed).
   Embedding of file system resources into binaries,
   with hot-reloading during development.
