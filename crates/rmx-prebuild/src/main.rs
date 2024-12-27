@@ -89,5 +89,18 @@ fn main() -> AnyResult<()> {
     let examples_dir = fs::read_dir(&examples_dir)
         .context(examples_dir.display().to_string())?;
 
+    let crate_info = build_crate_info(
+        &crates_meta, &rmx_manifest, &examples_dir,
+    )?;
+
     todo!()
 }
+
+fn build_crate_info(
+    crates_meta: &meta::Crates,
+    rmx_manifest: &toml::Value,
+    examples_dir: &fs::ReadDir,
+) -> AnyResult<Vec<CrateInfo>> {
+    todo!()
+}
+
