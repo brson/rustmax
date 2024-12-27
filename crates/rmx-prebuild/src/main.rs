@@ -91,7 +91,7 @@ fn main() -> AnyResult<()> {
         .context(examples_dir.display().to_string())?;
 
     let crate_info = build_crate_info(
-        &crates_meta, &rmx_manifest, &examples_dir,
+        &crates_meta, &rmx_manifest, examples_dir,
     )?;
 
     todo!()
@@ -100,10 +100,10 @@ fn main() -> AnyResult<()> {
 fn build_crate_info(
     crates_meta: &meta::Crates,
     rmx_manifest: &toml::Value,
-    examples_dir: &fs::ReadDir,
+    examples_dir: fs::ReadDir,
 ) -> AnyResult<Vec<CrateInfo>> {
     let manifest_crate_info = get_manifest_crate_info(rmx_manifest)?;
-    eprintln!("{manifest_crate_info:#?}");
+    let examples = get_examples(examples_dir)?;
     todo!()
 }
 
@@ -135,4 +135,29 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<Vec<ManifestCrat
             version: version.to_owned(),
         })
     }).collect()
+}
+
+
+#[derive(Debug)]
+struct CrateExample {
+    name: String,
+    text: String,
+}
+
+fn get_examples(
+    mut examples_dir: fs::ReadDir,
+) -> AnyResult<Vec<CrateExample>> {
+    for dir_entry in examples_dir {
+        let dir_entry = dir_entry?;
+        let filename = dir_entry
+            .path()
+            .file_name()
+            .ok_or(A!("file name"))?
+            .to_str()
+            .ok_or(A!("file name"))?;
+
+        todo!()
+    }
+
+    todo!()
 }
