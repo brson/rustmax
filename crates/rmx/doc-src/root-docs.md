@@ -229,7 +229,7 @@ Crates for building commandline interfaces.
 
 ### Crates in `rmx-profile-cli`
 
-- [`ctrlc`] - Simple handling of CTRL-C for CLI programs.
+- [`ctrlc`] - Simple handling of Ctrl-C for CLI programs.
 - [`termcolor`] - Cross-platform library for writing colored output to the terminal.
 - [`rustyline`] - Command-line input reading with history.
 
@@ -246,7 +246,7 @@ Crates for writing [Rust build scripts](todo).
 ### Crates in `rmx-profile-build-script`
 
 - [`bindgen`] - Generate Rust bindings to C and C++ libraries.
-- [`cc`] - A basic cross-platform C compiler driver.
+- [`cc`] - A basic cross-platform C/C++ compiler driver.
 - [`cxx`] - C++ bridge runtime support; paired with [`cxx_build`].
 - [`cxx-build`](cxx_build) - C++ bridge generator; paired with [`cxx`].
 

@@ -60,6 +60,42 @@
             short_desc: "Byte buffers",
             oneline_desc: "Abstractions for working with byte buffers: [`Bytes`](bytes::Bytes), [`Buf`](bytes::Buf), and [`BufMut`](bytes::BufMut)",
         },
+        {
+            name: "cc",
+            category: "ffi",
+            short_desc: "Compile C/C++ files",
+            oneline_desc: "A basic cross-platform C/C++ compiler driver",
+        },
+        {
+            name: "cfg-if",
+            category: "convenience",
+            short_desc: "Compile-time control flow",
+            oneline_desc: "A macro for writing conditional compilation as `if` / `else` blocks",
+        },
+        {
+            name: "chrono",
+            category: "time",
+            short_desc: "Dates and time",
+            oneline_desc: "Dates and time (legacy)",
+        },
+        {
+            name: "clap",
+            category: "cli",
+            short_desc: "Command-line parsing",
+            oneline_desc: "Command-line parsing",
+        },
+        {
+            name: "crossbeam",
+            category: "parallelism",
+            short_desc: "Fast channels, etc.",
+            oneline_desc: "Concurrency tools to supplement [`std::sync`](#rmxl-std-sync), including fast channels",
+        },
+        {
+            name: "ctrlc",
+            category: "cli",
+            short_desc: "Handle Ctrl+C",
+            oneline_desc: "Simple handling of Ctrl-C for CLI programs",
+        },
 
 
 
