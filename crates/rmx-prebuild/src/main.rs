@@ -112,7 +112,7 @@ struct ManifestCrate {
     version: String,
 }
 
-fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
+fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<Vec<ManifestCrate>> {
     let deps = manifest
         .as_table()
         .ok_or(A!("toml: manifest table"))?
@@ -120,9 +120,6 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
         .ok_or(A!("toml: dependencies"))?
         .as_table()
         .ok_or(A!("toml: dependencies table"))?;
-
-    use std::borrow::ToOwned::to_owned as O;
-    use std::borrow::ToString::to_string as S;
 
     deps.iter().map(|(name, dep)| {
         let version = dep
@@ -132,9 +129,9 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
             .ok_or(A!("toml: dep version"))?
             .as_str()
             .ok_or(A!("toml: dep version string"))?;
-        ManifestCrate {
+        Ok(ManifestCrate {
             name: name.to_owned(),
-e            version: version.to_owned(),
-        }            
-k    }).collect()
+            version: version.to_owned(),
+        })
+    }).collect()
 }
