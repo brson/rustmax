@@ -39,31 +39,31 @@ mod meta {
     #[derive(Serialize, Deserialize)]
     #[derive(Clone, Debug)]
     pub struct Crates {
-        crates: Vec<Crate>,
+        pub crates: Vec<Crate>,
     }
 
     #[derive(Serialize, Deserialize)]
     #[derive(Clone, Debug)]
     pub struct Crate {
-        name: String,
-        category: String,
-        short_desc: String,
-        oneline_desc: String,
+        pub name: String,
+        pub category: String,
+        pub short_desc: String,
+        pub oneline_desc: String,
     }
 
     #[derive(Serialize, Deserialize)]
     #[derive(Clone, Debug)]
     pub struct Tools {
-        tools: Vec<Tool>,
+        pub tools: Vec<Tool>,
     }
 
     #[derive(Serialize, Deserialize)]
     #[derive(Clone, Debug)]
     pub struct Tool {
-        name: String,
-        category: String,
-        short_desc: String,
-        oneline_desc: String,
+        pub name: String,
+        pub category: String,
+        pub short_desc: String,
+        pub oneline_desc: String,
     }
 }
 
@@ -104,6 +104,28 @@ fn build_crate_info(
 ) -> AnyResult<Vec<CrateInfo>> {
     let manifest_crate_info = get_manifest_crate_info(rmx_manifest)?;
     let examples = get_examples(examples_dir)?;
+
+    let mut infos = Vec::new();
+    
+    for crate_ in manifest_crate_info {
+        let meta = crates_meta.crates.iter().find(|cm| {
+            cm.name == crate_.name
+        }).ok_or(A!("missing crate meta for {}", crate_.name))?;
+
+        let example = examples.iter().find(|ce| {
+            ce.name == crate_.name
+        }).map(|ce| ce.text.to_string()).unwrap_or_default();
+
+        infos.push(CrateInfo {
+            name: crate_.name.to_string(),
+            category: meta.category.to_string(),
+            version: crate_.version.to_string(),
+            short_desc: meta.short_desc.to_string(),
+            oneline_desc: meta.oneline_desc.to_string(),
+            example,
+        });
+    }
+
     todo!()
 }
 
@@ -167,7 +189,7 @@ fn get_examples(
         };
 
         let name = captures.name("name").expect(".");
-        let text = fs::read_to_string(filename)?;
+        let text = fs::read_to_string(dir_entry.path())?;
 
         examples.push(CrateExample {
             name: name.as_str().to_string(),
