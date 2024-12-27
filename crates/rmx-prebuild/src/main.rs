@@ -80,7 +80,12 @@ fn main() -> AnyResult<()> {
     let rmx_manifest_str = fs::read_to_string(&rmx_manifest_file)
         .context(rmx_manifest_file.display().to_string())?;
 
-    
+    let crates_meta: meta::Crates = json5::from_str(&crates_meta_str)
+        .context("crates meta")?;
+    let tools_meta: meta::Tools = json5::from_str(&tools_meta_str)
+        .context("tools meta")?;
+    let rmx_manifest: toml::Value = toml::from_str(&rmx_manifest_str)
+        .context("rmx manifest meta")?;
     let examples_dir = fs::read_dir(&examples_dir)
         .context(examples_dir.display().to_string())?;
 

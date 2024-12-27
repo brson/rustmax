@@ -1,0 +1,16 @@
+{
+    crates: [
+        {
+            name: "ahash",
+            category: "",
+            short_desc: "",
+            oneline_desc: "",
+        },
+        {
+            name: "anyhow",
+            category: "",
+            short_desc: "",
+            oneline_desc: "",
+        },
+    ]
+}
