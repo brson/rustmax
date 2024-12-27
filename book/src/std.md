@@ -21,7 +21,9 @@ has bitrotted.
 Some of the Rust standard library documentation is excellent,
 with good overviews of systems programming topics generally.
 
+<!-- duplicated in library.md -->
 - 🔖 [`std::collections`](https://doc.rust-lang.org/std/collections/index.html)
+- 🔖 [`std::error`](https://doc.rust-lang.org/stable/std/error/index.html)
 - 🔖 [`std::sync`](https://doc.rust-lang.org/std/sync/index.html)
 - 🔖 [`std::sync::atomic`](https://doc.rust-lang.org/std/atomic/index.html)
 

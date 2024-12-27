@@ -29,6 +29,11 @@ notable or useful chapters within a book.
 ## The Rust standard library
 
 - **[`std`](https://doc.rust-lang.org/std/index.html)**
+  <!-- duplicated in std.md -->
+  - 🔖 [`std::collections`](https://doc.rust-lang.org/std/collections/index.html)
+  - 🔖 [`std::error`](https://doc.rust-lang.org/stable/std/error/index.html)
+  - 🔖 [`std::sync`](https://doc.rust-lang.org/std/sync/index.html)
+  - 🔖 [`std::sync::atomic`](https://doc.rust-lang.org/std/atomic/index.html)
 - [`core`](https://doc.rust-lang.org/core/index.html)
 - [`alloc`](https://doc.rust-lang.org/alloc/index.html)
 - [`proc_macro`](https://doc.rust-lang.org/proc_macro/index.html)
