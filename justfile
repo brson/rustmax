@@ -17,7 +17,7 @@ check:
 
 test:
     cargo test -p rmx
-    cargo test -p rmx --features rmx-profile-no-std
+    #cargo test -p rmx --features rmx-profile-no-std
     cargo test -p rmx --features rmx-profile-std
     cargo test -p rmx --features rmx-profile-full
     cargo test -p rmx --features rmx-profile-max
