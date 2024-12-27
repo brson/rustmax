@@ -55,10 +55,10 @@
             oneline_desc: "Big-endian and little-endian encoding",
         },
         {
-            name: "",
-            category: "",
-            short_desc: "",
-            oneline_desc: "",
+            name: "bytes",
+            category: "collections",
+            short_desc: "Byte buffers",
+            oneline_desc: "Abstractions for working with byte buffers: [`Bytes`](bytes::Bytes), [`Buf`](bytes::Buf), and [`BufMut`](bytes::BufMut)",
         },
 
 
