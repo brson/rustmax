@@ -103,10 +103,11 @@ fn build_crate_info(
     examples_dir: &fs::ReadDir,
 ) -> AnyResult<Vec<CrateInfo>> {
     let manifest_crate_info = get_manifest_crate_info(rmx_manifest)?;
-
+    eprintln!("{manifest_crate_info:#?}");
     todo!()
 }
 
+#[derive(Debug)]
 struct ManifestCrate {
     name: String,
     version: String,
