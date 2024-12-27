@@ -35,6 +35,7 @@ but that are not yet part of Rust Max.
   File system notification.
 - [`num`](https://docs.rs/num).
 - [`num-traits`](https://docs.rs/num-traits)
+- [`ordered-float`](https://docs.rs/ordered-float)
 - [`petgraph`](https://docs.rs/petgraph)
 - [`rust-embed`](https://docs.rs/rust-embed).
   Embedding of file system resources into binaries,
