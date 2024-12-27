@@ -2214,6 +2214,7 @@ dependencies = [
  "json5",
  "serde",
  "tera",
+ "toml",
 ]
 
 [[package]]

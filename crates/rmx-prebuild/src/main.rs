@@ -14,13 +14,14 @@
 
 #![allow(unused)]
 
-use std::env;
+use std::{env, fs};
 use anyhow::Result as AnyResult;
+use anyhow::Context;
 
 const CRATES_META: &str = "src/crates.json5";
 const TOOLS_META: &str = "src/tools.json5";
 const RMX_MANIFEST: &str = "crates/rmx/Cargo.toml";
-const EXAMPLES_DIR: &str = "crates/doc-src/";
+const EXAMPLES_DIR: &str = "crates/rmx/doc-src";
 
 struct CrateInfo {
     name: String,
@@ -31,12 +32,57 @@ struct CrateInfo {
     example: String,
 }
 
+mod meta {
+    use serde::{Serialize, Deserialize};
+
+    #[derive(Serialize, Deserialize)]
+    #[derive(Clone, Debug)]
+    pub struct Crates {
+        crates: Vec<Crate>,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[derive(Clone, Debug)]
+    pub struct Crate {
+        name: String,
+        category: String,
+        short_desc: String,
+        oneline_desc: String,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[derive(Clone, Debug)]
+    pub struct Tools {
+        tools: Vec<Tool>,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[derive(Clone, Debug)]
+    pub struct Tool {
+        name: String,
+        category: String,
+        short_desc: String,
+        oneline_desc: String,
+    }
+}
+
 fn main() -> AnyResult<()> {
     let workspace_dir = env::current_dir()?;
     let crates_meta_file = workspace_dir.join(CRATES_META);
     let tools_meta_file = workspace_dir.join(TOOLS_META);
     let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
     let examples_dir = workspace_dir.join(EXAMPLES_DIR);
+
+    let crates_meta_str = fs::read_to_string(&crates_meta_file)
+        .context(crates_meta_file.display().to_string())?;
+    let tools_meta_str = fs::read_to_string(&tools_meta_file)
+        .context(tools_meta_file.display().to_string())?;
+    let rmx_manifest_str = fs::read_to_string(&rmx_manifest_file)
+        .context(rmx_manifest_file.display().to_string())?;
+
+    
+    let examples_dir = fs::read_dir(&examples_dir)
+        .context(examples_dir.display().to_string())?;
 
     todo!()
 }
