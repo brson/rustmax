@@ -40,6 +40,10 @@ pub mod prelude {
     pub use crate::extras::S;
 
     #[cfg(feature = "extension-trait")]
+    pub use crate::extras::QuickToString as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::QuickToOwned as _;
+    #[cfg(feature = "extension-trait")]
     pub use crate::extras::QuickClone as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::OptionExpect as _;
