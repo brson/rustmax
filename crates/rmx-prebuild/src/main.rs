@@ -147,17 +147,33 @@ struct CrateExample {
 fn get_examples(
     mut examples_dir: fs::ReadDir,
 ) -> AnyResult<Vec<CrateExample>> {
+    let crate_name_regex = regex::Regex::new(
+        r"^crate-(?<name>[a-zA-Z0-9_-]+)\.md$"
+    ).expect(".");
+
+    let mut examples = Vec::new();
+
     for dir_entry in examples_dir {
         let dir_entry = dir_entry?;
-        let filename = dir_entry
-            .path()
+        let filename = dir_entry.path();
+        let filename = filename
             .file_name()
             .ok_or(A!("file name"))?
             .to_str()
             .ok_or(A!("file name"))?;
 
-        todo!()
+        let Some(captures) = crate_name_regex.captures(filename) else {
+            continue;
+        };
+
+        let name = captures.name("name").expect(".");
+        let text = fs::read_to_string(filename)?;
+
+        examples.push(CrateExample {
+            name: name.as_str().to_string(),
+            text,
+        });
     }
 
-    todo!()
+    Ok(examples)
 }
