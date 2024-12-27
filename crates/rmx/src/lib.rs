@@ -77,27 +77,53 @@ pub mod extras {
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
-    pub fn S<S>(
-        s: &S,
+    pub fn S<T>(
+        s: &T,
     ) -> crate::alloc::string::String
-    where S: crate::alloc::string::ToString + ?Sized,
+    where T: crate::alloc::string::ToString + ?Sized,
     {
         crate::alloc::string::ToString::to_string(s)
     }
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
-    pub fn O<O>(
-        o: &O,
-    ) -> O::Owned
-    where O: crate::alloc::borrow::ToOwned + ?Sized,
+    pub fn O<T>(
+        o: &T,
+    ) -> T::Owned
+    where T: crate::alloc::borrow::ToOwned + ?Sized,
     {
         crate::alloc::borrow::ToOwned::to_owned(o)
     }
 
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
-    pub impl<T> QuickClone<T> for T where T: Clone {
+    pub impl<T> QuickToString<T> for T
+    where T: crate::alloc::string::ToString
+    {
+        #[allow(non_snake_case)]
+        fn S(&self) -> crate::alloc::string::String {
+            crate::alloc::string::ToString::to_string(self)
+        }
+    }
+
+    #[cfg(feature = "extension-trait")]
+    #[extension_trait::extension_trait]
+    pub impl<T> QuickToOwned<T> for T
+        where T: crate::alloc::borrow::ToOwned,
+    {
+        type Owned = T::Owned;
+
+        #[allow(non_snake_case)]
+        fn O(&self) -> Self::Owned {
+            crate::alloc::borrow::ToOwned::to_owned(self)
+        }
+    }
+
+    #[cfg(feature = "extension-trait")]
+    #[extension_trait::extension_trait]
+    pub impl<T> QuickClone<T> for T
+    where T: Clone
+    {
         #[allow(non_snake_case)]
         fn C(&self) -> T {
             self.clone()
