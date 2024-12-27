@@ -208,9 +208,7 @@ pub mod bindgen {
 
 #[cfg(feature = "bitflags")]
 pub mod bitflags {
-    //! Types in which the bits are individually addressable.
-    //!
-    //! See crate [`::bitflags`].
+    #![doc = include_str!("../doc-src/crate-bitflags.md")]
 
     pub use ::bitflags::*;
 }

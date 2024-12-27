@@ -44,9 +44,11 @@ by using the [`AHashMap`] type alias.
 ```
 use ahash::AHashMap;
 
-let mut map: AHashMap<i32, i32> = AHashMap::new();
-map.insert(12, 34);
-map.insert(56, 78);
+fn main() {
+    let mut map: AHashMap<i32, i32> = AHashMap::new();
+    map.insert(12, 34);
+    map.insert(56, 78);
+}
 ```
 
 
