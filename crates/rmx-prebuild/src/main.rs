@@ -134,7 +134,7 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
             .ok_or(A!("toml: dep version string"))?;
         ManifestCrate {
             name: name.to_owned(),
-            version: version.to_owned(),
+e            version: version.to_owned(),
         }            
 k    }).collect()
 }
