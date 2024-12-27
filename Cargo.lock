@@ -2206,6 +2206,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rmx-prebuild"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "json5",
+ "serde",
+ "tera",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
