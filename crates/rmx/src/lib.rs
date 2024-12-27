@@ -14,10 +14,13 @@ pub mod prelude {
 
     #[cfg(feature = "anyhow")]
     pub use ::anyhow::{
-        Result as AnyResult,
-        Error as AnyError,
         Context as _,
         anyhow, bail,
+    };
+
+    #[cfg(feature = "anyhow")]
+    pub use crate::extras::{
+        AnyResult, AnyError, A,
     };
 
     #[cfg(feature = "cfg-if")]
@@ -46,6 +49,13 @@ pub mod prelude {
 
 pub mod extras {
     //! Additional tidbits defined by `rmx`.
+
+    #[cfg(feature = "anyhow")]
+    pub use ::anyhow::{
+        Result as AnyResult,
+        Error as AnyError,
+        anyhow as A,
+    };
 
     pub fn default<T: Default>() -> T {
         Default::default()
