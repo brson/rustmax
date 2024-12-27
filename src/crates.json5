@@ -2,12 +2,70 @@
     crates: [
         {
             name: "ahash",
+            category: "collections",
+            short_desc: "Fast `HashMap`s",
+            oneline_desc: "A fast and DOS-resistent hash function, for use in `HashMap`s",
+        },
+        {
+            name: "anyhow",
+            category: "error",
+            short_desc: "Easy error handling",
+            oneline_desc: "Easy error handling",
+        },
+        {
+            name: "axum",
+            category: "web",
+            short_desc: "Web framework",
+            oneline_desc: " Web application framework based on [`tokio`](#rmxl-tokio)",
+        },
+        {
+            name: "backtrace",
+            category: "error",
+            short_desc: "Stack traces",
+            oneline_desc: "Callstack backtraces on demand",
+        },
+        {
+            name: "base64",
+            category: "encoding",
+            short_desc: "Base-64 encoding and decoding",
+            oneline_desc: "Base-64 encoding and decoding",
+        },
+        {
+            name: "bindgen",
+            category: "ffi",
+            short_desc: "C/C++ interop",
+            oneline_desc: "Generate Rust bindings to C and C++ libraries",
+        },
+        {
+            name: "bitflags",
+            category: "collections",
+            short_desc: "Bitfields",
+            oneline_desc: "Types in which the bits are individually addressable",
+        },
+        {
+            name: "blake3",
+            category: "cryptography",
+            short_desc: "Cryptographic hashing",
+            oneline_desc: "The BLAKE3 cryptographic hash function",
+        },
+        {
+            name: "byteorder",
+            category: "encoding",
+            short_desc: "Big/little endianness",
+            oneline_desc: "Big-endian and little-endian encoding",
+        },
+        {
+            name: "",
             category: "",
             short_desc: "",
             oneline_desc: "",
         },
+
+
+
+
         {
-            name: "anyhow",
+            name: "",
             category: "",
             short_desc: "",
             oneline_desc: "",

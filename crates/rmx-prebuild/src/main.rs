@@ -106,14 +106,14 @@ fn build_crate_info(
     let examples = get_examples(examples_dir)?;
 
     let mut infos = Vec::new();
-    
-    for crate_ in manifest_crate_info {
-        let meta = crates_meta.crates.iter().find(|cm| {
-            cm.name == crate_.name
+
+    for crate_ in &manifest_crate_info {
+        let meta = crates_meta.crates.iter().find(|c| {
+            c.name == crate_.name
         }).ok_or(A!("missing crate meta for {}", crate_.name))?;
 
-        let example = examples.iter().find(|ce| {
-            ce.name == crate_.name
+        let example = examples.iter().find(|c| {
+            c.name == crate_.name
         }).map(|ce| ce.text.to_string()).unwrap_or_default();
 
         infos.push(CrateInfo {
@@ -126,7 +126,19 @@ fn build_crate_info(
         });
     }
 
-    todo!()
+    for crate_ in &crates_meta.crates {
+        let _ = manifest_crate_info.iter().find(|c| {
+            c.name == crate_.name
+        }).ok_or(A!("unused crate meta for {}", crate_.name))?;
+    }
+
+    for crate_ in &examples {
+        let _ = manifest_crate_info.iter().find(|c| {
+            c.name == crate_.name
+        }).ok_or(A!("unused example for {}", crate_.name))?;
+    }
+
+    Ok(infos)
 }
 
 #[derive(Debug)]
