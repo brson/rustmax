@@ -121,7 +121,10 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
         .as_table()
         .ok_or(A!("toml: dependencies table"))?;
 
-    for (name, dep) in deps.iter() {
+    use std::borrow::ToOwned::to_owned as O;
+    use std::borrow::ToString::to_string as S;
+
+    deps.iter().map(|(name, dep)| {
         let version = dep
             .as_table()
             .ok_or(A!("toml: dep table"))?
@@ -129,7 +132,9 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<ManifestCrate> {
             .ok_or(A!("toml: dep version"))?
             .as_str()
             .ok_or(A!("toml: dep version string"))?;
-    }
-
-    todo!()
+        ManifestCrate {
+            name: name.to_owned(),
+            version: version.to_owned(),
+        }            
+k    }).collect()
 }
