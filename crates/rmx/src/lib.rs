@@ -77,8 +77,10 @@ pub mod extras {
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
-    pub fn S(s: &'static str) -> crate::alloc::string::String {
-        core::convert::From::from(s)
+    pub fn S(
+        s: &impl crate::alloc::string::ToString,
+    ) -> crate::alloc::string::String {
+        crate::alloc::string::ToString::to_string(s)
     }
 
     #[cfg(feature = "extension-trait")]
