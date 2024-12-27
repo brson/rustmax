@@ -60,6 +60,7 @@ notable or useful chapters within a book.
 ## The Rust crate ecosystem
 
 - [The `rand` Book](https://rust-random.github.io/book/)
+- [The `proptest` Book](https://proptest-rs.github.io/proptest/intro.html)
 - [The `serde` Book](https://serde.rs/)
 - [The Rust Cookbook](https://rust-lang-nursery.github.io/rust-cookbook/)
 
