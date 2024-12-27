@@ -9,11 +9,18 @@ clean:
 
 check:
     cargo check -p rmx
-    #cargo check -p rmx --features rmx-profile-no-std
+    cargo check -p rmx --features rmx-profile-no-std
     cargo check -p rmx --features rmx-profile-std
     cargo check -p rmx --features rmx-profile-full
     cargo check -p rmx --features rmx-profile-max
     cargo check -p rmx-cli
+
+test:
+    cargo test -p rmx
+    cargo test -p rmx --features rmx-profile-no-std
+    cargo test -p rmx --features rmx-profile-std
+    cargo test -p rmx --features rmx-profile-full
+    cargo test -p rmx --features rmx-profile-max
 
 lint:
     cargo deny check
