@@ -8,6 +8,8 @@ but that are not yet part of Rust Max.
 
 - [`backtrace-on-stack-overflow`](https://docs.rs/backtrace-on-stack-overflow).
   Nice missing feature, but code looks underdeveloped.
+- [`bitvec`](https://docs.rs/bitvec).
+  Operate directly on bits.
 - [`console`](https://docs.rs/console),
   [`dialoguer`](https://docs.rs/dialoguer), and
   [`indicatif`](https://docs.rs/indicatif).
