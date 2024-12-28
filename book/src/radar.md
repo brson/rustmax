@@ -74,6 +74,7 @@ but that are not yet part of Rust Max.
 - threadpool
 - zip
 - parser generator (pest?)
+- alternative to bitflags
 
 
 ## Graveyard
