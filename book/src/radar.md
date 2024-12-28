@@ -71,6 +71,7 @@ but that are not yet part of Rust Max.
 - wasm crates and tools
 - threadpool
 - zip
+- parser generator (pest?)
 
 
 ## Graveyard
