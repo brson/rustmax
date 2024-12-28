@@ -1,7 +1,37 @@
 // hide transitive crate dependencies from sidebar
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
+
+    const cratePath = guessCrateJsonPath();
+    console.log(`guessing crate.json at ${cratePath}`);
+
+    try {
+        const response = await fetch(cratePath);
+        if (!response.ok) {
+            console.log(`unable to load crate.json: ${response.status}`);
+            return;
+        }
+
+        const crates = await response.json();
+        console.log(`crates: ${crates}`);
+        hideCrates(crates);
+    } catch (error) {
+        console.log(`fetch error: ${error}`);
+    }
+
+    //hideCrates();
+});
+
+function guessCrateJsonPath() {
+    // Presumably `rootPath` is set by rustdoc
+    console.assert(window.rootPath != null);
+    return `${window.rootPath}/crates.json`;
+}
+
+function hideCrates(crates) {
     console.log("hiding irrelevant crates from sidebar");
+
+    const crateSet = new Set(crates);
 
     var visibleTotal = 0;
     var hiddenTotal = 0;
@@ -24,71 +54,5 @@ window.addEventListener("load", () => {
     }
 
     console.log(`visible ${visibleTotal}; hidden ${hiddenTotal}`);
-});
-
-// Must be kept in sync with crates/rmx/Cargo.toml
-const crateSet = new Set([
-    'ahash',
-    'anyhow',
-    'axum',
-    'backtrace',
-    'base64',
-    'bindgen',
-    'bitflags',
-    'blake3',
-    'byteorder',
-    'bytes',
-    'cc',
-    'cfg_if',
-    'chrono',
-    'clap',
-    'ctrlc',
-    'crossbeam',
-    'cxx',
-    'cxx_build',
-    'derive_more',
-    'env_logger',
-    'extension_trait',
-    'futures',
-    'http',
-    'hex',
-    'hyper',
-    'itertools',
-    'jiff',
-    'json5',
-    'libc',
-    'log',
-    'mime',
-    'nom',
-    'num_bigint',
-    'num_cpus',
-    'num_enum',
-    'proc_macro2',
-    'proptest',
-    'quote',
-    'rand',
-    'rand_chacha',
-    'rand_pcg',
-    'rayon',
-    'regex',
-    'reqwest',
-    'rustyline',
-    'serde',
-    'serde_json',
-    'sha2',
-    'socket2',
-    'static_assertions',
-    'syn',
-    'tempfile',
-    'tera',
-    'termcolor',
-    'thiserror',
-    'tokio',
-    'tower',
-    'toml',
-    'unicode_segmentation',
-    'url',
-    'walkdir',
-    'xshell',
-]);
+}
 

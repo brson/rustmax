@@ -254,7 +254,7 @@ fn make_crate_lists(
     md.push_str("|-|-|-|\n");
     json.push_str("[\n");
 
-    for krate in crates {
+    for (i, krate) in crates.iter().enumerate() {
         md.push_str(&format!(
             "| {} | `{} = \"{}\"` | [📖]({}) |\n",
             krate.short_desc,
@@ -262,10 +262,17 @@ fn make_crate_lists(
             krate.version,
             "todo",
         ));
-        json.push_str(&format!(
-            "\"{}\",\n",
-            krate.name,
-        ));
+        if i + 1 < crates.len() {
+            json.push_str(&format!(
+                "\"{}\",\n",
+                krate.name,
+            ));
+        } else {
+            json.push_str(&format!(
+                "\"{}\"\n",
+                krate.name,
+            ));
+        }
     }
 
     md.push_str("");

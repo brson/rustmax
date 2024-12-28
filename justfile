@@ -51,12 +51,13 @@ maint-upgrade-incompatible:
 prebuild:
     cargo run -p rmx-prebuild
 
-doc-crates:
+doc-crates: prebuild
     RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \
       cargo doc -p rmx --features rmx-profile-max
     cp www/mixins/mixin-rustdoc-themes.css target/doc/
     cp www/mixins/mixin-rustdoc-script.js target/doc/
     cp www/rustmax-themes.css target/doc/
+    cp work/crates.json target/doc/
 
 doc-book:
     rm -rf book/book
