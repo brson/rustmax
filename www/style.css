@@ -154,3 +154,7 @@ table#rmx-crate-table tr:nth-child(even)
 table#rmx-crate-table tr:nth-child(odd) {
     background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 5%);
 }
+
+table button {
+    background: none;
+}
