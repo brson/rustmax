@@ -48,6 +48,8 @@ maint-upgrade-incompatible:
     cargo upgrade --incompatible
 
 
+prebuild:
+    cargo run -p rmx-prebuild
 
 doc-crates:
     RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \

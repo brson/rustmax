@@ -24,6 +24,11 @@ const TOOLS_META: &str = "src/tools.json5";
 const RMX_MANIFEST: &str = "crates/rmx/Cargo.toml";
 const EXAMPLES_DIR: &str = "crates/rmx/doc-src";
 
+const OUT_DIR: &str = "work";
+const OUT_CRATES_MD: &str = "work/crates.md";
+const OUT_CRATES_JSON: &str = "work/crates.json";
+const OUT_CRATES_HTML: &str = "work/crates.html";
+    
 struct CrateInfo {
     name: String,
     category: String,
@@ -69,6 +74,7 @@ mod meta {
 
 fn main() -> AnyResult<()> {
     let workspace_dir = env::current_dir()?;
+
     let crates_meta_file = workspace_dir.join(CRATES_META);
     let tools_meta_file = workspace_dir.join(TOOLS_META);
     let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
@@ -94,7 +100,30 @@ fn main() -> AnyResult<()> {
         &crates_meta, &rmx_manifest, examples_dir,
     )?;
 
-    todo!()
+    let out_crates_md_file = workspace_dir.join(OUT_CRATES_MD);
+    let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
+    let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
+
+    let (
+        out_crates_md_str,
+        out_crates_json_str,
+        out_crates_html_str,
+    ) = make_crate_lists(&crate_info);
+
+    fs::create_dir_all(OUT_DIR)?;
+    write(out_crates_md_file, &out_crates_md_str)?;
+    write(out_crates_json_file, &out_crates_json_str)?;
+    write(out_crates_html_file, &out_crates_html_str)?;
+
+    Ok(())
+}
+
+fn write<P>(p: P, c: &str) -> AnyResult<()>
+    where P: AsRef<std::path::Path>,
+{
+    fs::write(&p, c)?;
+    eprintln!("wrote {}", p.as_ref().display());
+    Ok(())
 }
 
 fn build_crate_info(
@@ -210,4 +239,37 @@ fn get_examples(
     }
 
     Ok(examples)
+}
+
+fn make_crate_lists(
+    crates: &[CrateInfo]
+) -> (
+    String, String, String
+) {
+    let mut md = String::new();
+    let mut json = String::new();
+    let mut html = String::new();
+
+    md.push_str("| Feature | Crate | |\n");
+    md.push_str("|-|-|-|\n");
+    json.push_str("[\n");
+
+    for krate in crates {
+        md.push_str(&format!(
+            "| {} | `{} = \"{}\"` | [📖]({}) |\n",
+            krate.short_desc,
+            krate.name,
+            krate.version,
+            "todo",
+        ));
+        json.push_str(&format!(
+            "\"{}\",\n",
+            krate.name,
+        ));
+    }
+
+    md.push_str("");
+    json.push_str("]");
+
+    (md, json, html)
 }

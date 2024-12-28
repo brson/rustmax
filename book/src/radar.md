@@ -27,6 +27,7 @@ but that are not yet part of Rust Max.
   [`detone`](https://docs.rs/detone).
 - [`flate2`](https://docs.rs/flate2).
 - [`fnv`](https://docs.rs/fnv) or some other non-ahash fast hash
+- [`home`](https://docs.rs/home)
 - [`memchr`](https://docs.rs/memchr)
 - [`memmap`](hthtps://docs.rs/memmap)
 - [`ndarray`](https://docs.rs/ndarray)
@@ -53,6 +54,7 @@ but that are not yet part of Rust Max.
 - [`tracing`](https://docs.rs/tracing).
 - [`tracing-subscriber`](https://docs.rs/tracing-subscriber).
 - [`tracing-tracy`](https://docs.rs/tracing-tracy).
+- [`xdg`](https://docs.rs/xdg)
 
 
 ## Tools
