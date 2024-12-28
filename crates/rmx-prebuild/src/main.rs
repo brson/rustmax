@@ -285,8 +285,10 @@ fn make_crate_lists(
             krate.short_desc,
         ));
         html.push_str(&format!(
-            "<td><a href='{}'><code>{} = \"{}\"</code></a></td>\n",
-            "todo",
+            "<td><a href='https://docs.rs/{}/{}/{}'><code>{} = \"{}\"</code></a></td>\n",
+            krate.name,
+            krate.version,
+            krate.name.replace("-", "_"),
             krate.name,
             krate.version,
         ));
