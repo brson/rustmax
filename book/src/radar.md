@@ -39,6 +39,8 @@ but that are not yet part of Rust Max.
 - [`num`](https://docs.rs/num).
 - [`num-traits`](https://docs.rs/num-traits)
 - [`ordered-float`](https://docs.rs/ordered-float)
+- [`parking_lot`](https://docs.rs/parking_lot)
+  Non-poisoning mutexes, etc.
 - [`petgraph`](https://docs.rs/petgraph)
 - [`rustversion`](https://docs.rs/rustversion)
 - [`rust-embed`](https://docs.rs/rust-embed).
@@ -75,7 +77,8 @@ but that are not yet part of Rust Max.
 - zip
 - parser generator (pest?)
 - alternative to bitflags
-
+- gui stuff
+  - winit, wgpu vs glow, morphorm, css
 
 ## Graveyard
 
