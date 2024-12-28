@@ -157,4 +157,6 @@ table#rmx-crate-table tr:nth-child(odd) {
 
 table button {
     background: none;
+    color: var(--rmx-color-fg);
+    border: 1px solid var(--rmx-color-fg);
 }
