@@ -45,5 +45,5 @@ nav.mobile-topbar,
 	--sidebar-link-color: var(--rmx-color-links);
 
     --code-block-background-color: color-mix(in srgb, var(--rmx-color-bg), var(--rmx-color-accents) 10%);
-	--table-alt-row-background-color: color-mix(in srgb, rgba(0, 0, 0, 0), var(--rmx-color-accents) 5%);
+	--table-alt-row-background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 5%);
 }

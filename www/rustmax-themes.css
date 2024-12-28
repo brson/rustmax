@@ -2,6 +2,8 @@
 :root:not([data-theme]) {
     --rmx-color-fg: #444;      /* black */
     --rmx-color-bg: #f8f8f8;   /* white */
+    --rmx-color-fg-deep: black;
+    --rmx-color-bg-deep: white;
     --rmx-color-links: #08f;   /* blue */
     --rmx-color-accents: #f30; /* red */
 
@@ -16,6 +18,8 @@
 :root[data-theme="dark"] {
     --rmx-color-fg: #f8f8f8;
     --rmx-color-bg: #111;
+    --rmx-color-fg-deep: white;
+    --rmx-color-bg-deep: black;
     --rmx-color-links: #2af;
     --rmx-color-accents: #f30;
 

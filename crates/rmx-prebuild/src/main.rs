@@ -253,7 +253,7 @@ fn make_crate_lists(
     md.push_str("| Feature | Crate | |\n");
     md.push_str("|-|-|-|\n");
     json.push_str("[\n");
-    html.push_str("<table id='rmd-crate-table'>\n");
+    html.push_str("<table id='rmx-crate-table'>\n");
     html.push_str("<thead>\n");
     html.push_str("<th>Feature</th>\n");
     html.push_str("<th>Crate</th>\n");

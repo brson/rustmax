@@ -3,9 +3,8 @@ default:
 
 
 
-clean:
+clean: doc-clean
     cargo clean
-    rm -rf out
 
 check:
     cargo check -p rmx
@@ -51,6 +50,10 @@ maint-upgrade-incompatible:
 prebuild:
     cargo run -p rmx-prebuild
 
+
+doc-clean:
+    rm -rf out
+
 doc-crates: prebuild
     RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \
       cargo doc -p rmx --features rmx-profile-max
@@ -68,9 +71,10 @@ doc-book:
 
 doc-build: doc-crates doc-book
     rm -rf book/yapp~
-    rm -rf out
+    #rm -rf out
     mkdir -p out/book
     mkdir -p out/api
     cp -r www/* out/
     cp -r book/book/* out/book/
-    cp -r target/doc/* out/api/
+    cp -rl target/doc/* out/api/
+    cp work/crates.html out/

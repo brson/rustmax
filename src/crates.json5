@@ -3,7 +3,7 @@
         {
             name: "ahash",
             category: "collections",
-            short_desc: "Fast `HashMap`s",
+            short_desc: "Fast hash maps",
             oneline_desc: "A fast and DOS-resistent hash function, for use in `HashMap`s",
         },
         {
