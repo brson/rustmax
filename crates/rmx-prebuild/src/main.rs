@@ -253,6 +253,12 @@ fn make_crate_lists(
     md.push_str("| Feature | Crate | |\n");
     md.push_str("|-|-|-|\n");
     json.push_str("[\n");
+    html.push_str("<table id='rmd-crate-table'>\n");
+    html.push_str("<thead>\n");
+    html.push_str("<th>Feature</th>\n");
+    html.push_str("<th>Crate</th>\n");
+    html.push_str("<th></th>\n");
+    html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
         md.push_str(&format!(
@@ -273,10 +279,25 @@ fn make_crate_lists(
                 krate.name,
             ));
         }
+        html.push_str("<tr>\n");
+        html.push_str(&format!(
+            "<td>{}</td>\n",
+            krate.short_desc,
+        ));
+        html.push_str(&format!(
+            "<td><code>{} = \"{}\"</code></td>\n",
+            krate.name,
+            krate.version,
+        ));
+        html.push_str(&format!(
+            "<td>todo</td>\n",
+        ));
+        html.push_str("</tr>\n");
     }
 
     md.push_str("");
     json.push_str("]");
+    html.push_str("</thead>\n");
 
     (md, json, html)
 }
