@@ -27,9 +27,12 @@ but that are not yet part of Rust Max.
   [`oem_cp`](https://docs.rs/oem_cp),
   [`icu_normalizer`](https://docs.rs/icu_normalizer),
   [`detone`](https://docs.rs/detone).
+- [`eyre`](https://docs.rs/eyre).
+  Sophisticated error handling.
 - [`flate2`](https://docs.rs/flate2).
 - [`fnv`](https://docs.rs/fnv) or some other non-ahash fast hash
 - [`home`](https://docs.rs/home)
+- [`indexmap`](https://docs.rs/indexmap)
 - [`memchr`](https://docs.rs/memchr)
 - [`memmap`](hthtps://docs.rs/memmap)
 - [`ndarray`](https://docs.rs/ndarray)
