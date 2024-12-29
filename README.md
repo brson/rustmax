@@ -24,7 +24,7 @@ documents and reexports other useful Rust crates.
   for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
 - [An opinionated config file](rustfmt.toml)
   for [rustfmt](https://github.com/rust-lang/rustfmt).
-- [An opinionated config file](configs/deny.toml)
+- [An opinionated config file](deny.toml)
   for [cargo-deny](https://github.com/EmbarkStudios/cargo-deny).
 - [An opinionated config file](clippy-control.toml)
   for [clippy-control](https://github.com/brson/clippy-control).

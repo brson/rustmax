@@ -36,6 +36,7 @@ enum CliCmd {
 
     WriteFmtConfig(CliCmdWriteFmtConfig),
     WriteCargoDenyConfig(CliCmdWriteCargoDenyConfig),
+    WriteClippyControlConfig(CliCmdWriteClippyControlConfig),
 
     RunAllChecks(CliCmdRunAllChecks),
 }
@@ -58,6 +59,10 @@ struct CliCmdWriteCargoDenyConfig {
 }
 
 #[derive(clap::Args)]
+struct CliCmdWriteClippyControlConfig {
+}
+
+#[derive(clap::Args)]
 struct CliCmdRunAllChecks {
 }
 
@@ -68,6 +73,7 @@ impl CliOpts {
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
+            CliCmd::WriteClippyControlConfig(cmd) => cmd.run(),
 
             CliCmd::RunAllChecks(cmd) => cmd.run(),
 
@@ -98,8 +104,17 @@ impl CliCmdWriteFmtConfig {
 impl CliCmdWriteCargoDenyConfig {
     fn run(&self) -> AnyResult<()> {
         // todo --force
-        let contents = include_bytes!("../../../configs/deny.toml");
-        rmx::std::fs::write("rustfmt.toml", contents)?;
+        let contents = include_bytes!("../../../deny.toml");
+        rmx::std::fs::write("deny.toml", contents)?;
+        Ok(())
+    }
+}
+
+impl CliCmdWriteClippyControlConfig {
+    fn run(&self) -> AnyResult<()> {
+        // todo --force
+        let contents = include_bytes!("../../../clippy-control.toml");
+        rmx::std::fs::write("clippy-control.toml", contents)?;
         Ok(())
     }
 }
