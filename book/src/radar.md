@@ -50,7 +50,6 @@ but that are not yet part of Rust Max.
 - [`rust-embed`](https://docs.rs/rust-embed).
   Embedding of file system resources into binaries,
   with hot-reloading during development.
-- [`semver`](https://docs.rs/semver).
 - [`smallvec`](https://docs.rs/smallvec).
   The "small vector" optimization.
   There may be better / newer options.
@@ -83,6 +82,7 @@ but that are not yet part of Rust Max.
 - alternative to bitflags
 - gui stuff
   - winit, wgpu vs glow, morphorm, css
+- i18n
 
 ## Graveyard
 

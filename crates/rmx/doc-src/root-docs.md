@@ -40,8 +40,9 @@ as a "batteries included" supercrate.
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
 | system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
 | testing | [`proptest`], [`static_assertions`] |
-| build scripts | … |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
+| build scripts | … |
+| deployment and software lifecycle | [`semver`] |
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 
 
@@ -154,6 +155,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`rand`] - Random number generators.
 - [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
 - [`rand_pcg`] - The PCG non-cryptographically-secure random number generators.
+- [`semver`] - The software versioning standard used by Rust.
 - [`serde`] - The standard Rust serialization framework.
 - [`serde_json`] - JSON serialization / deserialization with [`serde`].
 - [`sha2`] - The SHA2 cryptographic hash functions.

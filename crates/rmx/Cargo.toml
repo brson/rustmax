@@ -40,6 +40,7 @@ rmx-crates-no-std = [
   "rand",
   "rand_chacha",
   "rand_pcg",
+  "semver",
   "serde",
   "serde_json",
   "sha2",
@@ -209,6 +210,7 @@ rmx-feature-std = [
   "rand_chacha/std",
   "regex/std",
   "quote/proc-macro",
+  "semver/std",
   "serde/std",
   "serde_json/std",
   "sha2/std",
@@ -220,7 +222,7 @@ rmx-feature-default = [
   "axum/default",
   "bindgen/default",
   "byteorder/default",
-  "chrono/clock", # can't use chrono/default because of RUSTSEC-2020-0071
+  "chrono/clock", # todo can't use chrono/default because of RUSTSEC-2020-0071
   "clap/default",
   "derive_more/default",
   "futures/default",
@@ -232,6 +234,7 @@ rmx-feature-default = [
   "regex/default",
   "reqwest/default",
   "rustyline/default",
+  "semver/std",
   "serde/default",
   "serde_json/default",
   "sha2/default",
@@ -256,6 +259,7 @@ rmx-feature-serde = [
   "rand/serde1",
   "rand_chacha/serde1",
   "rand_pcg/serde1",
+  "semver/serde",
   "num-bigint/serde",
   "url/serde",
 ]
@@ -364,6 +368,7 @@ rayon = { version = "1.10.0", optional = true, default-features = false }
 regex = { version = "1.11.1", optional = true, default-features = false }
 reqwest = { version = "0.12.9", optional = true, default-features = false }
 rustyline = { version = "15.0.0", optional = true, default-features = false }
+semver = { version = "1.0.24", optional = true, default-features = false }
 serde = { version = "1.0.216", optional = true, default-features = false }
 serde_json = { version = "1.0.134", optional = true, default-features = false }
 sha2 = { version = "0.10.8", optional = true, default-features = false }

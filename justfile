@@ -2,6 +2,10 @@ default:
     just --list
 
 
+install-tools:
+    cargo install mdbook
+    cargo install mdbook-yapp
+
 
 clean: doc-clean
     cargo clean

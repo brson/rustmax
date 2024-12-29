@@ -585,6 +585,15 @@ pub mod rustyline {
     pub use ::rustyline::*;
 }
 
+#[cfg(feature = "semver")]
+pub mod semver {
+    //! The software versioning standard used by Rust
+    //!
+    //! See crate [`::semver`].
+
+    pub use ::semver::*;
+}
+
 #[cfg(feature = "serde")]
 pub mod serde {
     //! The standard Rust serialization framework.

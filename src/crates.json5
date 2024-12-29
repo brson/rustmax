@@ -271,6 +271,12 @@
             oneline_desc: "todo",
         },
         {
+            name: "semver",
+            category: "deployment",
+            short_desc: "Semantic versioning",
+            oneline_desc: "The software versioning standard used by Rust",
+        },
+        {
             name: "serde",
             category: "encoding",
             short_desc: "Standard serialization",
