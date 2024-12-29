@@ -26,13 +26,17 @@ struct CliOpts {
 #[derive(clap::Subcommand)]
 enum CliCmd {
     ListTools(CliCmdListTools),
-    InstallTools(CliCmdInstallTools),
+    InstallTools,
     InstallTool(CliCmdInstallTool),
-    ListDocs(CliCmdListDocs),
-    OpenDoc(CliCmdOpenDoc),
+
+    ListDocs,
+    OpenDoc,
+
+    NewProject,
+
     WriteFmtConfig(CliCmdWriteFmtConfig),
     WriteCargoDenyConfig(CliCmdWriteCargoDenyConfig),
-    NewProject(CliCmdNewProject),
+
     RunAllChecks(CliCmdRunAllChecks),
 }
 
@@ -41,21 +45,8 @@ struct CliCmdListTools {
 }
 
 #[derive(clap::Args)]
-struct CliCmdInstallTools {
-    tools: Vec<Tool>,
-}
-
-#[derive(clap::Args)]
 struct CliCmdInstallTool {
     tool: Tool,
-}
-
-#[derive(clap::Args)]
-struct CliCmdListDocs {
-}
-
-#[derive(clap::Args)]
-struct CliCmdOpenDoc {
 }
 
 #[derive(clap::Args)]
@@ -64,10 +55,6 @@ struct CliCmdWriteFmtConfig {
 
 #[derive(clap::Args)]
 struct CliCmdWriteCargoDenyConfig {
-}
-
-#[derive(clap::Args)]
-struct CliCmdNewProject {
 }
 
 #[derive(clap::Args)]
@@ -80,8 +67,10 @@ impl CliOpts {
             CliCmd::ListTools(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
+            CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
 
             CliCmd::RunAllChecks(cmd) => cmd.run(),
+
             _ => todo!(),
         }
     }
