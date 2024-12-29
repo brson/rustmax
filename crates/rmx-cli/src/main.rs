@@ -28,9 +28,14 @@ enum CliCmd {
     ListTools(CliCmdListTools),
     InstallTools,
     InstallTool(CliCmdInstallTool),
+    UpdateTools,
+    UpdateTool,
+    UninstallTools,
+    UninstallTool,
 
     ListDocs,
     OpenDoc,
+    SearchDocs,
 
     NewProject,
 
