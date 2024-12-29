@@ -2,6 +2,7 @@
 
 mod tools;
 mod impls;
+mod moldman;
 
 use rmx::prelude::*;
 use rmx::{
@@ -29,9 +30,11 @@ enum CliCmd {
     InstallTools,
     InstallTool(CliCmdInstallTool),
     UpdateTools,
-    UpdateTool,
+    UpdateTool(CliCmdUpdateTool),
     UninstallTools,
-    UninstallTool,
+    UninstallTool(CliCmdUninstallTool),
+    ToolsStatus,
+    ToolStatus(CliCmdToolStatus),
 
     ListDocs,
     OpenDoc,
@@ -56,6 +59,21 @@ struct CliCmdInstallTool {
 }
 
 #[derive(clap::Args)]
+struct CliCmdUpdateTool {
+    tool: Tool,
+}
+
+#[derive(clap::Args)]
+struct CliCmdUninstallTool {
+    tool: Tool,
+}
+
+#[derive(clap::Args)]
+struct CliCmdToolStatus {
+    tool: Tool,
+}
+
+#[derive(clap::Args)]
 struct CliCmdWriteFmtConfig {
 }
 
@@ -75,6 +93,10 @@ impl CliOpts {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
             CliCmd::ListTools(cmd) => cmd.run(),
+            CliCmd::InstallTool(cmd) => cmd.run(),
+            CliCmd::UpdateTool(cmd) => cmd.run(),
+            CliCmd::UninstallTool(cmd) => cmd.run(),
+            CliCmd::ToolStatus(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
@@ -94,6 +116,30 @@ impl CliCmdListTools {
         }
 
         Ok(())
+    }
+}
+
+impl CliCmdInstallTool {
+    fn run(&self) -> AnyResult<()> {
+        self.tool.install()
+    }
+}
+
+impl CliCmdUpdateTool {
+    fn run(&self) -> AnyResult<()> {
+        self.tool.update()
+    }
+}
+
+impl CliCmdUninstallTool {
+    fn run(&self) -> AnyResult<()> {
+        self.tool.uninstall()
+    }
+}
+
+impl CliCmdToolStatus {
+    fn run(&self) -> AnyResult<()> {
+        self.tool.status()
     }
 }
 

@@ -1,3 +1,5 @@
+use rmx::prelude::*;
+
 use super::tools::*;
 
 impl Tool {
@@ -118,6 +120,42 @@ impl Tool {
             _ => ToolAttrs {
                 display_name: "<unknown>",
             }
+        }
+    }
+}
+
+impl Tool {
+    pub fn install(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::install(),
+            _ => todo!(),
+        }
+    }
+}
+
+impl Tool {
+    pub fn update(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::update(),
+            _ => todo!(),
+        }
+    }
+}
+
+impl Tool {
+    pub fn uninstall(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::uninstall(),
+            _ => todo!(),
+        }
+    }
+}
+
+impl Tool {
+    pub fn status(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::status(),
+            _ => todo!(),
         }
     }
 }
