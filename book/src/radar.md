@@ -27,6 +27,7 @@ but that are not yet part of Rust Max.
   [`oem_cp`](https://docs.rs/oem_cp),
   [`icu_normalizer`](https://docs.rs/icu_normalizer),
   [`detone`](https://docs.rs/detone).
+- [`enum-iterator`](https://docs.rs/enum-iterator),
 - [`eyre`](https://docs.rs/eyre).
   Sophisticated error handling.
 - [`flate2`](https://docs.rs/flate2).

@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+mod tools;
 mod impls;
 
 use rmx::prelude::*;
@@ -8,90 +9,12 @@ use rmx::{
     serde,
 };
 
+use tools::Tool;
+
+
 fn main() -> AnyResult<()> {
     let opts = <CliOpts as clap::Parser>::parse();
     opts.run()
-}
-
-#[derive(clap::ValueEnum)]
-#[derive(clap::Subcommand)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[derive(enum_iterator::Sequence)]
-#[derive(Clone)]
-#[serde(rename_all = "kebab-case")]
-enum Tool {
-    /* rustup itself */
-
-    Rustup,
-
-    /* rustup proxies */
-
-    Cargo,
-    CargoClippy,
-    CargoFmt,
-    CargoMiri,
-    Rustc,
-    Rustdoc,
-    Rustfmt,
-    RustGdbGui,
-    RustGdb,
-    RustLldb,
-
-    /* other tools from rustup components */
-
-    RustAnalyzer,
-    Miri,
-    Clippy,
-    LlvmTools,
-    LlvmCov,
-    
-    /* cargo plugins */
-
-    CargoAudit,
-    CargoBenchcmp,
-    CargoCleanAll,
-    CargoDeny,
-    CargoDeps,
-    CargoEdit,
-    CargoExpand,
-    CargoFuzz,
-    CargoGeiger,
-    CargoGenerate,
-    CargoHack,
-    CargoLlvmLines,
-    CargoOutdated,
-    CargoUdeps,
-    CargoTree,
-    CargoWatch,
-    CargoWorkspace,
-    CargoSemver, // rust-semversemver
-
-    /* non-plugins */
-    
-    BasicHttpServer,
-    Eva,
-    Chit,
-    Critcmp,
-    DuDust,
-    FdFind,
-    Gist,
-    Hexyl,
-    Hyperfine,
-    Jsonxf,
-    Just,
-    Mdbook,
-    Parol,
-    Ripgrep,
-    Sd,
-    Tokei,
-    WasmOpt,
-    WasmPack,
-    WasmTools,
-    Xsv,
-}
-
-struct ToolAttrs {
-    display_name: &'static str,
 }
 
 #[derive(clap::Parser)]

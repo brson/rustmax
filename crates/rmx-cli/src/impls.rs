@@ -1,4 +1,4 @@
-use super::*;
+use super::tools::*;
 
 impl Tool {
     pub fn attrs(&self) -> ToolAttrs {
@@ -108,6 +108,11 @@ impl Tool {
             },
             CargoSemver => ToolAttrs {
                 display_name: "cargo-semver",
+            },
+
+            /* non-rust */
+            Mold => ToolAttrs {
+                display_name: "mold",
             },
 
             _ => ToolAttrs {
