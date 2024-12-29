@@ -77,7 +77,7 @@ but that are not yet part of Rust Max.
 - gRPC
 - wasm crates and tools
 - threadpool
-- zip
+- zip, gzip
 - parser generator (pest?)
 - alternative to bitflags
 - gui stuff
