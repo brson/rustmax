@@ -6,13 +6,11 @@ edition.workspace = true
 
 [features]
 
-default = [
-  #"rmx-profile-no-std",
-  #"rmx-profile-std",
-]
+default = []
 
 
 ## ---------- ##
+
 
 rmx-crates-no-std = [
   "ahash",
@@ -171,6 +169,7 @@ rmx-profile-max-nightly = [
 
 
 ## ---------- ##
+
 
 rmx-feature-no-std = [
   "ahash/compile-time-rng",
