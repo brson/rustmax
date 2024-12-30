@@ -10,15 +10,20 @@ but that are not yet part of Rust Max.
   Nice missing feature, but code looks underdeveloped.
 - [`bitvec`](https://docs.rs/bitvec).
   Operate directly on bits.
+- [`boringtun`](https://docs.rs/boringtun).
+  WireGuard.
 - [`console`](https://docs.rs/console),
   [`dialoguer`](https://docs.rs/dialoguer), and
   [`indicatif`](https://docs.rs/indicatif).
+  Pretty terminals.
 - [`criterion`](https://docs.rs/criterion).
   Advanced benchmarking.
 - [`dashmap`](https://docs.rs/dashmap).
   Concurrent hash map.
 - [`datatest-stable`](https://docs.rs/datatest-stable)
+  Data-driven tests.
 - [`derive-new`](https://docs.rs/derive-new)
+  Derive the `new` function.
 - [`ena`](https://docs.rs/ena).
   The union find algorithm.
 - [`encoding`](https://docs.rs/encoding),
@@ -27,11 +32,15 @@ but that are not yet part of Rust Max.
   [`oem_cp`](https://docs.rs/oem_cp),
   [`icu_normalizer`](https://docs.rs/icu_normalizer),
   [`detone`](https://docs.rs/detone).
-- [`enum-iterator`](https://docs.rs/enum-iterator),
+  Text encoding.
+- [`enum-iterator`](https://docs.rs/enum-iterator).
+  Iterate over variants.
 - [`eyre`](https://docs.rs/eyre).
   Sophisticated error handling.
 - [`flate2`](https://docs.rs/flate2).
 - [`fnv`](https://docs.rs/fnv) or some other non-ahash fast hash
+- [`hashbrown`](https://docs.rs/hashbrown).
+  Better hash maps. Is there still a reason to use this?
 - [`home`](https://docs.rs/home)
 - [`indexmap`](https://docs.rs/indexmap)
 - [`memchr`](https://docs.rs/memchr)
@@ -47,6 +56,7 @@ but that are not yet part of Rust Max.
   Non-poisoning mutexes, etc.
 - [`petgraph`](https://docs.rs/petgraph)
 - [`rangetools`](https://docs.rs/rangetools)
+- [`rustls`](https://docs.rs/rustls). TLS.
 - [`rustversion`](https://docs.rs/rustversion)
 - [`rust-embed`](https://docs.rs/rust-embed).
   Embedding of file system resources into binaries,
@@ -55,6 +65,7 @@ but that are not yet part of Rust Max.
   The "small vector" optimization.
   There may be better / newer options.
 - [`tar`](https://docs.rs/tar).
+- [`tungstenite`](https://docs.rs/tungstenite). WebSockets.
 - [`stacker`](https://docs.rs/stacker).
   Manually-growable call stacks.
 - [`time`](https://docs.rs/time).
@@ -82,8 +93,13 @@ but that are not yet part of Rust Max.
 - parser generator (pest?)
 - alternative to bitflags
 - gui stuff
-  - winit, wgpu vs glow, morphorm, css
+  - winit, wgpu vs glow, morphorm, css, iced vs egui
 - i18n
+- QUIC - either quinn or quiche
+- HTTP3
+- markdown
+- csv
+
 
 ## Graveyard
 
