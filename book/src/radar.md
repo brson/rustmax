@@ -46,6 +46,7 @@ but that are not yet part of Rust Max.
 - [`parking_lot`](https://docs.rs/parking_lot)
   Non-poisoning mutexes, etc.
 - [`petgraph`](https://docs.rs/petgraph)
+- [`rangetools`](https://docs.rs/rangetools)
 - [`rustversion`](https://docs.rs/rustversion)
 - [`rust-embed`](https://docs.rs/rust-embed).
   Embedding of file system resources into binaries,

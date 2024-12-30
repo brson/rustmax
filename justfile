@@ -80,5 +80,5 @@ doc-build: doc-crates doc-book
     mkdir -p out/api
     cp -r www/* out/
     cp -r book/book/* out/book/
-    cp -rl target/doc/* out/api/
+    cp -rlf target/doc/* out/api/
     cp work/crates.html out/
