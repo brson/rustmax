@@ -101,8 +101,8 @@ pub mod extras {
 
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
-    pub impl<T> QuickToString<T> for T
-    where T: crate::alloc::string::ToString
+    pub impl<T> QuickToString for T
+    where T: crate::alloc::string::ToString + ?Sized,
     {
         #[allow(non_snake_case)]
         fn S(&self) -> crate::alloc::string::String {
@@ -112,7 +112,7 @@ pub mod extras {
 
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
-    pub impl<T> QuickToOwned<T> for T
+    pub impl<T> QuickToOwned for T
         where T: crate::alloc::borrow::ToOwned,
     {
         type Owned = T::Owned;
