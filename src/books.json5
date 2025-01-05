@@ -1,0 +1,24 @@
+{
+    books: [
+        {
+            slug: "trpl",
+            name: "The Rust Programming Language",
+            repo: "https://github.com/rust-lang/book",
+        },
+        {
+            slug: "rust-by-example",
+            name: "Rust By Example",
+            repo: "https://github.com/rust-lang/rust-by-example",
+        },
+        {
+            slug: "reference",
+            name: "The Rust Reference",
+            repo: "https://github.com/rust-lang/reference",
+        },
+        {
+            slug: "nomicon",
+            name: "The Rustonomicon",
+            repo: "https://github.com/rust-lang/nomicon",
+        },
+    ],
+}

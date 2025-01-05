@@ -3,6 +3,7 @@
 mod tools;
 mod impls;
 mod moldman;
+mod books;
 
 use rmx::prelude::*;
 use rmx::{
@@ -36,9 +37,7 @@ enum CliCmd {
     ToolsStatus,
     ToolStatus(CliCmdToolStatus),
 
-    ListDocs,
-    OpenDoc,
-    SearchDocs,
+    BuildLibrary(CliCmdBuildLibrary),
 
     NewProject,
 
@@ -74,6 +73,11 @@ struct CliCmdToolStatus {
 }
 
 #[derive(clap::Args)]
+struct CliCmdBuildLibrary {
+    book: Option<String>,
+}
+
+#[derive(clap::Args)]
 struct CliCmdWriteFmtConfig {
 }
 
@@ -97,6 +101,8 @@ impl CliOpts {
             CliCmd::UpdateTool(cmd) => cmd.run(),
             CliCmd::UninstallTool(cmd) => cmd.run(),
             CliCmd::ToolStatus(cmd) => cmd.run(),
+
+            CliCmd::BuildLibrary(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
@@ -140,6 +146,15 @@ impl CliCmdUninstallTool {
 impl CliCmdToolStatus {
     fn run(&self) -> AnyResult<()> {
         self.tool.status()
+    }
+}
+
+impl CliCmdBuildLibrary {
+    fn run(&self) -> AnyResult<()> {
+        match self.book {
+            None => books::build_library(),
+            Some(ref book) => books::build_one_book(book),
+        }
     }
 }
 
