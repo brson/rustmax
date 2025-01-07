@@ -32,6 +32,25 @@ pub fn build_one_book(slug: &str) -> AnyResult<()> {
 }
 
 fn build_books(books: &[Book]) -> AnyResult<()> {
+    let procs = [
+        get_repo,
+        build_book,
+    ];
+
+    for proc in procs {
+        for book in books {
+            proc(book)?;
+        }
+    }
+
+    Ok(())
+}
+
+fn get_repo(book: &Book) -> AnyResult<()> {
+    todo!()
+}
+
+fn build_book(book: &Book) -> AnyResult<()> {
     todo!()
 }
 
