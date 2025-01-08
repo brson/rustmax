@@ -69,6 +69,7 @@ doc-crates: prebuild
 doc-book:
     rm -rf book/book
     cd book && mdbook build
+    # same as in mod_book_style
     cp www/mixins/mixin-mdbook-style.css book/book/
     cp www/mixins/mixin-mdbook-script.js book/book/
     cp www/rustmax-themes.css book/book/
