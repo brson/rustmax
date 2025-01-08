@@ -22,6 +22,7 @@ but that are not yet part of Rust Max.
   Concurrent hash map.
 - [`datatest-stable`](https://docs.rs/datatest-stable)
   Data-driven tests.
+- [`dotenv`](https://docs.rs/dotenv).
 - [`derive-new`](https://docs.rs/derive-new)
   Derive the `new` function.
 - [`ena`](https://docs.rs/ena).
@@ -42,6 +43,8 @@ but that are not yet part of Rust Max.
 - [`hashbrown`](https://docs.rs/hashbrown).
   Better hash maps. Is there still a reason to use this?
 - [`home`](https://docs.rs/home)
+- [`ignore`](https://docs.rs/ignore).
+  Like `walkdir` but obeys `.gitignore`.
 - [`indexmap`](https://docs.rs/indexmap)
 - [`memchr`](https://docs.rs/memchr)
 - [`memmap`](hthtps://docs.rs/memmap)
@@ -64,6 +67,7 @@ but that are not yet part of Rust Max.
 - [`smallvec`](https://docs.rs/smallvec).
   The "small vector" optimization.
   There may be better / newer options.
+- [`sqlx`](https://docs.rs/sqlx).
 - [`tar`](https://docs.rs/tar).
 - [`tungstenite`](https://docs.rs/tungstenite). WebSockets.
 - [`stacker`](https://docs.rs/stacker).
