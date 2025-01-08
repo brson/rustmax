@@ -18,5 +18,9 @@ default-members = [
   "crates/rmx-cli",
 ]
 
+exclude = [
+  "work/books/",
+]
+
 [profile.release]
 overflow-checks = true

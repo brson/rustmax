@@ -82,7 +82,8 @@ fn build_book(book: &Book) -> AnyResult<()> {
     let ref dir = book_src_dir(book);
     assert!(fs::exists(dir)?);
     let sh = Shell::new()?;
-    let _pd = sh.push_dir(dir);
+    sh.change_dir(dir);
+    sh.set_var("RUSTUP_TOOLCHAIN", "nightly"); // fixme - rust reference needs nightly
     cmd!(sh, "mdbook build").run()?;
     assert!(fs::exists(format!("{}/index.html", book_out_dir(book)))?);
     Ok(())
