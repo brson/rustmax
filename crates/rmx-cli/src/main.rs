@@ -37,6 +37,7 @@ enum CliCmd {
     ToolsStatus,
     ToolStatus(CliCmdToolStatus),
 
+    ListLibrary(CliCmdListLibrary),
     BuildLibrary(CliCmdBuildLibrary),
 
     NewProject,
@@ -73,6 +74,10 @@ struct CliCmdToolStatus {
 }
 
 #[derive(clap::Args)]
+struct CliCmdListLibrary {
+}
+
+#[derive(clap::Args)]
 struct CliCmdBuildLibrary {
     book: Option<String>,
 }
@@ -102,6 +107,7 @@ impl CliOpts {
             CliCmd::UninstallTool(cmd) => cmd.run(),
             CliCmd::ToolStatus(cmd) => cmd.run(),
 
+            CliCmd::ListLibrary(cmd) => cmd.run(),
             CliCmd::BuildLibrary(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
@@ -146,6 +152,12 @@ impl CliCmdUninstallTool {
 impl CliCmdToolStatus {
     fn run(&self) -> AnyResult<()> {
         self.tool.status()
+    }
+}
+
+impl CliCmdListLibrary {
+    fn run(&self) -> AnyResult<()> {
+        books::list_library()
     }
 }
 
