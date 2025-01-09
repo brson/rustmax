@@ -11,7 +11,9 @@
 # ### Rationale
 #
 # Giving variables names can improve readability.
+
 "let_and_return" = "allow"
+
 
 # ## arithmetic_side_effects = deny
 #
@@ -20,4 +22,140 @@
 # ### Rationale
 #
 # Most Rust code should explicitly handle overflow.
+
 "arithmetic_side_effects" = "deny"
+
+
+# ## "collapsible_else_if" = "allow"
+#
+# Allow `else` blocks that contain only `if` blocks.
+#
+#     if foo {
+#         ...
+#     } else {
+#         if bar {
+#             ...
+#         }
+#     }
+#
+# Clippy prefers to write this
+#
+#     if foo {
+#         ...
+#     } else if bar {
+#             ...
+#     }
+#
+# Sometimes it's nice for a bare `else` to explicitly
+# convey that there are no other cases further
+# down the code listing.
+
+"collapsible_else_if" = "allow"
+
+
+# ## "manual_map" = "allow"
+#
+# Allow constructs like
+#
+#     if let Some(text) = c.text() {
+#         Some((c, text))
+#     } else {
+#        // Filter out errors
+#        None
+#     }
+#
+# Clippy would rather write this as
+#
+#     c.text().map(|c| (c, text))
+#
+# Sometimes in context the open coding is more
+# readable; in this case it includes a comment
+# in one of the branches.
+# Good suggestion usually, but I don't always want it.
+
+"manual_map" = "allow"
+
+
+# ## "map_flatten" = "allow"
+#
+# Allow iterator chains of `map` followed by `flatten`.
+#
+# Flattening the result of `map` unwraps any `Some`
+# values and ignores `None` values. This same
+# behavor is provided my `filter_map`, which
+# clippy prefers.
+#
+#     source_map.chunks(db).iter().map(|chunk| {
+#         let chunk_lex = lex_chunk(db, chunk.C());
+#         parse_chunk(db, chunk_lex).clause(db)
+#     }).flatten().collect();
+#
+# vs.
+#
+#     source_map.chunks(db).iter().filter_map(|chunk| {
+#         let chunk_lex = lex_chunk(db, chunk.C());
+#         parse_chunk(db, chunk_lex).clause(db)
+#     }).collect();
+#
+# `map` -> `flatten` is preferable because each step
+# is focused on doing one thing, first mapping then flattening,
+# rather than the combined map and flatten behavior of `filter_map`.
+# Easier to think about one thing at a time.
+
+"map_flatten" = "allow"
+
+
+# ## "unnecessary_filter_map" = "allow"
+#
+# Allow `filter_map` when `filter` would work.
+#
+#     let tokens = chunk_lex.tokens(db).iter()
+#         .filter_map(|token| {
+#             match token.kind(db) {
+#                 TokenKind::Whitespace => None,
+#                 TokenKind::Comment => None,
+#                 _ => Some(token),
+#             }
+#         });
+#
+# vs.
+#
+#     let tokens = chunk_lex.tokens(db).iter()
+#         .filter(|token| {
+#             match token.kind(db) {
+#                 TokenKind::Whitespace => false,
+#                 TokenKind::Comment => false,
+#                 _ => true,
+#             }
+#         });
+#
+# `filter_map` may be prefered because `filter`
+# relies on `true` and `false`, and it`s not immediately
+# obvious what they mean: which one is "keep" and which
+# is "discard"?
+# Good suggestion, but not always wanted.
+
+"unnecessary_filter_map" = "allow"
+
+
+# ## "single_match" = "allow"
+#
+# Allow matches with a single non-empty arm
+# instead of `if let`.
+#
+#     match term {
+#         ir::Term::Error => break,
+#         _ => {}
+#     }
+#
+# vs.
+#
+#     if let ir::Term::Error = term {
+#         break;
+#     }
+#
+# There may be cases where one prefers
+# the more verbose version.
+# Unconfident about this one.
+
+"single_match" = "allow"
