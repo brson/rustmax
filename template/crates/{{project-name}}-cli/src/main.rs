@@ -21,7 +21,7 @@ struct Cli {
 
 #[derive(clap::Subcommand)]
 enum Command {
-    Check(CheckCommand),
+    Run(RunCommand),
 }
 
 #[derive(clap::Args)]
@@ -31,18 +31,18 @@ struct Args {
 }
 
 #[derive(clap::Args)]
-struct CheckCommand {
+struct RunCommand {
 }
 
 impl Cli {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
-            Command::Check(cmd) => cmd.run(&self.args),
+            Command::Run(cmd) => cmd.run(&self.args),
         }
     }
 }
 
-impl CheckCommand {
+impl RunCommand {
     fn run(&self, _args: &Args) -> AnyResult<()> {
         info!("hello world");
 
