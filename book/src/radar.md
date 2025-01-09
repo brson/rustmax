@@ -85,6 +85,7 @@ but that are not yet part of Rust Max.
 ## Tools
 
 - [`cargo-duplicates`](https://crates.io/crates/cargo-duplicates)
+- [`cargo-hack`](https://crates.io/crates/cargo-hack)
 - [`cargo-outdated`](https://crates.io/crates/cargo-outdated)
 - [`rust-analyzer`](https://rust-analyzer.github.io/)
 
