@@ -58,6 +58,8 @@ but that are not yet part of Rust Max.
 - [`parking_lot`](https://docs.rs/parking_lot)
   Non-poisoning mutexes, etc.
 - [`petgraph`](https://docs.rs/petgraph)
+- [`ratatui`](https://docs.rs/ratatui).
+  Seriously cool CLIs.
 - [`rangetools`](https://docs.rs/rangetools)
 - [`rustls`](https://docs.rs/rustls). TLS.
 - [`rustversion`](https://docs.rs/rustversion)
