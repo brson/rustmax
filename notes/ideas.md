@@ -42,6 +42,7 @@
 - linking
 - build scripts
 - benchmarking
+- mold
 
 # More ideas
 

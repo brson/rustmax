@@ -46,7 +46,10 @@ notable or useful chapters within a book.
 <!-- order here is same is in tools.md -->
 - [The `cargo` Book](https://doc.rust-lang.org/cargo/index.html)
   - 🔖 [The manifest format](https://doc.rust-lang.org/cargo/reference/manifest.html)
-  - 🔖 [Environment variables](https://doc.rust-lang.org/cargo/reference/environment-variables.html) that affect the Cargo build process.
+  - 🔖 [Environment variables](https://doc.rust-lang.org/cargo/reference/environment-variables.html)
+    that affect the Cargo build process.
+  - 🔖 [Configuration format](https://doc.rust-lang.org/cargo/reference/config.html).
+    Cargo has many interesting configuration options.
 - [The `rustc` Book](https://doc.rust-lang.org/rustc/index.html)
   - 🔖 [The lint system and built-in lints](https://doc.rust-lang.org/nightly/rustc/lints/index.html)
   - 🔖 [Rust platform support tiers](https://doc.rust-lang.org/nightly/rustc/platform-support.html)
