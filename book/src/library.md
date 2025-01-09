@@ -34,6 +34,8 @@ notable or useful chapters within a book.
   <!-- duplicated in std.md -->
   - 🔖 [`std::collections`](https://doc.rust-lang.org/std/collections/index.html)
   - 🔖 [`std::error`](https://doc.rust-lang.org/stable/std/error/index.html)
+  - 🔖 [`std::ptr`](https://doc.rust-lang.org/std/ptr/index.html).
+    Safety, undefined behavior, and "provenance".
   - 🔖 [`std::sync`](https://doc.rust-lang.org/std/sync/index.html)
   - 🔖 [`std::sync::atomic`](https://doc.rust-lang.org/std/atomic/index.html)
 - [`core`](https://doc.rust-lang.org/core/index.html)
