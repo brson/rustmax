@@ -49,6 +49,14 @@ pub mod prelude {
     pub use crate::extras::OptionExpect as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::ResultExpect as _;
+
+    // Ordering is recommended by
+    // `clippy::comparison_chain` and if it's
+    // important enough that the compiler suggests
+    // using it instead of comparison operator syntax,
+    // let's put it in the prelude.
+    #[cfg(feature = "rmx-rustlib-core")]
+    pub use ::core::cmp::Ordering;
 }
 
 pub mod extras {
