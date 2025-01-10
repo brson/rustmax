@@ -41,14 +41,8 @@ maint-outdated:
 maint-duplicates:
     cargo duplicates
 
-maint-update:
-    cargo update
-
 maint-upgrade:
-    cargo upgrade
-
-maint-upgrade-incompatible:
-    cargo upgrade --incompatible
+    cargo upgrade --incompatible --compatible=ignore
 
 
 prebuild:
