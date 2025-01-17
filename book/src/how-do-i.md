@@ -67,11 +67,15 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … calculate a cryptographic content hash?
 
-## Parallelism
+## Parallelism and Concurrency
 
 ### … initialize a global value?
 
 todo `LazyLock`, `OnceLock`, and `Once`.
+
+### … send messages to/from async code?
+
+todo futures::channels
 
 ## Asynchronous I/O
 
