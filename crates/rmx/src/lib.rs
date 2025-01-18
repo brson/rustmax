@@ -32,6 +32,9 @@ pub mod prelude {
     #[cfg(feature = "log")]
     pub use ::log::{error, warn, info, debug, trace};
 
+    #[cfg(all(feature = "futures", feature = "rmx-feature-default"))]
+    pub use ::futures::executor::block_on;
+
     pub use crate::extras::{
         default,
     };
