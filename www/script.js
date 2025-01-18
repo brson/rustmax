@@ -1,6 +1,6 @@
 window.addEventListener("load", () => {
     const exampleButtons = document.querySelectorAll(".example-button");
-    for (button of exampleButtons) {
+    for (const button of exampleButtons) {
         const name = button.dataset.name;
         const exampleRow = document.querySelector(`#example-row-${name}`);
 
@@ -8,11 +8,12 @@ window.addEventListener("load", () => {
 
         button.addEventListener("click", () => {
             exampleRow.classList.toggle("example-row-visible");
-
             if (exampleRow.classList.contains("example-row-visible")) {
                 button.innerText = "-";
+                console.log(button);
             } else {
                 button.innerText = "+";
+                console.log(button);
             }
         });
     }

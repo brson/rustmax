@@ -181,3 +181,7 @@ table button {
     /*display: table-row;*/
     visibility: visible;
 }
+
+button {
+    font-family: monospace;
+}

@@ -257,7 +257,7 @@ fn make_crate_lists(
     html.push_str("<thead>\n");
     html.push_str("<th>Feature</th>\n");
     html.push_str("<th>Crate</th>\n");
-    html.push_str("<th><button>+</button></th>\n");
+    html.push_str("<th><button type='button'>+</button></th>\n");
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
@@ -305,7 +305,7 @@ fn make_crate_lists(
         ));
         if example_html.is_some() {
             html.push_str(&format!(
-                "<td><button id='button-{}' class='example-button' data-name='{}'>+</button></td>\n",
+                "<td><button id='button-{}' class='example-button' data-name='{}' type='button'>+</button></td>\n",
                 krate.name,
                 krate.name,
             ));
