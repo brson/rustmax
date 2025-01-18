@@ -2,7 +2,7 @@ Types in which the bits are individually addressable.
 
 - Crate [`::bitflags`].
 - [docs.rs](https://docs.rs/bitflags)
-- [cargo.io](https://crates.io/crates/bitflags)
+- [crates.io](https://crates.io/crates/bitflags)
 - [GitHub](todo)
 
 ---

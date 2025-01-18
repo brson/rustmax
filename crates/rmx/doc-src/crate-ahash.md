@@ -2,7 +2,7 @@ A fast and DOS-resistent hash function, for use in `HashMap`s.
 
 - Crate [`::ahash`].
 - [docs.rs](https://docs.rs/ahash)
-- [cargo.io](https://crates.io/crates/ahash)
+- [crates.io](https://crates.io/crates/ahash)
 - [GitHub](https://github.com/tkaitchuck/ahash)
 
 ---
