@@ -168,3 +168,7 @@ table button {
     color: var(--rmx-color-fg);
     border: 1px solid var(--rmx-color-fg);
 }
+
+.example-row {
+    display: none;
+}

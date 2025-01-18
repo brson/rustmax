@@ -261,6 +261,8 @@ fn make_crate_lists(
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
+        let example_html = render_example(krate);
+
         md.push_str(&format!(
             "| {} | `{} = \"{}\"` | [📖]({}) |\n",
             krate.short_desc,
@@ -268,6 +270,7 @@ fn make_crate_lists(
             krate.version,
             "todo",
         ));
+
         if i + 1 < crates.len() {
             json.push_str(&format!(
                 "\"{}\",\n",
@@ -279,6 +282,7 @@ fn make_crate_lists(
                 krate.name,
             ));
         }
+
         html.push_str("<tr>\n");
         html.push_str(&format!(
             "<td>{}</td>\n",
@@ -292,10 +296,27 @@ fn make_crate_lists(
             krate.name,
             krate.version,
         ));
-        html.push_str(&format!(
-            "<td><button>+</button></td>\n",
-        ));
+        if example_html.is_some() {
+            html.push_str(&format!(
+                "<td><button id='button-{}' class='example-button'>+</button></td>\n",
+                krate.name,
+            ));
+        } else {
+            html.push_str("<td></td>");
+        }
         html.push_str("</tr>\n");
+        {
+            if let Some(example_html) = example_html {
+                html.push_str(&format!(
+                    "<tr id='example-row-{}' class='example-row'>\n",
+                    krate.name,
+                ));
+                html.push_str("<td colspan=3>\n");
+                html.push_str(&example_html);
+                html.push_str("</td>\n");
+                html.push_str("</tr>\n");
+            }
+        }
     }
 
     md.push_str("");
@@ -303,4 +324,18 @@ fn make_crate_lists(
     html.push_str("</thead>\n");
 
     (md, json, html)
+}
+
+fn render_example(
+    krate: &CrateInfo
+) -> Option<String> {
+    if !krate.example.is_empty() {
+        let html = comrak::markdown_to_html(
+            &krate.example,
+            &Default::default(),
+        );
+        Some(html)
+    } else {
+        None
+    }
 }

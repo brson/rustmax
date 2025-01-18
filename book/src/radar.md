@@ -12,6 +12,8 @@ but that are not yet part of Rust Max.
   Operate directly on bits.
 - [`boringtun`](https://docs.rs/boringtun).
   WireGuard.
+- [`comrak`](https://docs.rs/comrak).
+  Markdown parser.
 - [`console`](https://docs.rs/console),
   [`dialoguer`](https://docs.rs/dialoguer), and
   [`indicatif`](https://docs.rs/indicatif).
