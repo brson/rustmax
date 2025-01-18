@@ -30,7 +30,7 @@ pub mod prelude {
     pub use ::extension_trait::extension_trait;
 
     #[cfg(feature = "log")]
-    pub use ::log;
+    pub use ::log::{error, warn, info, debug, trace};
 
     #[cfg(all(feature = "futures", feature = "rmx-feature-default"))]
     pub use ::futures::executor::block_on;
