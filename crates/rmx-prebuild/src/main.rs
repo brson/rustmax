@@ -283,7 +283,14 @@ fn make_crate_lists(
             ));
         }
 
-        html.push_str("<tr>\n");
+        html.push_str(&format!(
+            "<tr class='{}'>\n",
+            if i % 2 == 0 {
+                "row-even"
+            } else {
+                "row-odd"
+            }
+        ));
         html.push_str(&format!(
             "<td>{}</td>\n",
             krate.short_desc,
@@ -298,7 +305,8 @@ fn make_crate_lists(
         ));
         if example_html.is_some() {
             html.push_str(&format!(
-                "<td><button id='button-{}' class='example-button'>+</button></td>\n",
+                "<td><button id='button-{}' class='example-button' data-name='{}'>+</button></td>\n",
+                krate.name,
                 krate.name,
             ));
         } else {
@@ -308,8 +316,13 @@ fn make_crate_lists(
         {
             if let Some(example_html) = example_html {
                 html.push_str(&format!(
-                    "<tr id='example-row-{}' class='example-row'>\n",
+                    "<tr id='example-row-{}' class='example-row {}'>\n",
                     krate.name,
+                    if i % 2 == 0 {
+                        "row-even"
+                    } else {
+                        "row-odd"
+                    }
                 ));
                 html.push_str("<td colspan=3>\n");
                 html.push_str(&example_html);

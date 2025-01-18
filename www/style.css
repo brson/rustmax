@@ -146,13 +146,16 @@ table#rmx-crate-table th {
 }
 
 table#rmx-crate-table thead tr:nth-child(odd),
-table#rmx-crate-table tr:nth-child(even)
+/*table#rmx-crate-table tr:nth-child(even)*/
+table#rmx-crate-table tr.row-odd
 {
     background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 10%);
     background-color: var(--rmx-color-bg-deep);
 }
 
-table#rmx-crate-table tr:nth-child(odd) {
+/*table#rmx-crate-table tr:nth-child(odd)*/
+table#rmx-crate-table tr.row-even
+{
     background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 10%);
     background-color: var(--rmx-color-bg-deep);
     background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-fg-deep) 10%);
@@ -170,5 +173,11 @@ table button {
 }
 
 .example-row {
-    display: none;
+    /*display: none;*/
+    visibility: collapse;
+}
+
+.example-row-visible {
+    /*display: table-row;*/
+    visibility: visible;
 }
