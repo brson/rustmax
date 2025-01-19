@@ -90,7 +90,7 @@ as a "batteries included" supercrate.
   - [Crate reexports](#crate-reexports)
   - [Standard library reexports](#standard-library-reexports)
   - [The `rmx` prelude](#the-rmx-prelude)
-  - [The `extra` module](#the-extra-module)
+  - [The `extras` module](#the-extras-module)
   - [Starter examples](#starter-examples)
   - [Starting from a template](#starting-from-a-template)
   - [Known bugs](#known-bugs)
@@ -496,7 +496,7 @@ through cargo features like `rmx-profile-std`.
 
 
 
-## The `extra` module
+## The `extras` module
 
 
 
