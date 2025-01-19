@@ -116,6 +116,11 @@ but that are not yet part of Rust Max.
 - fixed-point, decimal numbers, rust-decimal
 
 
+## Replacements
+
+- num_cpu -> std::thread::available_parallelism
+
+
 ## Graveyard
 
 These projects were once useful or notable,
