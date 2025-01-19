@@ -70,6 +70,8 @@ but that are not yet part of Rust Max.
 - [`rust-embed`](https://docs.rs/rust-embed).
   Embedding of file system resources into binaries,
   with hot-reloading during development.
+- [`scopeguard`](https://docs.rs/scopeguard).
+  Like `defer`.
 - [`smallvec`](https://docs.rs/smallvec).
   The "small vector" optimization.
   There may be better / newer options.
