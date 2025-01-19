@@ -490,19 +490,6 @@ through cargo features like `rmx-profile-std`.
 
 
 
-## Standard library reexports
-
-The [`std`], [`core`], [`alloc`], and [`proc_macro`]
-are reexported from `rmx` when the
-[`rmx-rustlibs-std`],
-[`rmx-rustlibs-core`],
-[`rmx-rustlibs-alloc`],
-[`rmx-rustlibs-proc_macro`]
-cargo features are enabled.
-
-
-
-
 
 ## The `rmx` prelude
 
