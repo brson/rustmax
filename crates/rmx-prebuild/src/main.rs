@@ -397,7 +397,7 @@ fn substitute_links(
             let link_dest = link_dest.as_str().trim();
             if let Some(sub) = link_subs.get(link_dest) {
                 buf.push_str(
-                    &format!("[{link_name}]: {link_dest}"),
+                    &format!("[{link_name}]: {sub}"),
                 );
             } else {
                 eprintln!("unreplaced link: {link_dest}");

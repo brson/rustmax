@@ -57,9 +57,9 @@ fn main() {
 [`HashMap`]: crate::std::collections::HashMap
 [`HashSet`]: crate::std::collections::HashSet
 [`Hasher`]: crate::std::hash::Hasher
-[`AHasher`]: todo
-[`AHashMap`]: todo
-[SipHash 1-3]: todo
-[dos]: todo
-[AES-NI]: todo
+[`AHasher`]: crate::ahash::AHasher
+[`AHashMap`]: crate::ahash::AHashMap
+[SipHash 1-3]: https://en.wikipedia.org/wiki/SipHash
+[dos]: https://lwn.net/Articles/474912/
+[AES-NI]: https://en.wikipedia.org/wiki/AES_instruction_set
 [`hashbrown`]: https://docs.rs/hashbrown

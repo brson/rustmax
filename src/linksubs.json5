@@ -1,3 +1,14 @@
 {
-    "crate::std::collections::HashMap": "https://doc.rust-lang.org/stable/std/collections/struct.HashMap.html",
+    // ahash
+    "crate::std::collections::HashMap":
+    "https://doc.rust-lang.org/stable/std/collections/struct.HashMap.html",
+    "crate::std::collections::HashSet":
+    "https://doc.rust-lang.org/stable/std/collections/struct.HashSet.html",
+    "crate::std::hash::Hasher":
+    "https://doc.rust-lang.org/stable/std/hash/trait.Hasher.html",
+    "crate::ahash::AHasher":
+    "https://docs.rs/ahash/latest/ahash/struct.AHasher.html",
+    "crate::ahash::AHashMap":
+    "https://docs.rs/ahash/latest/ahash/struct.AHashMap.html",
+
 }
