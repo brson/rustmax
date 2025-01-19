@@ -18,7 +18,7 @@ particularly for small keys like integers,
 so it is common for programs to use a different
 implementation of `Hasher`.
 
-[`ahash`] is both DOS-resistent,
+`ahash` is both DOS-resistent,
 and fast enough for almost all uses of hash maps.
 
 It comes with tradeoffs though,
@@ -57,6 +57,8 @@ fn main() {
 [`HashMap`]: crate::std::collections::HashMap
 [`HashSet`]: crate::std::collections::HashSet
 [`Hasher`]: crate::std::hash::Hasher
+[`AHasher`]: todo
+[`AHashMap`]: todo
 [SipHash 1-3]: todo
 [dos]: todo
 [AES-NI]: todo

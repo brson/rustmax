@@ -18,11 +18,13 @@ use std::{env, fs};
 use anyhow::Result as AnyResult;
 use anyhow::Context;
 use anyhow::anyhow as A;
+use std::collections::BTreeMap;
 
 const CRATES_META: &str = "src/crates.json5";
 const TOOLS_META: &str = "src/tools.json5";
 const RMX_MANIFEST: &str = "crates/rmx/Cargo.toml";
 const EXAMPLES_DIR: &str = "crates/rmx/doc-src";
+const LINK_SUBS: &str = "src/linksubs.json5";
 
 const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
@@ -79,6 +81,7 @@ fn main() -> AnyResult<()> {
     let tools_meta_file = workspace_dir.join(TOOLS_META);
     let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
     let examples_dir = workspace_dir.join(EXAMPLES_DIR);
+    let link_subs_file = workspace_dir.join(LINK_SUBS);
 
     let crates_meta_str = fs::read_to_string(&crates_meta_file)
         .context(crates_meta_file.display().to_string())?;
@@ -86,6 +89,8 @@ fn main() -> AnyResult<()> {
         .context(tools_meta_file.display().to_string())?;
     let rmx_manifest_str = fs::read_to_string(&rmx_manifest_file)
         .context(rmx_manifest_file.display().to_string())?;
+    let link_subs_str = fs::read_to_string(&link_subs_file)
+        .context(tools_meta_file.display().to_string())?;
 
     let crates_meta: meta::Crates = json5::from_str(&crates_meta_str)
         .context("crates meta")?;
@@ -95,6 +100,8 @@ fn main() -> AnyResult<()> {
         .context("rmx manifest meta")?;
     let examples_dir = fs::read_dir(&examples_dir)
         .context(examples_dir.display().to_string())?;
+    let link_subs: BTreeMap<String, String> = json5::from_str(&link_subs_str)
+        .context("crates meta")?;
 
     let crate_info = build_crate_info(
         &crates_meta, &rmx_manifest, examples_dir,
@@ -108,7 +115,7 @@ fn main() -> AnyResult<()> {
         out_crates_md_str,
         out_crates_json_str,
         out_crates_html_str,
-    ) = make_crate_lists(&crate_info);
+    ) = make_crate_lists(&crate_info, &link_subs);
 
     fs::create_dir_all(OUT_DIR)?;
     write(out_crates_md_file, &out_crates_md_str)?;
@@ -242,7 +249,8 @@ fn get_examples(
 }
 
 fn make_crate_lists(
-    crates: &[CrateInfo]
+    crates: &[CrateInfo],
+    link_subs: &BTreeMap<String, String>,
 ) -> (
     String, String, String
 ) {
@@ -261,7 +269,7 @@ fn make_crate_lists(
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
-        let example_html = render_example(krate);
+        let example_html = render_example(krate, link_subs);
 
         md.push_str(&format!(
             "| {} | `{} = \"{}\"` | [📖]({}) |\n",
@@ -340,15 +348,65 @@ fn make_crate_lists(
 }
 
 fn render_example(
-    krate: &CrateInfo
+    krate: &CrateInfo,
+    link_subs: &BTreeMap<String, String>,
 ) -> Option<String> {
     if !krate.example.is_empty() {
+        let md = process_md(&krate.example, link_subs);
         let html = comrak::markdown_to_html(
-            &krate.example,
+            &md,
             &Default::default(),
         );
         Some(html)
     } else {
         None
     }
+}
+
+fn process_md(
+    md: &str,
+    link_subs: &BTreeMap<String, String>,
+) -> String {
+    let md = remove_crate_link(md);
+    substitute_links(&md, link_subs)
+}
+
+fn remove_crate_link(md: &str) -> String {
+    let re = regex::Regex::new("^- Crate \\[").expect(".");
+    let mut buf = String::new();
+    for line in md.lines() {
+        if !re.is_match(line) {
+            buf.push_str(line);
+            buf.push('\n');
+        }
+    }
+    buf
+}
+
+fn substitute_links(
+    md: &str,
+    link_subs: &BTreeMap<String, String>,
+) -> String {
+    let re = regex::Regex::new("^\\[(.+)\\]:(.+)$").expect(".");
+    let mut buf = String::new();
+    for line in md.lines() {
+        if let Some(caps) = re.captures(line) {
+            let link_name = caps.get(1).expect(".");
+            let link_name = link_name.as_str();
+            let link_dest = caps.get(2).expect(".");
+            let link_dest = link_dest.as_str().trim();
+            if let Some(sub) = link_subs.get(link_dest) {
+                buf.push_str(
+                    &format!("[{link_name}]: {link_dest}"),
+                );
+            } else {
+                eprintln!("unreplaced link: {link_dest}");
+                buf.push_str(line);
+            }
+        } else {
+            buf.push_str(line);
+        }
+        buf.push('\n');
+    }
+    buf
 }
