@@ -30,7 +30,8 @@ const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
 const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
-    
+
+#[derive(Debug)]
 struct CrateInfo {
     name: String,
     category: String,
@@ -269,7 +270,7 @@ fn make_crate_lists(
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
-        let example_html = render_example(krate, link_subs);
+        let example_html = render_example(krate, link_subs, crates);
 
         md.push_str(&format!(
             "| {} | `{} = \"{}\"` | [📖]({}) |\n",
@@ -350,9 +351,10 @@ fn make_crate_lists(
 fn render_example(
     krate: &CrateInfo,
     link_subs: &BTreeMap<String, String>,
+    crates: &[CrateInfo],
 ) -> Option<String> {
     if !krate.example.is_empty() {
-        let md = process_md(&krate.example, link_subs);
+        let md = process_md(&krate.example, link_subs, crates);
         let html = comrak::markdown_to_html(
             &md,
             &Default::default(),
@@ -366,9 +368,12 @@ fn render_example(
 fn process_md(
     md: &str,
     link_subs: &BTreeMap<String, String>,
+    crates: &[CrateInfo],
 ) -> String {
     let md = remove_crate_link(md);
-    substitute_links(&md, link_subs)
+    let md = substitute_links(&md, link_subs);
+    let md = substitute_versions(&md, crates);
+    md
 }
 
 fn remove_crate_link(md: &str) -> String {
@@ -409,4 +414,41 @@ fn substitute_links(
         buf.push('\n');
     }
     buf
+}
+
+fn substitute_versions(
+    md: &str,
+    crates: &[CrateInfo],
+) -> String {
+    let re = regex::Regex::new("^\\[(.+)\\]: *https://docs.rs/(.+)/latest/(.+)$").expect(".");
+    let mut buf = String::new();
+    for line in md.lines() {
+        if let Some(caps) = re.captures(line) {
+            let link_name = caps.get(1).expect(".");
+            let link_name = link_name.as_str();
+            let crate_name = caps.get(2).expect(".");
+            let crate_name = crate_name.as_str();
+            let link_tail = caps.get(3).expect(".");
+            let link_tail = link_tail.as_str().trim();
+            if let Some(info) = find_crate(crates, crate_name) {
+                let version = &info.version;
+                buf.push_str(
+                    &format!("[{link_name}]: https://docs.rs/{crate_name}/{version}/{link_tail}")
+                );
+            } else {
+                buf.push_str(line);
+            }
+        } else {
+            buf.push_str(line);
+        }
+        buf.push('\n');
+    }
+    buf
+}
+
+fn find_crate<'c>(
+    crates: &'c [CrateInfo],
+    name: &str,
+) -> Option<&'c CrateInfo> {
+    crates.iter().find(|c| c.name == name)
 }
