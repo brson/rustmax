@@ -83,6 +83,7 @@ but that are not yet part of Rust Max.
 - [`tracing`](https://docs.rs/tracing).
 - [`tracing-subscriber`](https://docs.rs/tracing-subscriber).
 - [`tracing-tracy`](https://docs.rs/tracing-tracy).
+- [`unicode-xid`](https://docs.rs/unicode-xid).
 - [`xdg`](https://docs.rs/xdg)
 
 
@@ -98,7 +99,7 @@ but that are not yet part of Rust Max.
 
 - SHA3
 - gRPC
-- wasm crates and tools
+- wasm crates and tools, wasm-bindgen, stdweb
 - threadpool
 - zip, gzip
 - parser generator (pest?)
@@ -111,6 +112,8 @@ but that are not yet part of Rust Max.
 - markdown
 - csv
 - small string, smartstring
+- rational numbers
+- fixed-point, decimal numbers, rust-decimal
 
 
 ## Graveyard
