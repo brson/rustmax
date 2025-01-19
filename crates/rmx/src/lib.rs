@@ -51,6 +51,9 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::S;
 
+    #[cfg(feature = "rmx-rustlib-alloc")]
+    pub use crate::extras::O;
+
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::QuickToString as _;
     #[cfg(feature = "extension-trait")]
