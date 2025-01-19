@@ -12,6 +12,15 @@
 pub mod prelude {
     //! The `rmx` prelude.
 
+    #[cfg(all(feature = "rmx-rustlib-core", not(feature = "rmx-rustlib-std")))]
+    pub use ::core::prelude::rust_2021::*;
+
+    #[cfg(feature = "rmx-rustlib-std")]
+    pub use ::std::prelude::rust_2021::*;
+
+    #[cfg(feature = "futures")]
+    pub use ::futures::prelude::*;
+
     #[cfg(feature = "anyhow")]
     pub use ::anyhow::{
         Context as _,
@@ -60,6 +69,9 @@ pub mod prelude {
     // let's put it in the prelude.
     #[cfg(feature = "rmx-rustlib-core")]
     pub use ::core::cmp::Ordering;
+
+    #[cfg(feature = "itertools")]
+    pub use ::itertools::Itertools as _;
 }
 
 pub mod extras {
