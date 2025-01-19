@@ -194,15 +194,19 @@ pub mod extras {
 
 
 #[cfg(feature = "rmx-rustlib-core")]
+#[doc(inline)]
 pub extern crate core;
 
 #[cfg(feature = "rmx-rustlib-alloc")]
+#[doc(inline)]
 pub extern crate alloc;
 
 #[cfg(feature = "rmx-rustlib-std")]
+#[doc(inline)]
 pub extern crate std;
 
 #[cfg(feature = "rmx-rustlib-proc_macro")]
+#[doc(inline)]
 pub extern crate proc_macro;
 
 

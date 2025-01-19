@@ -400,16 +400,16 @@ todo
 `rmx` re-exports the standard Rust libraries for convenience.
 
 
-## 📙 Rustlib: `rmx-rustlib-no-std`
+## 📙 Rustlib: `rmx-rustlibs-no-std`
 
 
-## 📙 Rustlib: `rmx-rustlib-alloc`
+## 📙 Rustlib: `rmx-rustlibs-alloc`
 
 
-## 📙 Rustlib: `rmx-rustlib-std`
+## 📙 Rustlib: `rmx-rustlibs-std`
 
 
-## 📙 Rustlib: `rmx-rustlib-proc-macro`
+## 📙 Rustlib: `rmx-rustlibs-proc-macro`
 
 
 
@@ -473,10 +473,33 @@ rmx.features = [
 
 ## Crate reexports
 
+The crates of `rmx` are all reexported as modules from the `rmx` crate.
+
+```rust
+use rmx::rand::Rng;
+```
+
+These modules should generally behave the same as the corresponding crates,
+with exceptions noted in ["Known Bugs"](#known-bugs).
+These modules have have `rmx`-specific module-level documentation,
+with a short description and motivation, an example,
+and relevant links, including to the original crate-level documentation.
+
+These modules are only defined when their crate is configured
+through cargo features like `rmx-profile-std`.
 
 
 
 ## Standard library reexports
+
+The [`std`], [`core`], [`alloc`], and [`proc_macro`]
+are reexported from `rmx` when the
+[`rmx-rustlibs-std`],
+[`rmx-rustlibs-core`],
+[`rmx-rustlibs-alloc`],
+[`rmx-rustlibs-proc_macro`]
+cargo features are enabled.
+
 
 
 
