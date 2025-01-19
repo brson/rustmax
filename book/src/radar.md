@@ -43,11 +43,13 @@ but that are not yet part of Rust Max.
 - [`flate2`](https://docs.rs/flate2).
 - [`fnv`](https://docs.rs/fnv) or some other non-ahash fast hash
 - [`hashbrown`](https://docs.rs/hashbrown).
-  Better hash maps. Is there still a reason to use this?
+  Hash maps with no-std.
 - [`home`](https://docs.rs/home)
 - [`ignore`](https://docs.rs/ignore).
   Like `walkdir` but obeys `.gitignore`.
 - [`indexmap`](https://docs.rs/indexmap)
+- [`libm`](https://docs.rs/libm).
+  Useful for no-std.
 - [`memchr`](https://docs.rs/memchr)
 - [`memmap`](hthtps://docs.rs/memmap)
 - [`ndarray`](https://docs.rs/ndarray)
@@ -108,6 +110,7 @@ but that are not yet part of Rust Max.
 - HTTP3
 - markdown
 - csv
+- small string, smartstring
 
 
 ## Graveyard
