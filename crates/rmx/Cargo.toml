@@ -221,7 +221,7 @@ rmx-feature-default = [
   "axum/default",
   "bindgen/default",
   "byteorder/default",
-  "chrono/clock", # todo can't use chrono/default because of RUSTSEC-2020-0071
+  "chrono/default",
   "clap/default",
   "derive_more/default",
   "env_logger/default",
