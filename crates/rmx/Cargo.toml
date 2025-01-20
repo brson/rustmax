@@ -63,24 +63,16 @@ rmx-crates-std = [
   "xshell",
 ]
 
-# todo what to do about these "/full" features?
-# "/blocking", etc.
-
 rmx-crates-net = [
   "rmx-crates-std",
   "axum",
   "http",
   "hyper",
-  "hyper/full",
   "mime",
   "reqwest",
-  "reqwest/blocking",
-  "reqwest/json",
   "socket2",
   "tokio",
-  "tokio/full",
   "tower",
-  "tower/full",
   "url",
 ]
 
@@ -171,115 +163,119 @@ rmx-profile-max-nightly = [
 
 
 rmx-feature-no-std = [
-  "ahash/compile-time-rng",
-  "byteorder/i128",
-  "derive_more/full",
-  "jiff/alloc",
-  "serde_json/alloc",
+  "ahash?/compile-time-rng",
+  "byteorder?/i128",
+  "derive_more?/full",
+  "jiff?/alloc",
+  "serde_json?/alloc",
 ]
 
 rmx-feature-std = [
   "rmx-feature-no-std",
-  "ahash/std",
-  "anyhow/std",
-  "backtrace/std",
-  "base64/std",
-  "bitflags/std",
-  "blake3/std",
-  "byteorder/std",
-  "bytes/std",
-  "chrono/std",
-  "clap/std",
-  "crossbeam/std",
-  "cxx/std",
-  "futures/std",
-  "hex/std",
-  "itertools/use_std",
-  "jiff/std",
-  "libc/std",
-  "log/std",
-  "nom/std",
-  "num-bigint/std",
-  "num_enum/std",
-  "proc-macro2/proc-macro",
-  "proptest/std",
-  "rand/std",
-  "rand/std_rng",
-  "rand_chacha/std",
-  "regex/std",
-  "quote/proc-macro",
-  "semver/std",
-  "serde/std",
-  "serde_json/std",
-  "sha2/std",
+  "ahash?/std",
+  "anyhow?/std",
+  "backtrace?/std",
+  "base64?/std",
+  "bitflags?/std",
+  "blake3?/std",
+  "byteorder?/std",
+  "bytes?/std",
+  "chrono?/std",
+  "clap?/std",
+  "crossbeam?/std",
+  "cxx?/std",
+  "futures?/std",
+  "hex?/std",
+  "itertools?/use_std",
+  "jiff?/std",
+  "libc?/std",
+  "log?/std",
+  "nom?/std",
+  "num-bigint?/std",
+  "num_enum?/std",
+  "proc-macro2?/proc-macro",
+  "proptest?/std",
+  "rand?/std",
+  "rand?/std_rng",
+  "rand_chacha?/std",
+  "regex?/std",
+  "quote?/proc-macro",
+  "semver?/std",
+  "serde?/std",
+  "serde_json?/std",
+  "sha2?/std",
 ]
 
-# todo should these be e.g. "axum?/default"
 rmx-feature-default = [
-  "ahash/default",
-  "axum/default",
-  "bindgen/default",
-  "byteorder/default",
-  "chrono/default",
-  "clap/default",
-  "derive_more/default",
-  "env_logger/default",
-  "futures/default",
-  "jiff/default",
-  "nom/default",
-  "proc-macro2/default",
-  "proptest/default",
-  "quote/default",
-  "regex/default",
-  "reqwest/default",
-  "rustyline/default",
-  "semver/std",
-  "serde/default",
-  "serde_json/default",
-  "sha2/default",
-  "tera/default",
-  "tokio/default",
-  "toml/default",
-  "url/default",
+  "ahash?/default",
+  "axum?/default",
+  "bindgen?/default",
+  "byteorder?/default",
+  "chrono?/default",
+  "clap?/default",
+  "derive_more?/default",
+  "env_logger?/default",
+  "futures?/default",
+  "jiff?/default",
+  "nom?/default",
+  "proc-macro2?/default",
+  "proptest?/default",
+  "quote?/default",
+  "regex?/default",
+  "reqwest?/default",
+  "rustyline?/default",
+  "semver?/std",
+  "serde?/default",
+  "serde_json?/default",
+  "sha2?/default",
+  "tera?/default",
+  "tokio?/default",
+  "toml?/default",
+  "url?/default",
 ]
 
 # non-default features that we turn on by default for convenience
 rmx-feature-more = [
+  "hyper?/full",
   "rand?/small_rng",
+  "reqwest?/blocking",
+  "reqwest?/json",
   "serde?/rc",
+  "tokio?/full",
+  "tower?/full",
 ]
 
 rmx-feature-derive = [
-  "clap/derive",
-  "serde/derive",
+  "clap?/derive",
+  "serde?/derive",
 ]
 
 rmx-feature-serde = [
-  "backtrace/serde",
-  "bitflags/serde",
-  "bytes/serde",
-  "hex/serde",
-  "jiff/serde",
-  "log/serde",
-  "rand/serde1",
-  "rand_chacha/serde1",
-  "rand_pcg/serde1",
-  "semver/serde",
-  "num-bigint/serde",
-  "url/serde",
+  "backtrace?/serde",
+  "bitflags?/serde",
+  "bytes?/serde",
+  "hex?/serde",
+  "jiff?/serde",
+  "log?/serde",
+  "rand?/serde1",
+  "rand_chacha?/serde1",
+  "rand_pcg?/serde1",
+  "semver?/serde",
+  "num-bigint?/serde",
+  "url?/serde",
 ]
 
 rmx-feature-backtrace = [
   "rmx-feature-std",
-  "anyhow/backtrace",
+  "anyhow?/backtrace",
 ]
 
 rmx-feature-tokio = [
 ]
 
 rmx-feature-nightly = [
-  "rand/nightly",
-  "tempfile/nightly",
+  "rand?/nightly",
+  "tempfile?/nightly",
 ]
 
 
@@ -309,9 +305,6 @@ rmx-rustlib-proc_macro = []
 
 ## ---------- ##
 
-
-anyhow = ["dep:anyhow"]
-# todo
 
 
 

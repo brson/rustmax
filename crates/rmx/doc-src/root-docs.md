@@ -70,6 +70,7 @@ as a "batteries included" supercrate.
   - [⛲ Feature: `rmx-feature-no-std`][`rmx-feature-no-std`]
   - [⛲ Feature: `rmx-feature-std`][`rmx-feature-std`]
   - [⛲ Feature: `rmx-feature-default`][`rmx-feature-default`]
+  - [⛲ Feature: `rmx-feature-more`][`rmx-feature-more`]
   - **[⛲ Feature: `rmx-feature-derive`][`rmx-feature-derive`]**
   - **[⛲ Feature: `rmx-feature-serde`][`rmx-feature-serde`]**
   - [⛲ Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
@@ -169,6 +170,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 
 💡 This profile also enables [`rmx-feature-std`].\
 💡 This profile also enables [`rmx-feature-default`].\
+💡 This profile also enables [`rmx-feature-more`].\
 💡 This profile also enables [`rmx-rustlibs-std`].
 
 
@@ -336,6 +338,15 @@ It does not typically need to be set manually.
 It enables the "default" feature of crates.
 
 
+## ⛲ Feature: `rmx-feature-more`
+
+This feature is enabled by [`rmx-profile-std`].
+It does not typically need to be set manually.
+
+This activates extra crate features for convenience
+that the crates themselves do not typically activate by default.
+
+
 ## ⛲ Feature: `rmx-feature-derive`
 
 Enables derive macros of crates where it is optional,
@@ -499,6 +510,7 @@ through cargo features like `rmx-profile-std`.
 [`rmx-feature-no-std`]: #-feature-rmx-feature-no-std
 [`rmx-feature-std`]: #-feature-rmx-feature-std
 [`rmx-feature-default`]: #-feature-rmx-feature-default
+[`rmx-feature-more`]: #-feature-rmx-feature-more
 [`rmx-feature-derive`]: #-feature-rmx-feature-derive
 [`rmx-feature-serde`]: #-feature-rmx-feature-serde
 [`rmx-feature-backtrace`]: #-feature-rmx-feature-backtrace
