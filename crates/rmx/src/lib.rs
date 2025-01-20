@@ -117,6 +117,7 @@ pub mod extras {
         fn maybe_init_env_logger() {
             crate::env_logger::Builder::new()
                 .filter_level(log::LevelFilter::Info)
+                .format_timestamp(None)
                 .parse_default_env()
                 .init();
         }
