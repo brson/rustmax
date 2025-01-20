@@ -75,10 +75,6 @@ as a "batteries included" supercrate.
   - [⛲ Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
   - **[⛲ Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
   - [⛲ Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
-- [Crate features](#crate-features).
-  Some Crate-specific features are re-exported by `rmx`.
-  - [⛲ Feature: `rmx-rand-x-small_rng`][`rmx-rand-x-small_rng`]
-  - [⛲ Feature: `rmx-serde-x-rc`][`rmx-serde-x-rc`]
 - [Rust standard libraries](#rust-standard-libraries).
   `rmx` re-exports the standard Rust libraries for convenience.
   - [📙 Rustlib: `rmx-rustlibs-no-std`][`rmx-rustlibs-no-std`]
@@ -293,9 +289,7 @@ This profile simply enables all previous profiles.
 💡 This profile also enables [`rmx-feature-derive`].\
 💡 This profile also enables [`rmx-feature-serde`].\
 💡 This profile also enables [`rmx-feature-backtrace`].\
-💡 This profile also enables [`rmx-feature-tokio`].\
-💡 This profile also enables [`rmx-rand-x-small_rng`].\
-💡 This profile also enables [`rmx-serde-x-rc`].
+💡 This profile also enables [`rmx-feature-tokio`].
 
 
 
@@ -374,23 +368,6 @@ typically with a feature named "tokio".
 
 Enables features that only compile with the Rust [nightly compiler],
 typically with a feature named "nightly".
-
-
-
-
-# Crate features
-
-Some Crate-specific features are re-exported by `rmx`.
-
-
-## ⛲ Feature: `rmx-rand-x-small_rng`
-
-todo
-
-
-## ⛲ Feature: `rmx-serde-x-rc`
-
-todo
 
 
 
@@ -527,8 +504,6 @@ through cargo features like `rmx-profile-std`.
 [`rmx-feature-backtrace`]: #-feature-rmx-feature-backtrace
 [`rmx-feature-tokio`]: #-feature-rmx-feature-tokio
 [`rmx-feature-nightly`]: #-feature-rmx-feature-nightly
-[`rmx-rand-x-small_rng`]: #-feature-rmx-rand-x-small_rng
-[`rmx-serde-x-rc`]: #-feature-rmx-serde-x-rc
 [`rmx-rustlibs-no-std`]: #-rustlibs-rmx-rustlibs-no-std
 [`rmx-rustlibs-alloc`]: #-rustlibs-rmx-rustlibs-alloc
 [`rmx-rustlibs-std`]: #-rustlibs-rmx-rustlibs-std

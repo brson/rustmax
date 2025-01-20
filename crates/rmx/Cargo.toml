@@ -120,6 +120,7 @@ rmx-profile-std = [
   "rmx-rustlibs-std",
   "rmx-feature-std",
   "rmx-feature-default",
+  "rmx-feature-more",
   "rmx-crates-std",
 ]
 
@@ -158,8 +159,6 @@ rmx-profile-max = [
   "rmx-feature-serde",
   "rmx-feature-backtrace",
   "rmx-feature-tokio",
-  "rmx-rand-x-small_rng",
-  "rmx-serde-x-rc",
 ]
 
 rmx-profile-max-nightly = [
@@ -244,6 +243,12 @@ rmx-feature-default = [
   "url/default",
 ]
 
+# non-default features that we turn on by default for convenience
+rmx-feature-more = [
+  "rand?/small_rng",
+  "serde?/rc",
+]
+
 rmx-feature-derive = [
   "clap/derive",
   "serde/derive",
@@ -275,18 +280,6 @@ rmx-feature-tokio = [
 rmx-feature-nightly = [
   "rand/nightly",
   "tempfile/nightly",
-]
-
-
-## ---------- ##
-
-
-rmx-rand-x-small_rng = [
-  "rand/small_rng",
-]
-
-rmx-serde-x-rc = [
-  "serde/rc",
 ]
 
 
