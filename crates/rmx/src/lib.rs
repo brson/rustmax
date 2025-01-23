@@ -96,6 +96,8 @@ pub mod prelude {
     pub use crate::extras::OptionExpect as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::ResultExpect as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::RangeExt as _;
 }
 
 pub mod extras {
@@ -207,6 +209,18 @@ pub mod extras {
                 Ok(v) => v,
                 Err(e) => panic!("impossible `Err` result: {e}"),
             }
+        }
+    }
+
+    // todo: define this for generic Range<N>
+    #[cfg(feature = "extension-trait")]
+    #[extension_trait::extension_trait]
+    pub impl RangeExt for core::ops::Range<usize> {
+        fn subrange(&self, sub: core::ops::Range<usize>) -> Option<core::ops::Range<usize>> {
+            if sub.start >= self.len() || sub.end > self.len() {
+                return None;
+            }
+            Some((self.start + sub.start)..(self.start + sub.end))
         }
     }
 }
