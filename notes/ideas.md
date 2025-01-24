@@ -42,7 +42,8 @@
 - linking
 - build scripts
 - benchmarking
-- mold
+- mold / cargo-zig
+- tour of rustmax prelude
 
 # More ideas
 
