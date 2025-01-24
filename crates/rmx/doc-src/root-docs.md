@@ -491,7 +491,8 @@ through cargo features like `rmx-profile-std`.
 
 ## Known bugs
 
-- serde derive only works if the serde crate is an explicit dependency.
+- `serde` derive only works if the `serde` crate is an explicit dependency.
+- `derive_more` derives only works if the `derive_more` crate is an explicit dependency.
 
 
 
