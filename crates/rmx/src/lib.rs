@@ -97,6 +97,8 @@ pub mod prelude {
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::ResultExpect as _;
     #[cfg(feature = "extension-trait")]
+    pub use crate::extras::ResultIgnore as _;
+    #[cfg(feature = "extension-trait")]
     pub use crate::extras::RangeExt as _;
 }
 
@@ -209,6 +211,21 @@ pub mod extras {
                 Ok(v) => v,
                 Err(e) => panic!("impossible `Err` result: {e}"),
             }
+        }
+    }
+
+    /// Ignore a `Result`.
+    ///
+    /// This is nice because the common idiom of `let _ = ...` is untyped
+    /// and can accidentally be applied to non-`Result` types like `Future`s.
+    #[cfg(feature = "extension-trait")]
+    #[extension_trait::extension_trait]
+    pub impl<T, E> ResultIgnore<T, E> for Result<T, E>
+    {
+        #[track_caller]
+        #[allow(non_snake_case)]
+        fn I(self) {
+            let _ = self;
         }
     }
 
