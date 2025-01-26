@@ -47,6 +47,7 @@ but that are not yet part of Rust Max.
 - [`home`](https://docs.rs/home)
 - [`ignore`](https://docs.rs/ignore).
   Like `walkdir` but obeys `.gitignore`.
+- [`include_dir`](https://docs.rs/include_dir).
 - [`indexmap`](https://docs.rs/indexmap)
 - [`libm`](https://docs.rs/libm).
   Useful for no-std.
