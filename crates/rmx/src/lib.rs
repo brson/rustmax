@@ -131,6 +131,21 @@ pub mod extras {
         maybe_init_env_logger();
     }
 
+    pub fn init_crate_name(crate_name: &str) {
+        #[cfg(feature = "env_logger")]
+        fn maybe_init_env_logger(crate_name: &str) {
+            crate::env_logger::Builder::new()
+                .filter_module(crate_name, log::LevelFilter::Info)
+                .format_timestamp(None)
+                .parse_default_env()
+                .init();
+        }
+        #[cfg(not(feature = "env_logger"))]
+        fn maybe_init_env_logger(_crate_name: &str) { }
+
+        maybe_init_env_logger(crate_name);
+    }
+
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
     pub fn S<T>(
