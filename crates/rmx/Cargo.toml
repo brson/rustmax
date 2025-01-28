@@ -237,7 +237,6 @@ rmx-feature-default = [
 # non-default features that we turn on by default for convenience
 rmx-feature-more = [
   "hyper?/full",
-  "rand?/small_rng",
   "reqwest?/blocking",
   "reqwest?/json",
   "serde?/rc",
@@ -257,9 +256,9 @@ rmx-feature-serde = [
   "hex?/serde",
   "jiff?/serde",
   "log?/serde",
-  "rand?/serde1",
-  "rand_chacha?/serde1",
-  "rand_pcg?/serde1",
+  "rand?/serde",
+  "rand_chacha?/serde",
+  "rand_pcg?/serde",
   "semver?/serde",
   "num-bigint?/serde",
   "url?/serde",
@@ -340,16 +339,16 @@ json5 = { version = "0.4.1", optional = true, default-features = false }
 libc = { version = "0.2.169", optional = true, default-features = false }
 log = { version = "0.4.22", optional = true, default-features = false }
 mime = { version = "0.3.17", optional = true, default-features = false }
-nom = { version = "7.1.3", optional = true, default-features = false }
+nom = { version = "8.0.0", optional = true, default-features = false }
 num-bigint = { version = "0.4.6", optional = true, default-features = false }
 num_cpus = { version = "1.16.0", optional = true, default-features = false }
 num_enum = { version = "0.7.3", optional = true, default-features = false }
 proc-macro2 = { version = "1.0.92", optional = true, default-features = false }
 proptest = { version = "1.6.0", optional = true, default-features = false }
 quote = { version = "1.0.37", optional = true, default-features = false }
-rand = { version = "0.8.5", optional = true, default-features = false }
-rand_chacha = { version = "0.3.1", optional = true, default-features = false }
-rand_pcg = { version = "0.3.1", optional = true, default-features = false }
+rand = { version = "0.9.0", optional = true, default-features = false }
+rand_chacha = { version = "0.9.0", optional = true, default-features = false }
+rand_pcg = { version = "0.9.0", optional = true, default-features = false }
 rayon = { version = "1.10.0", optional = true, default-features = false }
 regex = { version = "1.11.1", optional = true, default-features = false }
 reqwest = { version = "0.12.9", optional = true, default-features = false }
