@@ -15,6 +15,7 @@
 #![allow(unused)]
 
 use std::{env, fs};
+use std::path::Path;
 use anyhow::Result as AnyResult;
 use anyhow::Context;
 use anyhow::anyhow as A;
@@ -30,6 +31,8 @@ const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
 const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
+
+const OUT_README: &str = "README.md";
 
 #[derive(Debug)]
 struct CrateInfo {
@@ -122,6 +125,8 @@ fn main() -> AnyResult<()> {
     write(out_crates_md_file, &out_crates_md_str)?;
     write(out_crates_json_file, &out_crates_json_str)?;
     write(out_crates_html_file, &out_crates_html_str)?;
+
+    create_readme(&workspace_dir, &out_crates_md_str)?;
 
     Ok(())
 }
@@ -270,6 +275,12 @@ fn make_crate_lists(
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
+        let docrs_link = format!(
+            "https://docs.rs/{}/{}/{}",
+            krate.name,
+            krate.version,
+            krate.name.replace("-", "_"),
+        );
         let example_html = render_example(krate, link_subs, crates);
 
         md.push_str(&format!(
@@ -277,7 +288,7 @@ fn make_crate_lists(
             krate.short_desc,
             krate.name,
             krate.version,
-            "todo",
+            docrs_link,
         ));
 
         if i + 1 < crates.len() {
@@ -305,10 +316,8 @@ fn make_crate_lists(
             krate.short_desc,
         ));
         html.push_str(&format!(
-            "<td><a href='https://docs.rs/{}/{}/{}'><code>{} = \"{}\"</code></a></td>\n",
-            krate.name,
-            krate.version,
-            krate.name.replace("-", "_"),
+            "<td><a href='{}'><code>{} = \"{}\"</code></a></td>\n",
+            docrs_link,
             krate.name,
             krate.version,
         ));
@@ -451,4 +460,18 @@ fn find_crate<'c>(
     name: &str,
 ) -> Option<&'c CrateInfo> {
     crates.iter().find(|c| c.name == name)
+}
+
+fn create_readme(workspace_dir: &Path, cratesmd: &str) -> AnyResult<()> {
+    let mut tera = tera::Tera::new("src/*.template.*")?;
+    let mut context = tera::Context::new();
+    context.insert("cratelist", cratesmd);
+
+    let rendered = tera.render("README.template.md", &context)?;
+
+    let outfile = workspace_dir.join(OUT_README);
+
+    std::fs::write(outfile, rendered)?;
+
+    Ok(())
 }
