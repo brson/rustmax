@@ -1,5 +1,5 @@
 [package]
-name = "rmx-cli"
+name = "rustmax-cli"
 version.workspace = true
 license.workspace = true
 edition.workspace = true
@@ -9,8 +9,8 @@ name = "rmx"
 path = "src/main.rs"
 
 [dependencies]
-rmx.path = "../rmx"
-rmx.package = "rmx"
+rmx.path = "../rustmax"
+rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
   "rmx-profile-std",

@@ -23,8 +23,8 @@ use std::collections::BTreeMap;
 
 const CRATES_META: &str = "src/crates.json5";
 const TOOLS_META: &str = "src/tools.json5";
-const RMX_MANIFEST: &str = "crates/rmx/Cargo.toml";
-const EXAMPLES_DIR: &str = "crates/rmx/doc-src";
+const RMX_MANIFEST: &str = "crates/rustmax/Cargo.toml";
+const EXAMPLES_DIR: &str = "crates/rustmax/doc-src";
 const LINK_SUBS: &str = "src/linksubs.json5";
 
 const OUT_DIR: &str = "work";

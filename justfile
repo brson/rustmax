@@ -11,19 +11,19 @@ clean: doc-clean
     cargo clean
 
 check:
-    cargo check -p rmx
-    cargo check -p rmx --features rmx-profile-no-std
-    cargo check -p rmx --features rmx-profile-std
-    cargo check -p rmx --features rmx-profile-full
-    cargo check -p rmx --features rmx-profile-max
-    cargo check -p rmx-cli
+    cargo check -p rustmax
+    cargo check -p rustmax --features rmx-profile-no-std
+    cargo check -p rustmax --features rmx-profile-std
+    cargo check -p rustmax --features rmx-profile-full
+    cargo check -p rustmax --features rmx-profile-max
+    cargo check -p rustmax-cli
 
 test:
-    cargo test -p rmx
+    cargo test -p rustmax
     #cargo test -p rmx --features rmx-profile-no-std
-    cargo test -p rmx --features rmx-profile-std
-    cargo test -p rmx --features rmx-profile-full
-    cargo test -p rmx --features rmx-profile-max
+    cargo test -p rustmax --features rmx-profile-std
+    cargo test -p rustmax --features rmx-profile-full
+    cargo test -p rustmax --features rmx-profile-max
 
 lint:
     cargo deny check
@@ -46,7 +46,7 @@ maint-upgrade:
 
 
 prebuild:
-    cargo run -p rmx-prebuild
+    cargo run -p rustmax-prebuild
 
 
 doc-clean:
@@ -54,7 +54,7 @@ doc-clean:
 
 doc-crates: prebuild
     RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \
-      cargo doc -p rmx --features rmx-profile-max
+      cargo doc -p rustmax --features rmx-profile-max
     cp www/mixins/mixin-rustdoc-themes.css target/doc/
     cp www/mixins/mixin-rustdoc-script.js target/doc/
     cp www/rustmax-themes.css target/doc/

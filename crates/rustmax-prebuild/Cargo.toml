@@ -1,12 +1,12 @@
 [package]
-name = "rmx-prebuild"
+name = "rustmax-prebuild"
 publish = false
 version.workspace = true
 license.workspace = true
 edition.workspace = true
 
 [[bin]]
-name = "rmx-prebuild"
+name = "rustmax-prebuild"
 path = "src/main.rs"
 
 [dependencies]
