@@ -254,6 +254,15 @@ pub mod extras {
             }
             Some((self.start + sub.start)..(self.start + sub.end))
         }
+
+        fn checked_sub(&self, other: usize) -> Option<core::ops::Range<usize>> {
+            let start = self.start.checked_sub(other);
+            let end = self.end.checked_sub(other);
+            match (start, end) {
+                (Some(start), Some(end)) => Some(start..end),
+                _ => None,
+            }
+        }
     }
 }
 
