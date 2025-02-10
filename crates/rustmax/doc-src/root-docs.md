@@ -409,7 +409,7 @@ In your manifest `Cargo.toml`:
 ```toml
 [dependencies]
 rmx.package = "rustmax"
-version = "0.0.2"
+rmx.version = "0.0.2"
 rmx.features = [
   "rmx-profile-std",
 ]
@@ -419,7 +419,7 @@ Or if using a workspace, in your workspace `Cargo.toml`
 
 ```toml
 [dependencies]
-version = "0.0.2"
+rmx.version = "0.0.2"
 rmx.features = [
   "rmx-profile-std",
 ]
@@ -452,7 +452,7 @@ as well as minor helpers missing from the standard library.
 ```toml
 [dependencies]
 rmx.package = "rustmax"
-version = "0.0.2"
+rmx.version = "0.0.2"
 rmx.features = [
   "rmx-profile-std",
 ]
