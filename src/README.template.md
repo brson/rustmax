@@ -12,6 +12,10 @@ It is neither stable nor supported.
 
 ---
 
+*Rust Max is not an official Rust project.*
+
+---
+
 {{cratelist}}
 
 ---

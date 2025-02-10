@@ -12,6 +12,10 @@ It is neither stable nor supported.
 
 ---
 
+*Rust Max is not an official Rust project.*
+
+---
+
 | Feature | Crate | |
 |-|-|-|
 | Fast hash maps | `ahash = "0.8.11"` | [📖](https://docs.rs/ahash/0.8.11/ahash) |
