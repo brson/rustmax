@@ -271,7 +271,7 @@ fn make_crate_lists(
     html.push_str("<thead>\n");
     html.push_str("<th>Feature</th>\n");
     html.push_str("<th>Crate</th>\n");
-    html.push_str("<th><button type='button'>+</button></th>\n");
+    html.push_str("<th>Example</th>\n");
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {

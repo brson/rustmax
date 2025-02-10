@@ -166,6 +166,9 @@ table#rmx-crate-table tr:not(:last-child) {
     border-bottom: 1px dashed color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-fg-deep) 20%);
 }
 
+table#rmx-crate-table tr.example-row:not(:last-child) {
+    border-bottom: none;
+}
 table button {
     background: none;
     color: var(--rmx-color-fg);
