@@ -159,3 +159,18 @@
 # Unconfident about this one.
 
 "single_match" = "allow"
+
+
+# ## "toplevel_ref_arg" = "allow"
+#
+# Allow `let ref`.
+#
+#     let ref out_dir = book_out_dir(book);
+#
+# vs.
+#
+#     let out_dir = &book_out_dir(book);
+#
+# `let ref` is clear and pretty.
+
+"toplevel_ref_arg" = "allow"

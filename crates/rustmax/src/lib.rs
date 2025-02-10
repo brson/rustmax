@@ -1,4 +1,5 @@
 #![doc = include_str!("../doc-src/root-docs.md")]
+#![allow(clippy::needless_doctest_main)]
 
 /* ---------- */
 

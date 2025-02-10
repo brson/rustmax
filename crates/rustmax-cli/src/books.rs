@@ -129,8 +129,8 @@ fn mod_book_style(book: &Book) -> AnyResult<()> {
 
     for (src_dir, file) in mixins {
         fs::copy(
-            &format!("{src_dir}/{file}"),
-            &format!("{out_dir}/{file}"),
+            format!("{src_dir}/{file}"),
+            format!("{out_dir}/{file}"),
         )?;
     }
 
