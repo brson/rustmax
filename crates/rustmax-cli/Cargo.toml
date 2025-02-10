@@ -5,7 +5,7 @@ license.workspace = true
 edition.workspace = true
 
 [[bin]]
-name = "rmx"
+name = "rustmax"
 path = "src/main.rs"
 
 [dependencies]
