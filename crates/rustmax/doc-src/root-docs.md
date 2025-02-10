@@ -419,7 +419,7 @@ Or if using a workspace, in your workspace `Cargo.toml`
 
 ```toml
 [dependencies]
-rmx.version = "0.2.0"
+rmx.version = "0.0.1"
 rmx.features = [
   "rmx-profile-std",
 ]
