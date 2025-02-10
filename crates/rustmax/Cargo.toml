@@ -7,6 +7,11 @@ authors.workspace = true
 repository.workspace = true
 description.workspace = true
 
+[package.metadata.docs.rs]
+
+features = ["rmx-profile-max"]
+
+
 [features]
 
 default = []
