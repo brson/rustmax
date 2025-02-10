@@ -1,5 +1,5 @@
 [workspace.package]
-description = "Rust Max"
+description = "A collection of useful crates."
 edition = "2021"
 version = "0.0.1"
 license = "Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT OR CC0-1.0"
