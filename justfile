@@ -89,3 +89,4 @@ publish:
 replace-version old new:
     sd "^version = \"{{old}}\"" "version = \"{{new}}\"" Cargo.toml
     fd --type file --exec sd "^rmx\.version = \"{{old}}\"" "rmx.version = \"{{new}}\""
+    cargo check # update lockfile
