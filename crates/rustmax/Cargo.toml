@@ -1,8 +1,10 @@
 [package]
 name = "rustmax"
+edition.workspace = true
 version.workspace = true
 license.workspace = true
-edition.workspace = true
+authors.workspace = true
+repository.workspace = true
 
 [features]
 

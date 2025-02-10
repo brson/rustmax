@@ -1,10 +1,10 @@
 [workspace.package]
 description = "Rust Max"
+edition = "2021"
 version = "0.0.1"
 license = "Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT OR CC0-1.0"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
-documentation = "https://github.com/brson/rustmax"
-edition = "2021"
+repository = "https://github.com/brson/rustmax"
 
 [workspace]
 resolver = "2"
