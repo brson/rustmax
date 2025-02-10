@@ -85,3 +85,7 @@ publish-dry:
 publish:
     cargo publish -p rustmax
     cargo publish -p rustmax-cli
+
+replace-version old new:
+    sd "^version = \"{{old}}\"" "version = \"{{new}}\"" Cargo.toml
+    fd --type file --exec sd "^rmx\.version = \"{{old}}\"" "version = \"{{new}}\"" Cargo.toml
