@@ -465,8 +465,9 @@ rmx.features = [
 
 The crates of `rustmax` are all reexported as modules from the `rustmax` crate.
 
-```rust
-use rustmax::rand::Rng;
+```rust,ignore
+# use rustmax as rmx;
+use rmx::rand::Rng;
 ```
 
 These modules should generally behave the same as the corresponding crates,

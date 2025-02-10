@@ -35,6 +35,4 @@ fn main() {
     assert_eq!((e1 - e2), Flag::A);     // set difference
     assert_eq!(!e2, Flag::A);           // set complement
 }
-
-# main();
 ```
