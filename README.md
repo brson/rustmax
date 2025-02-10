@@ -83,7 +83,7 @@ It is neither stable nor supported.
 
 ## The crates
 
-The [`rmx` crate](https://docs.rs/rmx)
+The [`rustmax` crate](https://docs.rs/rustmax)
 documents and reexports other useful Rust crates.
 
 
@@ -98,16 +98,7 @@ documents and reexports other useful Rust crates.
   for [cargo-deny](https://github.com/EmbarkStudios/cargo-deny).
 - [An opinionated config file](clippy-control.toml)
   for [clippy-control](https://github.com/brson/clippy-control).
-- [The `rmx` CLI for managing the above.](https://docs.rs/rmx-cli).
-
-
-## The documentation
-
-This project is documented as
-
-- [Markdown](book/src/SUMMARY.md),
-- [HTML](todo),
-- and [PDF](todo).
+- [The `rustmax` CLI for managing the above.](https://docs.rs/rustmax-cli).
 
 
 ## License
@@ -116,7 +107,7 @@ Rust Max is licensed
 
     CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 
-All libraries included as dependencies of the `rmx` crate
+All libraries included as dependencies of the `rustmax` crate
 are permissively licensed under BSD-3-Clause, MIT, or weaker.
 
-Tools installed by the `rmx` command may have other licenses.
+Tools installed by the `rustmax` command may have other licenses.
