@@ -54,7 +54,7 @@ as a "batteries included" supercrate.
 
 
 - [Profiles](#profiles).
-  `rmx` organizes crates into _profiles_,
+  `rustmax` organizes crates into _profiles_,
   which correspond to common target environments and application types.
   - [🌎 Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
   - **[🌎 Profile: `rmx-profile-std`][`rmx-profile-std`]**
@@ -82,16 +82,16 @@ as a "batteries included" supercrate.
   - [📙 Rustlib: `rmx-rustlibs-alloc`][`rmx-rustlibs-alloc`]
   - [📙 Rustlib: `rmx-rustlibs-std`][`rmx-rustlibs-std`]
   - [📙 Rustlib: `rmx-rustlibs-proc-macro`][`rmx-rustlibs-proc-macro`]
-- [Using `rmx` as a library](#using-rmx-as-a-library)
-  - [`rmx` and cargo features](#rmx-and-cargo-features)
+- [Using `rustmax` as a library](#using-rustmax-as-a-library)
+  - [`rustmax` and cargo features](#rustmax-and-cargo-features)
   - [Crate reexports](#crate-reexports)
   - [Standard library reexports](#standard-library-reexports)
-  - [The `rmx` prelude](#the-rmx-prelude)
+  - [The `rustmax` prelude](#the-rustmax-prelude)
   - [The `extras` module](#the-extras-module)
   - [Starter examples](#starter-examples)
   - [Starting from a template](#starting-from-a-template)
   - [Known bugs](#known-bugs)
-- `rmx` crate API docs
+- `rustmax` crate API docs
   - [Re-exports](#reexports)
   - [Modules](#modules)
 
@@ -107,7 +107,7 @@ as a "batteries included" supercrate.
 
 # Profiles
 
-`rmx` organizes crates into _profiles_,
+`rustmax` organizes crates into _profiles_,
 which correspond to common target environments and application types.
 
 By default no profile is enabled and no crates are exported.
@@ -285,7 +285,7 @@ This profile simply enables all previous profiles.
 
 ## 🌎 Profile: `rmx-profile-max`
 
-`rmx` with all features (that don't require nightly).
+`rustmax` with all features (that don't require nightly).
 
 💡 This profile also enables [`rmx-profile-full`].\
 💡 This profile also enables [`rmx-feature-derive`].\
@@ -298,7 +298,7 @@ This profile simply enables all previous profiles.
 
 ## 🌎 Profile: `rmx-profile-max-nightly`
 
-`rmx` with all features (including nightly).
+`rustmax` with all features (including nightly).
 
 💡 This profile also enables [`rmx-profile-max`].\
 💡 This profile also enables [`rmx-feature-nightly`].
@@ -308,7 +308,7 @@ This profile simply enables all previous profiles.
 
 # Ecosystem features
 
-`rmx` identifies Cargo features common across many crates.
+`rustmax` identifies Cargo features common across many crates.
 
 
 ## ⛲ Feature: `rmx-feature-no-std`
@@ -385,7 +385,7 @@ typically with a feature named "nightly".
 
 # Rust standard libraries
 
-`rmx` re-exports the standard Rust libraries for convenience.
+`rustmax` re-exports the standard Rust libraries for convenience.
 
 
 ## 📙 Rustlib: `rmx-rustlibs-no-std`
@@ -402,13 +402,14 @@ typically with a feature named "nightly".
 
 
 
-# Using `rmx` as a library.
+# Using `rustmax` as a library.
 
 In your manifest `Cargo.toml`:
 
 ```toml
 [dependencies]
-rmx.version = "0.2.0"
+rmx.package = "rustmax"
+rmx.version = "0.0.1"
 rmx.features = [
   "rmx-profile-std",
 ]
@@ -434,14 +435,14 @@ rmx.workspace = true
 
 
 
-## `rmx` and cargo features
+## `rustmax` and cargo features
 
 todo
 
-The main way of configuring the `rmx` crates is by enabling
+The main way of configuring the `rustmax` crates is by enabling
 the appropriate _profile_ cargo features.
 
-`rmx` enables no features by default,
+`rustmax` enables no features by default,
 and reexports no crates;
 but for most uses people will want to enable [`rmx-profile-std`].
 This feature augments the Rust `std` library with crates
@@ -450,7 +451,8 @@ as well as minor helpers missing from the standard library.
 
 ```toml
 [dependencies]
-rmx.version = "0.2.0"
+rmx.package = "rustmax"
+rmx.version = "0.0.1"
 rmx.features = [
   "rmx-profile-std",
 ]
@@ -461,15 +463,15 @@ rmx.features = [
 
 ## Crate reexports
 
-The crates of `rmx` are all reexported as modules from the `rmx` crate.
+The crates of `rustmax` are all reexported as modules from the `rustmax` crate.
 
 ```rust
-use rmx::rand::Rng;
+use rustmax::rand::Rng;
 ```
 
 These modules should generally behave the same as the corresponding crates,
 with exceptions noted in ["Known Bugs"](#known-bugs).
-These modules have have `rmx`-specific module-level documentation,
+These modules have have `rustmax`-specific module-level documentation,
 with a short description and motivation, an example,
 and relevant links, including to the original crate-level documentation.
 
@@ -479,7 +481,7 @@ through cargo features like `rmx-profile-std`.
 
 
 
-## The `rmx` prelude
+## The `rustmax` prelude
 
 
 

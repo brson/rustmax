@@ -49,6 +49,8 @@ fn main() {
     map.insert(12, 34);
     map.insert(56, 78);
 }
+
+# main();
 ```
 
 
