@@ -173,7 +173,7 @@ impl CliCmdBuildLibrary {
 impl CliCmdWriteFmtConfig {
     fn run(&self) -> AnyResult<()> {
         // todo --force
-        let contents = include_bytes!("../../../rustfmt.toml");
+        let contents = include_bytes!("../assets/rustfmt.toml");
         rmx::std::fs::write("rustfmt.toml", contents)?;
         Ok(())
     }
@@ -182,7 +182,7 @@ impl CliCmdWriteFmtConfig {
 impl CliCmdWriteCargoDenyConfig {
     fn run(&self) -> AnyResult<()> {
         // todo --force
-        let contents = include_bytes!("../../../deny.toml");
+        let contents = include_bytes!("../assets/deny.toml");
         rmx::std::fs::write("deny.toml", contents)?;
         Ok(())
     }
@@ -191,7 +191,7 @@ impl CliCmdWriteCargoDenyConfig {
 impl CliCmdWriteClippyControlConfig {
     fn run(&self) -> AnyResult<()> {
         // todo --force
-        let contents = include_bytes!("../../../clippy-control.toml");
+        let contents = include_bytes!("../assets/clippy-control.toml");
         rmx::std::fs::write("clippy-control.toml", contents)?;
         Ok(())
     }

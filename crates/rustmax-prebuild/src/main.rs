@@ -26,6 +26,7 @@ const TOOLS_META: &str = "src/tools.json5";
 const RMX_MANIFEST: &str = "crates/rustmax/Cargo.toml";
 const EXAMPLES_DIR: &str = "crates/rustmax/doc-src";
 const LINK_SUBS: &str = "src/linksubs.json5";
+const CLI_DIR: &str = "crates/rustmax-cli";
 
 const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
@@ -86,6 +87,7 @@ fn main() -> AnyResult<()> {
     let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
     let examples_dir = workspace_dir.join(EXAMPLES_DIR);
     let link_subs_file = workspace_dir.join(LINK_SUBS);
+    let cli_dir = workspace_dir.join(CLI_DIR);
 
     let crates_meta_str = fs::read_to_string(&crates_meta_file)
         .context(crates_meta_file.display().to_string())?;
@@ -127,6 +129,8 @@ fn main() -> AnyResult<()> {
     write(out_crates_html_file, &out_crates_html_str)?;
 
     create_readme(&workspace_dir, &out_crates_md_str)?;
+
+    copy_cli_assets(&workspace_dir, &cli_dir);
 
     Ok(())
 }
@@ -472,6 +476,25 @@ fn create_readme(workspace_dir: &Path, cratesmd: &str) -> AnyResult<()> {
     let outfile = workspace_dir.join(OUT_README);
 
     std::fs::write(outfile, rendered)?;
+
+    Ok(())
+}
+
+fn copy_cli_assets(workspace_dir: &Path, cli_dir: &Path) -> AnyResult<()> {
+    let asset_dir = cli_dir.join("assets");
+    fs::create_dir_all(&asset_dir)?;
+
+    let rustfmt_cfg_in = workspace_dir.join("rustfmt.toml");
+    let deny_cfg_in = workspace_dir.join("deny.toml");
+    let control_cfg_in = workspace_dir.join("clippy-control.toml");
+
+    let rustfmt_cfg_out = asset_dir.join("rustfmt.toml");
+    let deny_cfg_out = asset_dir.join("deny.toml");
+    let control_cfg_out = asset_dir.join("clippy-control.toml");
+
+    fs::copy(&rustfmt_cfg_in, rustfmt_cfg_out)?;
+    fs::copy(&deny_cfg_in, deny_cfg_out)?;
+    fs::copy(&control_cfg_in, control_cfg_out)?;
 
     Ok(())
 }
