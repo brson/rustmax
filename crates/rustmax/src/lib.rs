@@ -245,6 +245,7 @@ pub mod extras {
     }
 
     // todo: define this for generic Range<N>
+    // todo: put this in a crate and elaborate
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl RangeExt for core::ops::Range<usize> {
@@ -252,14 +253,19 @@ pub mod extras {
             if sub.start >= self.len() || sub.end > self.len() {
                 return None;
             }
-            Some((self.start + sub.start)..(self.start + sub.end))
+            let new_start = self.start.checked_add(sub.start);
+            let new_end = self.start.checked_add(sub.end);
+            match (new_start, new_end) {
+                (Some(new_start), Some(new_end)) => Some(new_start..new_end),
+                _ => None,
+            }
         }
 
         fn checked_sub(&self, other: usize) -> Option<core::ops::Range<usize>> {
-            let start = self.start.checked_sub(other);
-            let end = self.end.checked_sub(other);
-            match (start, end) {
-                (Some(start), Some(end)) => Some(start..end),
+            let new_start = self.start.checked_sub(other);
+            let new_end = self.end.checked_sub(other);
+            match (new_start, new_end) {
+                (Some(new_start), Some(new_end)) => Some(new_start..new_end),
                 _ => None,
             }
         }
