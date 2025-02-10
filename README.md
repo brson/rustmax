@@ -88,12 +88,12 @@ It is neither stable nor supported.
 ## The crates
 
 The [`rustmax` crate](https://docs.rs/rustmax)
-documents and reexports other useful Rust crates.
+documents and reexports other Rust crates.
 
 
 ## The tools
 
-- [A collection of useful Rust tools](book/src/tools.md).
+- [A collection of Rust tools](book/src/tools.md).
 - [An opinionated workspace template](template),
   for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
 - [An opinionated config file](rustfmt.toml)

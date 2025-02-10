@@ -1,3 +1,5 @@
+A collection of Rust crates.
+
 **🚧
 WARNING:
 Do not use this project.
