@@ -83,5 +83,5 @@ publish-dry:
     cargo publish -p rustmax-cli --dry-run
 
 publish:
-    cargo publish -p rustmax --dry-run
-    cargo publish -p rustmax-cli --dry-run
+    cargo publish -p rustmax
+    cargo publish -p rustmax-cli
