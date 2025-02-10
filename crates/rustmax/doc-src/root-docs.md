@@ -411,7 +411,7 @@ In your manifest `Cargo.toml`:
 rmx.package = "rustmax"
 rmx.version = "0.0.3"
 rmx.features = [
-  "rmx-profile-std",
+  "rmx-profile-max",
 ]
 ```
 
@@ -421,7 +421,7 @@ Or if using a workspace, in your workspace `Cargo.toml`
 [dependencies]
 rmx.version = "0.0.3"
 rmx.features = [
-  "rmx-profile-std",
+  "rmx-profile-max",
 ]
 ```
 
@@ -454,7 +454,7 @@ as well as minor helpers missing from the standard library.
 rmx.package = "rustmax"
 rmx.version = "0.0.3"
 rmx.features = [
-  "rmx-profile-std",
+  "rmx-profile-max",
 ]
 ```
 
