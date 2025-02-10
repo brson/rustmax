@@ -66,7 +66,7 @@ as a "batteries included" supercrate.
   - **[🌎 Profile: `rmx-profile-max`][`rmx-profile-max`]**
   - [🌎 Profile: `rmx-profile-max-nightly`][`rmx-profile-max-nightly`]
 - [Ecosystem features](#ecosystem-features).
-  `rmx` identifies Cargo features common across many crates.
+  `rustmax` identifies Cargo features common across many crates.
   - [⛲ Feature: `rmx-feature-no-std`][`rmx-feature-no-std`]
   - [⛲ Feature: `rmx-feature-std`][`rmx-feature-std`]
   - [⛲ Feature: `rmx-feature-default`][`rmx-feature-default`]
@@ -77,7 +77,7 @@ as a "batteries included" supercrate.
   - **[⛲ Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
   - [⛲ Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
 - [Rust standard libraries](#rust-standard-libraries).
-  `rmx` re-exports the standard Rust libraries for convenience.
+  `rustmax` re-exports the standard Rust libraries for convenience.
   - [📙 Rustlib: `rmx-rustlibs-no-std`][`rmx-rustlibs-no-std`]
   - [📙 Rustlib: `rmx-rustlibs-alloc`][`rmx-rustlibs-alloc`]
   - [📙 Rustlib: `rmx-rustlibs-std`][`rmx-rustlibs-std`]
