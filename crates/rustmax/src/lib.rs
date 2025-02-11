@@ -81,6 +81,9 @@ pub mod prelude {
         default,
     };
 
+    #[cfg(feature = "rmx-rustlib-core")]
+    pub use crate::bug;
+
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::S;
 
@@ -105,6 +108,18 @@ pub mod prelude {
 
 pub mod extras {
     //! Additional tidbits defined by `rmx`.
+
+    /// Like 'unimplemented' but shorter to type.
+    #[cfg(feature = "rmx-rustlib-core")]
+    #[macro_export]
+    macro_rules! bug {
+        () => {
+            core::panic!("unexpected case (bug!)")
+        };
+        ($($arg:tt)+) => {
+            core::panic!("unexpected case (bug!): {}", $crate::format_args!($($arg)+))
+        };
+    }
 
     #[cfg(feature = "anyhow")]
     pub use ::anyhow::{
