@@ -69,7 +69,10 @@ pub mod prelude {
     pub use ::log::{error, warn, info, debug, trace};
 
     #[cfg(all(feature = "futures", feature = "rmx-feature-default"))]
-    pub use ::futures::executor::block_on;
+    pub use ::futures::{
+        executor::block_on,
+        future::Either,
+    };
 
     #[cfg(feature = "itertools")]
     pub use ::itertools::Itertools as _;
