@@ -21,6 +21,7 @@ notable or useful chapters within a book.
 - [Rust Unsafe Code Guidelines](https://rust-lang.github.io/unsafe-code-guidelines/)
 - [Rust Error Codes Index](https://doc.rust-lang.org/stable/error_codes/error-index.html)
 - [The Rust Unstable Book](https://doc.rust-lang.org/unstable-book/)
+- [The Rust Style Guide](https://doc.rust-lang.org/nightly/style-guide/index.html)
 - [Rust Release Notes](https://doc.rust-lang.org/nightly/releases.html)
 
 ## The Rust standard library
