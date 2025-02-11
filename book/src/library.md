@@ -1,11 +1,10 @@
 # The Rust Max Library
 
 The Rust language and its ecosystem is documented in "books"
-(rendered with [`mdbook`](todo)).
+(rendered with [`mdbook`]), and most of these links are to books.
 
 Links with a bookmark icon, 🔖, are to particularly
 notable or useful chapters within a book.
-
 
 ## The Rust language
 
@@ -22,7 +21,7 @@ notable or useful chapters within a book.
 - [Rust Unsafe Code Guidelines](https://rust-lang.github.io/unsafe-code-guidelines/)
 - [Rust Error Codes Index](https://doc.rust-lang.org/stable/error_codes/error-index.html)
 - [The Rust Unstable Book](https://doc.rust-lang.org/unstable-book/)
-
+- [Rust Release Notes](https://doc.rust-lang.org/nightly/releases.html)
 
 ## The Rust standard library
 
@@ -67,6 +66,10 @@ notable or useful chapters within a book.
 - [The `serde` Book](https://serde.rs/)
 - [The Rust Cookbook](https://rust-lang-nursery.github.io/rust-cookbook/)
 
+## Domain-specific Rust
+
+- [The Embedded Rust Book](https://doc.rust-lang.org/nightly/embedded-book/index.html)
+
 ## The Rust Project internals
 
 - [Rust Project Goals](https://rust-lang.github.io/rust-project-goals/)
@@ -75,3 +78,8 @@ notable or useful chapters within a book.
 - [Rust Forge](https://forge.rust-lang.org/)
   - 🔖 [Alternative Rust Installation Methods](https://forge.rust-lang.org/infra/other-installation-methods.html)
 - [Rust RFCs](https://rust-lang.github.io/rfcs/)
+
+
+
+[`mdbook`]: https://github.com/rust-lang/mdBook
+

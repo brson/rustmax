@@ -245,6 +245,7 @@ rmx-feature-default = [
 # non-default features that we turn on by default for convenience
 rmx-feature-more = [
   "hyper?/full",
+  "rand?/thread_rng",
   "reqwest?/blocking",
   "reqwest?/json",
   "serde?/rc",
