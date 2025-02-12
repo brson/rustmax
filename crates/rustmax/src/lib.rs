@@ -103,6 +103,8 @@ pub mod prelude {
     pub use crate::extras::OptionExpect as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::ResultExpect as _;
+    #[cfg(all(feature = "extension-trait", feature = "anyhow"))]
+    pub use crate::extras::AnyResultExpect as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::ResultIgnore as _;
     #[cfg(feature = "extension-trait")]
@@ -248,6 +250,20 @@ pub mod extras {
         }
     }
 
+    #[cfg(all(feature = "extension-trait", feature = "anyhow"))]
+    #[extension_trait::extension_trait]
+    pub impl<T> AnyResultExpect<T> for AnyResult<T>
+    {
+        #[track_caller]
+        #[allow(non_snake_case)]
+        fn X(self) -> T {
+            match self {
+                Ok(v) => v,
+                Err(e) => panic!("impossible `Err` result: {e}"),
+            }
+        }
+    }
+
     /// Ignore a `Result`.
     ///
     /// This is nice because the common idiom of `let _ = ...` is untyped
@@ -268,6 +284,10 @@ pub mod extras {
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl RangeExt for core::ops::Range<usize> {
+        fn from_start_len(start: usize, len: usize) -> Option<core::ops::Range<usize>> {
+            Some(start..start.checked_add(len)?)
+        }
+
         fn subrange(&self, sub: core::ops::Range<usize>) -> Option<core::ops::Range<usize>> {
             if sub.start >= self.len() || sub.end > self.len() {
                 return None;
