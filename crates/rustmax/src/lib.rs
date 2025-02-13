@@ -167,6 +167,13 @@ pub mod extras {
         maybe_init_env_logger(crate_name);
     }
 
+    pub fn recurse<F, R>(f: F) -> R
+    where F: FnOnce() -> R
+    {
+        // todo could grow stack here
+        f()
+    }
+
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
     pub fn S<T>(
