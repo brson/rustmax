@@ -65,3 +65,7 @@
 - glossary / concept index
   - link to the relevant places in the library for subjects
 - io-sandbox profile
+
+# Tips
+
+- solving "()" is not an Iterator / Future for `todo!()`'s implementing return impl traits
