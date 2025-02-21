@@ -1,9 +1,12 @@
+#![allow(unused)]
+
 use rmx::prelude::*;
+
 use rmx::clap::{self, Parser as _};
-use std::path::PathBuf;
+use rmx::std::path::PathBuf;
 
 fn main() -> AnyResult<()> {
-    rmx::extras::init();
+    rmx::extras::init_crate_name(env!("CARGO_CRATE_NAME"));
 
     let cli = Cli::parse();
     cli.run()?;
