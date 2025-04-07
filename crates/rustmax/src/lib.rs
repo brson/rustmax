@@ -28,6 +28,8 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use ::alloc::{format, vec};
 
+    #[cfg(feature = "rmx-rustlib-alloc")]
+    pub use crate::extras::fmt;
 
     /* standard library exports that aren't in its prelude */
 
@@ -132,6 +134,9 @@ pub mod extras {
         Error as AnyError,
         anyhow as A,
     };
+
+    #[cfg(feature = "rmx-rustlib-alloc")]
+    pub use ::alloc::format as fmt;
 
     pub fn default<T: Default>() -> T {
         Default::default()
