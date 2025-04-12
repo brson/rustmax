@@ -97,6 +97,7 @@ but that are not yet part of Rust Max.
 - [`cargo-outdated`](https://crates.io/crates/cargo-outdated)
 - [`hyperfine`](https://github.com/sharkdp/hyperfine)
 - [`rust-analyzer`](https://rust-analyzer.github.io/)
+- [`wasmtime-cli`](https://crates.io/crates/wasmtime-cli)
 
 
 ## Wanted
