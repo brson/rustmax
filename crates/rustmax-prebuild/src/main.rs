@@ -214,6 +214,17 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<Vec<ManifestCrat
             name: name.to_owned(),
             version: version.to_owned(),
         })
+    }).filter_map(|crate_| match crate_ {
+        Ok(crate_) => {
+            // Ignore underscore-prefixed crates.
+            // These are used for internal purposes.
+            if !crate_.name.starts_with("_") {
+                Some(Ok(crate_))
+            } else {
+                None
+            }
+        }
+        Err(e) => Some(Err(e))
     }).collect()
 }
 
