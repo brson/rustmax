@@ -381,3 +381,9 @@ unicode-segmentation = { version = "1.12.0", optional = true, default-features =
 url = { version = "2.5.4", optional = true, default-features = false }
 walkdir = { version = "2.5.0", optional = true, default-features = false }
 xshell = { version = "0.2.7", optional = true, default-features = false }
+
+
+# Indirect dependencies we want to control versions for
+
+# build failure in minimum-version build
+_gcc = { package = "gcc", version = "0.3.55", optional = true, default-features = false }
