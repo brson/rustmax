@@ -25,6 +25,10 @@ test:
     cargo test -p rustmax --features rmx-profile-full
     cargo test -p rustmax --features rmx-profile-max
 
+test-min-version-build: maint-lock-minimum-versions
+    cargo test -p rustmax --features rmx-profile-std
+
+
 lint:
     cargo deny check
     cargo audit
