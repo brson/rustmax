@@ -2598,7 +2598,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2669,7 +2669,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-cli"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "enum-iterator",
  "rustmax",
@@ -2678,7 +2678,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-prebuild"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "anyhow",
  "clap",

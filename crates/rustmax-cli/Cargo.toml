@@ -13,7 +13,7 @@ path = "src/main.rs"
 
 [dependencies]
 rmx.path = "../rustmax"
-rmx.version = "0.0.4"
+rmx.version = "0.0.5"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
