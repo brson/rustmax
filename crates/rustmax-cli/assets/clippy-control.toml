@@ -53,29 +53,6 @@
 "collapsible_else_if" = "allow"
 
 
-# ## "manual_map" = "allow"
-#
-# Allow constructs like
-#
-#     if let Some(text) = c.text() {
-#         Some((c, text))
-#     } else {
-#        // Filter out errors
-#        None
-#     }
-#
-# Clippy would rather write this as
-#
-#     c.text().map(|c| (c, text))
-#
-# Sometimes in context the open coding is more
-# readable; in this case it includes a comment
-# in one of the branches.
-# Good suggestion usually, but I don't always want it.
-
-"manual_map" = "allow"
-
-
 # ## "map_flatten" = "allow"
 #
 # Allow iterator chains of `map` followed by `flatten`.
