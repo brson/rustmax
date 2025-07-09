@@ -2657,6 +2657,7 @@ dependencies = [
  "tera",
  "termcolor",
  "thiserror 2.0.9",
+ "thread_local",
  "tokio",
  "toml 0.9.0",
  "tower",
@@ -3152,11 +3153,11 @@ dependencies = [
 
 [[package]]
 name = "thread_local"
-version = "1.0.0"
+version = "1.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88ddf1ad580c7e3d1efff877d972bcc93f995556b9087a5a259630985c88ceab"
+checksum = "f60246a4944f24f6e018aa17cdeffb7818b76356965d03b07d6a9886e8962185"
 dependencies = [
- "lazy_static",
+ "cfg-if 1.0.1",
 ]
 
 [[package]]

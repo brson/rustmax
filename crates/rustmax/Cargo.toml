@@ -387,3 +387,5 @@ xshell = { version = "0.2.7", optional = true, default-features = false }
 
 # build failure in minimum-version build
 _gcc = { package = "gcc", version = "0.3.55", optional = true, default-features = false }
+# cargo audit
+_thread_local = { package = "thread_local", version = "1.1.4", optional = true, default-features = false }
