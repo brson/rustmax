@@ -44,6 +44,14 @@ maint-duplicates:
 maint-upgrade:
     cargo upgrade --incompatible --compatible=ignore
 
+# useful prior to running `cargo audit`
+maint-lock-minimum-versions:
+    cargo +nightly update -Z minimal-versions
+
+maint-audit:
+    cargo audit
+
+
 
 prebuild:
     cargo run -p rustmax-prebuild
