@@ -35,7 +35,7 @@ fn get_target() -> AnyResult<MoldTarget> {
     if cfg!(target_os = "linux") && cfg!(target_arch = "x86_64") {
         Ok(MoldTarget::LinuxX86_64)
     } else {
-        Err(anyhow!("unsupperted target"))
+        Err(anyhow!("unsupported target"))
     }
 }
 
