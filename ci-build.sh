@@ -8,7 +8,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --defaul
 
 source ~/.cargo/env
 
-cargo install mdbook@0.4.43
 cargo install just@1.36.0
 
+just install-tools
 just build
