@@ -10,7 +10,7 @@
             name: "anyhow",
             category: "errors",
             short_desc: "Easy error handling",
-            oneline_desc: "Easy error handling",
+            oneline_desc: "Flexible error handling for applications",
         },
         {
             name: "axum",

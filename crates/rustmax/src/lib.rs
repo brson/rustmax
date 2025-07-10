@@ -357,9 +357,7 @@ pub mod ahash {
 
 #[cfg(feature = "anyhow")]
 pub mod anyhow {
-    //! Easy error handling.
-    //!
-    //! See crate [`::anyhow`].
+    #![doc = include_str!("../doc-src/crate-anyhow.md")]
 
     pub use ::anyhow::*;
 }

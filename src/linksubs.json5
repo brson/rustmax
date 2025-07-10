@@ -11,4 +11,22 @@
     "crate::ahash::AHashMap":
     "https://docs.rs/ahash/latest/ahash/struct.AHashMap.html",
 
+    // anyhow
+    "crate::thiserror":
+    "https://docs.rs/thiserror",
+    "crate::anyhow::anyhow":
+    "https://docs.rs/anyhow/latest/anyhow/macro.anyhow.html",
+    "crate::anyhow::bail":
+    "https://docs.rs/anyhow/latest/anyhow/macro.bail.html",
+    "crate::anyhow::Error":
+    "https://docs.rs/anyhow/latest/anyhow/struct.Error.html",
+    "crate::anyhow::Result":
+    "https://docs.rs/anyhow/latest/anyhow/type.Result.html",
+    "crate::anyhow::Context":
+    "https://docs.rs/anyhow/latest/anyhow/trait.Context.html",
+    "crate::anyhow::Context::context":
+    "https://docs.rs/anyhow/latest/anyhow/trait.Context.html#tymethod.context",
+    "crate::std::error::Error":
+    "https://doc.rust-lang.org/stable/std/error/trait.Error.html",
+
 }
