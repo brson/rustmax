@@ -2,7 +2,7 @@
 
 set +euxo pipefail
 
-TOOLCHAIN=1.84.1
+TOOLCHAIN=1.88.0
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $TOOLCHAIN
 
