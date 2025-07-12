@@ -23,7 +23,7 @@
   [`cargo-generate`](#user-content--cargo-generate)
 - More Rust tools:
   [`clippy-control`](#user-content--clippy-control)
-- More tools:
+- More general developer tools:
   [`ripgrep`](#user-content--ripgrep)
   [`tokei`](#user-content--tokei)
   [`basic-http-server`](#user-content--clippy-control)
@@ -40,7 +40,7 @@ todo say something here
 
 ## Standard Rust tools
 
-### 📦 `cargo`
+### 🌞 `cargo`
 
 The Rust build and packaging tool.
 It is the central tool in most Rust development workflows.
@@ -50,12 +50,12 @@ usually managed by `rustup`.
 > 👁️  [The `cargo` Book](https://doc.rust-lang.org/cargo/index.html)
 
 
-### 📦 `rustc`
-### 📦 `rustup`
-### 📦 `rustfmt`
-### 📦 `mdbook`
-### 📦 `bindgen`
-### 📦 `miri`
+### 🌞 `rustc`
+### 🌞 `rustup`
+### 🌞 `rustfmt`
+### 🌞 `mdbook`
+### 🌞 `bindgen`
+### 🌞 `miri`
 
 
 
@@ -63,7 +63,7 @@ usually managed by `rustup`.
 ## Cargo plugins
 
 
-### 📦 `cargo-edit`
+### 🌞 `cargo-edit`
 
 Extra `cargo` subcommands for editing `Cargo.toml`.
 
@@ -71,7 +71,7 @@ Extra `cargo` subcommands for editing `Cargo.toml`.
 cargo install cargo-edit
 ```
 
-> 🥡 [`crates.io` Page](https://crates.io/crates/cargo-edit)\
+> 🌞 [`crates.io` Page](https://crates.io/crates/cargo-edit)\
 > 👁️  [Source Repository](https://github.com/killercup/cargo-edit)
 
 ---
@@ -87,27 +87,27 @@ is built into `cargo` itself.
 
 
 
-### 📦 `cargo-clean-all`
-### 📦 `cargo-deny`
-### 📦 `cargo-license`
-### 📦 `cargo-audit`
-### 📦 `cargo-generate`
-
-
-
-
-## More Rust-specific tools
-
-### 📦 `clippy-control`
+### 🌞 `cargo-clean-all`
+### 🌞 `cargo-deny`
+### 🌞 `cargo-license`
+### 🌞 `cargo-audit`
+### 🌞 `cargo-generate`
 
 
 
 
 ## More Rust tools
 
-### 📦 `ripgrep`
+### 🌞 `clippy-control`
 
-### 📦 `just`
+
+
+
+## More general developer tools
+
+### 🌞 `ripgrep`
+
+### 🌞 `just`
 
 A simple and suprisingly useful command runner with `make`-like syntax.
 
@@ -115,7 +115,7 @@ A simple and suprisingly useful command runner with `make`-like syntax.
 cargo install just
 ```
 
-> 🥡 [`crates.io` Page](https://crates.io/crates/just)\
+> 🌞 [`crates.io` Page](https://crates.io/crates/just)\
 > 👁️  [Source Repository](https://github.com/casey/just)
 
 ---
@@ -175,15 +175,19 @@ Available recipes:
     replace-version old new
     test
     test-min-version-build
+
+$ just build
+   Compiling rustmax-cli v0.0.5 (…/rustmax/crates/rustmax-cli)
+   …
 ```
 
 
 
 
-### 📦 `tokei`
-### 📦 `basic-http-server`
-### 📦 `gist`
-### 📦 `jaq`
-### 📦 `jsonxf`
-### 📦 `fd`
-### 📦 `sd`
+### 🌞 `tokei`
+### 🌞 `basic-http-server`
+### 🌞 `gist`
+### 🌞 `jaq`
+### 🌞 `jsonxf`
+### 🌞 `fd`
+### 🌞 `sd`
