@@ -95,14 +95,91 @@ is built into `cargo` itself.
 
 
 
+
 ## More Rust-specific tools
 
 ### 📦 `clippy-control`
 
+
+
+
 ## More Rust tools
 
 ### 📦 `ripgrep`
+
 ### 📦 `just`
+
+A simple and suprisingly useful command runner with `make`-like syntax.
+
+```
+cargo install just
+```
+
+> 🥡 [`crates.io` Page](https://crates.io/crates/just)\
+> 👁️  [Source Repository](https://github.com/casey/just)
+
+---
+
+Almost every project has a handful of commands the developer(s)
+uses frequently. Put these in a `justfile` so the menu of
+commands for this project is always obvious, which
+can be extra helpful after years away from a project.
+
+`just` runs commands listed in a file named `justfile`.
+The `justfile` lives your project's root directory,
+and is configured with a `make`-like syntax:
+
+```just
+default:
+    just --list
+
+install-tools:
+    cargo install mdbook
+    cargo install mdbook-yapp
+
+clean: doc-clean
+    cargo clean
+
+doc-clean:
+    rm -rf out
+```
+
+It's a simple idea, but suprisingly useful. And don't worry that it looks like
+a `Makefile` &mdash; it is much more fun and sensible in use than `make`.
+
+When you come back to a project and see there's a justfile you
+know to run `just --list` and you'll immediately see what
+was on the previous maintainer's mind.
+
+```
+$ just --list
+Available recipes:
+    build
+    check
+    clean
+    default
+    doc-book
+    doc-build
+    doc-clean
+    doc-crates
+    install-tools
+    lint
+    maint-audit
+    maint-duplicates
+    maint-lock-minimum-versions # useful prior to running `cargo audit`
+    maint-outdated
+    maint-upgrade
+    prebuild
+    publish
+    publish-dry
+    replace-version old new
+    test
+    test-min-version-build
+```
+
+
+
+
 ### 📦 `tokei`
 ### 📦 `basic-http-server`
 ### 📦 `gist`

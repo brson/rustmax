@@ -3,6 +3,7 @@
 Sometimes exact formatting is important to make code beautiful.
 Don't be afraid annotate with `#[rustfmt::skip]`.
 
+
 ## Use `Option` with `?`
 
 The `?` operator works with `Option` to early-return on `None`,
@@ -19,3 +20,63 @@ fn find_user_email(id: u32) -> Option<String> {
 
 An alternative to `match` or `if let` statements, `?` lets you chain
 operations that might fail, automatically propagating `None` up the call stack.
+
+
+## Put common development commands in a `justfile`
+
+Almost every project has a handful of commands the developer(s)
+uses frequently. Put these in a `justfile` so the menu of
+commands for this project is always obvious, which
+can be extra helpful after years away from a project.
+
+`just` runs commands listed in a file named `justfile`.
+The `justfile` lives your project's root directory,
+and is configured with a `make`-like syntax:
+
+```just
+default:
+    just --list
+
+install-tools:
+    cargo install mdbook
+    cargo install mdbook-yapp
+
+clean: doc-clean
+    cargo clean
+
+doc-clean:
+    rm -rf out
+```
+
+It's a simple idea, but suprisingly useful. And don't worry that it looks like
+a `Makefile` &mdash; it is much more fun and sensible in use than `make`.
+
+When you come back to a project and see there's a justfile you
+know to run `just --list` and you'll immediately see what
+was on the previous maintainer's mind.
+
+```
+$ just --list
+Available recipes:
+    build
+    check
+    clean
+    default
+    doc-book
+    doc-build
+    doc-clean
+    doc-crates
+    install-tools
+    lint
+    maint-audit
+    maint-duplicates
+    maint-lock-minimum-versions # useful prior to running `cargo audit`
+    maint-outdated
+    maint-upgrade
+    prebuild
+    publish
+    publish-dry
+    replace-version old new
+    test
+    test-min-version-build
+```
