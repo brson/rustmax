@@ -6,6 +6,8 @@ install-tools:
     cargo install mdbook
     cargo install mdbook-yapp
 
+install-cli:
+    cargo install --path crates/rustmax-cli
 
 clean: doc-clean
     cargo clean
