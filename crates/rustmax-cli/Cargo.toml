@@ -17,7 +17,7 @@ rmx.version = "0.0.5"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
-  "rmx-profile-std",
+  "rmx-profile-net",
   "rmx-feature-derive",
 ]
 serde.version = "1"
