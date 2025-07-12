@@ -1,6 +1,6 @@
 ## Use `rustfmt::skip`
 
-Sometimes formatting is important.
+Sometimes exact formatting is important to make code beautiful.
 Don't be afraid annotate with `#[rustfmt::skip]`.
 
 ## Use `Option` with `?`
