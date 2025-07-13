@@ -9,7 +9,6 @@
 - [Rust Max: The Crates](crates.md)
 - [Rust Max: The Tools](tools.md)
 - [The Rust Max Library](library.md)
-- [Rust Max Addons](addons.md)
 
 ---
 
