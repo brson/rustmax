@@ -65,6 +65,10 @@
 - glossary / concept index
   - link to the relevant places in the library for subjects
 - io-sandbox profile
+- tool ideas:
+  - manage system packages
+  - set up system for cross-compiling
+  - cargo-zigbuild?
 
 # Tips
 

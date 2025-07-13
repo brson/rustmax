@@ -30,3 +30,4 @@
 - jj-cli
 - mdbook
 - wabt
+- cargo-zigbuild
