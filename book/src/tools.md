@@ -23,6 +23,8 @@
   [`cargo-generate`](#user-content--cargo-generate)
 - More Rust tools:
   [`clippy-control`](#user-content--clippy-control)
+- Non-Rust tools for Rust:
+  [`mold`](#user-content--mold)
 - More general developer tools:
   [`ripgrep`](#user-content--ripgrep)
   [`tokei`](#user-content--tokei)
@@ -99,6 +101,12 @@ is built into `cargo` itself.
 ## More Rust tools
 
 ### 🌞 `clippy-control`
+
+
+
+## Non-Rust tools for Rust
+
+### 🌞 `mold`
 
 
 
