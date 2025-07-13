@@ -1,3 +1,10 @@
+## Set up the `mold` linker
+
+The Rust Max CLI tool can do this for you:
+
+`rustmax install-tool mold`
+
+
 ## Use `rustfmt::skip`
 
 Sometimes exact formatting is important to make code beautiful.
