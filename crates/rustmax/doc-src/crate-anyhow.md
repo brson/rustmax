@@ -39,7 +39,7 @@ use [`thiserror`] instead of `anyhow`.
 Use [`Result<T>`] as your main error type,
 and [`.context()`] to add helpful error messages:
 
-```rust
+```rust,ignore
 use anyhow::{Context, Result};
 
 fn get_cluster_info() -> Result<ClusterMap> {
