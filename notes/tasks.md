@@ -1,4 +1,4 @@
-# Task add-cargo-plugin: Add a cargo plugin to rustmax-cli
+# Task add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli
 
 `rustmax-cli` has four commands that operate on "tools":
 `install-tool`, `uninstall-tool`, `update-tool`, `tool-status`;
@@ -13,3 +13,17 @@ To add a new cargo plugin:
 - Think about if these tools have any special considerations for post-install/uninstall actions etc.
   Do they store caches in the home directory that can be delete on uninstall?
 
+
+# Task add-cargo-tool-to-book: Add a cargo-based tool to the rustmax book
+
+Rust Max documents important Rust tools, most of which can be install by cargo.
+
+These are documented in book/src/tools.md
+
+- Decide which category your tool belongs to
+- Add the tool to the index at the top of the file
+- Add a corresponding section for the tool to the correct location in the file
+
+When writing documentation try to express
+why this tool is significant to the Rust ecosystem.
+Write one or two examples of how it is most typically used.
