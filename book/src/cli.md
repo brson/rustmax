@@ -15,6 +15,7 @@ Rust tools, and Rust projects.
 - Install all Rust Max tools
 - Create a Rust Max project from template
 - Build the Rust Max documentation
+- Run all lint-style checks
 - Emit opinionated `rustfmt.toml`
 - Emit opinionated `deny.toml`
 - Emit opinionated `clippy-control.toml`
