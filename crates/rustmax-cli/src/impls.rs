@@ -131,6 +131,10 @@ impl Tool {
                 display_name: "just",
                 impl_complete: true,
             },
+            Mdbook => ToolAttrs {
+                display_name: "mdbook",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -164,6 +168,7 @@ impl Tool {
             Tool::Jsonxf => cargo_tool_install(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_install(&JAQ_CONFIG),
             Tool::Just => cargo_tool_install(&JUST_CONFIG),
+            Tool::Mdbook => cargo_tool_install(&MDBOOK_CONFIG),
             _ => todo!(),
         }
     }
@@ -187,6 +192,7 @@ impl Tool {
             Tool::Jsonxf => cargo_tool_update(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_update(&JAQ_CONFIG),
             Tool::Just => cargo_tool_update(&JUST_CONFIG),
+            Tool::Mdbook => cargo_tool_update(&MDBOOK_CONFIG),
             _ => todo!(),
         }
     }
@@ -210,6 +216,7 @@ impl Tool {
             Tool::Jsonxf => cargo_tool_uninstall(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_uninstall(&JAQ_CONFIG),
             Tool::Just => cargo_tool_uninstall(&JUST_CONFIG),
+            Tool::Mdbook => cargo_tool_uninstall(&MDBOOK_CONFIG),
             _ => todo!(),
         }
     }
@@ -233,6 +240,7 @@ impl Tool {
             Tool::Jsonxf => cargo_tool_status(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_status(&JAQ_CONFIG),
             Tool::Just => cargo_tool_status(&JUST_CONFIG),
+            Tool::Mdbook => cargo_tool_status(&MDBOOK_CONFIG),
             _ => todo!(),
         }
     }
@@ -861,6 +869,14 @@ const JAQ_CONFIG: CargoToolConfig = CargoToolConfig {
 const JUST_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "just",
     package_name: "just",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const MDBOOK_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "mdbook",
+    package_name: "mdbook",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
