@@ -36,6 +36,7 @@ pub enum Tool {
     CargoAudit,
     CargoCleanAll,
     CargoDeny,
+    CargoDuplicates,
     CargoEdit,
     CargoGenerate,
     CargoOutdated,
