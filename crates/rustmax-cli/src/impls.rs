@@ -102,235 +102,297 @@ impl Tool {
     }
 }
 
-fn cargo_clean_all_install() -> AnyResult<()> {
-    println!("Installing cargo-clean-all...");
+struct CargoToolConfig {
+    tool_name: &'static str,
+    package_name: &'static str,
+    subcommand: &'static str,
+    post_install_note: Option<&'static str>,
+    post_install_action: Option<fn() -> AnyResult<()>>,
+    post_status_action: Option<fn() -> AnyResult<()>>,
+}
+
+fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("Installing {}...", config.tool_name);
 
     // Check if already installed
     if let Ok(output) = std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
+        .args([config.subcommand, "--version"])
         .output()
     {
         if output.status.success() {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("cargo-clean-all is already installed ({})", version);
-            println!("Use 'rustmax update-tool cargo-clean-all' to update to the latest version");
+            println!("{} is already installed ({})", config.tool_name, version);
+            println!("Use 'rustmax update-tool {}' to update to the latest version", config.tool_name);
             return Ok(());
         }
     }
 
     // Install using cargo install
-    println!("Running: cargo install cargo-clean-all");
+    println!("Running: cargo install {}", config.package_name);
     let status = std::process::Command::new("cargo")
-        .args(["install", "cargo-clean-all"])
+        .args(["install", config.package_name])
         .status()
         .context("Failed to execute cargo install command")?;
 
     if !status.success() {
         bail!(
-            "cargo install cargo-clean-all failed with exit code: {}",
+            "cargo install {} failed with exit code: {}",
+            config.package_name,
             status
         );
     }
 
     // Verify installation
     match std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
+        .args([config.subcommand, "--version"])
         .output()
     {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("✓ cargo-clean-all installed successfully ({})", version);
+            println!("✓ {} installed successfully ({})", config.tool_name, version);
         }
         _ => {
             println!("⚠️  Installation may have succeeded but could not verify version");
         }
     }
 
-    println!("cargo-clean-all installation complete!");
+    if let Some(note) = config.post_install_note {
+        println!("{}", note);
+    }
+
+    if let Some(action) = config.post_install_action {
+        action()?;
+    }
+
+    println!("{} installation complete!", config.tool_name);
     Ok(())
+}
+
+fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("Uninstalling {}...", config.tool_name);
+
+    // Check if installed first
+    match std::process::Command::new("cargo")
+        .args([config.subcommand, "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("Found {} ({}), proceeding with uninstall", config.tool_name, version);
+        }
+        _ => {
+            println!("{} is not installed", config.tool_name);
+            return Ok(());
+        }
+    }
+
+    // Uninstall using cargo uninstall
+    println!("Running: cargo uninstall {}", config.package_name);
+    let status = std::process::Command::new("cargo")
+        .args(["uninstall", config.package_name])
+        .status()
+        .context("Failed to execute cargo uninstall command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo uninstall {} failed with exit code: {}",
+            config.package_name,
+            status
+        );
+    }
+
+    // Verify uninstallation
+    match std::process::Command::new("cargo")
+        .args([config.subcommand, "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            println!("⚠️  {} may still be installed (uninstall verification failed)", config.tool_name);
+        }
+        _ => {
+            println!("✓ {} uninstalled successfully", config.tool_name);
+        }
+    }
+
+    if let Some(note) = config.post_install_note {
+        println!("{}", note);
+    }
+
+    println!("{} uninstallation complete!", config.tool_name);
+    Ok(())
+}
+
+fn cargo_tool_update(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("Updating {}...", config.tool_name);
+
+    // Check if installed first
+    let current_version = match std::process::Command::new("cargo")
+        .args([config.subcommand, "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("Current version: {}", version);
+            Some(version.to_string())
+        }
+        _ => {
+            println!(
+                "{} is not installed, use 'rustmax install-tool {}' instead",
+                config.tool_name, config.tool_name
+            );
+            return Ok(());
+        }
+    };
+
+    // Update using cargo install --force
+    println!("Running: cargo install --force {}", config.package_name);
+    let status = std::process::Command::new("cargo")
+        .args(["install", "--force", config.package_name])
+        .status()
+        .context("Failed to execute cargo install command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo install --force {} failed with exit code: {}",
+            config.package_name,
+            status
+        );
+    }
+
+    // Verify update
+    match std::process::Command::new("cargo")
+        .args([config.subcommand, "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let new_version = String::from_utf8_lossy(&output.stdout);
+            let new_version = new_version.trim();
+            
+            if let Some(old_version) = current_version {
+                if old_version != new_version {
+                    println!("✓ {} updated: {} → {}", config.tool_name, old_version, new_version);
+                } else {
+                    println!("✓ {} is already up to date ({})", config.tool_name, new_version);
+                }
+            } else {
+                println!("✓ {} updated to {}", config.tool_name, new_version);
+            }
+        }
+        _ => {
+            println!("⚠️  Update may have succeeded but could not verify version");
+        }
+    }
+
+    println!("{} update complete!", config.tool_name);
+    Ok(())
+}
+
+fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("{} status:", config.tool_name);
+
+    // Check binary installation and version
+    match std::process::Command::new("cargo")
+        .args([config.subcommand, "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("  Binary: Installed ({})", version);
+        }
+        Ok(_) => {
+            println!("  Binary: Installed (version unknown)");
+        }
+        Err(_) => {
+            println!("  Binary: Not installed");
+        }
+    }
+
+    if let Some(action) = config.post_status_action {
+        action()?;
+    }
+
+    Ok(())
+}
+
+fn cargo_audit_download_db() -> AnyResult<()> {
+    // Download advisory database on first install
+    println!("Downloading advisory database...");
+    let db_status = std::process::Command::new("cargo")
+        .args(["audit", "--stale"]) // This will download the DB if not present
+        .output();
+
+    match db_status {
+        Ok(_) => println!("✓ Advisory database ready"),
+        Err(_) => println!("⚠️  Could not initialize advisory database"),
+    }
+    Ok(())
+}
+
+fn cargo_audit_status_db() -> AnyResult<()> {
+    // Check advisory database status
+    let advisory_db_path = std::env::var("HOME")
+        .map(|home| format!("{}/.cargo/advisory-db", home))
+        .unwrap_or_else(|_| "~/.cargo/advisory-db".to_string());
+
+    if std::path::Path::new(&advisory_db_path).exists() {
+        println!("  Advisory DB: Present at {}", advisory_db_path);
+    } else {
+        println!("  Advisory DB: Not found, run 'cargo audit' to download");
+    }
+    Ok(())
+}
+
+fn cargo_clean_all_install() -> AnyResult<()> {
+    let config = CargoToolConfig {
+        tool_name: "cargo-clean-all",
+        package_name: "cargo-clean-all",
+        subcommand: "clean-all",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: None,
+    };
+    cargo_tool_install(&config)
 }
 
 fn cargo_audit_install() -> AnyResult<()> {
-    println!("Installing cargo-audit...");
-
-    // Check if already installed
-    if let Ok(output) = std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        if output.status.success() {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("cargo-audit is already installed ({})", version);
-            println!("Use 'rustmax update-tool cargo-audit' to update to the latest version");
-            return Ok(());
-        }
-    }
-
-    // Install using cargo install
-    println!("Running: cargo install cargo-audit");
-    let status = std::process::Command::new("cargo")
-        .args(["install", "cargo-audit"])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install cargo-audit failed with exit code: {}",
-            status
-        );
-    }
-
-    // Verify installation
-    match std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("✓ cargo-audit installed successfully ({})", version);
-        }
-        _ => {
-            println!("⚠️  Installation may have succeeded but could not verify version");
-        }
-    }
-
-    println!("cargo-audit installation complete!");
-    Ok(())
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: None,
+        post_install_action: Some(cargo_audit_download_db),
+        post_status_action: Some(cargo_audit_status_db),
+    };
+    cargo_tool_install(&config)
 }
 
 fn cargo_audit_update() -> AnyResult<()> {
-    println!("Updating cargo-audit...");
-
-    // Check if installed first
-    let current_version = match std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("Current version: {}", version);
-            Some(version.to_string())
-        }
-        _ => {
-            println!(
-                "cargo-audit is not installed, use 'rustmax install-tool cargo-audit' instead"
-            );
-            return Ok(());
-        }
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: None,
     };
-
-    // Update using cargo install --force
-    println!("Running: cargo install --force cargo-audit");
-    let status = std::process::Command::new("cargo")
-        .args(["install", "--force", "cargo-audit"])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install --force cargo-audit failed with exit code: {}",
-            status
-        );
-    }
-
-    // Verify update
-    match std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let new_version = String::from_utf8_lossy(&output.stdout);
-            let new_version = new_version.trim();
-
-            if let Some(old_version) = current_version {
-                if old_version != new_version {
-                    println!("✓ cargo-audit updated: {} → {}", old_version, new_version);
-                } else {
-                    println!("✓ cargo-audit is already up to date ({})", new_version);
-                }
-            } else {
-                println!("✓ cargo-audit updated to {}", new_version);
-            }
-        }
-        _ => {
-            println!("⚠️  Update may have succeeded but could not verify version");
-        }
-    }
-
-    println!("cargo-audit update complete!");
-    Ok(())
+    cargo_tool_update(&config)
 }
 
 fn cargo_clean_all_update() -> AnyResult<()> {
-    println!("Updating cargo-clean-all...");
-
-    // Check if installed first
-    let current_version = match std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("Current version: {}", version);
-            Some(version.to_string())
-        }
-        _ => {
-            println!(
-                "cargo-clean-all is not installed, use 'rustmax install-tool cargo-clean-all' instead"
-            );
-            return Ok(());
-        }
+    let config = CargoToolConfig {
+        tool_name: "cargo-clean-all",
+        package_name: "cargo-clean-all",
+        subcommand: "clean-all",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: None,
     };
-
-    // Update using cargo install --force
-    println!("Running: cargo install --force cargo-clean-all");
-    let status = std::process::Command::new("cargo")
-        .args(["install", "--force", "cargo-clean-all"])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install --force cargo-clean-all failed with exit code: {}",
-            status
-        );
-    }
-
-    // Verify update
-    match std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let new_version = String::from_utf8_lossy(&output.stdout);
-            let new_version = new_version.trim();
-
-            if let Some(old_version) = current_version {
-                if old_version != new_version {
-                    println!(
-                        "✓ cargo-clean-all updated: {} → {}",
-                        old_version, new_version
-                    );
-                } else {
-                    println!("✓ cargo-clean-all is already up to date ({})", new_version);
-                }
-            } else {
-                println!("✓ cargo-clean-all updated to {}", new_version);
-            }
-        }
-        _ => {
-            println!("⚠️  Update may have succeeded but could not verify version");
-        }
-    }
-
-    println!("cargo-clean-all update complete!");
-    Ok(())
+    cargo_tool_update(&config)
 }
 
 impl Tool {
@@ -367,165 +429,49 @@ impl Tool {
 }
 
 fn cargo_audit_status() -> AnyResult<()> {
-    println!("cargo-audit status:");
-
-    // Check binary installation and version
-    match std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("  Binary: Installed ({})", version);
-        }
-        Ok(_) => {
-            println!("  Binary: Installed (version unknown)");
-        }
-        Err(_) => {
-            println!("  Binary: Not installed");
-            return Ok(());
-        }
-    }
-
-    // Check advisory database status
-    let advisory_db_path = std::env::var("HOME")
-        .map(|home| format!("{}/.cargo/advisory-db", home))
-        .unwrap_or_else(|_| "~/.cargo/advisory-db".to_string());
-
-    if std::path::Path::new(&advisory_db_path).exists() {
-        println!("  Advisory DB: Present at {}", advisory_db_path);
-    } else {
-        println!("  Advisory DB: Not found, run 'cargo audit' to download");
-    }
-
-    Ok(())
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: Some(cargo_audit_status_db),
+    };
+    cargo_tool_status(&config)
 }
 
 fn cargo_clean_all_status() -> AnyResult<()> {
-    println!("cargo-clean-all status:");
-
-    // Check binary installation and version
-    match std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("  Binary: Installed ({})", version);
-        }
-        Ok(_) => {
-            println!("  Binary: Installed (version unknown)");
-        }
-        Err(_) => {
-            println!("  Binary: Not installed");
-        }
-    }
-
-    Ok(())
+    let config = CargoToolConfig {
+        tool_name: "cargo-clean-all",
+        package_name: "cargo-clean-all",
+        subcommand: "clean-all",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: None,
+    };
+    cargo_tool_status(&config)
 }
 
 fn cargo_audit_uninstall() -> AnyResult<()> {
-    println!("Uninstalling cargo-audit...");
-
-    // Check if installed first
-    match std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("Found cargo-audit ({}), proceeding with uninstall", version);
-        }
-        _ => {
-            println!("cargo-audit is not installed");
-            return Ok(());
-        }
-    }
-
-    // Uninstall using cargo uninstall
-    println!("Running: cargo uninstall cargo-audit");
-    let status = std::process::Command::new("cargo")
-        .args(["uninstall", "cargo-audit"])
-        .status()
-        .context("Failed to execute cargo uninstall command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo uninstall cargo-audit failed with exit code: {}",
-            status
-        );
-    }
-
-    // Verify uninstallation
-    match std::process::Command::new("cargo")
-        .args(["audit", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            println!("⚠️  cargo-audit may still be installed (uninstall verification failed)");
-        }
-        _ => {
-            println!("✓ cargo-audit uninstalled successfully");
-        }
-    }
-
-    println!("cargo-audit uninstallation complete!");
-    println!("Note: Advisory database at ~/.cargo/advisory-db was not removed");
-    Ok(())
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: Some("Note: Advisory database at ~/.cargo/advisory-db was not removed"),
+        post_install_action: None,
+        post_status_action: None,
+    };
+    cargo_tool_uninstall(&config)
 }
 
 fn cargo_clean_all_uninstall() -> AnyResult<()> {
-    println!("Uninstalling cargo-clean-all...");
-
-    // Check if installed first
-    match std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!(
-                "Found cargo-clean-all ({}), proceeding with uninstall",
-                version
-            );
-        }
-        _ => {
-            println!("cargo-clean-all is not installed");
-            return Ok(());
-        }
-    }
-
-    // Uninstall using cargo uninstall
-    println!("Running: cargo uninstall cargo-clean-all");
-    let status = std::process::Command::new("cargo")
-        .args(["uninstall", "cargo-clean-all"])
-        .status()
-        .context("Failed to execute cargo uninstall command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo uninstall cargo-clean-all failed with exit code: {}",
-            status
-        );
-    }
-
-    // Verify uninstallation
-    match std::process::Command::new("cargo")
-        .args(["clean-all", "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            println!("⚠️  cargo-clean-all may still be installed (uninstall verification failed)");
-        }
-        _ => {
-            println!("✓ cargo-clean-all uninstalled successfully");
-        }
-    }
-
-    println!("cargo-clean-all uninstallation complete!");
-    Ok(())
+    let config = CargoToolConfig {
+        tool_name: "cargo-clean-all",
+        package_name: "cargo-clean-all",
+        subcommand: "clean-all",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: None,
+    };
+    cargo_tool_uninstall(&config)
 }
