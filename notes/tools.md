@@ -10,7 +10,6 @@
 - [cargo-audit](https://crates.io/crates/cargo-audit) - find known security vulnerabilities
 - [cargo-expand](https://github.com/dtolnay/cargo-expand) - expand macros
 - [cargo-hack](https://crates.io/crates/cargo-hack) - build / test with all combinations of cargo features
-- [cargo-tree](https://crates.io/crates/cargo-tree) - show the crate graph as a tree
 
 
 ## Other Tools

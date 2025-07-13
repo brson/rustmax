@@ -40,7 +40,6 @@ pub enum Tool {
     CargoEdit,
     CargoGenerate,
     CargoOutdated,
-    CargoTree,
 
     /* non-plugin cargo programs */
     BasicHttpServer,
