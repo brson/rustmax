@@ -164,6 +164,7 @@ impl Tool {
     pub fn uninstall(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::uninstall(),
+            Tool::CargoAudit => cargo_audit_uninstall(),
             _ => todo!(),
         }
     }
@@ -212,5 +213,56 @@ fn cargo_audit_status() -> AnyResult<()> {
         println!("  Advisory DB: Not found, run 'cargo audit' to download");
     }
 
+    Ok(())
+}
+
+fn cargo_audit_uninstall() -> AnyResult<()> {
+    println!("Uninstalling cargo-audit...");
+
+    // Check if installed first
+    match std::process::Command::new("cargo")
+        .args(["audit", "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("Found cargo-audit ({}), proceeding with uninstall", version);
+        }
+        _ => {
+            println!("cargo-audit is not installed");
+            return Ok(());
+        }
+    }
+
+    // Uninstall using cargo uninstall
+    println!("Running: cargo uninstall cargo-audit");
+    let status = std::process::Command::new("cargo")
+        .args(["uninstall", "cargo-audit"])
+        .status()
+        .context("Failed to execute cargo uninstall command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo uninstall cargo-audit failed with exit code: {}",
+            status
+        );
+    }
+
+    // Verify uninstallation
+    match std::process::Command::new("cargo")
+        .args(["audit", "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            println!("⚠️  cargo-audit may still be installed (uninstall verification failed)");
+        }
+        _ => {
+            println!("✓ cargo-audit uninstalled successfully");
+        }
+    }
+
+    println!("cargo-audit uninstallation complete!");
+    println!("Note: Advisory database at ~/.cargo/advisory-db was not removed");
     Ok(())
 }
