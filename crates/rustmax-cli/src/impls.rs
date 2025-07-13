@@ -111,6 +111,10 @@ impl Tool {
                 display_name: "dust",
                 impl_complete: true,
             },
+            FdFind => ToolAttrs {
+                display_name: "fd",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -139,6 +143,7 @@ impl Tool {
             Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_install(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_install(&DU_DUST_CONFIG),
+            Tool::FdFind => cargo_tool_install(&FD_FIND_CONFIG),
             _ => todo!(),
         }
     }
@@ -157,6 +162,7 @@ impl Tool {
             Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_update(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_update(&DU_DUST_CONFIG),
+            Tool::FdFind => cargo_tool_update(&FD_FIND_CONFIG),
             _ => todo!(),
         }
     }
@@ -175,6 +181,7 @@ impl Tool {
             Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_uninstall(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_uninstall(&DU_DUST_CONFIG),
+            Tool::FdFind => cargo_tool_uninstall(&FD_FIND_CONFIG),
             _ => todo!(),
         }
     }
@@ -193,6 +200,7 @@ impl Tool {
             Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_status(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_status(&DU_DUST_CONFIG),
+            Tool::FdFind => cargo_tool_status(&FD_FIND_CONFIG),
             _ => todo!(),
         }
     }
@@ -781,6 +789,14 @@ const BASIC_HTTP_SERVER_CONFIG: CargoToolConfig = CargoToolConfig {
 const DU_DUST_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "dust",
     package_name: "du-dust",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const FD_FIND_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "fd",
+    package_name: "fd-find",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
