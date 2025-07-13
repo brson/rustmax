@@ -102,6 +102,39 @@ impl Tool {
     }
 }
 
+impl Tool {
+    pub fn update(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::update(),
+            Tool::CargoAudit => cargo_audit_update(),
+            Tool::CargoCleanAll => cargo_clean_all_update(),
+            _ => todo!(),
+        }
+    }
+}
+
+impl Tool {
+    pub fn uninstall(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::uninstall(),
+            Tool::CargoAudit => cargo_audit_uninstall(),
+            Tool::CargoCleanAll => cargo_clean_all_uninstall(),
+            _ => todo!(),
+        }
+    }
+}
+
+impl Tool {
+    pub fn status(&self) -> AnyResult<()> {
+        match self {
+            Tool::Mold => crate::moldman::status(),
+            Tool::CargoAudit => cargo_audit_status(),
+            Tool::CargoCleanAll => cargo_clean_all_status(),
+            _ => todo!(),
+        }
+    }
+}
+
 struct CargoToolConfig {
     tool_name: &'static str,
     package_name: &'static str,
@@ -319,6 +352,56 @@ fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
     Ok(())
 }
 
+/////////
+
+fn cargo_audit_install() -> AnyResult<()> {
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: None,
+        post_install_action: Some(cargo_audit_download_db),
+        post_status_action: Some(cargo_audit_status_db),
+    };
+    cargo_tool_install(&config)
+}
+
+fn cargo_audit_update() -> AnyResult<()> {
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: None,
+    };
+    cargo_tool_update(&config)
+}
+
+fn cargo_audit_status() -> AnyResult<()> {
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: None,
+        post_install_action: None,
+        post_status_action: Some(cargo_audit_status_db),
+    };
+    cargo_tool_status(&config)
+}
+
+fn cargo_audit_uninstall() -> AnyResult<()> {
+    let config = CargoToolConfig {
+        tool_name: "cargo-audit",
+        package_name: "cargo-audit",
+        subcommand: "audit",
+        post_install_note: Some("Note: Advisory database at ~/.cargo/advisory-db was not removed"),
+        post_install_action: None,
+        post_status_action: None,
+    };
+    cargo_tool_uninstall(&config)
+}
+
 fn cargo_audit_download_db() -> AnyResult<()> {
     // Download advisory database on first install
     println!("Downloading advisory database...");
@@ -347,6 +430,8 @@ fn cargo_audit_status_db() -> AnyResult<()> {
     Ok(())
 }
 
+////////
+
 fn cargo_clean_all_install() -> AnyResult<()> {
     let config = CargoToolConfig {
         tool_name: "cargo-clean-all",
@@ -357,30 +442,6 @@ fn cargo_clean_all_install() -> AnyResult<()> {
         post_status_action: None,
     };
     cargo_tool_install(&config)
-}
-
-fn cargo_audit_install() -> AnyResult<()> {
-    let config = CargoToolConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: Some(cargo_audit_download_db),
-        post_status_action: Some(cargo_audit_status_db),
-    };
-    cargo_tool_install(&config)
-}
-
-fn cargo_audit_update() -> AnyResult<()> {
-    let config = CargoToolConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-    };
-    cargo_tool_update(&config)
 }
 
 fn cargo_clean_all_update() -> AnyResult<()> {
@@ -395,51 +456,6 @@ fn cargo_clean_all_update() -> AnyResult<()> {
     cargo_tool_update(&config)
 }
 
-impl Tool {
-    pub fn update(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::update(),
-            Tool::CargoAudit => cargo_audit_update(),
-            Tool::CargoCleanAll => cargo_clean_all_update(),
-            _ => todo!(),
-        }
-    }
-}
-
-impl Tool {
-    pub fn uninstall(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::uninstall(),
-            Tool::CargoAudit => cargo_audit_uninstall(),
-            Tool::CargoCleanAll => cargo_clean_all_uninstall(),
-            _ => todo!(),
-        }
-    }
-}
-
-impl Tool {
-    pub fn status(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::status(),
-            Tool::CargoAudit => cargo_audit_status(),
-            Tool::CargoCleanAll => cargo_clean_all_status(),
-            _ => todo!(),
-        }
-    }
-}
-
-fn cargo_audit_status() -> AnyResult<()> {
-    let config = CargoToolConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: Some(cargo_audit_status_db),
-    };
-    cargo_tool_status(&config)
-}
-
 fn cargo_clean_all_status() -> AnyResult<()> {
     let config = CargoToolConfig {
         tool_name: "cargo-clean-all",
@@ -450,18 +466,6 @@ fn cargo_clean_all_status() -> AnyResult<()> {
         post_status_action: None,
     };
     cargo_tool_status(&config)
-}
-
-fn cargo_audit_uninstall() -> AnyResult<()> {
-    let config = CargoToolConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: Some("Note: Advisory database at ~/.cargo/advisory-db was not removed"),
-        post_install_action: None,
-        post_status_action: None,
-    };
-    cargo_tool_uninstall(&config)
 }
 
 fn cargo_clean_all_uninstall() -> AnyResult<()> {
