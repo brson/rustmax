@@ -127,6 +127,10 @@ impl Tool {
                 display_name: "jaq",
                 impl_complete: true,
             },
+            Just => ToolAttrs {
+                display_name: "just",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -159,6 +163,7 @@ impl Tool {
             Tool::Gist => cargo_tool_install(&GIST_CONFIG),
             Tool::Jsonxf => cargo_tool_install(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_install(&JAQ_CONFIG),
+            Tool::Just => cargo_tool_install(&JUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -181,6 +186,7 @@ impl Tool {
             Tool::Gist => cargo_tool_update(&GIST_CONFIG),
             Tool::Jsonxf => cargo_tool_update(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_update(&JAQ_CONFIG),
+            Tool::Just => cargo_tool_update(&JUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -203,6 +209,7 @@ impl Tool {
             Tool::Gist => cargo_tool_uninstall(&GIST_CONFIG),
             Tool::Jsonxf => cargo_tool_uninstall(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_uninstall(&JAQ_CONFIG),
+            Tool::Just => cargo_tool_uninstall(&JUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -225,6 +232,7 @@ impl Tool {
             Tool::Gist => cargo_tool_status(&GIST_CONFIG),
             Tool::Jsonxf => cargo_tool_status(&JSONXF_CONFIG),
             Tool::Jaq => cargo_tool_status(&JAQ_CONFIG),
+            Tool::Just => cargo_tool_status(&JUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -845,6 +853,14 @@ const JSONXF_CONFIG: CargoToolConfig = CargoToolConfig {
 const JAQ_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "jaq",
     package_name: "jaq",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const JUST_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "just",
+    package_name: "just",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
