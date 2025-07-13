@@ -115,6 +115,10 @@ impl Tool {
                 display_name: "fd",
                 impl_complete: true,
             },
+            Gist => ToolAttrs {
+                display_name: "gist",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -144,6 +148,7 @@ impl Tool {
             Tool::BasicHttpServer => cargo_tool_install(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_install(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_install(&FD_FIND_CONFIG),
+            Tool::Gist => cargo_tool_install(&GIST_CONFIG),
             _ => todo!(),
         }
     }
@@ -163,6 +168,7 @@ impl Tool {
             Tool::BasicHttpServer => cargo_tool_update(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_update(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_update(&FD_FIND_CONFIG),
+            Tool::Gist => cargo_tool_update(&GIST_CONFIG),
             _ => todo!(),
         }
     }
@@ -182,6 +188,7 @@ impl Tool {
             Tool::BasicHttpServer => cargo_tool_uninstall(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_uninstall(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_uninstall(&FD_FIND_CONFIG),
+            Tool::Gist => cargo_tool_uninstall(&GIST_CONFIG),
             _ => todo!(),
         }
     }
@@ -201,6 +208,7 @@ impl Tool {
             Tool::BasicHttpServer => cargo_tool_status(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_status(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_status(&FD_FIND_CONFIG),
+            Tool::Gist => cargo_tool_status(&GIST_CONFIG),
             _ => todo!(),
         }
     }
@@ -797,6 +805,14 @@ const DU_DUST_CONFIG: CargoToolConfig = CargoToolConfig {
 const FD_FIND_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "fd",
     package_name: "fd-find",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const GIST_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "gist",
+    package_name: "gist",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
