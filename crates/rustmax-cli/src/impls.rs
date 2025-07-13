@@ -135,6 +135,10 @@ impl Tool {
                 display_name: "mdbook",
                 impl_complete: true,
             },
+            Ripgrep => ToolAttrs {
+                display_name: "rg",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -169,6 +173,7 @@ impl Tool {
             Tool::Jaq => cargo_tool_install(&JAQ_CONFIG),
             Tool::Just => cargo_tool_install(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_install(&MDBOOK_CONFIG),
+            Tool::Ripgrep => cargo_tool_install(&RIPGREP_CONFIG),
             _ => todo!(),
         }
     }
@@ -193,6 +198,7 @@ impl Tool {
             Tool::Jaq => cargo_tool_update(&JAQ_CONFIG),
             Tool::Just => cargo_tool_update(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_update(&MDBOOK_CONFIG),
+            Tool::Ripgrep => cargo_tool_update(&RIPGREP_CONFIG),
             _ => todo!(),
         }
     }
@@ -217,6 +223,7 @@ impl Tool {
             Tool::Jaq => cargo_tool_uninstall(&JAQ_CONFIG),
             Tool::Just => cargo_tool_uninstall(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_uninstall(&MDBOOK_CONFIG),
+            Tool::Ripgrep => cargo_tool_uninstall(&RIPGREP_CONFIG),
             _ => todo!(),
         }
     }
@@ -241,6 +248,7 @@ impl Tool {
             Tool::Jaq => cargo_tool_status(&JAQ_CONFIG),
             Tool::Just => cargo_tool_status(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_status(&MDBOOK_CONFIG),
+            Tool::Ripgrep => cargo_tool_status(&RIPGREP_CONFIG),
             _ => todo!(),
         }
     }
@@ -877,6 +885,14 @@ const JUST_CONFIG: CargoToolConfig = CargoToolConfig {
 const MDBOOK_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "mdbook",
     package_name: "mdbook",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const RIPGREP_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "rg",
+    package_name: "ripgrep",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
