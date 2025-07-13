@@ -465,8 +465,7 @@ fn update_cargo_config() -> AnyResult<()> {
     let mut config: toml::Value = if config_path.exists() {
         let content =
             fs::read_to_string(&config_path).context("Failed to read existing cargo config")?;
-        content
-            .parse()
+        toml::from_str(&content)
             .context("Failed to parse existing cargo config")?
     } else {
         toml::Value::Table(Default::default())
