@@ -14,12 +14,12 @@
 
 #![allow(unused)]
 
-use std::{env, fs};
-use std::path::Path;
-use anyhow::Result as AnyResult;
 use anyhow::Context;
+use anyhow::Result as AnyResult;
 use anyhow::anyhow as A;
 use std::collections::BTreeMap;
+use std::path::Path;
+use std::{env, fs};
 
 const CRATES_META: &str = "src/crates.json5";
 const TOOLS_META: &str = "src/tools.json5";
@@ -46,16 +46,14 @@ struct CrateInfo {
 }
 
 mod meta {
-    use serde::{Serialize, Deserialize};
+    use serde::{Deserialize, Serialize};
 
-    #[derive(Serialize, Deserialize)]
-    #[derive(Clone, Debug)]
+    #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Crates {
         pub crates: Vec<Crate>,
     }
 
-    #[derive(Serialize, Deserialize)]
-    #[derive(Clone, Debug)]
+    #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Crate {
         pub name: String,
         pub category: String,
@@ -63,14 +61,12 @@ mod meta {
         pub oneline_desc: String,
     }
 
-    #[derive(Serialize, Deserialize)]
-    #[derive(Clone, Debug)]
+    #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Tools {
         pub tools: Vec<Tool>,
     }
 
-    #[derive(Serialize, Deserialize)]
-    #[derive(Clone, Debug)]
+    #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Tool {
         pub name: String,
         pub category: String,
@@ -89,39 +85,31 @@ fn main() -> AnyResult<()> {
     let link_subs_file = workspace_dir.join(LINK_SUBS);
     let cli_dir = workspace_dir.join(CLI_DIR);
 
-    let crates_meta_str = fs::read_to_string(&crates_meta_file)
-        .context(crates_meta_file.display().to_string())?;
-    let tools_meta_str = fs::read_to_string(&tools_meta_file)
-        .context(tools_meta_file.display().to_string())?;
-    let rmx_manifest_str = fs::read_to_string(&rmx_manifest_file)
-        .context(rmx_manifest_file.display().to_string())?;
-    let link_subs_str = fs::read_to_string(&link_subs_file)
-        .context(tools_meta_file.display().to_string())?;
+    let crates_meta_str =
+        fs::read_to_string(&crates_meta_file).context(crates_meta_file.display().to_string())?;
+    let tools_meta_str =
+        fs::read_to_string(&tools_meta_file).context(tools_meta_file.display().to_string())?;
+    let rmx_manifest_str =
+        fs::read_to_string(&rmx_manifest_file).context(rmx_manifest_file.display().to_string())?;
+    let link_subs_str =
+        fs::read_to_string(&link_subs_file).context(tools_meta_file.display().to_string())?;
 
-    let crates_meta: meta::Crates = json5::from_str(&crates_meta_str)
-        .context("crates meta")?;
-    let tools_meta: meta::Tools = json5::from_str(&tools_meta_str)
-        .context("tools meta")?;
-    let rmx_manifest: toml::Value = toml::from_str(&rmx_manifest_str)
-        .context("rmx manifest meta")?;
-    let examples_dir = fs::read_dir(&examples_dir)
-        .context(examples_dir.display().to_string())?;
-    let link_subs: BTreeMap<String, String> = json5::from_str(&link_subs_str)
-        .context("crates meta")?;
+    let crates_meta: meta::Crates = json5::from_str(&crates_meta_str).context("crates meta")?;
+    let tools_meta: meta::Tools = json5::from_str(&tools_meta_str).context("tools meta")?;
+    let rmx_manifest: toml::Value =
+        toml::from_str(&rmx_manifest_str).context("rmx manifest meta")?;
+    let examples_dir = fs::read_dir(&examples_dir).context(examples_dir.display().to_string())?;
+    let link_subs: BTreeMap<String, String> =
+        json5::from_str(&link_subs_str).context("crates meta")?;
 
-    let crate_info = build_crate_info(
-        &crates_meta, &rmx_manifest, examples_dir,
-    )?;
+    let crate_info = build_crate_info(&crates_meta, &rmx_manifest, examples_dir)?;
 
     let out_crates_md_file = workspace_dir.join(OUT_CRATES_MD);
     let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
     let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
 
-    let (
-        out_crates_md_str,
-        out_crates_json_str,
-        out_crates_html_str,
-    ) = make_crate_lists(&crate_info, &link_subs);
+    let (out_crates_md_str, out_crates_json_str, out_crates_html_str) =
+        make_crate_lists(&crate_info, &link_subs);
 
     fs::create_dir_all(OUT_DIR)?;
     write(out_crates_md_file, &out_crates_md_str)?;
@@ -136,7 +124,8 @@ fn main() -> AnyResult<()> {
 }
 
 fn write<P>(p: P, c: &str) -> AnyResult<()>
-    where P: AsRef<std::path::Path>,
+where
+    P: AsRef<std::path::Path>,
 {
     fs::write(&p, c)?;
     eprintln!("wrote {}", p.as_ref().display());
@@ -154,13 +143,17 @@ fn build_crate_info(
     let mut infos = Vec::new();
 
     for crate_ in &manifest_crate_info {
-        let meta = crates_meta.crates.iter().find(|c| {
-            c.name == crate_.name
-        }).ok_or(A!("missing crate meta for {}", crate_.name))?;
+        let meta = crates_meta
+            .crates
+            .iter()
+            .find(|c| c.name == crate_.name)
+            .ok_or(A!("missing crate meta for {}", crate_.name))?;
 
-        let example = examples.iter().find(|c| {
-            c.name == crate_.name
-        }).map(|ce| ce.text.to_string()).unwrap_or_default();
+        let example = examples
+            .iter()
+            .find(|c| c.name == crate_.name)
+            .map(|ce| ce.text.to_string())
+            .unwrap_or_default();
 
         infos.push(CrateInfo {
             name: crate_.name.to_string(),
@@ -173,15 +166,17 @@ fn build_crate_info(
     }
 
     for crate_ in &crates_meta.crates {
-        let _ = manifest_crate_info.iter().find(|c| {
-            c.name == crate_.name
-        }).ok_or(A!("unused crate meta for {}", crate_.name))?;
+        let _ = manifest_crate_info
+            .iter()
+            .find(|c| c.name == crate_.name)
+            .ok_or(A!("unused crate meta for {}", crate_.name))?;
     }
 
     for crate_ in &examples {
-        let _ = manifest_crate_info.iter().find(|c| {
-            c.name == crate_.name
-        }).ok_or(A!("unused example for {}", crate_.name))?;
+        let _ = manifest_crate_info
+            .iter()
+            .find(|c| c.name == crate_.name)
+            .ok_or(A!("unused example for {}", crate_.name))?;
     }
 
     Ok(infos)
@@ -202,32 +197,34 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<Vec<ManifestCrat
         .as_table()
         .ok_or(A!("toml: dependencies table"))?;
 
-    deps.iter().map(|(name, dep)| {
-        let version = dep
-            .as_table()
-            .ok_or(A!("toml: dep table"))?
-            .get("version")
-            .ok_or(A!("toml: dep version"))?
-            .as_str()
-            .ok_or(A!("toml: dep version string"))?;
-        Ok(ManifestCrate {
-            name: name.to_owned(),
-            version: version.to_owned(),
+    deps.iter()
+        .map(|(name, dep)| {
+            let version = dep
+                .as_table()
+                .ok_or(A!("toml: dep table"))?
+                .get("version")
+                .ok_or(A!("toml: dep version"))?
+                .as_str()
+                .ok_or(A!("toml: dep version string"))?;
+            Ok(ManifestCrate {
+                name: name.to_owned(),
+                version: version.to_owned(),
+            })
         })
-    }).filter_map(|crate_| match crate_ {
-        Ok(crate_) => {
-            // Ignore underscore-prefixed crates.
-            // These are used for internal purposes.
-            if !crate_.name.starts_with("_") {
-                Some(Ok(crate_))
-            } else {
-                None
+        .filter_map(|crate_| match crate_ {
+            Ok(crate_) => {
+                // Ignore underscore-prefixed crates.
+                // These are used for internal purposes.
+                if !crate_.name.starts_with("_") {
+                    Some(Ok(crate_))
+                } else {
+                    None
+                }
             }
-        }
-        Err(e) => Some(Err(e))
-    }).collect()
+            Err(e) => Some(Err(e)),
+        })
+        .collect()
 }
-
 
 #[derive(Debug)]
 struct CrateExample {
@@ -235,12 +232,8 @@ struct CrateExample {
     text: String,
 }
 
-fn get_examples(
-    mut examples_dir: fs::ReadDir,
-) -> AnyResult<Vec<CrateExample>> {
-    let crate_name_regex = regex::Regex::new(
-        r"^crate-(?<name>[a-zA-Z0-9_-]+)\.md$"
-    ).expect(".");
+fn get_examples(mut examples_dir: fs::ReadDir) -> AnyResult<Vec<CrateExample>> {
+    let crate_name_regex = regex::Regex::new(r"^crate-(?<name>[a-zA-Z0-9_-]+)\.md$").expect(".");
 
     let mut examples = Vec::new();
 
@@ -272,9 +265,7 @@ fn get_examples(
 fn make_crate_lists(
     crates: &[CrateInfo],
     link_subs: &BTreeMap<String, String>,
-) -> (
-    String, String, String
-) {
+) -> (String, String, String) {
     let mut md = String::new();
     let mut json = String::new();
     let mut html = String::new();
@@ -300,41 +291,23 @@ fn make_crate_lists(
 
         md.push_str(&format!(
             "| {} | `{} = \"{}\"` | [📖]({}) |\n",
-            krate.short_desc,
-            krate.name,
-            krate.version,
-            docrs_link,
+            krate.short_desc, krate.name, krate.version, docrs_link,
         ));
 
         if i + 1 < crates.len() {
-            json.push_str(&format!(
-                "\"{}\",\n",
-                krate.name,
-            ));
+            json.push_str(&format!("\"{}\",\n", krate.name,));
         } else {
-            json.push_str(&format!(
-                "\"{}\"\n",
-                krate.name,
-            ));
+            json.push_str(&format!("\"{}\"\n", krate.name,));
         }
 
         html.push_str(&format!(
             "<tr class='{}'>\n",
-            if i % 2 == 0 {
-                "row-even"
-            } else {
-                "row-odd"
-            }
+            if i % 2 == 0 { "row-even" } else { "row-odd" }
         ));
-        html.push_str(&format!(
-            "<td>{}</td>\n",
-            krate.short_desc,
-        ));
+        html.push_str(&format!("<td>{}</td>\n", krate.short_desc,));
         html.push_str(&format!(
             "<td><a href='{}'><code>{} = \"{}\"</code></a></td>\n",
-            docrs_link,
-            krate.name,
-            krate.version,
+            docrs_link, krate.name, krate.version,
         ));
         if example_html.is_some() {
             html.push_str(&format!(
@@ -351,11 +324,7 @@ fn make_crate_lists(
                 html.push_str(&format!(
                     "<tr id='example-row-{}' class='example-row {}'>\n",
                     krate.name,
-                    if i % 2 == 0 {
-                        "row-even"
-                    } else {
-                        "row-odd"
-                    }
+                    if i % 2 == 0 { "row-even" } else { "row-odd" }
                 ));
                 html.push_str("<td colspan=3>\n");
                 html.push_str(&example_html);
@@ -379,21 +348,14 @@ fn render_example(
 ) -> Option<String> {
     if !krate.example.is_empty() {
         let md = process_md(&krate.example, link_subs, crates);
-        let html = comrak::markdown_to_html(
-            &md,
-            &Default::default(),
-        );
+        let html = comrak::markdown_to_html(&md, &Default::default());
         Some(html)
     } else {
         None
     }
 }
 
-fn process_md(
-    md: &str,
-    link_subs: &BTreeMap<String, String>,
-    crates: &[CrateInfo],
-) -> String {
+fn process_md(md: &str, link_subs: &BTreeMap<String, String>, crates: &[CrateInfo]) -> String {
     let md = remove_crate_link(md);
     let md = substitute_links(&md, link_subs);
     let md = substitute_versions(&md, crates);
@@ -412,10 +374,7 @@ fn remove_crate_link(md: &str) -> String {
     buf
 }
 
-fn substitute_links(
-    md: &str,
-    link_subs: &BTreeMap<String, String>,
-) -> String {
+fn substitute_links(md: &str, link_subs: &BTreeMap<String, String>) -> String {
     let re = regex::Regex::new("^\\[(.+)\\]:(.+)$").expect(".");
     let mut buf = String::new();
     for line in md.lines() {
@@ -425,9 +384,7 @@ fn substitute_links(
             let link_dest = caps.get(2).expect(".");
             let link_dest = link_dest.as_str().trim();
             if let Some(sub) = link_subs.get(link_dest) {
-                buf.push_str(
-                    &format!("[{link_name}]: {sub}"),
-                );
+                buf.push_str(&format!("[{link_name}]: {sub}"));
             } else {
                 eprintln!("unreplaced link: {link_dest}");
                 buf.push_str(line);
@@ -440,10 +397,7 @@ fn substitute_links(
     buf
 }
 
-fn substitute_versions(
-    md: &str,
-    crates: &[CrateInfo],
-) -> String {
+fn substitute_versions(md: &str, crates: &[CrateInfo]) -> String {
     let re = regex::Regex::new("^\\[(.+)\\]: *https://docs.rs/(.+)/latest/(.+)$").expect(".");
     let mut buf = String::new();
     for line in md.lines() {
@@ -456,9 +410,9 @@ fn substitute_versions(
             let link_tail = link_tail.as_str().trim();
             if let Some(info) = find_crate(crates, crate_name) {
                 let version = &info.version;
-                buf.push_str(
-                    &format!("[{link_name}]: https://docs.rs/{crate_name}/{version}/{link_tail}")
-                );
+                buf.push_str(&format!(
+                    "[{link_name}]: https://docs.rs/{crate_name}/{version}/{link_tail}"
+                ));
             } else {
                 buf.push_str(line);
             }
@@ -470,10 +424,7 @@ fn substitute_versions(
     buf
 }
 
-fn find_crate<'c>(
-    crates: &'c [CrateInfo],
-    name: &str,
-) -> Option<&'c CrateInfo> {
+fn find_crate<'c>(crates: &'c [CrateInfo], name: &str) -> Option<&'c CrateInfo> {
     crates.iter().find(|c| c.name == name)
 }
 

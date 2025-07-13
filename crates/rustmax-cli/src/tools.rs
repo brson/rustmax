@@ -1,21 +1,19 @@
-use rmx::{
-    clap,
-    serde,
-};
+use rmx::{clap, serde};
 
-#[derive(clap::ValueEnum)]
-#[derive(clap::Subcommand)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[derive(enum_iterator::Sequence)]
-#[derive(Clone)]
+#[derive(
+    clap::ValueEnum,
+    clap::Subcommand,
+    serde::Serialize,
+    serde::Deserialize,
+    enum_iterator::Sequence,
+    Clone,
+)]
 #[serde(rename_all = "kebab-case")]
 pub enum Tool {
     /* rustup itself */
-
     Rustup,
 
     /* rustup proxies */
-
     Cargo,
     CargoClippy,
     CargoFmt,
@@ -28,15 +26,13 @@ pub enum Tool {
     RustLldb,
 
     /* other tools from rustup components */
-
     RustAnalyzer,
     Miri,
     Clippy,
     LlvmTools,
     LlvmCov,
-    
-    /* cargo plugins */
 
+    /* cargo plugins */
     CargoAudit,
     CargoCleanAll,
     CargoDeny,
@@ -46,7 +42,6 @@ pub enum Tool {
     CargoTree,
 
     /* non-plugins */
-    
     BasicHttpServer,
     DuDust,
     FdFind,
@@ -67,4 +62,3 @@ pub enum Tool {
 pub struct ToolAttrs {
     pub display_name: &'static str,
 }
-

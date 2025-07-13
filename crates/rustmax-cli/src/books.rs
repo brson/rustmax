@@ -1,7 +1,7 @@
-use rmx::prelude::*;
-use rmx::serde::{Serialize, Deserialize};
-use rmx::xshell;
 use rmx::json5;
+use rmx::prelude::*;
+use rmx::serde::{Deserialize, Serialize};
+use rmx::xshell;
 use rmx::xshell::{Shell, cmd};
 use std::fs;
 
@@ -30,7 +30,8 @@ pub fn build_library() -> AnyResult<()> {
 }
 
 pub fn build_one_book(slug: &str) -> AnyResult<()> {
-    let book: Vec<Book> = load()?.books
+    let book: Vec<Book> = load()?
+        .books
         .into_iter()
         .filter(|b| b.slug == slug)
         .collect();
@@ -41,12 +42,7 @@ pub fn build_one_book(slug: &str) -> AnyResult<()> {
 }
 
 fn build_books(books: &[Book]) -> AnyResult<()> {
-    let procs = [
-        get_repo,
-        insert_style_hook,
-        build_book,
-        mod_book_style,
-    ];
+    let procs = [get_repo, insert_style_hook, build_book, mod_book_style];
 
     for proc in procs {
         for book in books {
@@ -128,10 +124,7 @@ fn mod_book_style(book: &Book) -> AnyResult<()> {
     assert!(fs::exists(out_dir)?);
 
     for (src_dir, file) in mixins {
-        fs::copy(
-            format!("{src_dir}/{file}"),
-            format!("{out_dir}/{file}"),
-        )?;
+        fs::copy(format!("{src_dir}/{file}"), format!("{out_dir}/{file}"))?;
     }
 
     Ok(())

@@ -86,7 +86,7 @@ impl Tool {
 
             _ => ToolAttrs {
                 display_name: "<unknown>",
-            }
+            },
         }
     }
 }
@@ -103,7 +103,7 @@ impl Tool {
 
 fn cargo_audit_install() -> AnyResult<()> {
     println!("Installing cargo-audit...");
-    
+
     // Check if already installed
     if let Ok(output) = std::process::Command::new("cargo")
         .args(["audit", "--version"])
@@ -117,18 +117,21 @@ fn cargo_audit_install() -> AnyResult<()> {
             return Ok(());
         }
     }
-    
+
     // Install using cargo install
     println!("Running: cargo install cargo-audit");
     let status = std::process::Command::new("cargo")
         .args(["install", "cargo-audit"])
         .status()
         .context("Failed to execute cargo install command")?;
-    
+
     if !status.success() {
-        bail!("cargo install cargo-audit failed with exit code: {}", status);
+        bail!(
+            "cargo install cargo-audit failed with exit code: {}",
+            status
+        );
     }
-    
+
     // Verify installation
     match std::process::Command::new("cargo")
         .args(["audit", "--version"])
@@ -143,18 +146,18 @@ fn cargo_audit_install() -> AnyResult<()> {
             println!("⚠️  Installation may have succeeded but could not verify version");
         }
     }
-    
+
     // Download advisory database on first install
     println!("Downloading advisory database...");
     let db_status = std::process::Command::new("cargo")
         .args(["audit", "--stale"]) // This will download the DB if not present
         .output();
-    
+
     match db_status {
         Ok(_) => println!("✓ Advisory database ready"),
         Err(_) => println!("⚠️  Could not initialize advisory database"),
     }
-    
+
     println!("cargo-audit installation complete!");
     Ok(())
 }
@@ -189,7 +192,7 @@ impl Tool {
 
 fn cargo_audit_status() -> AnyResult<()> {
     println!("cargo-audit status:");
-    
+
     // Check binary installation and version
     match std::process::Command::new("cargo")
         .args(["audit", "--version"])
@@ -208,17 +211,17 @@ fn cargo_audit_status() -> AnyResult<()> {
             return Ok(());
         }
     }
-    
+
     // Check advisory database status
     let advisory_db_path = std::env::var("HOME")
         .map(|home| format!("{}/.cargo/advisory-db", home))
         .unwrap_or_else(|_| "~/.cargo/advisory-db".to_string());
-    
+
     if std::path::Path::new(&advisory_db_path).exists() {
         println!("  Advisory DB: Present at {}", advisory_db_path);
     } else {
         println!("  Advisory DB: Not found, run 'cargo audit' to download");
     }
-    
+
     Ok(())
 }

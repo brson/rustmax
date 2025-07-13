@@ -1,18 +1,12 @@
 #![doc = include_str!("../doc-src/root-docs.md")]
 #![allow(clippy::needless_doctest_main)]
-
 /* ---------- */
-
-
 #![no_std]
 
-
 /* ---------- */
-
 
 pub mod prelude {
     //! The `rmx` prelude.
-
 
     /* standard library preludes */
 
@@ -21,7 +15,6 @@ pub mod prelude {
 
     #[cfg(feature = "rmx-rustlib-std")]
     pub use ::std::prelude::rust_2021::*;
-
 
     /* standard library macros */
 
@@ -41,25 +34,18 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-core")]
     pub use ::core::cmp::Ordering;
 
-
     /* other preludes */
 
     #[cfg(feature = "futures")]
     pub use ::futures::prelude::*;
 
-
     /* common non-std imports */
 
     #[cfg(feature = "anyhow")]
-    pub use ::anyhow::{
-        Context as _,
-        anyhow, bail,
-    };
+    pub use ::anyhow::{Context as _, anyhow, bail};
 
     #[cfg(feature = "anyhow")]
-    pub use crate::extras::{
-        AnyResult, AnyError, A,
-    };
+    pub use crate::extras::{A, AnyError, AnyResult};
 
     #[cfg(feature = "cfg-if")]
     pub use ::cfg_if::cfg_if;
@@ -68,23 +54,17 @@ pub mod prelude {
     pub use ::extension_trait::extension_trait;
 
     #[cfg(feature = "log")]
-    pub use ::log::{error, warn, info, debug, trace};
+    pub use ::log::{debug, error, info, trace, warn};
 
     #[cfg(all(feature = "futures", feature = "rmx-feature-default"))]
-    pub use ::futures::{
-        executor::block_on,
-        future::Either,
-    };
+    pub use ::futures::{executor::block_on, future::Either};
 
     #[cfg(feature = "itertools")]
     pub use ::itertools::Itertools as _;
 
-
     /* extras */
 
-    pub use crate::extras::{
-        default,
-    };
+    pub use crate::extras::default;
 
     #[cfg(feature = "rmx-rustlib-core")]
     pub use crate::bug;
@@ -95,22 +75,22 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use crate::extras::O;
 
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::QuickToString as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::QuickToOwned as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::QuickClone as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::OptionExpect as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::ResultExpect as _;
     #[cfg(all(feature = "extension-trait", feature = "anyhow"))]
     pub use crate::extras::AnyResultExpect as _;
     #[cfg(feature = "extension-trait")]
-    pub use crate::extras::ResultIgnore as _;
+    pub use crate::extras::OptionExpect as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::QuickClone as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::QuickToOwned as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::QuickToString as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::RangeExt as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::ResultExpect as _;
+    #[cfg(feature = "extension-trait")]
+    pub use crate::extras::ResultIgnore as _;
 }
 
 pub mod extras {
@@ -129,11 +109,7 @@ pub mod extras {
     }
 
     #[cfg(feature = "anyhow")]
-    pub use ::anyhow::{
-        Result as AnyResult,
-        Error as AnyError,
-        anyhow as A,
-    };
+    pub use ::anyhow::{Error as AnyError, Result as AnyResult, anyhow as A};
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     pub use ::alloc::format as fmt;
@@ -152,7 +128,7 @@ pub mod extras {
                 .init();
         }
         #[cfg(not(feature = "env_logger"))]
-        fn maybe_init_env_logger() { }
+        fn maybe_init_env_logger() {}
 
         maybe_init_env_logger();
     }
@@ -167,13 +143,14 @@ pub mod extras {
                 .init();
         }
         #[cfg(not(feature = "env_logger"))]
-        fn maybe_init_env_logger(_crate_name: &str) { }
+        fn maybe_init_env_logger(_crate_name: &str) {}
 
         maybe_init_env_logger(crate_name);
     }
 
     pub fn recurse<F, R>(f: F) -> R
-    where F: FnOnce() -> R
+    where
+        F: FnOnce() -> R,
     {
         // todo could grow stack here
         f()
@@ -181,20 +158,18 @@ pub mod extras {
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
-    pub fn S<T>(
-        s: &T,
-    ) -> crate::alloc::string::String
-    where T: crate::alloc::string::ToString + ?Sized,
+    pub fn S<T>(s: &T) -> crate::alloc::string::String
+    where
+        T: crate::alloc::string::ToString + ?Sized,
     {
         crate::alloc::string::ToString::to_string(s)
     }
 
     #[cfg(feature = "rmx-rustlib-alloc")]
     #[allow(non_snake_case)]
-    pub fn O<T>(
-        o: &T,
-    ) -> T::Owned
-    where T: crate::alloc::borrow::ToOwned + ?Sized,
+    pub fn O<T>(o: &T) -> T::Owned
+    where
+        T: crate::alloc::borrow::ToOwned + ?Sized,
     {
         crate::alloc::borrow::ToOwned::to_owned(o)
     }
@@ -202,7 +177,8 @@ pub mod extras {
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T> QuickToString for T
-    where T: crate::alloc::string::ToString + ?Sized,
+    where
+        T: crate::alloc::string::ToString + ?Sized,
     {
         #[allow(non_snake_case)]
         fn S(&self) -> crate::alloc::string::String {
@@ -213,7 +189,8 @@ pub mod extras {
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T> QuickToOwned for T
-        where T: crate::alloc::borrow::ToOwned,
+    where
+        T: crate::alloc::borrow::ToOwned,
     {
         type Owned = T::Owned;
 
@@ -226,7 +203,8 @@ pub mod extras {
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T> QuickClone<T> for T
-    where T: Clone
+    where
+        T: Clone,
     {
         #[allow(non_snake_case)]
         fn C(&self) -> T {
@@ -250,7 +228,8 @@ pub mod extras {
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
     pub impl<T, E> ResultExpect<T, E> for Result<T, E>
-    where E: core::error::Error
+    where
+        E: core::error::Error,
     {
         #[track_caller]
         #[allow(non_snake_case)]
@@ -264,8 +243,7 @@ pub mod extras {
 
     #[cfg(all(feature = "extension-trait", feature = "anyhow"))]
     #[extension_trait::extension_trait]
-    pub impl<T> AnyResultExpect<T> for AnyResult<T>
-    {
+    pub impl<T> AnyResultExpect<T> for AnyResult<T> {
         #[track_caller]
         #[allow(non_snake_case)]
         fn X(self) -> T {
@@ -282,8 +260,7 @@ pub mod extras {
     /// and can accidentally be applied to non-`Result` types like `Future`s.
     #[cfg(feature = "extension-trait")]
     #[extension_trait::extension_trait]
-    pub impl<T, E> ResultIgnore<T, E> for Result<T, E>
-    {
+    pub impl<T, E> ResultIgnore<T, E> for Result<T, E> {
         #[track_caller]
         #[allow(non_snake_case)]
         fn I(self) {
@@ -323,9 +300,7 @@ pub mod extras {
     }
 }
 
-
 /* ---------- */
-
 
 #[cfg(feature = "rmx-rustlib-core")]
 #[doc(inline)]
@@ -343,9 +318,7 @@ pub extern crate std;
 #[doc(inline)]
 pub extern crate proc_macro;
 
-
 /* ---------- */
-
 
 #[cfg(feature = "ahash")]
 pub mod ahash {
@@ -353,7 +326,6 @@ pub mod ahash {
 
     pub use ::ahash::*;
 }
-
 
 #[cfg(feature = "anyhow")]
 pub mod anyhow {
@@ -743,7 +715,7 @@ pub mod rustyline {
     //! Command-line input reading with history.
     //!
     //! See crate [`::rustyline`].
-    
+
     pub use ::rustyline::*;
 }
 

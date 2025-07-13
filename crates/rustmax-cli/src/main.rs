@@ -1,18 +1,14 @@
 #![allow(unused)]
 
-mod tools;
+mod books;
 mod impls;
 mod moldman;
-mod books;
+mod tools;
 
 use rmx::prelude::*;
-use rmx::{
-    clap,
-    serde,
-};
+use rmx::{clap, serde};
 
 use tools::Tool;
-
 
 fn main() -> AnyResult<()> {
     let opts = <CliOpts as clap::Parser>::parse();
@@ -50,8 +46,7 @@ enum CliCmd {
 }
 
 #[derive(clap::Args)]
-struct CliCmdListTools {
-}
+struct CliCmdListTools {}
 
 #[derive(clap::Args)]
 struct CliCmdInstallTool {
@@ -74,8 +69,7 @@ struct CliCmdToolStatus {
 }
 
 #[derive(clap::Args)]
-struct CliCmdListLibrary {
-}
+struct CliCmdListLibrary {}
 
 #[derive(clap::Args)]
 struct CliCmdBuildLibrary {
@@ -83,20 +77,16 @@ struct CliCmdBuildLibrary {
 }
 
 #[derive(clap::Args)]
-struct CliCmdWriteFmtConfig {
-}
+struct CliCmdWriteFmtConfig {}
 
 #[derive(clap::Args)]
-struct CliCmdWriteCargoDenyConfig {
-}
+struct CliCmdWriteCargoDenyConfig {}
 
 #[derive(clap::Args)]
-struct CliCmdWriteClippyControlConfig {
-}
+struct CliCmdWriteClippyControlConfig {}
 
 #[derive(clap::Args)]
-struct CliCmdRunAllChecks {
-}
+struct CliCmdRunAllChecks {}
 
 impl CliOpts {
     fn run(&self) -> AnyResult<()> {
