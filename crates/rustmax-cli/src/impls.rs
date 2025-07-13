@@ -87,7 +87,7 @@ impl Tool {
             },
             CargoEdit => ToolAttrs {
                 display_name: "cargo-edit",
-                impl_complete: false,
+                impl_complete: true,
             },
             CargoGenerate => ToolAttrs {
                 display_name: "cargo-generate",
@@ -123,6 +123,7 @@ impl Tool {
             Tool::CargoAudit => cargo_plugin_install(&CARGO_AUDIT_CONFIG),
             Tool::CargoCleanAll => cargo_plugin_install(&CARGO_CLEAN_ALL_CONFIG),
             Tool::CargoDeny => cargo_plugin_install(&CARGO_DENY_CONFIG),
+            Tool::CargoEdit => cargo_plugin_install(&CARGO_EDIT_CONFIG),
             _ => todo!(),
         }
     }
@@ -135,6 +136,7 @@ impl Tool {
             Tool::CargoAudit => cargo_plugin_update(&CARGO_AUDIT_CONFIG),
             Tool::CargoCleanAll => cargo_plugin_update(&CARGO_CLEAN_ALL_CONFIG),
             Tool::CargoDeny => cargo_plugin_update(&CARGO_DENY_CONFIG),
+            Tool::CargoEdit => cargo_plugin_update(&CARGO_EDIT_CONFIG),
             _ => todo!(),
         }
     }
@@ -147,6 +149,7 @@ impl Tool {
             Tool::CargoAudit => cargo_plugin_uninstall(&CARGO_AUDIT_CONFIG),
             Tool::CargoCleanAll => cargo_plugin_uninstall(&CARGO_CLEAN_ALL_CONFIG),
             Tool::CargoDeny => cargo_plugin_uninstall(&CARGO_DENY_CONFIG),
+            Tool::CargoEdit => cargo_plugin_uninstall(&CARGO_EDIT_CONFIG),
             _ => todo!(),
         }
     }
@@ -159,6 +162,7 @@ impl Tool {
             Tool::CargoAudit => cargo_plugin_status(&CARGO_AUDIT_CONFIG),
             Tool::CargoCleanAll => cargo_plugin_status(&CARGO_CLEAN_ALL_CONFIG),
             Tool::CargoDeny => cargo_plugin_status(&CARGO_DENY_CONFIG),
+            Tool::CargoEdit => cargo_plugin_status(&CARGO_EDIT_CONFIG),
             _ => todo!(),
         }
     }
@@ -198,6 +202,16 @@ const CARGO_DENY_CONFIG: CargoPluginConfig = CargoPluginConfig {
     tool_name: "cargo-deny",
     package_name: "cargo-deny",
     subcommand: "deny",
+    post_install_note: None,
+    post_install_action: None,
+    post_status_action: None,
+    post_uninstall_action: None,
+};
+
+const CARGO_EDIT_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-edit",
+    package_name: "cargo-edit",
+    subcommand: "upgrade",
     post_install_note: None,
     post_install_action: None,
     post_status_action: None,
