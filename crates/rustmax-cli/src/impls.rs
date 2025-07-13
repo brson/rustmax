@@ -217,7 +217,9 @@ fn cargo_audit_update() -> AnyResult<()> {
             Some(version.to_string())
         }
         _ => {
-            println!("cargo-audit is not installed, use 'rustmax install-tool cargo-audit' instead");
+            println!(
+                "cargo-audit is not installed, use 'rustmax install-tool cargo-audit' instead"
+            );
             return Ok(());
         }
     };
@@ -244,7 +246,7 @@ fn cargo_audit_update() -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let new_version = String::from_utf8_lossy(&output.stdout);
             let new_version = new_version.trim();
-            
+
             if let Some(old_version) = current_version {
                 if old_version != new_version {
                     println!("✓ cargo-audit updated: {} → {}", old_version, new_version);
@@ -279,7 +281,9 @@ fn cargo_clean_all_update() -> AnyResult<()> {
             Some(version.to_string())
         }
         _ => {
-            println!("cargo-clean-all is not installed, use 'rustmax install-tool cargo-clean-all' instead");
+            println!(
+                "cargo-clean-all is not installed, use 'rustmax install-tool cargo-clean-all' instead"
+            );
             return Ok(());
         }
     };
@@ -306,10 +310,13 @@ fn cargo_clean_all_update() -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let new_version = String::from_utf8_lossy(&output.stdout);
             let new_version = new_version.trim();
-            
+
             if let Some(old_version) = current_version {
                 if old_version != new_version {
-                    println!("✓ cargo-clean-all updated: {} → {}", old_version, new_version);
+                    println!(
+                        "✓ cargo-clean-all updated: {} → {}",
+                        old_version, new_version
+                    );
                 } else {
                     println!("✓ cargo-clean-all is already up to date ({})", new_version);
                 }
@@ -481,7 +488,10 @@ fn cargo_clean_all_uninstall() -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("Found cargo-clean-all ({}), proceeding with uninstall", version);
+            println!(
+                "Found cargo-clean-all ({}), proceeding with uninstall",
+                version
+            );
         }
         _ => {
             println!("cargo-clean-all is not installed");
