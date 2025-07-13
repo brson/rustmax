@@ -25,10 +25,10 @@ struct CliOpts {
 enum CliCmd {
     ListTools(CliCmdListTools),
 
-    InstallTools,
-    UpdateTools,
-    UninstallTools,
-    ToolsStatus,
+    InstallTools(CliCmdInstallTools),
+    UpdateTools(CliCmdUpdateTools),
+    UninstallTools(CliCmdUninstallTools),
+    ToolsStatus(CliCmdToolsStatus),
 
     InstallTool(CliCmdInstallTool),
     UpdateTool(CliCmdUpdateTool),
@@ -49,6 +49,18 @@ enum CliCmd {
 
 #[derive(clap::Args)]
 struct CliCmdListTools {}
+
+#[derive(clap::Args)]
+struct CliCmdInstallTools {}
+
+#[derive(clap::Args)]
+struct CliCmdUpdateTools {}
+
+#[derive(clap::Args)]
+struct CliCmdUninstallTools {}
+
+#[derive(clap::Args)]
+struct CliCmdToolsStatus {}
 
 #[derive(clap::Args)]
 struct CliCmdInstallTool {
@@ -94,6 +106,12 @@ impl CliOpts {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
             CliCmd::ListTools(cmd) => cmd.run(),
+
+            CliCmd::InstallTools(cmd) => cmd.run(),
+            CliCmd::UpdateTools(cmd) => cmd.run(),
+            CliCmd::UninstallTools(cmd) => cmd.run(),
+            CliCmd::ToolsStatus(cmd) => cmd.run(),
+
             CliCmd::InstallTool(cmd) => cmd.run(),
             CliCmd::UpdateTool(cmd) => cmd.run(),
             CliCmd::UninstallTool(cmd) => cmd.run(),
@@ -120,6 +138,30 @@ impl CliCmdListTools {
         }
 
         Ok(())
+    }
+}
+
+impl CliCmdInstallTools {
+    fn run(&self) -> AnyResult<()> {
+        todo!("install-tools not yet implemented")
+    }
+}
+
+impl CliCmdUpdateTools {
+    fn run(&self) -> AnyResult<()> {
+        todo!("update-tools not yet implemented")
+    }
+}
+
+impl CliCmdUninstallTools {
+    fn run(&self) -> AnyResult<()> {
+        todo!("uninstall-tools not yet implemented")
+    }
+}
+
+impl CliCmdToolsStatus {
+    fn run(&self) -> AnyResult<()> {
+        todo!("tools-status not yet implemented")
     }
 }
 
