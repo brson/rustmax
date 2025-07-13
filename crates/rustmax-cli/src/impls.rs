@@ -139,6 +139,10 @@ impl Tool {
                 display_name: "rg",
                 impl_complete: true,
             },
+            Sd => ToolAttrs {
+                display_name: "sd",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -174,6 +178,7 @@ impl Tool {
             Tool::Just => cargo_tool_install(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_install(&MDBOOK_CONFIG),
             Tool::Ripgrep => cargo_tool_install(&RIPGREP_CONFIG),
+            Tool::Sd => cargo_tool_install(&SD_CONFIG),
             _ => todo!(),
         }
     }
@@ -199,6 +204,7 @@ impl Tool {
             Tool::Just => cargo_tool_update(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_update(&MDBOOK_CONFIG),
             Tool::Ripgrep => cargo_tool_update(&RIPGREP_CONFIG),
+            Tool::Sd => cargo_tool_update(&SD_CONFIG),
             _ => todo!(),
         }
     }
@@ -224,6 +230,7 @@ impl Tool {
             Tool::Just => cargo_tool_uninstall(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_uninstall(&MDBOOK_CONFIG),
             Tool::Ripgrep => cargo_tool_uninstall(&RIPGREP_CONFIG),
+            Tool::Sd => cargo_tool_uninstall(&SD_CONFIG),
             _ => todo!(),
         }
     }
@@ -249,6 +256,7 @@ impl Tool {
             Tool::Just => cargo_tool_status(&JUST_CONFIG),
             Tool::Mdbook => cargo_tool_status(&MDBOOK_CONFIG),
             Tool::Ripgrep => cargo_tool_status(&RIPGREP_CONFIG),
+            Tool::Sd => cargo_tool_status(&SD_CONFIG),
             _ => todo!(),
         }
     }
@@ -893,6 +901,14 @@ const MDBOOK_CONFIG: CargoToolConfig = CargoToolConfig {
 const RIPGREP_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "rg",
     package_name: "ripgrep",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const SD_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "sd",
+    package_name: "sd",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
