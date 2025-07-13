@@ -102,6 +102,12 @@ impl Tool {
                 impl_complete: true,
             },
 
+            /* non-plugin cargo programs */
+            BasicHttpServer => ToolAttrs {
+                display_name: "basic-http-server",
+                impl_complete: true,
+            },
+
             /* non-rust */
             Mold => ToolAttrs {
                 display_name: "mold",
@@ -127,6 +133,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_install(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_install(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
+            Tool::BasicHttpServer => cargo_tool_install(&BASIC_HTTP_SERVER_CONFIG),
             _ => todo!(),
         }
     }
@@ -143,6 +150,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_update(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_update(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
+            Tool::BasicHttpServer => cargo_tool_update(&BASIC_HTTP_SERVER_CONFIG),
             _ => todo!(),
         }
     }
@@ -159,6 +167,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_uninstall(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_uninstall(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
+            Tool::BasicHttpServer => cargo_tool_uninstall(&BASIC_HTTP_SERVER_CONFIG),
             _ => todo!(),
         }
     }
@@ -175,6 +184,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_status(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_status(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
+            Tool::BasicHttpServer => cargo_tool_status(&BASIC_HTTP_SERVER_CONFIG),
             _ => todo!(),
         }
     }
@@ -751,4 +761,12 @@ fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
 
     Ok(())
 }
+
+const BASIC_HTTP_SERVER_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "basic-http-server",
+    package_name: "basic-http-server",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
 
