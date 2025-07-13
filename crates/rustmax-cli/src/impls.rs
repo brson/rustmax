@@ -120,9 +120,9 @@ impl Tool {
     pub fn install(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::install(),
-            Tool::CargoAudit => cargo_audit_install(),
-            Tool::CargoCleanAll => cargo_clean_all_install(),
-            Tool::CargoDeny => cargo_deny_install(),
+            Tool::CargoAudit => cargo_plugin_install(&CARGO_AUDIT_CONFIG),
+            Tool::CargoCleanAll => cargo_plugin_install(&CARGO_CLEAN_ALL_CONFIG),
+            Tool::CargoDeny => cargo_plugin_install(&CARGO_DENY_CONFIG),
             _ => todo!(),
         }
     }
@@ -132,9 +132,9 @@ impl Tool {
     pub fn update(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::update(),
-            Tool::CargoAudit => cargo_audit_update(),
-            Tool::CargoCleanAll => cargo_clean_all_update(),
-            Tool::CargoDeny => cargo_deny_update(),
+            Tool::CargoAudit => cargo_plugin_update(&CARGO_AUDIT_CONFIG),
+            Tool::CargoCleanAll => cargo_plugin_update(&CARGO_CLEAN_ALL_CONFIG),
+            Tool::CargoDeny => cargo_plugin_update(&CARGO_DENY_CONFIG),
             _ => todo!(),
         }
     }
@@ -144,9 +144,9 @@ impl Tool {
     pub fn uninstall(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::uninstall(),
-            Tool::CargoAudit => cargo_audit_uninstall(),
-            Tool::CargoCleanAll => cargo_clean_all_uninstall(),
-            Tool::CargoDeny => cargo_deny_uninstall(),
+            Tool::CargoAudit => cargo_plugin_uninstall(&CARGO_AUDIT_CONFIG),
+            Tool::CargoCleanAll => cargo_plugin_uninstall(&CARGO_CLEAN_ALL_CONFIG),
+            Tool::CargoDeny => cargo_plugin_uninstall(&CARGO_DENY_CONFIG),
             _ => todo!(),
         }
     }
@@ -156,9 +156,9 @@ impl Tool {
     pub fn status(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::status(),
-            Tool::CargoAudit => cargo_audit_status(),
-            Tool::CargoCleanAll => cargo_clean_all_status(),
-            Tool::CargoDeny => cargo_deny_status(),
+            Tool::CargoAudit => cargo_plugin_status(&CARGO_AUDIT_CONFIG),
+            Tool::CargoCleanAll => cargo_plugin_status(&CARGO_CLEAN_ALL_CONFIG),
+            Tool::CargoDeny => cargo_plugin_status(&CARGO_DENY_CONFIG),
             _ => todo!(),
         }
     }
@@ -429,22 +429,6 @@ fn cargo_plugin_status(config: &CargoPluginConfig) -> AnyResult<()> {
 
 /////////
 
-fn cargo_audit_install() -> AnyResult<()> {
-    cargo_plugin_install(&CARGO_AUDIT_CONFIG)
-}
-
-fn cargo_audit_update() -> AnyResult<()> {
-    cargo_plugin_update(&CARGO_AUDIT_CONFIG)
-}
-
-fn cargo_audit_status() -> AnyResult<()> {
-    cargo_plugin_status(&CARGO_AUDIT_CONFIG)
-}
-
-fn cargo_audit_uninstall() -> AnyResult<()> {
-    cargo_plugin_uninstall(&CARGO_AUDIT_CONFIG)
-}
-
 fn cargo_audit_download_db() -> AnyResult<()> {
     // Download advisory database on first install
     println!("Downloading advisory database...");
@@ -491,38 +475,3 @@ fn cargo_audit_remove_db() -> AnyResult<()> {
     Ok(())
 }
 
-////////
-
-fn cargo_clean_all_install() -> AnyResult<()> {
-    cargo_plugin_install(&CARGO_CLEAN_ALL_CONFIG)
-}
-
-fn cargo_clean_all_update() -> AnyResult<()> {
-    cargo_plugin_update(&CARGO_CLEAN_ALL_CONFIG)
-}
-
-fn cargo_clean_all_status() -> AnyResult<()> {
-    cargo_plugin_status(&CARGO_CLEAN_ALL_CONFIG)
-}
-
-fn cargo_clean_all_uninstall() -> AnyResult<()> {
-    cargo_plugin_uninstall(&CARGO_CLEAN_ALL_CONFIG)
-}
-
-////////
-
-fn cargo_deny_install() -> AnyResult<()> {
-    cargo_plugin_install(&CARGO_DENY_CONFIG)
-}
-
-fn cargo_deny_update() -> AnyResult<()> {
-    cargo_plugin_update(&CARGO_DENY_CONFIG)
-}
-
-fn cargo_deny_status() -> AnyResult<()> {
-    cargo_plugin_status(&CARGO_DENY_CONFIG)
-}
-
-fn cargo_deny_uninstall() -> AnyResult<()> {
-    cargo_plugin_uninstall(&CARGO_DENY_CONFIG)
-}
