@@ -147,17 +147,6 @@ fn cargo_audit_install() -> AnyResult<()> {
         }
     }
 
-    // Download advisory database on first install
-    println!("Downloading advisory database...");
-    let db_status = std::process::Command::new("cargo")
-        .args(["audit", "--stale"]) // This will download the DB if not present
-        .output();
-
-    match db_status {
-        Ok(_) => println!("✓ Advisory database ready"),
-        Err(_) => println!("⚠️  Could not initialize advisory database"),
-    }
-
     println!("cargo-audit installation complete!");
     Ok(())
 }
