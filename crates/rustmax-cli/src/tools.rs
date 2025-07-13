@@ -61,4 +61,6 @@ pub enum Tool {
 
 pub struct ToolAttrs {
     pub display_name: &'static str,
+    // Temporary status indicating whether all rustmax commands are implemented
+    pub impl_complete: bool,
 }

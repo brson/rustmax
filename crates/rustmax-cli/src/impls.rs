@@ -8,84 +8,109 @@ impl Tool {
         match self {
             Rustup => ToolAttrs {
                 display_name: "rustup",
+                impl_complete: false,
             },
 
             Cargo => ToolAttrs {
                 display_name: "cargo",
+                impl_complete: false,
             },
             CargoClippy => ToolAttrs {
                 display_name: "cargo-clippy",
+                impl_complete: false,
             },
             CargoFmt => ToolAttrs {
                 display_name: "cargo-fmt",
+                impl_complete: false,
             },
             CargoMiri => ToolAttrs {
                 display_name: "cargo-miri",
+                impl_complete: false,
             },
             Rustc => ToolAttrs {
                 display_name: "rustc",
+                impl_complete: false,
             },
             Rustdoc => ToolAttrs {
                 display_name: "rustdoc",
+                impl_complete: false,
             },
             Rustfmt => ToolAttrs {
                 display_name: "rustfmt",
+                impl_complete: false,
             },
             RustGdbGui => ToolAttrs {
                 display_name: "rust-gdbgui",
+                impl_complete: false,
             },
             RustGdb => ToolAttrs {
                 display_name: "rust-gdb",
+                impl_complete: false,
             },
             RustLldb => ToolAttrs {
                 display_name: "rust-lldb",
+                impl_complete: false,
             },
 
             RustAnalyzer => ToolAttrs {
                 display_name: "rust-analyzer",
+                impl_complete: false,
             },
             Miri => ToolAttrs {
                 display_name: "miri",
+                impl_complete: false,
             },
             Clippy => ToolAttrs {
                 display_name: "clippy",
+                impl_complete: false,
             },
             LlvmTools => ToolAttrs {
                 display_name: "llvm-tools",
+                impl_complete: false,
             },
             LlvmCov => ToolAttrs {
                 display_name: "llvm-cov",
+                impl_complete: false,
             },
 
             CargoAudit => ToolAttrs {
                 display_name: "cargo-audit",
+                impl_complete: true,
             },
             CargoCleanAll => ToolAttrs {
                 display_name: "cargo-clean-all",
+                impl_complete: true,
             },
             CargoDeny => ToolAttrs {
                 display_name: "cargo-deny",
+                impl_complete: false,
             },
             CargoEdit => ToolAttrs {
                 display_name: "cargo-edit",
+                impl_complete: false,
             },
             CargoGenerate => ToolAttrs {
                 display_name: "cargo-generate",
+                impl_complete: false,
             },
             CargoOutdated => ToolAttrs {
                 display_name: "cargo-outdated",
+                impl_complete: false,
             },
             CargoTree => ToolAttrs {
                 display_name: "cargo-tree",
+                impl_complete: false,
             },
 
             /* non-rust */
             Mold => ToolAttrs {
                 display_name: "mold",
+                impl_complete: true,
             },
 
             _ => ToolAttrs {
                 display_name: "<unknown>",
+                impl_complete: false,
             },
         }
     }
