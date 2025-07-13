@@ -107,6 +107,10 @@ impl Tool {
                 display_name: "basic-http-server",
                 impl_complete: true,
             },
+            DuDust => ToolAttrs {
+                display_name: "dust",
+                impl_complete: true,
+            },
 
             /* non-rust */
             Mold => ToolAttrs {
@@ -134,6 +138,7 @@ impl Tool {
             Tool::CargoGenerate => cargo_plugin_install(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_install(&BASIC_HTTP_SERVER_CONFIG),
+            Tool::DuDust => cargo_tool_install(&DU_DUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -151,6 +156,7 @@ impl Tool {
             Tool::CargoGenerate => cargo_plugin_update(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_update(&BASIC_HTTP_SERVER_CONFIG),
+            Tool::DuDust => cargo_tool_update(&DU_DUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -168,6 +174,7 @@ impl Tool {
             Tool::CargoGenerate => cargo_plugin_uninstall(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_uninstall(&BASIC_HTTP_SERVER_CONFIG),
+            Tool::DuDust => cargo_tool_uninstall(&DU_DUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -185,6 +192,7 @@ impl Tool {
             Tool::CargoGenerate => cargo_plugin_status(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
             Tool::BasicHttpServer => cargo_tool_status(&BASIC_HTTP_SERVER_CONFIG),
+            Tool::DuDust => cargo_tool_status(&DU_DUST_CONFIG),
             _ => todo!(),
         }
     }
@@ -765,6 +773,14 @@ fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
 const BASIC_HTTP_SERVER_CONFIG: CargoToolConfig = CargoToolConfig {
     tool_name: "basic-http-server",
     package_name: "basic-http-server",
+    post_install_note: None,
+    post_install_action: None,
+    post_uninstall_action: None,
+};
+
+const DU_DUST_CONFIG: CargoToolConfig = CargoToolConfig {
+    tool_name: "dust",
+    package_name: "du-dust",
     post_install_note: None,
     post_install_action: None,
     post_uninstall_action: None,
