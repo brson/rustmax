@@ -143,25 +143,37 @@ impl CliCmdListTools {
 
 impl CliCmdInstallTools {
     fn run(&self) -> AnyResult<()> {
-        todo!("install-tools not yet implemented")
+        for tool in enum_iterator::all::<Tool>() {
+            tool.install()?;
+        }
+        Ok(())
     }
 }
 
 impl CliCmdUpdateTools {
     fn run(&self) -> AnyResult<()> {
-        todo!("update-tools not yet implemented")
+        for tool in enum_iterator::all::<Tool>() {
+            tool.update()?;
+        }
+        Ok(())
     }
 }
 
 impl CliCmdUninstallTools {
     fn run(&self) -> AnyResult<()> {
-        todo!("uninstall-tools not yet implemented")
+        for tool in enum_iterator::all::<Tool>() {
+            tool.uninstall()?;
+        }
+        Ok(())
     }
 }
 
 impl CliCmdToolsStatus {
     fn run(&self) -> AnyResult<()> {
-        todo!("tools-status not yet implemented")
+        for tool in enum_iterator::all::<Tool>() {
+            tool.status()?;
+        }
+        Ok(())
     }
 }
 
