@@ -41,19 +41,18 @@ pub enum Tool {
     CargoOutdated,
     CargoTree,
 
-    /* non-plugins */
+    /* non-plugin cargo programs */
     BasicHttpServer,
     DuDust,
     FdFind,
     Gist,
     Jsonxf,
+    Jaq,
     Just,
     Mdbook,
     Ripgrep,
     Sd,
     Tokei,
-    WasmTools,
-    Xsv,
 
     /* non-rust */
     Mold,

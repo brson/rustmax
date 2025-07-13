@@ -34,6 +34,7 @@
   [`jsonxf`](#user-content-jsonxf)
   [`fd`](#user-content--fd)
   [`sd`](#user-content--sd)
+  [`dust`](#user-content-sd)
 
 ---
 
@@ -217,3 +218,4 @@ $ just build
 ### 🌞 `jsonxf`
 ### 🌞 `fd`
 ### 🌞 `sd`
+### 🌞 `dust`
