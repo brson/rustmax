@@ -135,7 +135,7 @@ impl Tool {
     }
 }
 
-struct CargoToolConfig {
+struct CargoPluginConfig {
     tool_name: &'static str,
     package_name: &'static str,
     subcommand: &'static str,
@@ -144,7 +144,7 @@ struct CargoToolConfig {
     post_status_action: Option<fn() -> AnyResult<()>>,
 }
 
-fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
+fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
     println!("Installing {}...", config.tool_name);
 
     // Check if already installed
@@ -203,7 +203,7 @@ fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
     Ok(())
 }
 
-fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
+fn cargo_plugin_uninstall(config: &CargoPluginConfig) -> AnyResult<()> {
     println!("Uninstalling {}...", config.tool_name);
 
     // Check if installed first
@@ -258,7 +258,7 @@ fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
     Ok(())
 }
 
-fn cargo_tool_update(config: &CargoToolConfig) -> AnyResult<()> {
+fn cargo_plugin_update(config: &CargoPluginConfig) -> AnyResult<()> {
     println!("Updating {}...", config.tool_name);
 
     // Check if installed first
@@ -324,7 +324,7 @@ fn cargo_tool_update(config: &CargoToolConfig) -> AnyResult<()> {
     Ok(())
 }
 
-fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
+fn cargo_plugin_status(config: &CargoPluginConfig) -> AnyResult<()> {
     println!("{} status:", config.tool_name);
 
     // Check binary installation and version
@@ -366,7 +366,7 @@ fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
 /////////
 
 fn cargo_audit_install() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-audit",
         package_name: "cargo-audit",
         subcommand: "audit",
@@ -374,11 +374,11 @@ fn cargo_audit_install() -> AnyResult<()> {
         post_install_action: Some(cargo_audit_download_db),
         post_status_action: Some(cargo_audit_status_db),
     };
-    cargo_tool_install(&config)
+    cargo_plugin_install(&config)
 }
 
 fn cargo_audit_update() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-audit",
         package_name: "cargo-audit",
         subcommand: "audit",
@@ -386,11 +386,11 @@ fn cargo_audit_update() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: None,
     };
-    cargo_tool_update(&config)
+    cargo_plugin_update(&config)
 }
 
 fn cargo_audit_status() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-audit",
         package_name: "cargo-audit",
         subcommand: "audit",
@@ -398,11 +398,11 @@ fn cargo_audit_status() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: Some(cargo_audit_status_db),
     };
-    cargo_tool_status(&config)
+    cargo_plugin_status(&config)
 }
 
 fn cargo_audit_uninstall() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-audit",
         package_name: "cargo-audit",
         subcommand: "audit",
@@ -410,7 +410,7 @@ fn cargo_audit_uninstall() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: None,
     };
-    cargo_tool_uninstall(&config)
+    cargo_plugin_uninstall(&config)
 }
 
 fn cargo_audit_download_db() -> AnyResult<()> {
@@ -444,7 +444,7 @@ fn cargo_audit_status_db() -> AnyResult<()> {
 ////////
 
 fn cargo_clean_all_install() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-clean-all",
         package_name: "cargo-clean-all",
         subcommand: "clean-all",
@@ -452,11 +452,11 @@ fn cargo_clean_all_install() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: None,
     };
-    cargo_tool_install(&config)
+    cargo_plugin_install(&config)
 }
 
 fn cargo_clean_all_update() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-clean-all",
         package_name: "cargo-clean-all",
         subcommand: "clean-all",
@@ -464,11 +464,11 @@ fn cargo_clean_all_update() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: None,
     };
-    cargo_tool_update(&config)
+    cargo_plugin_update(&config)
 }
 
 fn cargo_clean_all_status() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-clean-all",
         package_name: "cargo-clean-all",
         subcommand: "clean-all",
@@ -476,11 +476,11 @@ fn cargo_clean_all_status() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: None,
     };
-    cargo_tool_status(&config)
+    cargo_plugin_status(&config)
 }
 
 fn cargo_clean_all_uninstall() -> AnyResult<()> {
-    let config = CargoToolConfig {
+    let config = CargoPluginConfig {
         tool_name: "cargo-clean-all",
         package_name: "cargo-clean-all",
         subcommand: "clean-all",
@@ -488,5 +488,5 @@ fn cargo_clean_all_uninstall() -> AnyResult<()> {
         post_install_action: None,
         post_status_action: None,
     };
-    cargo_tool_uninstall(&config)
+    cargo_plugin_uninstall(&config)
 }
