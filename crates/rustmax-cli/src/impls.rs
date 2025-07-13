@@ -99,7 +99,7 @@ impl Tool {
             },
             CargoTree => ToolAttrs {
                 display_name: "cargo-tree",
-                impl_complete: false,
+                impl_complete: true,
             },
 
             /* non-rust */
@@ -126,6 +126,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_install(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_install(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoTree => cargo_plugin_install(&CARGO_TREE_CONFIG),
             _ => todo!(),
         }
     }
@@ -141,6 +142,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_update(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_update(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoTree => cargo_plugin_update(&CARGO_TREE_CONFIG),
             _ => todo!(),
         }
     }
@@ -156,6 +158,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_uninstall(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_uninstall(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoTree => cargo_plugin_uninstall(&CARGO_TREE_CONFIG),
             _ => todo!(),
         }
     }
@@ -171,6 +174,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_status(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_status(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoTree => cargo_plugin_status(&CARGO_TREE_CONFIG),
             _ => todo!(),
         }
     }
@@ -240,6 +244,16 @@ const CARGO_OUTDATED_CONFIG: CargoPluginConfig = CargoPluginConfig {
     tool_name: "cargo-outdated",
     package_name: "cargo-outdated",
     subcommand: "outdated",
+    post_install_note: None,
+    post_install_action: None,
+    post_status_action: None,
+    post_uninstall_action: None,
+};
+
+const CARGO_TREE_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-tree",
+    package_name: "cargo-tree",
+    subcommand: "tree",
     post_install_note: None,
     post_install_action: None,
     post_status_action: None,
