@@ -95,9 +95,68 @@ impl Tool {
     pub fn install(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::install(),
+            Tool::CargoAudit => cargo_audit_install(),
             _ => todo!(),
         }
     }
+}
+
+fn cargo_audit_install() -> AnyResult<()> {
+    println!("Installing cargo-audit...");
+    
+    // Check if already installed
+    if let Ok(output) = std::process::Command::new("cargo")
+        .args(["audit", "--version"])
+        .output()
+    {
+        if output.status.success() {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("cargo-audit is already installed ({})", version);
+            println!("Use 'rustmax update-tool cargo-audit' to update to the latest version");
+            return Ok(());
+        }
+    }
+    
+    // Install using cargo install
+    println!("Running: cargo install cargo-audit");
+    let status = std::process::Command::new("cargo")
+        .args(["install", "cargo-audit"])
+        .status()
+        .context("Failed to execute cargo install command")?;
+    
+    if !status.success() {
+        bail!("cargo install cargo-audit failed with exit code: {}", status);
+    }
+    
+    // Verify installation
+    match std::process::Command::new("cargo")
+        .args(["audit", "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("✓ cargo-audit installed successfully ({})", version);
+        }
+        _ => {
+            println!("⚠️  Installation may have succeeded but could not verify version");
+        }
+    }
+    
+    // Download advisory database on first install
+    println!("Downloading advisory database...");
+    let db_status = std::process::Command::new("cargo")
+        .args(["audit", "--stale"]) // This will download the DB if not present
+        .output();
+    
+    match db_status {
+        Ok(_) => println!("✓ Advisory database ready"),
+        Err(_) => println!("⚠️  Could not initialize advisory database"),
+    }
+    
+    println!("cargo-audit installation complete!");
+    Ok(())
 }
 
 impl Tool {
