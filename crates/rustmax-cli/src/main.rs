@@ -24,13 +24,15 @@ struct CliOpts {
 #[derive(clap::Subcommand)]
 enum CliCmd {
     ListTools(CliCmdListTools),
+
     InstallTools,
-    InstallTool(CliCmdInstallTool),
     UpdateTools,
-    UpdateTool(CliCmdUpdateTool),
     UninstallTools,
-    UninstallTool(CliCmdUninstallTool),
     ToolsStatus,
+
+    InstallTool(CliCmdInstallTool),
+    UpdateTool(CliCmdUpdateTool),
+    UninstallTool(CliCmdUninstallTool),
     ToolStatus(CliCmdToolStatus),
 
     ListLibrary(CliCmdListLibrary),
