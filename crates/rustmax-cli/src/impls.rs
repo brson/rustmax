@@ -335,10 +335,21 @@ fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("  Binary: Installed ({})", version);
+            if version.is_empty() {
+                // Empty stdout but successful exit - this shouldn't happen for cargo plugins
+                println!("  Binary: Installed (version unknown)");
+            } else {
+                println!("  Binary: Installed ({})", version);
+            }
         }
-        Ok(_) => {
-            println!("  Binary: Installed (version unknown)");
+        Ok(output) => {
+            // Command ran but failed - check stderr for "no such command"
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            if stderr.contains("no such command") {
+                println!("  Binary: Not installed");
+            } else {
+                println!("  Binary: Installed (version unknown)");
+            }
         }
         Err(_) => {
             println!("  Binary: Not installed");
