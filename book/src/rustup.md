@@ -9,7 +9,7 @@ Rust is installed with the [`rustup`](https://rust-lang.github.io/rustup) tool.
 run the following in your shell then follow the onscreen instructions:
 
 ```
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl -sSf https://sh.rustup.rs | sh
 ```
 
 
