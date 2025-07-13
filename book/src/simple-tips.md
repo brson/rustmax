@@ -1,8 +1,20 @@
 ## Set up the `mold` linker
 
-The Rust Max CLI tool can do this for you:
+Linking is one of the most time-consuming
+stages of a Rust build,
+and it has to be redone every time you test your program.
+
+On Linux the [`mold`] linker is faster than
+the the default linker.
+Setting it up manually is not difficult,
+but just hard enough that I have to look it up
+every time.
+
+The Rust Max CLI tool can do it instead:
 
 `rustmax install-tool mold`
+
+[`mold`]: https://github.com/rui314/mold
 
 
 ## Use `rustfmt::skip`

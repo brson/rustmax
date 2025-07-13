@@ -16,6 +16,7 @@
 - [The Rust Standard Library Revisited](std.md)
 - [The Rust Ecosystem](ecosystem.md)
 - [How Do I … ?](how-do-i.md)
+- [Simple Tips](simple-tips.md)
 - [Modern Rust Features](modern-rust.md)
 - [The Rust Max Radar](radar.md)
 - [External Rust Resources](resources.md)
