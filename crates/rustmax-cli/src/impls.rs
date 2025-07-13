@@ -151,10 +151,73 @@ fn cargo_audit_install() -> AnyResult<()> {
     Ok(())
 }
 
+fn cargo_audit_update() -> AnyResult<()> {
+    println!("Updating cargo-audit...");
+
+    // Check if installed first
+    let current_version = match std::process::Command::new("cargo")
+        .args(["audit", "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("Current version: {}", version);
+            Some(version.to_string())
+        }
+        _ => {
+            println!("cargo-audit is not installed, use 'rustmax install-tool cargo-audit' instead");
+            return Ok(());
+        }
+    };
+
+    // Update using cargo install --force
+    println!("Running: cargo install --force cargo-audit");
+    let status = std::process::Command::new("cargo")
+        .args(["install", "--force", "cargo-audit"])
+        .status()
+        .context("Failed to execute cargo install command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo install --force cargo-audit failed with exit code: {}",
+            status
+        );
+    }
+
+    // Verify update
+    match std::process::Command::new("cargo")
+        .args(["audit", "--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let new_version = String::from_utf8_lossy(&output.stdout);
+            let new_version = new_version.trim();
+            
+            if let Some(old_version) = current_version {
+                if old_version != new_version {
+                    println!("✓ cargo-audit updated: {} → {}", old_version, new_version);
+                } else {
+                    println!("✓ cargo-audit is already up to date ({})", new_version);
+                }
+            } else {
+                println!("✓ cargo-audit updated to {}", new_version);
+            }
+        }
+        _ => {
+            println!("⚠️  Update may have succeeded but could not verify version");
+        }
+    }
+
+    println!("cargo-audit update complete!");
+    Ok(())
+}
+
 impl Tool {
     pub fn update(&self) -> AnyResult<()> {
         match self {
             Tool::Mold => crate::moldman::update(),
+            Tool::CargoAudit => cargo_audit_update(),
             _ => todo!(),
         }
     }
