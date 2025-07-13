@@ -532,3 +532,223 @@ fn cargo_audit_remove_db() -> AnyResult<()> {
     Ok(())
 }
 
+struct CargoToolConfig {
+    tool_name: &'static str,
+    package_name: &'static str,
+    post_install_note: Option<&'static str>,
+    post_install_action: Option<fn() -> AnyResult<()>>,
+    post_uninstall_action: Option<fn() -> AnyResult<()>>,
+}
+
+fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("Installing {}...", config.tool_name);
+
+    // Check if already installed
+    if let Ok(output) = std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        if output.status.success() {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("{} is already installed ({})", config.tool_name, version);
+            println!("Use 'rustmax update-tool {}' to update to the latest version", config.tool_name);
+            return Ok(());
+        }
+    }
+
+    // Install using cargo install
+    println!("Running: cargo install {}", config.package_name);
+    let status = std::process::Command::new("cargo")
+        .args(["install", config.package_name])
+        .status()
+        .context("Failed to execute cargo install command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo install {} failed with exit code: {}",
+            config.package_name,
+            status
+        );
+    }
+
+    // Verify installation
+    match std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("✓ {} installed successfully ({})", config.tool_name, version);
+        }
+        _ => {
+            println!("⚠️  Installation may have succeeded but could not verify version");
+        }
+    }
+
+    if let Some(note) = config.post_install_note {
+        println!("{}", note);
+    }
+
+    if let Some(action) = config.post_install_action {
+        action()?;
+    }
+
+    println!("{} installation complete!", config.tool_name);
+    Ok(())
+}
+
+fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("Uninstalling {}...", config.tool_name);
+
+    // Check if installed first
+    match std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("Found {} ({}), proceeding with uninstall", config.tool_name, version);
+        }
+        _ => {
+            println!("{} is not installed", config.tool_name);
+            return Ok(());
+        }
+    }
+
+    // Uninstall using cargo uninstall
+    println!("Running: cargo uninstall {}", config.package_name);
+    let status = std::process::Command::new("cargo")
+        .args(["uninstall", config.package_name])
+        .status()
+        .context("Failed to execute cargo uninstall command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo uninstall {} failed with exit code: {}",
+            config.package_name,
+            status
+        );
+    }
+
+    // Verify uninstallation
+    match std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            println!("⚠️  {} may still be installed (uninstall verification failed)", config.tool_name);
+        }
+        _ => {
+            println!("✓ {} uninstalled successfully", config.tool_name);
+        }
+    }
+
+    if let Some(note) = config.post_install_note {
+        println!("{}", note);
+    }
+
+    if let Some(action) = config.post_uninstall_action {
+        action()?;
+    }
+
+    println!("{} uninstallation complete!", config.tool_name);
+    Ok(())
+}
+
+fn cargo_tool_update(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("Updating {}...", config.tool_name);
+
+    // Check if installed first
+    let current_version = match std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            println!("Current version: {}", version);
+            Some(version.to_string())
+        }
+        _ => {
+            println!(
+                "{} is not installed, use 'rustmax install-tool {}' instead",
+                config.tool_name, config.tool_name
+            );
+            return Ok(());
+        }
+    };
+
+    // Update using cargo install --force
+    println!("Running: cargo install --force {}", config.package_name);
+    let status = std::process::Command::new("cargo")
+        .args(["install", "--force", config.package_name])
+        .status()
+        .context("Failed to execute cargo install command")?;
+
+    if !status.success() {
+        bail!(
+            "cargo install --force {} failed with exit code: {}",
+            config.package_name,
+            status
+        );
+    }
+
+    // Verify update
+    match std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let new_version = String::from_utf8_lossy(&output.stdout);
+            let new_version = new_version.trim();
+            
+            if let Some(old_version) = current_version {
+                if old_version != new_version {
+                    println!("✓ {} updated: {} → {}", config.tool_name, old_version, new_version);
+                } else {
+                    println!("✓ {} is already up to date ({})", config.tool_name, new_version);
+                }
+            } else {
+                println!("✓ {} updated to {}", config.tool_name, new_version);
+            }
+        }
+        _ => {
+            println!("⚠️  Update may have succeeded but could not verify version");
+        }
+    }
+
+    println!("{} update complete!", config.tool_name);
+    Ok(())
+}
+
+fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
+    println!("{} status:", config.tool_name);
+
+    // Check binary installation and version
+    match std::process::Command::new(config.tool_name)
+        .args(["--version"])
+        .output()
+    {
+        Ok(output) if output.status.success() => {
+            let version = String::from_utf8_lossy(&output.stdout);
+            let version = version.trim();
+            if version.is_empty() {
+                println!("  Binary: Installed (version unknown)");
+            } else {
+                println!("  Binary: Installed ({})", version);
+            }
+        }
+        Ok(_) => {
+            println!("  Binary: Not installed or version command failed");
+        }
+        Err(_) => {
+            println!("  Binary: Not installed");
+        }
+    }
+
+    Ok(())
+}
+
