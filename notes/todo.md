@@ -61,4 +61,3 @@
 - semver
 - home directory
 - grpc / protoc
-- mold setup
