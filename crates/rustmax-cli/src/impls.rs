@@ -174,6 +174,36 @@ struct CargoPluginConfig {
     post_uninstall_action: Option<fn() -> AnyResult<()>>,
 }
 
+const CARGO_AUDIT_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-audit",
+    package_name: "cargo-audit",
+    subcommand: "audit",
+    post_install_note: None,
+    post_install_action: Some(cargo_audit_download_db),
+    post_status_action: Some(cargo_audit_status_db),
+    post_uninstall_action: Some(cargo_audit_remove_db),
+};
+
+const CARGO_CLEAN_ALL_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-clean-all",
+    package_name: "cargo-clean-all",
+    subcommand: "clean-all",
+    post_install_note: None,
+    post_install_action: None,
+    post_status_action: None,
+    post_uninstall_action: None,
+};
+
+const CARGO_DENY_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-deny",
+    package_name: "cargo-deny",
+    subcommand: "deny",
+    post_install_note: None,
+    post_install_action: None,
+    post_status_action: None,
+    post_uninstall_action: None,
+};
+
 fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
     println!("Installing {}...", config.tool_name);
 
@@ -400,55 +430,19 @@ fn cargo_plugin_status(config: &CargoPluginConfig) -> AnyResult<()> {
 /////////
 
 fn cargo_audit_install() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: Some(cargo_audit_download_db),
-        post_status_action: Some(cargo_audit_status_db),
-        post_uninstall_action: None,
-    };
-    cargo_plugin_install(&config)
+    cargo_plugin_install(&CARGO_AUDIT_CONFIG)
 }
 
 fn cargo_audit_update() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_update(&config)
+    cargo_plugin_update(&CARGO_AUDIT_CONFIG)
 }
 
 fn cargo_audit_status() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: Some(cargo_audit_status_db),
-        post_uninstall_action: None,
-    };
-    cargo_plugin_status(&config)
+    cargo_plugin_status(&CARGO_AUDIT_CONFIG)
 }
 
 fn cargo_audit_uninstall() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-audit",
-        package_name: "cargo-audit",
-        subcommand: "audit",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: Some(cargo_audit_remove_db),
-    };
-    cargo_plugin_uninstall(&config)
+    cargo_plugin_uninstall(&CARGO_AUDIT_CONFIG)
 }
 
 fn cargo_audit_download_db() -> AnyResult<()> {
@@ -500,107 +494,35 @@ fn cargo_audit_remove_db() -> AnyResult<()> {
 ////////
 
 fn cargo_clean_all_install() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-clean-all",
-        package_name: "cargo-clean-all",
-        subcommand: "clean-all",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_install(&config)
+    cargo_plugin_install(&CARGO_CLEAN_ALL_CONFIG)
 }
 
 fn cargo_clean_all_update() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-clean-all",
-        package_name: "cargo-clean-all",
-        subcommand: "clean-all",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_update(&config)
+    cargo_plugin_update(&CARGO_CLEAN_ALL_CONFIG)
 }
 
 fn cargo_clean_all_status() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-clean-all",
-        package_name: "cargo-clean-all",
-        subcommand: "clean-all",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_status(&config)
+    cargo_plugin_status(&CARGO_CLEAN_ALL_CONFIG)
 }
 
 fn cargo_clean_all_uninstall() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-clean-all",
-        package_name: "cargo-clean-all",
-        subcommand: "clean-all",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_uninstall(&config)
+    cargo_plugin_uninstall(&CARGO_CLEAN_ALL_CONFIG)
 }
 
 ////////
 
 fn cargo_deny_install() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-deny",
-        package_name: "cargo-deny",
-        subcommand: "deny",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_install(&config)
+    cargo_plugin_install(&CARGO_DENY_CONFIG)
 }
 
 fn cargo_deny_update() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-deny",
-        package_name: "cargo-deny",
-        subcommand: "deny",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_update(&config)
+    cargo_plugin_update(&CARGO_DENY_CONFIG)
 }
 
 fn cargo_deny_status() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-deny",
-        package_name: "cargo-deny",
-        subcommand: "deny",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_status(&config)
+    cargo_plugin_status(&CARGO_DENY_CONFIG)
 }
 
 fn cargo_deny_uninstall() -> AnyResult<()> {
-    let config = CargoPluginConfig {
-        tool_name: "cargo-deny",
-        package_name: "cargo-deny",
-        subcommand: "deny",
-        post_install_note: None,
-        post_install_action: None,
-        post_status_action: None,
-        post_uninstall_action: None,
-    };
-    cargo_plugin_uninstall(&config)
+    cargo_plugin_uninstall(&CARGO_DENY_CONFIG)
 }
