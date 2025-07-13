@@ -95,7 +95,7 @@ impl Tool {
             },
             CargoOutdated => ToolAttrs {
                 display_name: "cargo-outdated",
-                impl_complete: false,
+                impl_complete: true,
             },
             CargoTree => ToolAttrs {
                 display_name: "cargo-tree",
@@ -125,6 +125,7 @@ impl Tool {
             Tool::CargoDeny => cargo_plugin_install(&CARGO_DENY_CONFIG),
             Tool::CargoEdit => cargo_plugin_install(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_install(&CARGO_GENERATE_CONFIG),
+            Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
             _ => todo!(),
         }
     }
@@ -139,6 +140,7 @@ impl Tool {
             Tool::CargoDeny => cargo_plugin_update(&CARGO_DENY_CONFIG),
             Tool::CargoEdit => cargo_plugin_update(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_update(&CARGO_GENERATE_CONFIG),
+            Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
             _ => todo!(),
         }
     }
@@ -153,6 +155,7 @@ impl Tool {
             Tool::CargoDeny => cargo_plugin_uninstall(&CARGO_DENY_CONFIG),
             Tool::CargoEdit => cargo_plugin_uninstall(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_uninstall(&CARGO_GENERATE_CONFIG),
+            Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
             _ => todo!(),
         }
     }
@@ -167,6 +170,7 @@ impl Tool {
             Tool::CargoDeny => cargo_plugin_status(&CARGO_DENY_CONFIG),
             Tool::CargoEdit => cargo_plugin_status(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_status(&CARGO_GENERATE_CONFIG),
+            Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
             _ => todo!(),
         }
     }
@@ -226,6 +230,16 @@ const CARGO_GENERATE_CONFIG: CargoPluginConfig = CargoPluginConfig {
     tool_name: "cargo-generate",
     package_name: "cargo-generate",
     subcommand: "generate",
+    post_install_note: None,
+    post_install_action: None,
+    post_status_action: None,
+    post_uninstall_action: None,
+};
+
+const CARGO_OUTDATED_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-outdated",
+    package_name: "cargo-outdated",
+    subcommand: "outdated",
     post_install_note: None,
     post_install_action: None,
     post_status_action: None,
