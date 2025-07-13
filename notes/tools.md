@@ -29,3 +29,4 @@
 - intentrace?
 - jj-cli
 - mdbook
+- wabt
