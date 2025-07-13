@@ -167,6 +167,7 @@ struct CargoPluginConfig {
     post_install_note: Option<&'static str>,
     post_install_action: Option<fn() -> AnyResult<()>>,
     post_status_action: Option<fn() -> AnyResult<()>>,
+    post_uninstall_action: Option<fn() -> AnyResult<()>>,
 }
 
 fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
@@ -277,6 +278,10 @@ fn cargo_plugin_uninstall(config: &CargoPluginConfig) -> AnyResult<()> {
 
     if let Some(note) = config.post_install_note {
         println!("{}", note);
+    }
+
+    if let Some(action) = config.post_uninstall_action {
+        action()?;
     }
 
     println!("{} uninstallation complete!", config.tool_name);
@@ -398,6 +403,7 @@ fn cargo_audit_install() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: Some(cargo_audit_download_db),
         post_status_action: Some(cargo_audit_status_db),
+        post_uninstall_action: None,
     };
     cargo_plugin_install(&config)
 }
@@ -410,6 +416,7 @@ fn cargo_audit_update() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: None,
         post_status_action: None,
+        post_uninstall_action: None,
     };
     cargo_plugin_update(&config)
 }
@@ -422,6 +429,7 @@ fn cargo_audit_status() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: None,
         post_status_action: Some(cargo_audit_status_db),
+        post_uninstall_action: None,
     };
     cargo_plugin_status(&config)
 }
@@ -431,9 +439,10 @@ fn cargo_audit_uninstall() -> AnyResult<()> {
         tool_name: "cargo-audit",
         package_name: "cargo-audit",
         subcommand: "audit",
-        post_install_note: Some("Note: Advisory database at ~/.cargo/advisory-db was not removed"),
+        post_install_note: None,
         post_install_action: None,
         post_status_action: None,
+        post_uninstall_action: Some(cargo_audit_remove_db),
     };
     cargo_plugin_uninstall(&config)
 }
@@ -466,6 +475,24 @@ fn cargo_audit_status_db() -> AnyResult<()> {
     Ok(())
 }
 
+fn cargo_audit_remove_db() -> AnyResult<()> {
+    // Remove advisory database on uninstall
+    let advisory_db_path = std::env::var("HOME")
+        .map(|home| format!("{}/.cargo/advisory-db", home))
+        .unwrap_or_else(|_| "~/.cargo/advisory-db".to_string());
+
+    if std::path::Path::new(&advisory_db_path).exists() {
+        println!("Removing advisory database at {}...", advisory_db_path);
+        match std::fs::remove_dir_all(&advisory_db_path) {
+            Ok(_) => println!("✓ Advisory database removed"),
+            Err(e) => println!("⚠️  Failed to remove advisory database: {}", e),
+        }
+    } else {
+        println!("Advisory database not found, nothing to remove");
+    }
+    Ok(())
+}
+
 ////////
 
 fn cargo_clean_all_install() -> AnyResult<()> {
@@ -476,6 +503,7 @@ fn cargo_clean_all_install() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: None,
         post_status_action: None,
+        post_uninstall_action: None,
     };
     cargo_plugin_install(&config)
 }
@@ -488,6 +516,7 @@ fn cargo_clean_all_update() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: None,
         post_status_action: None,
+        post_uninstall_action: None,
     };
     cargo_plugin_update(&config)
 }
@@ -500,6 +529,7 @@ fn cargo_clean_all_status() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: None,
         post_status_action: None,
+        post_uninstall_action: None,
     };
     cargo_plugin_status(&config)
 }
@@ -512,6 +542,7 @@ fn cargo_clean_all_uninstall() -> AnyResult<()> {
         post_install_note: None,
         post_install_action: None,
         post_status_action: None,
+        post_uninstall_action: None,
     };
     cargo_plugin_uninstall(&config)
 }
