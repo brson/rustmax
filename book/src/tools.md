@@ -108,6 +108,24 @@ is built into `cargo` itself.
 
 ### 🌞 `mold`
 
+A high-performance linker that significantly speeds up Rust builds on Linux.
+
+```
+rustmax install-tool mold
+```
+
+> 👁️  [Source Repository](https://github.com/rui314/mold)
+
+---
+
+Linking is one of the most time-consuming stages of a Rust build,
+and it has to be redone every time you test your program.
+On Linux the `mold` linker is faster than the default linker.
+
+Setting up `mold` manually requires configuring `.cargo/config.toml`
+and ensuring the linker is properly installed,
+but the Rust Max CLI tool handles this setup automatically.
+
 
 
 
