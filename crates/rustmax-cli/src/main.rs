@@ -134,7 +134,9 @@ impl CliOpts {
 impl CliCmdListTools {
     fn run(&self) -> AnyResult<()> {
         for tool in enum_iterator::all::<Tool>() {
-            if !tool.attrs().impl_complete { continue }
+            if !tool.attrs().impl_complete {
+                continue;
+            }
             println!("{}", tool.attrs().display_name);
         }
 
@@ -145,7 +147,9 @@ impl CliCmdListTools {
 impl CliCmdInstallTools {
     fn run(&self) -> AnyResult<()> {
         for tool in enum_iterator::all::<Tool>() {
-            if !tool.attrs().impl_complete { continue }
+            if !tool.attrs().impl_complete {
+                continue;
+            }
             tool.install()?;
         }
         Ok(())
@@ -155,7 +159,9 @@ impl CliCmdInstallTools {
 impl CliCmdUpdateTools {
     fn run(&self) -> AnyResult<()> {
         for tool in enum_iterator::all::<Tool>() {
-            if !tool.attrs().impl_complete { continue }
+            if !tool.attrs().impl_complete {
+                continue;
+            }
             tool.update()?;
         }
         Ok(())
@@ -165,7 +171,9 @@ impl CliCmdUpdateTools {
 impl CliCmdUninstallTools {
     fn run(&self) -> AnyResult<()> {
         for tool in enum_iterator::all::<Tool>() {
-            if !tool.attrs().impl_complete { continue }
+            if !tool.attrs().impl_complete {
+                continue;
+            }
             tool.uninstall()?;
         }
         Ok(())
@@ -175,7 +183,9 @@ impl CliCmdUninstallTools {
 impl CliCmdToolsStatus {
     fn run(&self) -> AnyResult<()> {
         for tool in enum_iterator::all::<Tool>() {
-            if !tool.attrs().impl_complete { continue }
+            if !tool.attrs().impl_complete {
+                continue;
+            }
             tool.status()?;
         }
         Ok(())

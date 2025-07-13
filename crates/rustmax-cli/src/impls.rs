@@ -350,7 +350,6 @@ const CARGO_OUTDATED_CONFIG: CargoPluginConfig = CargoPluginConfig {
     post_uninstall_action: None,
 };
 
-
 fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
     println!("Installing {}...", config.tool_name);
 
@@ -363,7 +362,10 @@ fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
             println!("{} is already installed ({})", config.tool_name, version);
-            println!("Use 'rustmax update-tool {}' to update to the latest version", config.tool_name);
+            println!(
+                "Use 'rustmax update-tool {}' to update to the latest version",
+                config.tool_name
+            );
             return Ok(());
         }
     }
@@ -391,7 +393,10 @@ fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("✓ {} installed successfully ({})", config.tool_name, version);
+            println!(
+                "✓ {} installed successfully ({})",
+                config.tool_name, version
+            );
         }
         _ => {
             println!("⚠️  Installation may have succeeded but could not verify version");
@@ -421,7 +426,10 @@ fn cargo_plugin_uninstall(config: &CargoPluginConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("Found {} ({}), proceeding with uninstall", config.tool_name, version);
+            println!(
+                "Found {} ({}), proceeding with uninstall",
+                config.tool_name, version
+            );
         }
         _ => {
             println!("{} is not installed", config.tool_name);
@@ -450,7 +458,10 @@ fn cargo_plugin_uninstall(config: &CargoPluginConfig) -> AnyResult<()> {
         .output()
     {
         Ok(output) if output.status.success() => {
-            println!("⚠️  {} may still be installed (uninstall verification failed)", config.tool_name);
+            println!(
+                "⚠️  {} may still be installed (uninstall verification failed)",
+                config.tool_name
+            );
         }
         _ => {
             println!("✓ {} uninstalled successfully", config.tool_name);
@@ -515,12 +526,18 @@ fn cargo_plugin_update(config: &CargoPluginConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let new_version = String::from_utf8_lossy(&output.stdout);
             let new_version = new_version.trim();
-            
+
             if let Some(old_version) = current_version {
                 if old_version != new_version {
-                    println!("✓ {} updated: {} → {}", config.tool_name, old_version, new_version);
+                    println!(
+                        "✓ {} updated: {} → {}",
+                        config.tool_name, old_version, new_version
+                    );
                 } else {
-                    println!("✓ {} is already up to date ({})", config.tool_name, new_version);
+                    println!(
+                        "✓ {} is already up to date ({})",
+                        config.tool_name, new_version
+                    );
                 }
             } else {
                 println!("✓ {} updated to {}", config.tool_name, new_version);
@@ -642,7 +659,10 @@ fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
             println!("{} is already installed ({})", config.tool_name, version);
-            println!("Use 'rustmax update-tool {}' to update to the latest version", config.tool_name);
+            println!(
+                "Use 'rustmax update-tool {}' to update to the latest version",
+                config.tool_name
+            );
             return Ok(());
         }
     }
@@ -670,7 +690,10 @@ fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("✓ {} installed successfully ({})", config.tool_name, version);
+            println!(
+                "✓ {} installed successfully ({})",
+                config.tool_name, version
+            );
         }
         _ => {
             println!("⚠️  Installation may have succeeded but could not verify version");
@@ -700,7 +723,10 @@ fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let version = String::from_utf8_lossy(&output.stdout);
             let version = version.trim();
-            println!("Found {} ({}), proceeding with uninstall", config.tool_name, version);
+            println!(
+                "Found {} ({}), proceeding with uninstall",
+                config.tool_name, version
+            );
         }
         _ => {
             println!("{} is not installed", config.tool_name);
@@ -729,7 +755,10 @@ fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
         .output()
     {
         Ok(output) if output.status.success() => {
-            println!("⚠️  {} may still be installed (uninstall verification failed)", config.tool_name);
+            println!(
+                "⚠️  {} may still be installed (uninstall verification failed)",
+                config.tool_name
+            );
         }
         _ => {
             println!("✓ {} uninstalled successfully", config.tool_name);
@@ -794,12 +823,18 @@ fn cargo_tool_update(config: &CargoToolConfig) -> AnyResult<()> {
         Ok(output) if output.status.success() => {
             let new_version = String::from_utf8_lossy(&output.stdout);
             let new_version = new_version.trim();
-            
+
             if let Some(old_version) = current_version {
                 if old_version != new_version {
-                    println!("✓ {} updated: {} → {}", config.tool_name, old_version, new_version);
+                    println!(
+                        "✓ {} updated: {} → {}",
+                        config.tool_name, old_version, new_version
+                    );
                 } else {
-                    println!("✓ {} is already up to date ({})", config.tool_name, new_version);
+                    println!(
+                        "✓ {} is already up to date ({})",
+                        config.tool_name, new_version
+                    );
                 }
             } else {
                 println!("✓ {} updated to {}", config.tool_name, new_version);
@@ -929,4 +964,3 @@ const TOKEI_CONFIG: CargoToolConfig = CargoToolConfig {
     post_install_action: None,
     post_uninstall_action: None,
 };
-
