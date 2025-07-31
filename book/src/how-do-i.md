@@ -37,6 +37,18 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … convert from slices to fixed-length arrays?
 
+### … Implement an `impl Iterator` with `todo!`?
+
+```
+  fn merge_create_accounts_results(                      
+      accounts: &[tb::Account],
+      results: Vec<tb::CreateAccountsResult>,
+  ) -> impl Iterator<Item = (u128, Option<tb::Account>)> + use<'_> {
+      todo!(); // optional
+      std::iter::empty() // satisfies the type checker
+  }  
+```
+
 ## Numerics
 
 ### … convert between numeric types ideomatically?
