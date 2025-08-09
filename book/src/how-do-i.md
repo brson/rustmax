@@ -3,15 +3,24 @@
 <!-- note the organization here is similar but not
      identical to crates/rmx/src-doc/root-docs.md -->
 
+
+
+
 ## Discovery
 
 ### … find a crate for a given purpose?
 
 ### … find the latest version of a crate?
 
+
+
+
 ## Project organization
 
 ### … organize a Rust workspace?
+
+
+
 
 ## Conveniences
 
@@ -23,6 +32,9 @@
 static_assertions::assert_obj_safe!(MyTrait);
 ```
 
+
+
+
 ## Error handling and debugging
 
 ### … handle errors simply and correctly?
@@ -30,6 +42,9 @@ static_assertions::assert_obj_safe!(MyTrait);
 ### … structure errors in a public API?
 
 ### … set up basic logging?
+
+
+
 
 ## Collections
 
@@ -49,6 +64,9 @@ static_assertions::assert_obj_safe!(MyTrait);
   }  
 ```
 
+
+
+
 ## Numerics
 
 ### … convert between numeric types ideomatically?
@@ -57,15 +75,24 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … convert between ints and bytes?
 
+
+
+
 ## Encoding, serialization, parsing
 
 ### … serialize to and from JSON?
 
 ### … decide what format to use with `serde`?
 
+
+
+
 ## Time
 
 ### … parse and render standard time formats?
+
+
+
 
 ## Random numbers
 
@@ -75,9 +102,15 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … generate a fast random number from a seed?
 
+
+
+
 ## Cryptography
 
 ### … calculate a cryptographic content hash?
+
+
+
 
 ## Parallelism and Concurrency
 
@@ -89,11 +122,26 @@ todo `LazyLock`, `OnceLock`, and `Once`.
 
 todo futures::channels
 
+### … use a thread pool?
+
+Use [`rayon::ThreadPool`].
+
+Although it has additional rayon features,
+it can be used as a basic thread pool.
+
+todo example
+
+[`rayon::ThreadPool`]: https://docs.rs/rayon/latest/rayon/struct.ThreadPool.html
+
+
 ## Asynchronous I/O
 
 ### … set up the `tokio` event loop?
 
 ### … stub an unwritten `async fn`?
+
+
+
 
 ## Networking and web
 
@@ -101,7 +149,13 @@ todo futures::channels
 
 ### … configure a basic HTTP server?
 
+
+
+
 ## Text / unicode
+
+
+
 
 ## Terminal / CLI
 
@@ -111,6 +165,9 @@ todo futures::channels
 
 ### … read line-based input from the terminal?
 
+
+
+
 ## System / OS
 
 ### … read environment variables?
@@ -119,11 +176,17 @@ todo futures::channels
 
 ### … work with multiple files in a temporary directory?
 
+
+
+
 ## Testing
 
 ### … create a custom test harness?
 
 ### … create a custom table-based test harness?
+
+
+
 
 ## Build scripts
 
@@ -132,6 +195,9 @@ todo futures::channels
 ### … link to a native static library?
 
 ### … compile and link a C source file?
+
+
+
 
 ## FFI / interop
 
