@@ -1,3 +1,19 @@
+## Import traits with `as _`
+
+Most of the time we need traits to call a method,
+and for this we need the trait to be in scope,
+but it doesn't need to be namable.
+
+```rust
+use std::io::{self, Seek as _};
+
+let hash = read_hash(&mut reader)?;
+reader.seek(io::SeekFrom::Start(0))?;
+```
+
+
+
+
 ## Set up the `mold` linker
 
 Linking is one of the most time-consuming
