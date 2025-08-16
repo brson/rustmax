@@ -2,8 +2,32 @@
 
 
 
-## Starting a project
+## Install Rust with `rustup`
 
+Rust is installed with the [`rustup`](https://rust-lang.github.io/rustup) tool.
+
+On Linux, Mac OS, and Unixes,
+run the following in your shell then follow the onscreen instructions:
+
+```
+curl -sSf https://sh.rustup.rs | sh
+```
+
+For Windows and other install see [https://rustup.rs].
+
+
+
+
+## Rust workspace considerations
+
+
+
+
+## Start a new `rustmax` project with `cargo-generate`
+
+```
+todo
+```
 
 
 

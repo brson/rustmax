@@ -2,7 +2,6 @@
 
 - [What is Rust Max?](what-is-rmx.md)
 - [Easy-mode Rust](easy-mode-rust.md)
-- [`rustup` Installation](rustup.md)
 
 ---
 
