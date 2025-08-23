@@ -1,14 +1,14 @@
 # Summary
 
-- [What is Rust Max?](what-is-rmx.md)
+- [What is Rustmax?](what-is-rmx.md)
 - [Easy-mode Rust](easy-mode-rust.md)
 
 ---
 
-- [Rust Max: The Crates](crates.md)
-- [Rust Max: The Tools](tools.md)
-- [The Rust Max Library](library.md)
-- [The Rust Max CLI](cli.md)
+- [Rustmax: The Crates](crates.md)
+- [Rustmax: The Tools](tools.md)
+- [The Rustmax Library](library.md)
+- [The Rustmax CLI](cli.md)
 
 ---
 
@@ -18,5 +18,5 @@
 - [The Rust Ecosystem](ecosystem.md)
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
-- [The Rust Max Radar](radar.md)
+- [The Rustmax Radar](radar.md)
 - [External Rust Resources](resources.md)

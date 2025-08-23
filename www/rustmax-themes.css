@@ -1,3 +1,9 @@
+:root {
+    --rmx-font-text: normal normal 16pt "Computer Modern Serif";
+    --rmx-font-code: normal normal 16pt "Computer Modern Typewriter", monospace;
+    --rmx-font-em: normal bold 16pt "Computer Modern Serif";
+}
+
 :root[data-theme="//light"],
 :root[data-theme="dark"],
 :root:not([data-theme]) {

@@ -13,7 +13,7 @@ run the following in your shell then follow the onscreen instructions:
 curl -sSf https://sh.rustup.rs | sh
 ```
 
-For Windows and other install see [https://rustup.rs].
+For Windows and other install see [https://rustup.rs](https://rustup.rs).
 
 
 

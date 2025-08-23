@@ -3,23 +3,19 @@
 }
 
 :root {
-    --rmx-font-text: "Computer Modern Serif";
-    --rmx-font-code: "Computer Modern Typewriter", monospace;
-    --rmx-font-em: normal bold 100% "Computer Modern Serif";
-
     font-size: 16pt;
-    font-family: var(--rmx-font-text);
+    font: var(--rmx-font-text);
 
     color: var(--rmx-color-fg);
     background-color: var(--rmx-color-bg);
 }
 
 code {
-    font-family: var(--rmx-font-code);
+    font: var(--rmx-font-code);
 }
 
 pre {
-    font-family: var(--rmx-font-code);
+    font: var(--rmx-font-code);
     padding: 20px;
     border: 1px dashed var(--rmx-color-border);
     background-color: var(--rmx-color-bg-alt);
@@ -143,7 +139,7 @@ table#rmx-crate-table tr > td:is(:nth-child(3)) {
 table#rmx-crate-table tr > td button {
     background-color: inherit;
     border: 1px solid var(--rmx-color-links);
-    font-family: var(--rmx-font-code);
+    font: var(--rmx-font-code);
     -font-size: 150%;
     cursor: pointer;
     color: var(--rmx-color-links);

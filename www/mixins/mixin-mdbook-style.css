@@ -1,5 +1,17 @@
 @import url("rustmax-themes.css");
 
+:root {
+    font-size: 16pt;
+    font: var(--rmx-font-text);
+    color: var(--rmx-color-fg);
+}
+
+body, h1, h2, h3,
+h1.menu-title
+{
+    font-size: 16pt;
+}
+
 #page-wrapper, #sidebar
 {
     background-color: unset;
@@ -11,24 +23,39 @@
     background-color: var(--rmx-color-bg);
 }
 
+.content p {
+    line-height: unset;
+}
+
 .content,
 .content .header:link,
 blockquote,
-p > code.hljs
+.hljs,
+p > code.hljs,
+.menu-bar
 {
     color: var(--rmx-color-fg);
 }
 
 a > code.hljs,
-a, a:hover, a:link {
+.chapter li a,
+.chapter li a:hover,
+.chapter li a:link,
+.chapter li a:visited,
+a, a:hover, a:link, a:visited
+{
     color: var(--rmx-color-links);
 }
 
 blockquote,
 p code.hljs,
-.mobile-nav-chapters
+.nav-chapters,
+.nav-chapters:hover,
+.nav-chapters:visited,
+.mobile-nav-chapters,
+.hljs
 {
-    background-color: color-mix(in srgb, var(--rmx-color-bg), var(--rmx-color-accents) 10%)
+    background-color: inherit;
 }
 
 #theme-toggle {
