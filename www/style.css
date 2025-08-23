@@ -80,20 +80,6 @@ aside, #warning {
     text-align: right;
 }
 
-#menu {
-    padding: 2em;
-    background-color: var(--rmx-color-bg-alt);
-}
-
-#menu {
-    display: flex;
-    gap: 2em;
-    justify-content: center;
-    text-transform: uppercase;
-    align-items: center;
-}
-
-#menu,
 section.crates
 {
     border: 1px dashed var(--rmx-color-border);
