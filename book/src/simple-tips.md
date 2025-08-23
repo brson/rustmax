@@ -1,3 +1,32 @@
+## There's an `Either` hiding in the `futures` crate!
+
+The `Either` type, most known from Haskell, is a useful
+reusable abstraction for the common need to create a lightweight type
+that is a named union of two other types, typically looks like:
+
+```
+enum Either<A, B> {
+  Left(A),
+  Right(B),
+}
+```
+
+Rust doesn't provide this type because it instead provides `Result`,
+which is the most common use-case for the pattern, and the remaining
+use-cases seem marginal for such a simple type - official guidelines
+encouraging writing your own `Either` type for specific uses, with more
+specific names.
+
+Sometimes you want one though!
+
+There's one in the futures crate: [`futures::future::Either`].
+
+Although `Either` is a `Future` and provided for awaiting pairs of futures,
+its definition is exactly as above.
+
+[`futures::future::Either`]: https://docs.rs/futures/latest/futures/future/enum.Either.html
+
+
 ## Import traits with `as _`
 
 Most of the time we need traits to call a method,
