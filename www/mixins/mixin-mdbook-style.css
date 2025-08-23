@@ -38,9 +38,12 @@ p > code.hljs,
 
 a > code.hljs,
 .chapter li a,
-.chapter li a:hover,
 .chapter li a:link,
+.chapter li a:hover,
 .chapter li a:visited,
+.content a:link,
+.content a:hover,
+.content a:visited,
 a, a:hover, a:link, a:visited
 {
     color: var(--rmx-color-links);
