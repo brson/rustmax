@@ -5,7 +5,7 @@
   <head>
     <meta charset='utf-8'>
 
-    <title>Rust Max</title>
+    <title>Rustmax</title>
     <meta name='description' content='A collection of crates, tools, and documentation for the Rust programming language.'>
 
     <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -18,7 +18,7 @@
     
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 
-    <link href='rustmax-themes.css' rel='stylesheet'/>
+    <!--<link href='rustmax-themes.css' rel='stylesheet'/>-->
     <link href='style.css' rel='stylesheet'/>
     <script src='set-theme.js'></script>
     <script src='script.js'></script>
@@ -40,27 +40,26 @@
 
     <section id="warning">
       <p>
-          WARNING:
           Do not use this project.
           It is neither stable nor supported.
       </p>
     </section>
 
     <section class='text'>
-      <h2>What is Rust Max?</h2>
+      <h2>What is Rustmax?</h2>
       <p>
-        <b>Rust Max</b> is a collection of crates, tools, and documentation
+        <em>Rustmax</em> is a collection of crates, tools, and documentation
         for the Rust programming language.
       </p>
       <p>
-        <b>Rust</b> is a modern systems programming language
+        <em>Rust</em> is a modern systems programming language
         that is extremely fast and does not crash.
         It is suitable for development of high-performance, low-level software
         as in operating systems, databases, and distributed systems;
         as well as command-line, web, mobile/embedded, and application development.
       </p>
       <p>
-        <b>Rust Max</b> is a comprehensive guide to the Rust ecosystem
+        <em>Rustmax</em> is a comprehensive guide to the Rust ecosystem
         for new and old Rust programmers,
         including a "batteries-included" supercrate
         of selected high-quality Rust libraries:
@@ -70,8 +69,18 @@
 
     <section id="warning">
       <p>
-          NOTE: Rust Max is not an official Rust project.
+          NOTE: Rustmax is not an official Rust project.
       </p>
+    </section>
+
+    <section>
+      <h2>Temp code listing</h2>
+      <pre>
+        async fn main() -> AnyResult<()> {
+          let foo = whatever;
+          println!("hey {whatever}");
+        }
+      </pre>
     </section>
 
     <!--
@@ -79,13 +88,13 @@
       <h2 id="mastery">RUST MASTERY AWAITS!</h2>
 
       <ul>
-        <li>Step 1: <b>Install Rust</b> with
+        <li>Step 1: <em>Install Rust</em> with
           <a href="book/rustup.html"><code>rustup</code></a>.
-        <li>Step 2: <b>Learn Rust</b> from
-          <a href="book/library.html">The Rust Max Library</a>.
-        <li>Step 3: <b>Build software</b> with
+        <li>Step 2: <em>Learn Rust</em> from
+          <a href="book/library.html">The Rustmax Library</a>.
+        <li>Step 3: <em>Build software</em> with
           <a href="book/crates.html">Rust crates</a>.
-        <li>Step 4: <b>Maintain software</b> with
+        <li>Step 4: <em>Maintain software</em> with
           <a href="book/tools.html">Rust tools</a>.
       </ul>
     </section>
@@ -102,8 +111,7 @@
     <br>
 
     <section class="crates">
-      <div hx-get="crates.html" hx-trigger="load">
-      </div>
+      <div hx-get="crates.html" hx-trigger="load"></div>
     </section>
 
     <!--

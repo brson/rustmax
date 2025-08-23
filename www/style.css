@@ -3,7 +3,11 @@
 }
 
 :root {
-    font-family: "Oswald";
+    --rmx-font-text: "Oswald";
+    --rmx-font-code: monospace;
+    --rmx-font-em: "Saira Stencil One";
+
+    font-family: var(--rmx-font-text);
     font-weight: 300;
     letter-spacing: 0.1em;
 
@@ -11,7 +15,8 @@
     background-color: var(--rmx-color-bg);
 }
 
-b {
+em {
+    font-family: var(--rmx-font-em);
     font-weight: 600;
 }
 
@@ -50,11 +55,11 @@ main > * {
 
 h1 {
     letter-spacing: 0.5em;
-    font-family: "Saira Stencil One";
+    font-family: var(--rmx-font-em);
 }
 
-h2#mastery {
-    font-family: "Saira Stencil One";
+h2 {
+    font-family: var(--rmx-font-em);
 }
 
 h1 > span {
@@ -66,7 +71,6 @@ header {
 }
 
 aside, #warning {
-    color: white;
     border-radius: 4px;
     background-color: var(--rmx-color-accents);
     text-align: center;
@@ -186,10 +190,15 @@ table button {
 }
 
 button {
-    font-family: monospace;
+    font-family: var(--rmx-font-code);
+}
+
+code {
+    font-family: var(--rmx-font-code);
 }
 
 pre {
+    font-family: var(--rmx-font-code);
     padding: 20px;
     border: 1px solid var(--rmx-color-border1);
     border-radius: 4px;
