@@ -10,15 +10,12 @@
 
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 
-    <!--<link href='rustmax-themes.css' rel='stylesheet'/>-->
+    <link href='rustmax-themes.css' rel='stylesheet'/>
+    <link href='fonts/Bright/cmun-bright.css' rel='stylesheet'/>
+    <link href='fonts/Serif/cmun-serif.css' rel='stylesheet'/>
+    <link href='fonts/Typewriter/cmun-typewriter.css' rel='stylesheet'/>
     <link href='style.css' rel='stylesheet'/>
     <script src='set-theme.js'></script>
     <script src='script.js'></script>
@@ -38,25 +35,13 @@
       </hgroup>
     </header>
 
-    <section id="warning">
-      <p>
-          Do not use this project.
-          It is neither stable nor supported.
-      </p>
-    </section>
-
     <section class='text'>
-      <h2>What is Rustmax?</h2>
-      <p>
-        <em>Rustmax</em> is a collection of crates, tools, and documentation
-        for the Rust programming language.
-      </p>
       <p>
         <em>Rust</em> is a modern systems programming language
         that is extremely fast and does not crash.
         It is suitable for development of high-performance, low-level software
         as in operating systems, databases, and distributed systems;
-        as well as command-line, web, mobile/embedded, and application development.
+        as well as command-line, web, mobile, embedded, and application development.
       </p>
       <p>
         <em>Rustmax</em> is a comprehensive guide to the Rust ecosystem
@@ -69,62 +54,26 @@
 
     <section id="warning">
       <p>
-          NOTE: Rustmax is not an official Rust project.
+          Do not use this project.
+          It is neither stable nor supported.
+      </p>
+      <p>
+          Rustmax is not an official Rust project.
       </p>
     </section>
 
-    <section>
-      <h2>Temp code listing</h2>
-      <pre>
-        async fn main() -> AnyResult<()> {
-          let foo = whatever;
-          println!("hey {whatever}");
-        }
-      </pre>
+    <section id='menu'>
+      <span><em><a href='api/rustmax/index.html'>The Crates</a></em></span>
+      <span>·</span>
+      <span><em><a href='book/tools.html'>The Tools</a></em></span>
+      <span>·</span>
+      <span><em><a href='book/library.html'>The Library</a></em></span>
     </section>
-
-    <!--
-    <section class='text'>
-      <h2 id="mastery">RUST MASTERY AWAITS!</h2>
-
-      <ul>
-        <li>Step 1: <em>Install Rust</em> with
-          <a href="book/rustup.html"><code>rustup</code></a>.
-        <li>Step 2: <em>Learn Rust</em> from
-          <a href="book/library.html">The Rustmax Library</a>.
-        <li>Step 3: <em>Build software</em> with
-          <a href="book/crates.html">Rust crates</a>.
-        <li>Step 4: <em>Maintain software</em> with
-          <a href="book/tools.html">Rust tools</a>.
-      </ul>
-    </section>
-    -->
-
-    <!--
-        rustup installation
-        crates and versions
-        tools and versions
-        library
-        addons (configs and templates)
-      -->
 
     <br>
 
     <section class="crates">
       <div hx-get="crates.html" hx-trigger="load"></div>
-    </section>
-
-    <!--
-    <section class="divider">
-    </section>
-    -->
-
-    <section id='menu'>
-      <span><a href='api/rustmax/index.html'>The Crates</a></span>
-      <span>·</span>
-      <span><a href='book/tools.html'>The Tools</a></span>
-      <span>·</span>
-      <span><a href='book/library.html'>The Library</a></span>
     </section>
 
     <footer>

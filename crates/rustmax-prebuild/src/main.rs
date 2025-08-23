@@ -270,13 +270,13 @@ fn make_crate_lists(
     let mut json = String::new();
     let mut html = String::new();
 
-    md.push_str("| Feature | Crate | |\n");
+    md.push_str("| Crate | Feature | |\n");
     md.push_str("|-|-|-|\n");
     json.push_str("[\n");
     html.push_str("<table id='rmx-crate-table'>\n");
     html.push_str("<thead>\n");
-    html.push_str("<th>Feature</th>\n");
     html.push_str("<th>Crate</th>\n");
+    html.push_str("<th>Feature</th>\n");
     html.push_str("<th>Example</th>\n");
     html.push_str("</thead>\n");
 
@@ -290,8 +290,8 @@ fn make_crate_lists(
         let example_html = render_example(krate, link_subs, crates);
 
         md.push_str(&format!(
-            "| {} | `{} = \"{}\"` | [📖]({}) |\n",
-            krate.short_desc, krate.name, krate.version, docrs_link,
+            "| `{} = \"{}\"` | {} | [📖]({}) |\n",
+            krate.name, krate.version, krate.short_desc, docrs_link,
         ));
 
         if i + 1 < crates.len() {
@@ -304,11 +304,11 @@ fn make_crate_lists(
             "<tr class='{}'>\n",
             if i % 2 == 0 { "row-even" } else { "row-odd" }
         ));
-        html.push_str(&format!("<td>{}</td>\n", krate.short_desc,));
         html.push_str(&format!(
             "<td><a href='{}'><code>{} = \"{}\"</code></a></td>\n",
             docrs_link, krate.name, krate.version,
         ));
+        html.push_str(&format!("<td>{}</td>\n", krate.short_desc,));
         if example_html.is_some() {
             html.push_str(&format!(
                 "<td><button id='button-{}' class='example-button' data-name='{}' type='button'>+</button></td>\n",

@@ -3,25 +3,30 @@
 }
 
 :root {
-    --rmx-font-text: "Oswald";
-    --rmx-font-code: monospace;
-    --rmx-font-em: "Saira Stencil One";
+    --rmx-font-text: "Computer Modern Serif";
+    --rmx-font-code: "Computer Modern Typewriter", monospace;
+    --rmx-font-em: normal bold 100% "Computer Modern Serif";
 
+    font-size: 16pt;
     font-family: var(--rmx-font-text);
-    font-weight: 300;
-    letter-spacing: 0.1em;
 
     color: var(--rmx-color-fg);
     background-color: var(--rmx-color-bg);
 }
 
-em {
-    font-family: var(--rmx-font-em);
-    font-weight: 600;
+code {
+    font-family: var(--rmx-font-code);
 }
 
-html {
-    /*background: linear-gradient(90deg, var(--rmx-color-border1) 0%, var(--rmx-color-border2) 5%, var(--rmx-color-bg) 20%, var(--rmx-color-bg) 80%, var(--rmx-color-border2) 95%, var(--rmx-color-border1) 100%);*/
+pre {
+    font-family: var(--rmx-font-code);
+    padding: 20px;
+    border: 1px dashed var(--rmx-color-border);
+    background-color: var(--rmx-color-bg-alt);
+}
+
+em {
+    font: var(--rmx-font-em);
 }
 
 a {
@@ -55,11 +60,11 @@ main > * {
 
 h1 {
     letter-spacing: 0.5em;
-    font-family: var(--rmx-font-em);
+    font: var(--rmx-font-em);
 }
 
 h2 {
-    font-family: var(--rmx-font-em);
+    font: var(--rmx-font-em);
 }
 
 h1 > span {
@@ -71,35 +76,13 @@ header {
 }
 
 aside, #warning {
-    border-radius: 4px;
-    background-color: var(--rmx-color-accents);
-    text-align: center;
+    font-style: italic;
+    text-align: right;
 }
 
 #menu {
     padding: 2em;
-}
-
-#menu {
-    background-image: linear-gradient(0deg, var(--rmx-color-shine) 50%, transparent 50%);
-    background-size: 1px 2px;
-    background-color: var(--rmx-color-unshine);
-}
-
-#menu,
-section.crates
-{
-    border: 4px solid var(--rmx-color-accents);
-    border-radius: 4px;
-    text-shadow: -0.5px -0.5px 1px var(--rmx-color-emboss);
-    box-shadow: 0px 0px 4px var(--rmx-color-emboss);
-}
-
-section.divider {
-    border: 2px solid var(--rmx-color-accents);
-    border-radius: 4px;
-    text-shadow: -0.5px -0.5px 1px var(--rmx-color-emboss);
-    box-shadow: 0px 0px 8px var(--rmx-color-emboss);
+    background-color: var(--rmx-color-bg-alt);
 }
 
 #menu {
@@ -107,26 +90,13 @@ section.divider {
     gap: 2em;
     justify-content: center;
     text-transform: uppercase;
-    font-size: 120%;
-    font-weight: 400;
     align-items: center;
-    color: var(--rmx-color-accents);
-    text-align: center;
 }
 
-h1, h2, p {
-    text-shadow: -0.5px -0.5px 1px var(--rmx-color-emboss);
-}
-
-section.text {
-}
-
-aside {
-    font-style: italic;
-}
-
-.divider {
-    padding: 0px;
+#menu,
+section.crates
+{
+    border: 1px dashed var(--rmx-color-border);
 }
 
 footer {
@@ -146,68 +116,75 @@ table#rmx-crate-table td
 }
 
 table#rmx-crate-table th {
-    border-bottom: 2px solid var(--rmx-color-accents);
+    border-bottom: 1px dashed var(--rmx-color-border);
 }
 
 table#rmx-crate-table thead tr:nth-child(odd),
-/*table#rmx-crate-table tr:nth-child(even)*/
 table#rmx-crate-table tr.row-odd
 {
-    background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 10%);
-    background-color: var(--rmx-color-bg-deep);
+    background-color: var(--rmx-color-bg-odd);
 }
 
-/*table#rmx-crate-table tr:nth-child(odd)*/
 table#rmx-crate-table tr.row-even
 {
-    background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 10%);
-    background-color: var(--rmx-color-bg-deep);
-    background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-fg-deep) 10%);
+    background-color: var(--rmx-color-bg-even);
 }
 
 table#rmx-crate-table tr:not(:last-child) {
-    border-bottom: 1px dashed var(--rmx-color-accents);
-    border-bottom: 1px dashed color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-fg-deep) 20%);
+    border-bottom: 1px dashed var(--rmx-color-border);
 }
 
 table#rmx-crate-table tr.example-row:not(:last-child) {
     border-bottom: none;
 }
-table button {
-    background: none;
-    color: var(--rmx-color-fg);
-    border: 1px solid var(--rmx-color-fg);
+
+table#rmx-crate-table tr.example-row:not(:last-child):is(.example-row-visible) {
+    border-bottom: 1px dashed var(--rmx-color-border);
 }
 
-.example-row {
-    /*display: none;*/
+table#rmx-crate-table tr:not(:last-child):has(+ tr.example-row-visible) {
+    border-bottom: none;
+}
+
+table#rmx-crate-table tr:not(:last-child):has(+ tr.example-row-visible) > td:is(:nth-child(2)) {
+    color: rgba(0, 0, 0, 0);
+}
+
+table#rmx-crate-table tr > td:is(:nth-child(3)) {
+    vertical-align: middle;
+}
+
+table#rmx-crate-table tr > td button {
+    background-color: inherit;
+    border: 1px solid var(--rmx-color-links);
+    font-family: var(--rmx-font-code);
+    -font-size: 150%;
+    cursor: pointer;
+    color: var(--rmx-color-links);
+}
+
+table#rmx-crate-table tr > td button:hover {
+    border: 1px solid var(--rmx-color-accents);
+    color: var(--rmx-color-accents);
+}
+
+table#rmx-crate-table tr > td:is(:nth-child(3)) {
+    text-align: center;
+}
+
+table#rmx-crate-table tr.example-row {
     visibility: collapse;
 }
 
-.example-row-visible {
-    /*display: table-row;*/
+table#rmx-crate-table tr.example-row-visible {
     visibility: visible;
 }
 
-button {
-    font-family: var(--rmx-font-code);
+table#rmx-crate-table tr.example-row-visible > td {
+    padding-top: 0;
 }
 
-code {
-    font-family: var(--rmx-font-code);
+table#rmx-crate-table tr.example-row-visible > td > p:is(:first-child) {
+    margin-top: 0;
 }
 
-pre {
-    font-family: var(--rmx-font-code);
-    padding: 20px;
-    border: 1px solid var(--rmx-color-border1);
-    border-radius: 4px;
-}
-
-tr.row-odd pre {
-    background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-fg-deep) 10%);
-}
-
-tr.row-even pre {
-    background-color: var(--rmx-color-bg-deep);
-}

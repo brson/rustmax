@@ -1,33 +1,20 @@
-:root[data-theme="light"],
+:root[data-theme="//light"],
+:root[data-theme="dark"],
 :root:not([data-theme]) {
     --rmx-color-fg: #444;      /* black */
-    --rmx-color-bg: #f8f8f8;   /* white */
-    --rmx-color-fg-deep: black;
-    --rmx-color-bg-deep: white;
-    --rmx-color-links: #08f;   /* blue */
+
+    --rmx-color-bg: #fafafa;   /* white */
+    --rmx-color-bg-alt: #f4f4f4;
+
+    --rmx-color-bg-odd: var(--rmx-color-bg-alt);
+    --rmx-color-bg-even: var(--rmx-color-bg);
+
+    --rmx-color-links: #07f;   /* blue */
     --rmx-color-accents: #f30; /* red */
 
-    --rmx-color-border1: #f8d8f8;
-    --rmx-color-border2: #f8e8e8;
-
-    --rmx-color-emboss: #ecc;
-    --rmx-color-shine: #ffffff;
-    --rmx-color-unshine: #faf4fa
+    --rmx-color-border: #888;
 }
 
-:root[data-theme="dark"] {
-    --rmx-color-fg: #f8f8f8;
-    --rmx-color-bg: #111;
-    --rmx-color-fg-deep: white;
-    --rmx-color-bg-deep: black;
-    --rmx-color-links: #2af;
-    --rmx-color-accents: #f30;
-
-    --rmx-color-border1: #382828;
-    --rmx-color-border2: #281818;
-
-    --rmx-color-emboss: #866;
-    --rmx-color-shine: #000;
-    --rmx-color-unshine: #1a141a
+:root[data-theme="//dark"] {
 }
 
