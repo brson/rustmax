@@ -1,7 +1,6 @@
 @import url("rustmax-themes.css");
 
 :root {
-    font-size: 16pt;
     font: var(--rmx-font-text);
     color: var(--rmx-color-fg);
 }

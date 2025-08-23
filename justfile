@@ -73,6 +73,7 @@ doc-crates: prebuild
     cp www/mixins/mixin-rustdoc-script.js target/doc/
     cp www/rustmax-themes.css target/doc/
     cp work/crates.json target/doc/
+    cp -r www/fonts target/doc/
 
 doc-book:
     rm -rf book/book

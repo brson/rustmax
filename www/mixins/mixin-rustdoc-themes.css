@@ -1,18 +1,28 @@
 
 @import url("rustmax-themes.css");
 
+:root,
 body,
 h1, h2, h3, h4,
 a, a.src {
-    font-family: "Oswald";
+    font: var(--rmx-font-text);
 }
 
 html {
     background-color: var(--rmx-color-bg);
 }
 
+.docblock code,
+.item-table dd code,
+pre {
+    background-color: var(--rmx-color-bg-alt);
+}
+
+.item-table dt > a {
+    font: var(--rmx-font-code);
+}
+
 body {
-    /*background: linear-gradient(90deg, var(--rmx-color-border1) 0%, var(--rmx-color-border2) 5%, var(--rmx-color-bg) 20%, var(--rmx-color-bg) 80%, var(--rmx-color-border2) 95%, var(--rmx-color-border1) 100%);*/
 }
 
 nav.mobile-topbar,
@@ -22,9 +32,15 @@ nav.mobile-topbar,
 
 @media not (max-width: 700px) {
     .sidebar {
-        background: unset;
+        background: var(--rmx-color-bg);
     }
 }
+
+ul {
+    margin-top: 0.5em;
+}
+
+
 
 
 :root[data-theme="light"], :root[data-theme="dark"], :root:not([data-theme]) {

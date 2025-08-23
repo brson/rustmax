@@ -4,23 +4,26 @@
     --rmx-font-em: normal bold 16pt "Computer Modern Serif";
 }
 
-:root[data-theme="//light"],
-:root[data-theme="dark"],
+:root[data-theme="light"],
 :root:not([data-theme]) {
     --rmx-color-fg: #444;      /* black */
-
     --rmx-color-bg: #fafafa;   /* white */
     --rmx-color-bg-alt: #f4f4f4;
-
     --rmx-color-bg-odd: var(--rmx-color-bg-alt);
     --rmx-color-bg-even: var(--rmx-color-bg);
-
     --rmx-color-links: #07f;   /* blue */
     --rmx-color-accents: #f30; /* red */
-
     --rmx-color-border: #888;
 }
 
-:root[data-theme="//dark"] {
+:root[data-theme="dark"] {
+    --rmx-color-fg: #fff;      /* white */
+    --rmx-color-bg: #111;   /* black */
+    --rmx-color-bg-alt: #222;
+    --rmx-color-bg-odd: var(--rmx-color-bg-alt);
+    --rmx-color-bg-even: var(--rmx-color-bg);
+    --rmx-color-links: #5af;   /* blue */
+    --rmx-color-accents: #f30; /* red */
+    --rmx-color-border: #888;
 }
 
