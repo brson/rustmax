@@ -137,10 +137,11 @@ table#rmx-crate-table tr > td:is(:nth-child(3)) {
 }
 
 table#rmx-crate-table tr > td button {
+    width: 1.5em;
+    height: 1.5em;
     background-color: inherit;
     border: 1px solid var(--rmx-color-links);
     font: var(--rmx-font-code);
-    -font-size: 150%;
     cursor: pointer;
     color: var(--rmx-color-links);
 }
