@@ -95,6 +95,7 @@ but that are not yet part of Rust Max.
 - [`cargo-duplicates`](https://crates.io/crates/cargo-duplicates)
 - [`cargo-hack`](https://crates.io/crates/cargo-hack)
 - [`cargo-outdated`](https://crates.io/crates/cargo-outdated)
+- [`flamegraph`](https://crates.io/crates/flamegraph)
 - [`hyperfine`](https://github.com/sharkdp/hyperfine)
 - [`rust-analyzer`](https://rust-analyzer.github.io/)
 - [`wasmtime-cli`](https://crates.io/crates/wasmtime-cli)
