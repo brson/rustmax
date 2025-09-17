@@ -247,6 +247,7 @@ rmx-feature-default = [
 rmx-feature-more = [
   "hyper?/full",
   "rand?/thread_rng",
+  "rand?/small_rng",
   "reqwest?/blocking",
   "reqwest?/json",
   "serde?/rc",
