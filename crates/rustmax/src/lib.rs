@@ -298,6 +298,29 @@ pub mod extras {
             }
         }
     }
+
+    #[cfg(feature = "rmx-rustlib-std")]
+    pub fn copy_dir_recursive(
+        src: &crate::std::path::Path,
+        dst: &crate::std::path::Path,
+    ) -> crate::std::io::Result<()> {
+        crate::std::fs::create_dir_all(dst)?;
+
+        for entry in crate::std::fs::read_dir(src)? {
+            let entry = entry?;
+            let file_type = entry.file_type()?;
+            let src_path = entry.path();
+            let dst_path = dst.join(entry.file_name());
+
+            if file_type.is_dir() {
+                copy_dir_recursive(&src_path, &dst_path)?;
+            } else {
+                crate::std::fs::copy(&src_path, &dst_path)?;
+            }
+        }
+
+        Ok(())
+    }
 }
 
 /* ---------- */
