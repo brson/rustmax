@@ -96,12 +96,25 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ## Random numbers
 
-### … generate a strong random number?
+### … generate a strong random anything?
+
+Use `rand::random`.
 
 ### … generate a strong random number from a seed?
 
+Use `rand::rngs::StdRng`.
+
 ### … generate a fast random number from a seed?
 
+Use `rand::rngs::SmallRng`.
+
+### … generate a strong random number from a seed with stable algorithm?
+
+Use `rand_chacha::ChaCha12Rng`.
+
+### … generate a fast random number from a seed with stable algorithm?
+
+Use `rand_pcg::Pcg64`.
 
 
 
