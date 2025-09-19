@@ -98,23 +98,58 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … generate a strong random anything?
 
-Use `rand::random`.
+Use [`rand::random`] for convenience when you need cryptographically secure randomness without managing state.
+
+```rust
+let x: u32 = rand::random();
+let y: f64 = rand::random(); // 0.0..1.0
+```
 
 ### … generate a strong random number from a seed?
 
-Use `rand::rngs::StdRng`.
+Use [`rand::rngs::StdRng`] when you need reproducible cryptographically secure randomness. This uses the platform's secure RNG algorithm.
+
+```rust
+use rand::{Rng, SeedableRng};
+let mut rng = rand::rngs::StdRng::seed_from_u64(42);
+let x: u32 = rng.gen();
+```
 
 ### … generate a fast random number from a seed?
 
-Use `rand::rngs::SmallRng`.
+Use [`rand::rngs::SmallRng`] for performance-critical code where cryptographic security isn't required. This automatically selects a fast algorithm.
+
+```rust
+use rand::{Rng, SeedableRng};
+let mut rng = rand::rngs::SmallRng::seed_from_u64(42);
+let x: u32 = rng.gen();
+```
 
 ### … generate a strong random number from a seed with stable algorithm?
 
-Use `rand_chacha::ChaCha12Rng`.
+Use [`rand_chacha::ChaCha12Rng`] when you need reproducible results across Rust versions and platforms with cryptographic security.
+
+```rust
+use rand::{Rng, SeedableRng};
+let mut rng = rand_chacha::ChaCha12Rng::seed_from_u64(42);
+let x: u32 = rng.gen();
+```
 
 ### … generate a fast random number from a seed with stable algorithm?
 
-Use `rand_pcg::Pcg64`.
+Use [`rand_pcg::Pcg64`] for deterministic, fast random numbers that remain consistent across platforms and Rust versions.
+
+```rust
+use rand::{Rng, SeedableRng};
+let mut rng = rand_pcg::Pcg64::seed_from_u64(42);
+let x: u32 = rng.gen();
+```
+
+[`rand::random`]: https://docs.rs/rand/latest/rand/fn.random.html
+[`rand::rngs::StdRng`]: https://docs.rs/rand/latest/rand/rngs/struct.StdRng.html
+[`rand::rngs::SmallRng`]: https://docs.rs/rand/latest/rand/rngs/struct.SmallRng.html
+[`rand_chacha::ChaCha12Rng`]: https://docs.rs/rand_chacha/latest/rand_chacha/struct.ChaCha12Rng.html
+[`rand_pcg::Pcg64`]: https://docs.rs/rand_pcg/latest/rand_pcg/type.Pcg64.html
 
 
 
