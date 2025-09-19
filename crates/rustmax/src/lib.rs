@@ -62,6 +62,12 @@ pub mod prelude {
     #[cfg(feature = "itertools")]
     pub use ::itertools::Itertools as _;
 
+    #[cfg(feature = "rand")]
+    pub use ::rand::RngCore as _;
+    pub use ::rand::Rng as _;
+    pub use ::rand::SeedableRng as _;
+    pub use ::rand::Fill as _;
+
     /* extras */
 
     pub use crate::extras::default;
