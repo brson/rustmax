@@ -1,2 +1,5 @@
-fn main() {
+use rmx::prelude::*;
+
+fn main() -> AnyResult<()> {
+    todo!()
 }
