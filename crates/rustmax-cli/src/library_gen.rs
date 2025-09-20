@@ -14,6 +14,8 @@ struct Book {
     name: String,
     repo: String,
     #[serde(default)]
+    upstream_url: Option<String>,
+    #[serde(default)]
     book_path: Option<String>,
     #[serde(default)]
     needs_nightly: bool,
@@ -58,36 +60,41 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     // Core language books
     if let Some(book) = book_map.get("trpl") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- **[{}](../library/{}/)** ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- **[{}](../library/{}/)** ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("rust-by-example") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- **[{}](../library/{}/)** ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- **[{}](../library/{}/)** ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("reference") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- **[{}](../library/{}/)** ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- **[{}](../library/{}/)** ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
         content.push_str("  - 🔖 [Conditional compilation](../library/reference/conditional-compilation.html).\n");
         content.push_str("       Including which cfgs are set by rustc.\n");
         content.push_str("  - 🔖 [Behavior considered undefined](../library/reference/behavior-considered-undefined.html)\n");
     }
     if let Some(book) = book_map.get("nomicon") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- **[{}](../library/{}/)** ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- **[{}](../library/{}/)** ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("edition-guide") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -95,15 +102,17 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("- [The Little Book of Rust Macros](https://veykril.github.io/tlborm/)\n");
 
     if let Some(book) = book_map.get("api-guidelines") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("unsafe-code-guidelines") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -132,9 +141,10 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("<!-- order here is same is in tools.md -->\n");
 
     if let Some(book) = book_map.get("cargo-book") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
         content.push_str("  - 🔖 [The manifest format](../library/cargo-book/reference/manifest.html)\n");
         content.push_str("  - 🔖 [Environment variables](../library/cargo-book/reference/environment-variables.html)\n");
@@ -143,9 +153,10 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
         content.push_str("    Cargo has many interesting configuration options.\n");
     }
     if let Some(book) = book_map.get("rustc-book") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
         content.push_str("  - 🔖 [The lint system and built-in lints](../library/rustc-book/lints/index.html)\n");
         content.push_str("  - 🔖 [Rust platform support tiers](../library/rustc-book/platform-support.html)\n");
@@ -155,9 +166,10 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("- [The `rustup` Book](https://rust-lang.github.io/rustup/index.html)\n");
 
     if let Some(book) = book_map.get("rustdoc-book") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -166,15 +178,17 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("- [The `just` Programmer's Manual](https://just.systems/man/en/)\n");
 
     if let Some(book) = book_map.get("mdbook") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("bindgen") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -184,9 +198,10 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("\n## The Rust crate ecosystem\n\n");
 
     if let Some(book) = book_map.get("rand-book") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -194,9 +209,10 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("- [The `serde` Book](https://serde.rs/)\n");
 
     if let Some(book) = book_map.get("rust-cookbook") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -204,9 +220,10 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("\n## Domain-specific Rust\n\n");
 
     if let Some(book) = book_map.get("embedded-book") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
@@ -215,28 +232,32 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("- [Rust Project Goals](https://rust-lang.github.io/rust-project-goals/)\n");
 
     if let Some(book) = book_map.get("rustc-dev-guide") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("std-dev-guide") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
     if let Some(book) = book_map.get("rust-forge") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
         content.push_str("  - 🔖 [Alternative Rust Installation Methods](../library/rust-forge/infra/other-installation-methods.html)\n");
     }
     if let Some(book) = book_map.get("rfcs") {
+        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
-            "- [{}](../library/{}/) ([source]({}))\n",
-            book.name, book.slug, book.repo
+            "- [{}](../library/{}/) ([upstream]({}))\n",
+            book.name, book.slug, upstream_link
         ));
     }
 
