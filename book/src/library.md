@@ -1,3 +1,5 @@
+<!-- GENERATED FILE DO NOT EDIT -->
+
 # The Rust Max Library
 
 The Rust language and its ecosystem is documented in "books"

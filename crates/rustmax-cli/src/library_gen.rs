@@ -37,6 +37,8 @@ fn load_books(root: &std::path::Path) -> AnyResult<Books> {
 fn generate_markdown(books: &Books) -> AnyResult<String> {
     let mut content = String::new();
 
+    content.push_str("<!-- GENERATED FILE DO NOT EDIT -->\n\n");
+
     // Header
     content.push_str("# The Rust Max Library\n\n");
     content.push_str("The Rust language and its ecosystem is documented in \"books\"\n");
