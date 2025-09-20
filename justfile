@@ -91,6 +91,10 @@ doc-library: prebuild
     else \
         cargo run -- build-library --generate-library-page; \
     fi
+    # Copy mixin files to each library subdirectory
+    @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-style.css {} \;
+    @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-script.js {} \;
+    @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/rustmax-themes.css {} \;
 
 doc-build: doc-crates doc-library doc-book
     rm -rf book/yapp~
