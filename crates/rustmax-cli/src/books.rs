@@ -71,6 +71,33 @@ pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> 
     build_books(&book, no_fetch)
 }
 
+pub fn refresh_library(root: &Path) -> AnyResult<()> {
+    let books = load(root)?.books;
+    println!("🔄 Refreshing all library repositories...");
+    for book in &books {
+        if let Err(e) = get_repo(book) {
+            eprintln!("Failed to refresh {}: {}", book.slug, e);
+        }
+    }
+    println!("✅ Library refresh complete");
+    Ok(())
+}
+
+pub fn refresh_one_book(root: &Path, slug: &str) -> AnyResult<()> {
+    let book: Vec<Book> = load(root)?
+        .books
+        .into_iter()
+        .filter(|b| b.slug == slug)
+        .collect();
+    if book.is_empty() {
+        return Err(anyhow!("unknown book '{slug}'"));
+    }
+    println!("🔄 Refreshing {} repository...", slug);
+    get_repo(&book[0])?;
+    println!("✅ {} refresh complete", slug);
+    Ok(())
+}
+
 pub fn install_missing_plugins(root: &Path, dry_run: bool) -> AnyResult<()> {
     println!("🔍 Scanning library for missing dependencies...");
 

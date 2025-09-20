@@ -39,6 +39,7 @@ enum CliCmd {
 
     ListLibrary(CliCmdListLibrary),
     BuildLibrary(CliCmdBuildLibrary),
+    RefreshLibrary(CliCmdRefreshLibrary),
     InstallLibraryDeps(CliCmdInstallLibraryDeps),
 
     NewProject,
@@ -91,12 +92,17 @@ struct CliCmdListLibrary {}
 #[derive(clap::Args)]
 struct CliCmdBuildLibrary {
     book: Option<String>,
-    /// Skip git clone/fetch operations (useful when repositories are already cloned)
+    /// Force git clone/fetch operations (by default skipped for dev speed)
     #[arg(long)]
-    no_fetch: bool,
+    fetch: bool,
     /// Generate library.md with local book links (off by default during development)
     #[arg(long)]
     generate_library_page: bool,
+}
+
+#[derive(clap::Args)]
+struct CliCmdRefreshLibrary {
+    book: Option<String>,
 }
 
 #[derive(clap::Args)]
@@ -135,6 +141,7 @@ impl CliOpts {
 
             CliCmd::ListLibrary(cmd) => cmd.run(),
             CliCmd::BuildLibrary(cmd) => cmd.run(),
+            CliCmd::RefreshLibrary(cmd) => cmd.run(),
             CliCmd::InstallLibraryDeps(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
@@ -243,9 +250,20 @@ impl CliCmdListLibrary {
 impl CliCmdBuildLibrary {
     fn run(&self) -> AnyResult<()> {
         let root = &Path::new(".");
+        let no_fetch = !self.fetch; // Invert the logic: fetch=false means no_fetch=true
         match self.book {
-            None => books::build_library(root, self.no_fetch, self.generate_library_page),
-            Some(ref book) => books::build_one_book(root, book, self.no_fetch),
+            None => books::build_library(root, no_fetch, self.generate_library_page),
+            Some(ref book) => books::build_one_book(root, book, no_fetch),
+        }
+    }
+}
+
+impl CliCmdRefreshLibrary {
+    fn run(&self) -> AnyResult<()> {
+        let root = &Path::new(".");
+        match self.book {
+            None => books::refresh_library(root),
+            Some(ref book) => books::refresh_one_book(root, book),
         }
     }
 }
