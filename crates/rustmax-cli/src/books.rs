@@ -334,6 +334,19 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
             eprintln!("Failed to insert style hook for {}: {}", book.slug, e);
         }
 
+        // Book-specific preparation
+        if let Err(e) = prepare_book(book) {
+            eprintln!("Failed to prepare {}: {}", book.slug, e);
+            results.push(BookBuildResult {
+                book: book.clone(),
+                success: false,
+                missing_plugins: Vec::new(),
+                local_tools: Vec::new(),
+                error_message: Some(format!("Preparation failed: {}", e)),
+            });
+            continue;
+        }
+
         // Build book - this is where we detect missing plugins
         let build_result = build_book_with_error_detection(book);
         match build_result {
@@ -389,7 +402,12 @@ fn book_src_dir(book: &Book) -> String {
 }
 
 fn book_out_dir(book: &Book) -> String {
-    format!("{BOOK_GIT_DIR}/{}/book", book.slug)
+    // Special case for bindgen: book source is in book/ subdir, so output goes to book-html/
+    if book.slug == "bindgen" {
+        format!("{BOOK_GIT_DIR}/{}/book-html", book.slug)
+    } else {
+        format!("{BOOK_GIT_DIR}/{}/book", book.slug)
+    }
 }
 
 fn get_repo(book: &Book) -> AnyResult<()> {
@@ -682,6 +700,39 @@ fn print_build_summary(results: &[BookBuildResult]) {
             println!("  - {}", result.book.slug);
         }
     }
+}
+
+fn prepare_book(book: &Book) -> AnyResult<()> {
+    match book.slug.as_str() {
+        "rfcs" => prepare_rfcs_book(book),
+        "bindgen" => prepare_bindgen_book(book),
+        _ => Ok(())
+    }
+}
+
+fn prepare_rfcs_book(book: &Book) -> AnyResult<()> {
+    let ref src_dir = book_src_dir(book);
+    println!("  Preparing RFCs book - generating SUMMARY.md");
+
+    let sh = Shell::new()?;
+    sh.change_dir(src_dir);
+
+    cmd!(sh, "python3 generate-book.py").run()?;
+    println!("  ✅ RFCs book preparation complete");
+    Ok(())
+}
+
+fn prepare_bindgen_book(book: &Book) -> AnyResult<()> {
+    let ref src_dir = book_src_dir(book);
+    println!("  Preparing bindgen book - restoring book directory");
+
+    let sh = Shell::new()?;
+    sh.change_dir(src_dir);
+
+    // Try git checkout instead of git restore for older git compatibility
+    cmd!(sh, "git checkout HEAD -- book/").run()?;
+    println!("  ✅ Bindgen book preparation complete");
+    Ok(())
 }
 
 fn parse_book_toml_for_local_tools(book_toml_path: &str) -> Vec<LocalTool> {
