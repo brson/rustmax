@@ -3,6 +3,7 @@ use rmx::prelude::*;
 use rmx::serde::{Deserialize, Serialize};
 use rmx::xshell;
 use rmx::xshell::{Shell, cmd};
+use std::path::Path;
 use std::fs;
 
 #[derive(Serialize, Deserialize)]
@@ -21,24 +22,25 @@ struct Book {
     needs_nightly: bool,
 }
 
-pub fn list_library() -> AnyResult<()> {
-    for book in load()?.books {
+pub fn list_library(root: &Path) -> AnyResult<()> {
+    for book in load(root)?.books {
         println!("{}", book.slug);
     }
 
     Ok(())
 }
 
-pub fn build_library() -> AnyResult<()> {
-    let books = load()?.books;
-    build_books(&books)?;
+pub fn build_library(root: &Path) -> AnyResult<()> {
+    let books = load(root)?.books;
+    // Continue even if some books fail to build
+    let _ = build_books(&books);
     // Generate library.md with local links
     crate::library_gen::generate_library_page()?;
     Ok(())
 }
 
-pub fn build_one_book(slug: &str) -> AnyResult<()> {
-    let book: Vec<Book> = load()?
+pub fn build_one_book(root: &Path, slug: &str) -> AnyResult<()> {
+    let book: Vec<Book> = load(root)?
         .books
         .into_iter()
         .filter(|b| b.slug == slug)
@@ -208,8 +210,12 @@ fn mod_book_style(book: &Book) -> AnyResult<()> {
     Ok(())
 }
 
-fn load() -> AnyResult<Books> {
-    let path = "src/books.json5";
-    let json = std::fs::read_to_string(path)?;
-    Ok(json5::from_str(&json)?)
+fn load(root: &Path) -> AnyResult<Books> {
+    let path = root.join("src/books.json5");
+
+    if let Ok(json) = std::fs::read_to_string(path) {
+        return Ok(json5::from_str(&json)?);
+    }
+
+    Err(anyhow!("Could not find books.json5"))
 }

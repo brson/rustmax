@@ -8,6 +8,7 @@ mod tools;
 
 use rmx::prelude::*;
 use rmx::{clap, serde};
+use std::path::Path;
 
 use tools::Tool;
 
@@ -219,15 +220,17 @@ impl CliCmdToolStatus {
 
 impl CliCmdListLibrary {
     fn run(&self) -> AnyResult<()> {
-        books::list_library()
+        let root = &Path::new(".");
+        books::list_library(root)
     }
 }
 
 impl CliCmdBuildLibrary {
     fn run(&self) -> AnyResult<()> {
+        let root = &Path::new(".");
         match self.book {
-            None => books::build_library(),
-            Some(ref book) => books::build_one_book(book),
+            None => books::build_library(root),
+            Some(ref book) => books::build_one_book(root, book),
         }
     }
 }

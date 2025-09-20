@@ -28,9 +28,16 @@ pub fn generate_library_page() -> AnyResult<()> {
 }
 
 fn load_books() -> AnyResult<Books> {
-    let path = "src/books.json5";
-    let json = fs::read_to_string(path)?;
-    Ok(rmx::json5::from_str(&json)?)
+    // Try different paths since we might be run from different directories
+    let paths = ["src/books.json5", "../src/books.json5", "../../src/books.json5"];
+
+    for path in &paths {
+        if let Ok(json) = fs::read_to_string(path) {
+            return Ok(rmx::json5::from_str(&json)?);
+        }
+    }
+
+    Err(anyhow!("Could not find books.json5 in any expected location. Tried: {:?}", paths))
 }
 
 fn generate_markdown(books: &Books) -> AnyResult<String> {
