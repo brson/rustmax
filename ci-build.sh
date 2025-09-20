@@ -11,4 +11,4 @@ source ~/.cargo/env
 cargo install just@1.36.0
 
 just install-tools
-just build
+RUSTMAX_CI=1 just build

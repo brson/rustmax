@@ -39,8 +39,6 @@ lint:
 
 build: doc-build
 
-
-
 maint-outdated:
     cargo outdated
 
@@ -83,10 +81,18 @@ doc-book:
     cp www/mixins/mixin-mdbook-script.js book/book/
     cp www/rustmax-themes.css book/book/
 
-doc-library:
-    cargo run -- build-library --generate-library-page
+doc-install-library-deps:
+    cargo run -- install-library-deps
 
-doc-build: doc-crates doc-book doc-library
+doc-library: prebuild
+    @if [ "${RUSTMAX_CI:-}" = "true" ]; then \
+        cargo run -- refresh-library; \
+        cargo run -- install-library-deps; \
+    else \
+        cargo run -- build-library --generate-library-page; \
+    fi
+
+doc-build: doc-crates doc-library doc-book
     rm -rf book/yapp~
     #rm -rf out
     mkdir -p out/book
