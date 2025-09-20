@@ -722,6 +722,7 @@ fn prepare_book(book: &Book) -> AnyResult<()> {
     match book.slug.as_str() {
         "rfcs" => prepare_rfcs_book(book),
         "bindgen" => prepare_bindgen_book(book),
+        "mdbook" => prepare_mdbook_book(book),
         _ => Ok(())
     }
 }
@@ -748,6 +749,47 @@ fn prepare_bindgen_book(book: &Book) -> AnyResult<()> {
     // Try git checkout instead of git restore for older git compatibility
     cmd!(sh, "git checkout HEAD -- book/").run()?;
     println!("  ✅ Bindgen book preparation complete");
+    Ok(())
+}
+
+fn prepare_mdbook_book(book: &Book) -> AnyResult<()> {
+    let ref src_dir = book_src_dir(book);
+    let book_subdir = book.book_path.as_deref().unwrap_or("");
+    let ref build_dir = if book_subdir.is_empty() {
+        src_dir.to_string()
+    } else {
+        format!("{}/{}", src_dir, book_subdir)
+    };
+
+    println!("  Preparing mdbook book - working around guide-helper compatibility issue");
+
+    let sh = Shell::new()?;
+    sh.change_dir(build_dir);
+
+    // The guide-helper has version compatibility issues with the installed mdbook
+    // Temporarily disable it by backing up and modifying book.toml
+    let book_toml_path = format!("{}/book.toml", build_dir);
+    let backup_path = format!("{}/book.toml.backup", build_dir);
+
+    // Create backup
+    cmd!(sh, "cp book.toml book.toml.backup").run()?;
+
+    // Read the current book.toml
+    let content = fs::read_to_string(&book_toml_path)?;
+
+    // Comment out the guide-helper preprocessor section
+    let modified_content = content.replace(
+        "[preprocessor.guide-helper]",
+        "# [preprocessor.guide-helper] # Temporarily disabled due to version compatibility"
+    ).replace(
+        "command = \"cargo run --quiet --manifest-path guide-helper/Cargo.toml\"",
+        "# command = \"cargo run --quiet --manifest-path guide-helper/Cargo.toml\""
+    );
+
+    // Write the modified content
+    fs::write(&book_toml_path, modified_content)?;
+
+    println!("  ✅ mdbook book preparation complete - guide-helper temporarily disabled");
     Ok(())
 }
 
