@@ -57,34 +57,34 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     // Core language books
     if let Some(book) = book_map.get("trpl") {
         content.push_str(&format!(
-            "- **[{}](/books/{}/)** ([source]({}))\n",
+            "- **[{}](../library/{}/)** ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("rust-by-example") {
         content.push_str(&format!(
-            "- **[{}](/books/{}/)** ([source]({}))\n",
+            "- **[{}](../library/{}/)** ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("reference") {
         content.push_str(&format!(
-            "- **[{}](/books/{}/)** ([source]({}))\n",
+            "- **[{}](../library/{}/)** ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
-        content.push_str("  - 🔖 [Conditional compilation](/books/reference/conditional-compilation.html).\n");
+        content.push_str("  - 🔖 [Conditional compilation](../library/reference/conditional-compilation.html).\n");
         content.push_str("       Including which cfgs are set by rustc.\n");
-        content.push_str("  - 🔖 [Behavior considered undefined](/books/reference/behavior-considered-undefined.html)\n");
+        content.push_str("  - 🔖 [Behavior considered undefined](../library/reference/behavior-considered-undefined.html)\n");
     }
     if let Some(book) = book_map.get("nomicon") {
         content.push_str(&format!(
-            "- **[{}](/books/{}/)** ([source]({}))\n",
+            "- **[{}](../library/{}/)** ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("edition-guide") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -94,13 +94,13 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("api-guidelines") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("unsafe-code-guidelines") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -131,22 +131,22 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("cargo-book") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
-        content.push_str("  - 🔖 [The manifest format](/books/cargo-book/reference/manifest.html)\n");
-        content.push_str("  - 🔖 [Environment variables](/books/cargo-book/reference/environment-variables.html)\n");
+        content.push_str("  - 🔖 [The manifest format](../library/cargo-book/reference/manifest.html)\n");
+        content.push_str("  - 🔖 [Environment variables](../library/cargo-book/reference/environment-variables.html)\n");
         content.push_str("    that affect the Cargo build process.\n");
-        content.push_str("  - 🔖 [Configuration format](/books/cargo-book/reference/config.html).\n");
+        content.push_str("  - 🔖 [Configuration format](../library/cargo-book/reference/config.html).\n");
         content.push_str("    Cargo has many interesting configuration options.\n");
     }
     if let Some(book) = book_map.get("rustc-book") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
-        content.push_str("  - 🔖 [The lint system and built-in lints](/books/rustc-book/lints/index.html)\n");
-        content.push_str("  - 🔖 [Rust platform support tiers](/books/rustc-book/platform-support.html)\n");
+        content.push_str("  - 🔖 [The lint system and built-in lints](../library/rustc-book/lints/index.html)\n");
+        content.push_str("  - 🔖 [Rust platform support tiers](../library/rustc-book/platform-support.html)\n");
     }
 
     // External tool docs
@@ -154,7 +154,7 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("rustdoc-book") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -165,13 +165,13 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("mdbook") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("bindgen") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -183,7 +183,7 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("rand-book") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -193,7 +193,7 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("rust-cookbook") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -203,7 +203,7 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("embedded-book") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
@@ -214,26 +214,26 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     if let Some(book) = book_map.get("rustc-dev-guide") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("std-dev-guide") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }
     if let Some(book) = book_map.get("rust-forge") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
-        content.push_str("  - 🔖 [Alternative Rust Installation Methods](/books/rust-forge/infra/other-installation-methods.html)\n");
+        content.push_str("  - 🔖 [Alternative Rust Installation Methods](../library/rust-forge/infra/other-installation-methods.html)\n");
     }
     if let Some(book) = book_map.get("rfcs") {
         content.push_str(&format!(
-            "- [{}](/books/{}/) ([source]({}))\n",
+            "- [{}](../library/{}/) ([source]({}))\n",
             book.name, book.slug, book.repo
         ));
     }

@@ -97,10 +97,11 @@ doc-build: doc-crates doc-library doc-book
     #rm -rf out
     mkdir -p out/book
     mkdir -p out/api
-    mkdir -p out/books
+    mkdir -p out/library
     cp -r www/* out/
     cp -r book/book/* out/book/
     cp -rlf target/doc/* out/api/
+    cp -r work/library/* out/library/
     cp work/crates.html out/
     cp work/build-info.json out/
 
