@@ -51,12 +51,14 @@ pub fn list_library(root: &Path) -> AnyResult<()> {
 pub fn build_library(root: &Path, no_fetch: bool, generate_library: bool) -> AnyResult<()> {
     let books = load(root)?.books;
     // Continue even if some books fail to build
-    let _ = build_books(&books, no_fetch);
+    let build_results = build_books(&books, no_fetch);
+    // Copy successfully built books to work/library/
+    copy_books_to_library(&books)?;
     // Generate library.md with local links (only if requested)
     if generate_library {
         crate::library_gen::generate_library_page()?;
     }
-    Ok(())
+    build_results
 }
 
 pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> {
@@ -68,7 +70,10 @@ pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> 
     if book.is_empty() {
         return Err(anyhow!("unknown book '{slug}'"));
     }
-    build_books(&book, no_fetch)
+    let build_result = build_books(&book, no_fetch);
+    // Copy the built book to work/library/
+    copy_books_to_library(&book)?;
+    build_result
 }
 
 pub fn refresh_library(root: &Path) -> AnyResult<()> {
@@ -849,6 +854,65 @@ fn parse_book_toml_for_local_tools(book_toml_path: &str) -> Vec<LocalTool> {
     }
 
     local_tools
+}
+
+fn copy_books_to_library(books: &[Book]) -> AnyResult<()> {
+    const LIBRARY_DIR: &str = "work/library";
+
+    println!("📚 Copying built books to library directory...");
+
+    // Create the library directory
+    fs::create_dir_all(LIBRARY_DIR)?;
+
+    let sh = Shell::new()?;
+    let mut copied_count = 0;
+    let mut failed_count = 0;
+
+    for book in books {
+        let book_output_dir = book_out_dir(book);
+        let library_book_dir = format!("{}/{}", LIBRARY_DIR, book.slug);
+
+        // Check if the book was built successfully (has index.html)
+        let index_locations = [
+            format!("{}/index.html", book_output_dir),
+            format!("{}/html/index.html", book_output_dir),
+        ];
+
+        let build_succeeded = index_locations.iter().any(|path| fs::exists(path).unwrap_or(false));
+
+        if build_succeeded {
+            // Determine the actual source directory (might be book/ or book/html/)
+            let actual_source = if fs::exists(format!("{}/html/index.html", book_output_dir)).unwrap_or(false) {
+                format!("{}/html", book_output_dir)
+            } else {
+                book_output_dir.clone()
+            };
+
+            // Remove existing directory if it exists
+            if fs::exists(&library_book_dir).unwrap_or(false) {
+                let _ = fs::remove_dir_all(&library_book_dir);
+            }
+
+            // Copy the book files
+            match cmd!(sh, "cp -r {actual_source} {library_book_dir}").run() {
+                Ok(_) => {
+                    println!("  ✅ Copied {} to library", book.slug);
+                    copied_count += 1;
+                }
+                Err(e) => {
+                    eprintln!("  ❌ Failed to copy {}: {}", book.slug, e);
+                    failed_count += 1;
+                }
+            }
+        } else {
+            println!("  ⏭️  Skipping {} - not built successfully", book.slug);
+        }
+    }
+
+    println!("📚 Library copy complete: {} copied, {} failed, {} skipped",
+             copied_count, failed_count, books.len() - copied_count - failed_count);
+
+    Ok(())
 }
 
 fn load(root: &Path) -> AnyResult<Books> {
