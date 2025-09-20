@@ -85,7 +85,7 @@ doc-install-library-deps:
     cargo run -- install-library-deps
 
 doc-library: prebuild
-    @if [ "${RUSTMAX_CI:-}" = "true" ]; then \
+    @if [ -n "${RUSTMAX_CI:-}" ]; then \
         cargo run -- refresh-library; \
         cargo run -- install-library-deps; \
     else \
