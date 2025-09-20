@@ -86,6 +86,12 @@ footer {
     font-style: italic;
 }
 
+.build-info {
+    font-size: 0.7em;
+    color: var(--rmx-color-fg-dim);
+    margin-top: 0.5em;
+}
+
 table#rmx-crate-table {
     width: 100%;
     border-collapse: collapse;

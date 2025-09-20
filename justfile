@@ -92,6 +92,7 @@ doc-build: doc-crates doc-book
     cp -r book/book/* out/book/
     cp -rlf target/doc/* out/api/
     cp work/crates.html out/
+    cp work/build-info.json out/
 
 publish-dry:
     cargo publish -p rustmax --dry-run

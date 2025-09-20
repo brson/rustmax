@@ -19,6 +19,7 @@ use anyhow::Result as AnyResult;
 use anyhow::anyhow as A;
 use std::collections::BTreeMap;
 use std::path::Path;
+use std::process::Command;
 use std::{env, fs};
 
 const CRATES_META: &str = "src/crates.json5";
@@ -32,6 +33,7 @@ const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
 const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
+const OUT_BUILD_INFO: &str = "work/build-info.json";
 
 const OUT_README: &str = "README.md";
 
@@ -107,14 +109,18 @@ fn main() -> AnyResult<()> {
     let out_crates_md_file = workspace_dir.join(OUT_CRATES_MD);
     let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
     let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
+    let out_build_info_file = workspace_dir.join(OUT_BUILD_INFO);
 
     let (out_crates_md_str, out_crates_json_str, out_crates_html_str) =
         make_crate_lists(&crate_info, &link_subs);
+
+    let build_info_str = make_build_info()?;
 
     fs::create_dir_all(OUT_DIR)?;
     write(out_crates_md_file, &out_crates_md_str)?;
     write(out_crates_json_file, &out_crates_json_str)?;
     write(out_crates_html_file, &out_crates_html_str)?;
+    write(out_build_info_file, &build_info_str)?;
 
     create_readme(&workspace_dir, &out_crates_md_str)?;
 
@@ -459,4 +465,30 @@ fn copy_cli_assets(workspace_dir: &Path, cli_dir: &Path) -> AnyResult<()> {
     fs::copy(&control_cfg_in, control_cfg_out)?;
 
     Ok(())
+}
+
+fn make_build_info() -> AnyResult<String> {
+    let commit_sha = get_git_commit_sha()?;
+    let build_info = serde_json::json!({
+        "commit_sha": commit_sha
+    });
+    Ok(serde_json::to_string_pretty(&build_info)?)
+}
+
+fn get_git_commit_sha() -> AnyResult<String> {
+    let output = Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .context("Failed to execute git rev-parse HEAD")?;
+
+    if !output.status.success() {
+        return Err(A!("git rev-parse HEAD failed: {}", String::from_utf8_lossy(&output.stderr)));
+    }
+
+    let sha = String::from_utf8(output.stdout)
+        .context("git output is not valid UTF-8")?
+        .trim()
+        .to_string();
+
+    Ok(sha)
 }

@@ -13,4 +13,23 @@ window.addEventListener("load", () => {
             }
         });
     }
+
+    // Load build info
+    loadBuildInfo();
 });
+
+async function loadBuildInfo() {
+    try {
+        const response = await fetch('build-info.json');
+        if (response.ok) {
+            const buildInfo = await response.json();
+            const commitShaElement = document.getElementById('commit-sha');
+            if (commitShaElement && buildInfo.commit_sha) {
+                const shortSha = buildInfo.commit_sha.substring(0, 8);
+                commitShaElement.textContent = `Build: ${shortSha}`;
+            }
+        }
+    } catch (error) {
+        console.log('Build info not available:', error);
+    }
+}
