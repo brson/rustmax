@@ -93,6 +93,9 @@ struct CliCmdBuildLibrary {
     /// Skip git clone/fetch operations (useful when repositories are already cloned)
     #[arg(long)]
     no_fetch: bool,
+    /// Generate library.md with local book links (off by default during development)
+    #[arg(long)]
+    generate_library_page: bool,
 }
 
 #[derive(clap::Args)]
@@ -232,7 +235,7 @@ impl CliCmdBuildLibrary {
     fn run(&self) -> AnyResult<()> {
         let root = &Path::new(".");
         match self.book {
-            None => books::build_library(root, self.no_fetch),
+            None => books::build_library(root, self.no_fetch, self.generate_library_page),
             Some(ref book) => books::build_one_book(root, book, self.no_fetch),
         }
     }

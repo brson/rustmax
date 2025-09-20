@@ -84,7 +84,7 @@ doc-book:
     cp www/rustmax-themes.css book/book/
 
 doc-library:
-    cargo run -- build-library
+    cargo run -- build-library --generate-library-page
 
 doc-build: doc-crates doc-book doc-library
     rm -rf book/yapp~

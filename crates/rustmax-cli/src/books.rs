@@ -30,12 +30,14 @@ pub fn list_library(root: &Path) -> AnyResult<()> {
     Ok(())
 }
 
-pub fn build_library(root: &Path, no_fetch: bool) -> AnyResult<()> {
+pub fn build_library(root: &Path, no_fetch: bool, generate_library: bool) -> AnyResult<()> {
     let books = load(root)?.books;
     // Continue even if some books fail to build
     let _ = build_books(&books, no_fetch);
-    // Generate library.md with local links
-    crate::library_gen::generate_library_page()?;
+    // Generate library.md with local links (only if requested)
+    if generate_library {
+        crate::library_gen::generate_library_page()?;
+    }
     Ok(())
 }
 
