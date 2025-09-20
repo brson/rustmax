@@ -1,0 +1,16 @@
+[package]
+name = "rustmax"
+edition = "2024"
+
+[dependencies]
+rmx.path = "../crates/rustmax"
+rmx.version = "0.0.5"
+rmx.package = "rustmax"
+rmx.default-features = false
+rmx.features = [
+  "rmx-profile-max",
+]
+
+[[test]]                     
+name = "rustmax-suite-tests"
+path = "tests/tests.rs" 

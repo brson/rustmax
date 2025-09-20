@@ -20,6 +20,7 @@ default-members = [
 
 exclude = [
   "work/books/",
+  "suite",
 ]
 
 [profile.release]
