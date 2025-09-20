@@ -26,7 +26,7 @@ async function loadBuildInfo() {
             const commitShaElement = document.getElementById('commit-sha');
             if (commitShaElement && buildInfo.commit_sha) {
                 const shortSha = buildInfo.commit_sha.substring(0, 8);
-                commitShaElement.textContent = `Build: ${shortSha}`;
+                commitShaElement.textContent = `${shortSha}`;
             }
         }
     } catch (error) {
