@@ -2672,6 +2672,7 @@ name = "rustmax-cli"
 version = "0.0.5"
 dependencies = [
  "enum-iterator",
+ "regex",
  "rustmax",
  "serde",
 ]

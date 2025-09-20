@@ -5,13 +5,14 @@ use rmx::xshell;
 use rmx::xshell::{Shell, cmd};
 use std::path::Path;
 use std::fs;
+use regex;
 
 #[derive(Serialize, Deserialize)]
 struct Books {
     books: Vec<Book>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 struct Book {
     slug: String,
     name: String,
@@ -20,6 +21,14 @@ struct Book {
     book_path: Option<String>,
     #[serde(default)]
     needs_nightly: bool,
+}
+
+#[derive(Debug, Clone)]
+struct BookBuildResult {
+    book: Book,
+    success: bool,
+    missing_plugins: Vec<String>,
+    error_message: Option<String>,
 }
 
 pub fn list_library(root: &Path) -> AnyResult<()> {
@@ -54,7 +63,7 @@ pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> 
 }
 
 fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
-    let mut failed_books = Vec::new();
+    let mut results: Vec<BookBuildResult> = Vec::new();
 
     // Step 1: Clone/update repos (unless skipped)
     if !no_fetch {
@@ -62,7 +71,12 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
             println!("Processing: {} - {}", book.slug, book.name);
             if let Err(e) = get_repo(book) {
                 eprintln!("Failed to clone/update {}: {}", book.slug, e);
-                failed_books.push(book.clone());
+                results.push(BookBuildResult {
+                    book: book.clone(),
+                    success: false,
+                    missing_plugins: Vec::new(),
+                    error_message: Some(format!("Clone/update failed: {}", e)),
+                });
             }
         }
     } else {
@@ -70,27 +84,56 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
     }
 
     // Step 2: Style hooks, build, and styling
-    let procs = [insert_style_hook, build_book, mod_book_style];
-    for proc in procs {
-        for book in books {
-            if failed_books.iter().any(|b| b.slug == book.slug) {
-                continue; // Skip books that already failed
+    for book in books {
+        if results.iter().any(|r| r.book.slug == book.slug && !r.success) {
+            continue; // Skip books that already failed
+        }
+
+        println!("Processing: {} - {}", book.slug, book.name);
+
+        // Style hook
+        if let Err(e) = insert_style_hook(book) {
+            eprintln!("Failed to insert style hook for {}: {}", book.slug, e);
+        }
+
+        // Build book - this is where we detect missing plugins
+        let build_result = build_book_with_error_detection(book);
+        match build_result {
+            Ok(_) => {
+                // Success - continue with styling
+                if let Err(e) = mod_book_style(book) {
+                    eprintln!("Failed to apply styling for {}: {}", book.slug, e);
+                    results.push(BookBuildResult {
+                        book: book.clone(),
+                        success: false,
+                        missing_plugins: Vec::new(),
+                        error_message: Some(format!("Styling failed: {}", e)),
+                    });
+                } else {
+                    results.push(BookBuildResult {
+                        book: book.clone(),
+                        success: true,
+                        missing_plugins: Vec::new(),
+                        error_message: None,
+                    });
+                }
             }
-            println!("Processing: {} - {}", book.slug, book.name);
-            if let Err(e) = proc(book) {
-                eprintln!("Failed to process {}: {}", book.slug, e);
-                failed_books.push(book.clone());
+            Err((missing_plugins, error_msg)) => {
+                if !missing_plugins.is_empty() {
+                    println!("  Missing plugins for {}: {}", book.slug, missing_plugins.join(", "));
+                }
+                eprintln!("Failed to build {}: {}", book.slug, error_msg);
+                results.push(BookBuildResult {
+                    book: book.clone(),
+                    success: false,
+                    missing_plugins,
+                    error_message: Some(error_msg),
+                });
             }
         }
     }
 
-    if !failed_books.is_empty() {
-        eprintln!("\nFailed to build {} books:", failed_books.len());
-        for book in &failed_books {
-            eprintln!("  - {}", book.slug);
-        }
-    }
-
+    print_build_summary(&results);
     Ok(())
 }
 
@@ -161,6 +204,61 @@ fn insert_style_hook(book: &Book) -> AnyResult<()> {
     Ok(())
 }
 
+fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, String)> {
+    let ref src_dir = book_src_dir(book);
+    let book_subdir = book.book_path.as_deref().unwrap_or("");
+    let ref build_dir = if book_subdir.is_empty() {
+        src_dir.to_string()
+    } else {
+        format!("{}/{}", src_dir, book_subdir)
+    };
+
+    // Check if the book directory exists
+    if !fs::exists(build_dir).unwrap_or(false) {
+        return Err((Vec::new(), format!("Book directory not found: {}", build_dir)));
+    }
+
+    println!("  Building {}", book.slug);
+    let sh = Shell::new().map_err(|e| (Vec::new(), e.to_string()))?;
+    sh.change_dir(build_dir);
+
+    // Some books need nightly toolchain
+    if book.needs_nightly || book.slug == "reference" {
+        sh.set_var("RUSTUP_TOOLCHAIN", "nightly");
+    }
+
+    // Run mdbook build and capture output for error analysis
+    let output = cmd!(sh, "mdbook build")
+        .ignore_status()
+        .read_stderr()
+        .map_err(|e| (Vec::new(), e.to_string()))?;
+
+    // Check if build succeeded
+    let out_dir = if book_subdir.is_empty() {
+        book_out_dir(book)
+    } else {
+        format!("{}/{}/book", src_dir, book_subdir)
+    };
+
+    if fs::exists(format!("{}/index.html", out_dir)).unwrap_or(false) {
+        // Build succeeded - move book if needed
+        if !book_subdir.is_empty() {
+            let target_dir = book_out_dir(book);
+            if fs::exists(&target_dir).unwrap_or(false) {
+                let _ = fs::remove_dir_all(&target_dir);
+            }
+            if let Err(e) = fs::rename(out_dir, target_dir) {
+                return Err((Vec::new(), format!("Failed to move book output: {}", e)));
+            }
+        }
+        Ok(())
+    } else {
+        // Build failed - analyze error output for missing plugins
+        let missing_plugins = detect_missing_plugins(&output);
+        Err((missing_plugins, output))
+    }
+}
+
 fn build_book(book: &Book) -> AnyResult<()> {
     let ref src_dir = book_src_dir(book);
     let book_subdir = book.book_path.as_deref().unwrap_or("");
@@ -226,6 +324,96 @@ fn mod_book_style(book: &Book) -> AnyResult<()> {
     }
 
     Ok(())
+}
+
+fn detect_missing_plugins(error_output: &str) -> Vec<String> {
+    let mut missing_plugins = Vec::new();
+
+    // Common patterns for missing mdbook plugins
+    let plugin_patterns = [
+        (r#"The command `([^`]+)` wasn't found"#, 1),
+        (r#"Command: ([^\s]+)"#, 1),
+        (r#"missing "([^"]+)" preprocessor"#, 1),
+        (r#"missing "([^"]+)" backend"#, 1),
+        (r#"The "([^"]+)" preprocessor exited unsuccessfully"#, 1),
+        (r#"The "([^"]+)" backend exited unsuccessfully"#, 1),
+        (r#"Error: The "([^"]+)" preprocessor"#, 1),
+        (r#"Error: The "([^"]+)" backend"#, 1),
+    ];
+
+    for (pattern, group) in plugin_patterns {
+        if let Ok(re) = regex::Regex::new(pattern) {
+            for cap in re.captures_iter(error_output) {
+                if let Some(plugin) = cap.get(group) {
+                    let plugin_name = plugin.as_str();
+                    // Skip common system commands that aren't mdbook plugins
+                    if !["git", "cargo", "rustc", "python", "python3"].contains(&plugin_name) {
+                        // Convert preprocessor/backend names to plugin names
+                        let plugin_name = match plugin_name {
+                            "guide-helper" => "mdbook-guide-helper",
+                            "linkcheck" => "mdbook-linkcheck",
+                            "mermaid" => "mdbook-mermaid",
+                            "toc" => "mdbook-toc",
+                            "trpl-listing" => "mdbook-trpl-listing",
+                            "trpl-note" => "mdbook-trpl-note",
+                            "gettext" => "mdbook-gettext",
+                            name if name.starts_with("mdbook-") => name,
+                            name => &format!("mdbook-{}", name),
+                        };
+                        missing_plugins.push(plugin_name.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    missing_plugins.sort();
+    missing_plugins.dedup();
+    missing_plugins
+}
+
+fn print_build_summary(results: &[BookBuildResult]) {
+    let successful = results.iter().filter(|r| r.success).count();
+    let failed = results.len() - successful;
+
+    println!("\n📊 Build Summary:");
+    println!("  ✅ {} books built successfully", successful);
+    println!("  ❌ {} books failed", failed);
+
+    if failed > 0 {
+        println!("\n❌ Failed books:");
+        for result in results.iter().filter(|r| !r.success) {
+            print!("  - {}", result.book.slug);
+            if !result.missing_plugins.is_empty() {
+                print!(" (missing: {})", result.missing_plugins.join(", "));
+            }
+            println!();
+        }
+
+        // Collect all unique missing plugins
+        let mut all_missing_plugins: Vec<String> = results
+            .iter()
+            .filter(|r| !r.success)
+            .flat_map(|r| r.missing_plugins.iter())
+            .cloned()
+            .collect();
+        all_missing_plugins.sort();
+        all_missing_plugins.dedup();
+
+        if !all_missing_plugins.is_empty() {
+            println!("\n🔧 Missing plugins to install:");
+            for plugin in all_missing_plugins {
+                println!("  cargo install {}", plugin);
+            }
+        }
+    }
+
+    if successful > 0 {
+        println!("\n✅ Successfully built books:");
+        for result in results.iter().filter(|r| r.success) {
+            println!("  - {}", result.book.slug);
+        }
+    }
 }
 
 fn load(root: &Path) -> AnyResult<Books> {
