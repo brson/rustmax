@@ -1,4 +1,18 @@
-## There's no standard way to recursively copy a dir!
+## Assert `Sync` / `Sync`
+
+```
+struct DbPathGen(());
+
+const _ASSERT_SEND_SYNC: () = assert_send_sync::<DbPathGen>();
+const fn assert_send_sync<T: Send + Sync>() { }
+```
+
+Also in `rustmax::extras::assert_send_sync`.
+
+
+## Copy a directory recursively
+
+There's no standard way to recursively copy a dir!
 
 Here take this:
 

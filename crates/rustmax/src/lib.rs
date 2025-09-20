@@ -327,6 +327,15 @@ pub mod extras {
 
         Ok(())
     }
+
+    /// Use in constant contexts to assert a type is `Sync + Sync`.p
+    ///
+    /// ```
+    /// struct DbPathGen(());
+    ///
+    /// const _ASSERT_SEND_SYNC: () = assert_send_sync::<DbPathGen>();
+    /// ```
+    pub const fn assert_send_sync<T: Send + Sync>() { }    
 }
 
 /* ---------- */
