@@ -62,6 +62,120 @@ pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> 
     build_books(&book, no_fetch)
 }
 
+pub fn install_missing_plugins(root: &Path, dry_run: bool) -> AnyResult<()> {
+    println!("🔍 Scanning library for missing dependencies...");
+
+    let books = load(root)?.books;
+    let results = analyze_books_for_plugins(&books);
+
+    let mut all_missing_plugins: Vec<String> = results
+        .iter()
+        .filter(|r| !r.success)
+        .flat_map(|r| r.missing_plugins.iter())
+        .cloned()
+        .collect();
+    all_missing_plugins.sort();
+    all_missing_plugins.dedup();
+
+    if all_missing_plugins.is_empty() {
+        println!("✅ No missing plugins detected!");
+        return Ok(());
+    }
+
+    println!("📦 Found {} missing plugins:", all_missing_plugins.len());
+    for plugin in &all_missing_plugins {
+        println!("  - {}", plugin);
+    }
+
+    if dry_run {
+        println!("\n🔧 Commands to install missing plugins:");
+        for plugin in &all_missing_plugins {
+            println!("  cargo install {}", plugin);
+        }
+        println!("\nRe-run without --dry-run to install automatically.");
+        return Ok(());
+    }
+
+    println!("\n🚀 Installing missing plugins...");
+    let mut failed_installs = Vec::new();
+    let mut already_installed = Vec::new();
+
+    for plugin in &all_missing_plugins {
+        // Check if plugin is already installed
+        let sh = Shell::new()?;
+        let check_result = cmd!(sh, "cargo install --list").read();
+
+        if let Ok(installed_list) = check_result {
+            if installed_list.contains(plugin) {
+                println!("  ⏭️  {} is already installed", plugin);
+                already_installed.push(plugin.clone());
+                continue;
+            }
+        }
+
+        println!("📦 Installing {}...", plugin);
+        let result = cmd!(sh, "cargo install {plugin}").run();
+
+        match result {
+            Ok(_) => println!("  ✅ Successfully installed {}", plugin),
+            Err(e) => {
+                eprintln!("  ❌ Failed to install {}: {}", plugin, e);
+                failed_installs.push(plugin.clone());
+            }
+        }
+    }
+
+    let installed_count = all_missing_plugins.len() - failed_installs.len() - already_installed.len();
+
+    if failed_installs.is_empty() && already_installed.is_empty() {
+        println!("\n🎉 All {} plugins installed successfully!", installed_count);
+    } else if failed_installs.is_empty() {
+        println!("\n🎉 {} new plugins installed successfully!", installed_count);
+        if !already_installed.is_empty() {
+            println!("📝 {} plugins were already installed", already_installed.len());
+        }
+    } else {
+        if installed_count > 0 {
+            println!("\n✅ {} plugins installed successfully", installed_count);
+        }
+        if !already_installed.is_empty() {
+            println!("📝 {} plugins were already installed", already_installed.len());
+        }
+        println!("\n⚠️  {} plugins failed to install:", failed_installs.len());
+        for plugin in &failed_installs {
+            println!("  - {}", plugin);
+        }
+        println!("\nYou may need to install these manually or check for different package names.");
+    }
+
+    Ok(())
+}
+
+fn analyze_books_for_plugins(books: &[Book]) -> Vec<BookBuildResult> {
+    let mut results = Vec::new();
+
+    for book in books {
+        // Quick dry-run build to detect missing plugins without full processing
+        let build_result = build_book_with_error_detection(book);
+        match build_result {
+            Ok(_) => results.push(BookBuildResult {
+                book: book.clone(),
+                success: true,
+                missing_plugins: Vec::new(),
+                error_message: None,
+            }),
+            Err((missing_plugins, error_msg)) => results.push(BookBuildResult {
+                book: book.clone(),
+                success: false,
+                missing_plugins,
+                error_message: Some(error_msg),
+            }),
+        }
+    }
+
+    results
+}
+
 fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
     let mut results: Vec<BookBuildResult> = Vec::new();
 

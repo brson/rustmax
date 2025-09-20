@@ -39,6 +39,7 @@ enum CliCmd {
 
     ListLibrary(CliCmdListLibrary),
     BuildLibrary(CliCmdBuildLibrary),
+    InstallLibraryDeps(CliCmdInstallLibraryDeps),
 
     NewProject,
 
@@ -99,6 +100,13 @@ struct CliCmdBuildLibrary {
 }
 
 #[derive(clap::Args)]
+struct CliCmdInstallLibraryDeps {
+    /// Show what would be installed without actually installing
+    #[arg(long)]
+    dry_run: bool,
+}
+
+#[derive(clap::Args)]
 struct CliCmdWriteFmtConfig {}
 
 #[derive(clap::Args)]
@@ -127,6 +135,7 @@ impl CliOpts {
 
             CliCmd::ListLibrary(cmd) => cmd.run(),
             CliCmd::BuildLibrary(cmd) => cmd.run(),
+            CliCmd::InstallLibraryDeps(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
@@ -238,6 +247,13 @@ impl CliCmdBuildLibrary {
             None => books::build_library(root, self.no_fetch, self.generate_library_page),
             Some(ref book) => books::build_one_book(root, book, self.no_fetch),
         }
+    }
+}
+
+impl CliCmdInstallLibraryDeps {
+    fn run(&self) -> AnyResult<()> {
+        let root = &Path::new(".");
+        books::install_missing_plugins(root, self.dry_run)
     }
 }
 
