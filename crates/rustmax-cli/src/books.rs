@@ -6,6 +6,7 @@ use rmx::xshell::{Shell, cmd};
 use std::path::Path;
 use std::fs;
 use regex;
+use toml;
 
 #[derive(Serialize, Deserialize)]
 struct Books {
@@ -28,7 +29,15 @@ struct BookBuildResult {
     book: Book,
     success: bool,
     missing_plugins: Vec<String>,
+    local_tools: Vec<LocalTool>,
     error_message: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+struct LocalTool {
+    name: String,
+    manifest_path: String,
+    book_path: String,
 }
 
 pub fn list_library(root: &Path) -> AnyResult<()> {
@@ -77,75 +86,160 @@ pub fn install_missing_plugins(root: &Path, dry_run: bool) -> AnyResult<()> {
     all_missing_plugins.sort();
     all_missing_plugins.dedup();
 
-    if all_missing_plugins.is_empty() {
-        println!("✅ No missing plugins detected!");
+    let mut all_local_tools: Vec<LocalTool> = results
+        .iter()
+        .filter(|r| !r.success)
+        .flat_map(|r| r.local_tools.iter())
+        .cloned()
+        .collect();
+    // Dedupe by name and manifest_path
+    all_local_tools.sort_by(|a, b| (&a.name, &a.manifest_path).cmp(&(&b.name, &b.manifest_path)));
+    all_local_tools.dedup_by(|a, b| a.name == b.name && a.manifest_path == b.manifest_path);
+
+    if all_missing_plugins.is_empty() && all_local_tools.is_empty() {
+        println!("✅ No missing dependencies detected!");
         return Ok(());
     }
 
-    println!("📦 Found {} missing plugins:", all_missing_plugins.len());
-    for plugin in &all_missing_plugins {
-        println!("  - {}", plugin);
+    if !all_missing_plugins.is_empty() {
+        println!("📦 Found {} missing published plugins:", all_missing_plugins.len());
+        for plugin in &all_missing_plugins {
+            println!("  - {}", plugin);
+        }
+    }
+
+    if !all_local_tools.is_empty() {
+        println!("🔧 Found {} local workspace tools to build:", all_local_tools.len());
+        for tool in &all_local_tools {
+            println!("  - {} ({})", tool.name, tool.manifest_path);
+        }
     }
 
     if dry_run {
-        println!("\n🔧 Commands to install missing plugins:");
-        for plugin in &all_missing_plugins {
-            println!("  cargo install {}", plugin);
+        if !all_missing_plugins.is_empty() {
+            println!("\n🚀 Commands to install missing published plugins:");
+            for plugin in &all_missing_plugins {
+                println!("  cargo install {}", plugin);
+            }
         }
-        println!("\nRe-run without --dry-run to install automatically.");
+
+        if !all_local_tools.is_empty() {
+            println!("\n🔧 Commands to build local workspace tools:");
+            for tool in &all_local_tools {
+                println!("  cargo build --manifest-path {}", tool.manifest_path);
+            }
+        }
+
+        println!("\nRe-run without --dry-run to install/build automatically.");
         return Ok(());
     }
 
-    println!("\n🚀 Installing missing plugins...");
     let mut failed_installs = Vec::new();
     let mut already_installed = Vec::new();
+    let mut failed_builds = Vec::new();
+    let mut successful_builds = Vec::new();
 
-    for plugin in &all_missing_plugins {
-        // Check if plugin is already installed
-        let sh = Shell::new()?;
-        let check_result = cmd!(sh, "cargo install --list").read();
+    // Install published plugins
+    if !all_missing_plugins.is_empty() {
+        println!("\n🚀 Installing missing published plugins...");
 
-        if let Ok(installed_list) = check_result {
-            if installed_list.contains(plugin) {
-                println!("  ⏭️  {} is already installed", plugin);
-                already_installed.push(plugin.clone());
-                continue;
+        for plugin in &all_missing_plugins {
+            // Check if plugin is already installed
+            let sh = Shell::new()?;
+            let check_result = cmd!(sh, "cargo install --list").read();
+
+            if let Ok(installed_list) = check_result {
+                if installed_list.contains(plugin) {
+                    println!("  ⏭️  {} is already installed", plugin);
+                    already_installed.push(plugin.clone());
+                    continue;
+                }
             }
-        }
 
-        println!("📦 Installing {}...", plugin);
-        let result = cmd!(sh, "cargo install {plugin}").run();
+            println!("📦 Installing {}...", plugin);
+            let result = cmd!(sh, "cargo install {plugin}").run();
 
-        match result {
-            Ok(_) => println!("  ✅ Successfully installed {}", plugin),
-            Err(e) => {
-                eprintln!("  ❌ Failed to install {}: {}", plugin, e);
-                failed_installs.push(plugin.clone());
+            match result {
+                Ok(_) => println!("  ✅ Successfully installed {}", plugin),
+                Err(e) => {
+                    eprintln!("  ❌ Failed to install {}: {}", plugin, e);
+                    failed_installs.push(plugin.clone());
+                }
             }
         }
     }
 
-    let installed_count = all_missing_plugins.len() - failed_installs.len() - already_installed.len();
+    // Build local workspace tools
+    if !all_local_tools.is_empty() {
+        println!("\n🔧 Building local workspace tools...");
 
-    if failed_installs.is_empty() && already_installed.is_empty() {
-        println!("\n🎉 All {} plugins installed successfully!", installed_count);
-    } else if failed_installs.is_empty() {
-        println!("\n🎉 {} new plugins installed successfully!", installed_count);
+        for tool in &all_local_tools {
+            println!("🔨 Building {} using {}...", tool.name, tool.manifest_path);
+            let sh = Shell::new()?;
+            let manifest_path = &tool.manifest_path;
+            let result = cmd!(sh, "cargo build --manifest-path {manifest_path}").run();
+
+            match result {
+                Ok(_) => {
+                    println!("  ✅ Successfully built {}", tool.name);
+                    successful_builds.push(tool.name.clone());
+                }
+                Err(e) => {
+                    eprintln!("  ❌ Failed to build {}: {}", tool.name, e);
+                    failed_builds.push(tool.name.clone());
+                }
+            }
+        }
+    }
+
+    // Print summary
+    let installed_count = all_missing_plugins.len() - failed_installs.len() - already_installed.len();
+    let total_success = installed_count + successful_builds.len();
+    let total_failed = failed_installs.len() + failed_builds.len();
+
+    if total_failed == 0 {
+        println!("\n🎉 All dependencies resolved successfully!");
+        if installed_count > 0 {
+            println!("  📦 {} published plugins installed", installed_count);
+        }
         if !already_installed.is_empty() {
-            println!("📝 {} plugins were already installed", already_installed.len());
+            println!("  📝 {} published plugins were already installed", already_installed.len());
+        }
+        if !successful_builds.is_empty() {
+            println!("  🔧 {} local tools built", successful_builds.len());
         }
     } else {
-        if installed_count > 0 {
-            println!("\n✅ {} plugins installed successfully", installed_count);
+        if total_success > 0 {
+            println!("\n✅ {} dependencies resolved successfully", total_success);
+            if installed_count > 0 {
+                println!("  📦 {} published plugins installed", installed_count);
+            }
+            if !successful_builds.is_empty() {
+                println!("  🔧 {} local tools built", successful_builds.len());
+            }
         }
+
         if !already_installed.is_empty() {
-            println!("📝 {} plugins were already installed", already_installed.len());
+            println!("📝 {} published plugins were already installed", already_installed.len());
         }
-        println!("\n⚠️  {} plugins failed to install:", failed_installs.len());
-        for plugin in &failed_installs {
-            println!("  - {}", plugin);
+
+        if !failed_installs.is_empty() {
+            println!("\n⚠️  {} published plugins failed to install:", failed_installs.len());
+            for plugin in &failed_installs {
+                println!("  - {}", plugin);
+            }
         }
-        println!("\nYou may need to install these manually or check for different package names.");
+
+        if !failed_builds.is_empty() {
+            println!("\n⚠️  {} local tools failed to build:", failed_builds.len());
+            for tool in &failed_builds {
+                println!("  - {}", tool);
+            }
+        }
+
+        if !failed_installs.is_empty() || !failed_builds.is_empty() {
+            println!("\nYou may need to resolve these manually.");
+        }
     }
 
     Ok(())
@@ -162,12 +256,14 @@ fn analyze_books_for_plugins(books: &[Book]) -> Vec<BookBuildResult> {
                 book: book.clone(),
                 success: true,
                 missing_plugins: Vec::new(),
+                local_tools: Vec::new(),
                 error_message: None,
             }),
-            Err((missing_plugins, error_msg)) => results.push(BookBuildResult {
+            Err((missing_plugins, local_tools, error_msg)) => results.push(BookBuildResult {
                 book: book.clone(),
                 success: false,
                 missing_plugins,
+                local_tools,
                 error_message: Some(error_msg),
             }),
         }
@@ -189,6 +285,7 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
                     book: book.clone(),
                     success: false,
                     missing_plugins: Vec::new(),
+                    local_tools: Vec::new(),
                     error_message: Some(format!("Clone/update failed: {}", e)),
                 });
             }
@@ -221,6 +318,7 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
                         book: book.clone(),
                         success: false,
                         missing_plugins: Vec::new(),
+                        local_tools: Vec::new(),
                         error_message: Some(format!("Styling failed: {}", e)),
                     });
                 } else {
@@ -228,19 +326,25 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
                         book: book.clone(),
                         success: true,
                         missing_plugins: Vec::new(),
+                        local_tools: Vec::new(),
                         error_message: None,
                     });
                 }
             }
-            Err((missing_plugins, error_msg)) => {
+            Err((missing_plugins, local_tools, error_msg)) => {
                 if !missing_plugins.is_empty() {
                     println!("  Missing plugins for {}: {}", book.slug, missing_plugins.join(", "));
+                }
+                if !local_tools.is_empty() {
+                    let tool_names: Vec<String> = local_tools.iter().map(|t| t.name.clone()).collect();
+                    println!("  Local tools for {}: {}", book.slug, tool_names.join(", "));
                 }
                 eprintln!("Failed to build {}: {}", book.slug, error_msg);
                 results.push(BookBuildResult {
                     book: book.clone(),
                     success: false,
                     missing_plugins,
+                    local_tools,
                     error_message: Some(error_msg),
                 });
             }
@@ -318,7 +422,7 @@ fn insert_style_hook(book: &Book) -> AnyResult<()> {
     Ok(())
 }
 
-fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, String)> {
+fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, Vec<LocalTool>, String)> {
     let ref src_dir = book_src_dir(book);
     let book_subdir = book.book_path.as_deref().unwrap_or("");
     let ref build_dir = if book_subdir.is_empty() {
@@ -329,11 +433,11 @@ fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, Stri
 
     // Check if the book directory exists
     if !fs::exists(build_dir).unwrap_or(false) {
-        return Err((Vec::new(), format!("Book directory not found: {}", build_dir)));
+        return Err((Vec::new(), Vec::new(), format!("Book directory not found: {}", build_dir)));
     }
 
     println!("  Building {}", book.slug);
-    let sh = Shell::new().map_err(|e| (Vec::new(), e.to_string()))?;
+    let sh = Shell::new().map_err(|e| (Vec::new(), Vec::new(), e.to_string()))?;
     sh.change_dir(build_dir);
 
     // Some books need nightly toolchain
@@ -345,7 +449,7 @@ fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, Stri
     let output = cmd!(sh, "mdbook build")
         .ignore_status()
         .read_stderr()
-        .map_err(|e| (Vec::new(), e.to_string()))?;
+        .map_err(|e| (Vec::new(), Vec::new(), e.to_string()))?;
 
     // Check if build succeeded
     let out_dir = if book_subdir.is_empty() {
@@ -362,14 +466,14 @@ fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, Stri
                 let _ = fs::remove_dir_all(&target_dir);
             }
             if let Err(e) = fs::rename(out_dir, target_dir) {
-                return Err((Vec::new(), format!("Failed to move book output: {}", e)));
+                return Err((Vec::new(), Vec::new(), format!("Failed to move book output: {}", e)));
             }
         }
         Ok(())
     } else {
-        // Build failed - analyze error output for missing plugins
-        let missing_plugins = detect_missing_plugins(&output);
-        Err((missing_plugins, output))
+        // Build failed - analyze error output for missing plugins and local tools
+        let (missing_plugins, local_tools) = detect_missing_dependencies(&output, build_dir);
+        Err((missing_plugins, local_tools, output))
     }
 }
 
@@ -440,8 +544,9 @@ fn mod_book_style(book: &Book) -> AnyResult<()> {
     Ok(())
 }
 
-fn detect_missing_plugins(error_output: &str) -> Vec<String> {
+fn detect_missing_dependencies(error_output: &str, build_dir: &str) -> (Vec<String>, Vec<LocalTool>) {
     let mut missing_plugins = Vec::new();
+    let mut local_tools = Vec::new();
 
     // Common patterns for missing mdbook plugins
     let plugin_patterns = [
@@ -455,6 +560,8 @@ fn detect_missing_plugins(error_output: &str) -> Vec<String> {
         (r#"Error: The "([^"]+)" backend"#, 1),
     ];
 
+    // First, extract all missing tool names from error output
+    let mut detected_tools = Vec::new();
     for (pattern, group) in plugin_patterns {
         if let Ok(re) = regex::Regex::new(pattern) {
             for cap in re.captures_iter(error_output) {
@@ -462,28 +569,48 @@ fn detect_missing_plugins(error_output: &str) -> Vec<String> {
                     let plugin_name = plugin.as_str();
                     // Skip common system commands that aren't mdbook plugins
                     if !["git", "cargo", "rustc", "python", "python3"].contains(&plugin_name) {
-                        // Convert preprocessor/backend names to plugin names
-                        let plugin_name = match plugin_name {
-                            "guide-helper" => "mdbook-guide-helper",
-                            "linkcheck" => "mdbook-linkcheck",
-                            "mermaid" => "mdbook-mermaid",
-                            "toc" => "mdbook-toc",
-                            "trpl-listing" => "mdbook-trpl-listing",
-                            "trpl-note" => "mdbook-trpl-note",
-                            "gettext" => "mdbook-gettext",
-                            name if name.starts_with("mdbook-") => name,
-                            name => &format!("mdbook-{}", name),
-                        };
-                        missing_plugins.push(plugin_name.to_string());
+                        detected_tools.push(plugin_name.to_string());
                     }
                 }
             }
         }
     }
 
+    detected_tools.sort();
+    detected_tools.dedup();
+
+    // Parse book.toml to check for local vs published tools
+    let book_toml_path = format!("{}/book.toml", build_dir);
+    let local_tool_configs = parse_book_toml_for_local_tools(&book_toml_path);
+
+    // Classify each detected tool
+    for tool_name in detected_tools {
+        // Check if this is a local tool defined in book.toml
+        if let Some(local_config) = local_tool_configs.iter().find(|lt| {
+            lt.name == tool_name || lt.name == format!("mdbook-{}", tool_name)
+        }) {
+            local_tools.push(local_config.clone());
+        } else {
+            // Convert preprocessor/backend names to plugin names for published tools
+            let plugin_name = match tool_name.as_str() {
+                "guide-helper" => "mdbook-guide-helper",
+                "linkcheck" => "mdbook-linkcheck",
+                "mermaid" => "mdbook-mermaid",
+                "toc" => "mdbook-toc",
+                "trpl-listing" => "mdbook-trpl-listing",
+                "trpl-note" => "mdbook-trpl-note",
+                "gettext" => "mdbook-gettext",
+                name if name.starts_with("mdbook-") => name,
+                name => &format!("mdbook-{}", name),
+            };
+            missing_plugins.push(plugin_name.to_string());
+        }
+    }
+
     missing_plugins.sort();
     missing_plugins.dedup();
-    missing_plugins
+
+    (missing_plugins, local_tools)
 }
 
 fn print_build_summary(results: &[BookBuildResult]) {
@@ -528,6 +655,64 @@ fn print_build_summary(results: &[BookBuildResult]) {
             println!("  - {}", result.book.slug);
         }
     }
+}
+
+fn parse_book_toml_for_local_tools(book_toml_path: &str) -> Vec<LocalTool> {
+    let mut local_tools = Vec::new();
+
+    if let Ok(toml_content) = fs::read_to_string(book_toml_path) {
+        if let Ok(toml_value) = toml::from_str::<toml::Value>(&toml_content) {
+            // Check preprocessors section
+            if let Some(preprocessors) = toml_value.get("preprocessor").and_then(|p| p.as_table()) {
+                for (name, config) in preprocessors {
+                    if let Some(command) = config.get("command").and_then(|c| c.as_str()) {
+                        // Look for cargo run with --manifest-path patterns
+                        if command.contains("cargo run") && command.contains("--manifest-path") {
+                            if let Some(manifest_start) = command.find("--manifest-path") {
+                                let manifest_part = &command[manifest_start + "--manifest-path".len()..].trim();
+                                if let Some(manifest_path) = manifest_part.split_whitespace().next() {
+                                    // Convert relative path to absolute path based on book directory
+                                    let book_dir = std::path::Path::new(book_toml_path).parent().unwrap_or(std::path::Path::new("."));
+                                    let absolute_manifest_path = book_dir.join(manifest_path);
+                                    local_tools.push(LocalTool {
+                                        name: name.clone(),
+                                        manifest_path: absolute_manifest_path.to_string_lossy().to_string(),
+                                        book_path: book_toml_path.to_string(),
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check backends section
+            if let Some(backends) = toml_value.get("output").and_then(|p| p.as_table()) {
+                for (name, config) in backends {
+                    if let Some(command) = config.get("command").and_then(|c| c.as_str()) {
+                        // Look for cargo run with --manifest-path patterns
+                        if command.contains("cargo run") && command.contains("--manifest-path") {
+                            if let Some(manifest_start) = command.find("--manifest-path") {
+                                let manifest_part = &command[manifest_start + "--manifest-path".len()..].trim();
+                                if let Some(manifest_path) = manifest_part.split_whitespace().next() {
+                                    // Convert relative path to absolute path based on book directory
+                                    let book_dir = std::path::Path::new(book_toml_path).parent().unwrap_or(std::path::Path::new("."));
+                                    let absolute_manifest_path = book_dir.join(manifest_path);
+                                    local_tools.push(LocalTool {
+                                        name: name.clone(),
+                                        manifest_path: absolute_manifest_path.to_string_lossy().to_string(),
+                                        book_path: book_toml_path.to_string(),
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    local_tools
 }
 
 fn load(root: &Path) -> AnyResult<Books> {
