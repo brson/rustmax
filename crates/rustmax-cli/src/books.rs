@@ -496,21 +496,37 @@ fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, Vec<
         .read_stderr()
         .map_err(|e| (Vec::new(), Vec::new(), e.to_string()))?;
 
-    // Check if build succeeded
+    // Check if build succeeded - look for index.html in the expected location
     let out_dir = if book_subdir.is_empty() {
         book_out_dir(book)
     } else {
         format!("{}/{}/book", src_dir, book_subdir)
     };
 
-    if fs::exists(format!("{}/index.html", out_dir)).unwrap_or(false) {
+    // Some books output to book/html/ instead of book/ directly
+    let index_locations = [
+        format!("{}/index.html", out_dir),
+        format!("{}/html/index.html", out_dir),
+    ];
+
+    let build_succeeded = index_locations.iter().any(|path| fs::exists(path).unwrap_or(false));
+
+    if build_succeeded {
         // Build succeeded - move book if needed
         if !book_subdir.is_empty() {
             let target_dir = book_out_dir(book);
             if fs::exists(&target_dir).unwrap_or(false) {
                 let _ = fs::remove_dir_all(&target_dir);
             }
-            if let Err(e) = fs::rename(out_dir, target_dir) {
+
+            // Determine the actual source directory (might be book/ or book/html/)
+            let actual_source = if fs::exists(format!("{}/html/index.html", out_dir)).unwrap_or(false) {
+                format!("{}/html", out_dir)
+            } else {
+                out_dir.clone()
+            };
+
+            if let Err(e) = fs::rename(actual_source, target_dir) {
                 return Err((Vec::new(), Vec::new(), format!("Failed to move book output: {}", e)));
             }
         }
