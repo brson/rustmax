@@ -20,5 +20,85 @@
             name: "The Rustonomicon",
             repo: "https://github.com/rust-lang/nomicon",
         },
+        {
+            slug: "edition-guide",
+            name: "The Rust Edition Guide",
+            repo: "https://github.com/rust-lang/edition-guide",
+        },
+        {
+            slug: "api-guidelines",
+            name: "Rust API Guidelines",
+            repo: "https://github.com/rust-lang/api-guidelines",
+        },
+        {
+            slug: "unsafe-code-guidelines",
+            name: "Rust Unsafe Code Guidelines",
+            repo: "https://github.com/rust-lang/unsafe-code-guidelines",
+        },
+        {
+            slug: "cargo-book",
+            name: "The Cargo Book",
+            repo: "https://github.com/rust-lang/cargo",
+            book_path: "src/doc",
+        },
+        {
+            slug: "rustc-book",
+            name: "The rustc Book",
+            repo: "https://github.com/rust-lang/rust",
+            book_path: "src/doc/rustc",
+        },
+        {
+            slug: "rustc-dev-guide",
+            name: "Guide to rustc Development",
+            repo: "https://github.com/rust-lang/rustc-dev-guide",
+        },
+        {
+            slug: "rustdoc-book",
+            name: "The rustdoc Book",
+            repo: "https://github.com/rust-lang/rust",
+            book_path: "src/doc/rustdoc",
+        },
+        {
+            slug: "mdbook",
+            name: "The mdBook Book",
+            repo: "https://github.com/rust-lang/mdBook",
+            book_path: "guide",
+        },
+        {
+            slug: "bindgen",
+            name: "The bindgen User Guide",
+            repo: "https://github.com/rust-lang/rust-bindgen",
+            book_path: "book",
+        },
+        {
+            slug: "rand-book",
+            name: "The Rand Book",
+            repo: "https://github.com/rust-random/book",
+        },
+        {
+            slug: "rust-cookbook",
+            name: "Rust Cookbook",
+            repo: "https://github.com/rust-lang-nursery/rust-cookbook",
+        },
+        {
+            slug: "embedded-book",
+            name: "The Embedded Rust Book",
+            repo: "https://github.com/rust-embedded/book",
+        },
+        {
+            slug: "std-dev-guide",
+            name: "Standard Library Developers Guide",
+            repo: "https://github.com/rust-lang/std-dev-guide",
+        },
+        {
+            slug: "rust-forge",
+            name: "Rust Forge",
+            repo: "https://github.com/rust-lang/rust-forge",
+        },
+        {
+            slug: "rfcs",
+            name: "Rust RFCs",
+            repo: "https://github.com/rust-lang/rfcs",
+        },
     ],
 }

@@ -2,6 +2,7 @@
 
 mod books;
 mod impls;
+mod library_gen;
 mod moldman;
 mod tools;
 
