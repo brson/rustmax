@@ -30,16 +30,16 @@ pub fn list_library(root: &Path) -> AnyResult<()> {
     Ok(())
 }
 
-pub fn build_library(root: &Path) -> AnyResult<()> {
+pub fn build_library(root: &Path, no_fetch: bool) -> AnyResult<()> {
     let books = load(root)?.books;
     // Continue even if some books fail to build
-    let _ = build_books(&books);
+    let _ = build_books(&books, no_fetch);
     // Generate library.md with local links
     crate::library_gen::generate_library_page()?;
     Ok(())
 }
 
-pub fn build_one_book(root: &Path, slug: &str) -> AnyResult<()> {
+pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> {
     let book: Vec<Book> = load(root)?
         .books
         .into_iter()
@@ -48,16 +48,32 @@ pub fn build_one_book(root: &Path, slug: &str) -> AnyResult<()> {
     if book.is_empty() {
         return Err(anyhow!("unknown book '{slug}'"));
     }
-    build_books(&book)
+    build_books(&book, no_fetch)
 }
 
-fn build_books(books: &[Book]) -> AnyResult<()> {
-    let procs = [get_repo, insert_style_hook, build_book, mod_book_style];
-
+fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
     let mut failed_books = Vec::new();
 
+    // Step 1: Clone/update repos (unless skipped)
+    if !no_fetch {
+        for book in books {
+            println!("Processing: {} - {}", book.slug, book.name);
+            if let Err(e) = get_repo(book) {
+                eprintln!("Failed to clone/update {}: {}", book.slug, e);
+                failed_books.push(book.clone());
+            }
+        }
+    } else {
+        println!("Skipping git clone/fetch operations");
+    }
+
+    // Step 2: Style hooks, build, and styling
+    let procs = [insert_style_hook, build_book, mod_book_style];
     for proc in procs {
         for book in books {
+            if failed_books.iter().any(|b| b.slug == book.slug) {
+                continue; // Skip books that already failed
+            }
             println!("Processing: {} - {}", book.slug, book.name);
             if let Err(e) = proc(book) {
                 eprintln!("Failed to process {}: {}", book.slug, e);

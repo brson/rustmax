@@ -34,7 +34,8 @@
             slug: "unsafe-code-guidelines",
             name: "Rust Unsafe Code Guidelines",
             repo: "https://github.com/rust-lang/unsafe-code-guidelines",
-        },
+            book_path: "reference",
+            },
         {
             slug: "cargo-book",
             name: "The Cargo Book",

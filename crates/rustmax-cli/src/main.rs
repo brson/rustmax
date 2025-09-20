@@ -90,6 +90,9 @@ struct CliCmdListLibrary {}
 #[derive(clap::Args)]
 struct CliCmdBuildLibrary {
     book: Option<String>,
+    /// Skip git clone/fetch operations (useful when repositories are already cloned)
+    #[arg(long)]
+    no_fetch: bool,
 }
 
 #[derive(clap::Args)]
@@ -229,8 +232,8 @@ impl CliCmdBuildLibrary {
     fn run(&self) -> AnyResult<()> {
         let root = &Path::new(".");
         match self.book {
-            None => books::build_library(root),
-            Some(ref book) => books::build_one_book(root, book),
+            None => books::build_library(root, self.no_fetch),
+            Some(ref book) => books::build_one_book(root, book, self.no_fetch),
         }
     }
 }

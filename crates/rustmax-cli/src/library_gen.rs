@@ -20,24 +20,18 @@ struct Book {
 }
 
 pub fn generate_library_page() -> AnyResult<()> {
-    let books = load_books()?;
+    let root = std::path::Path::new(".");
+    let books = load_books(root)?;
     let content = generate_markdown(&books)?;
     fs::write("book/src/library.md", content)?;
     println!("Generated library.md with local book links");
     Ok(())
 }
 
-fn load_books() -> AnyResult<Books> {
-    // Try different paths since we might be run from different directories
-    let paths = ["src/books.json5", "../src/books.json5", "../../src/books.json5"];
-
-    for path in &paths {
-        if let Ok(json) = fs::read_to_string(path) {
-            return Ok(rmx::json5::from_str(&json)?);
-        }
-    }
-
-    Err(anyhow!("Could not find books.json5 in any expected location. Tried: {:?}", paths))
+fn load_books(root: &std::path::Path) -> AnyResult<Books> {
+    let path = root.join("src/books.json5");
+    let json = fs::read_to_string(path)?;
+    Ok(rmx::json5::from_str(&json)?)
 }
 
 fn generate_markdown(books: &Books) -> AnyResult<String> {
