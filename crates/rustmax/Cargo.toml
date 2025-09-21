@@ -236,6 +236,7 @@ rmx-feature-default = [
   "quote?/default",
   "regex?/default",
   "reqwest?/default",
+  "rodio?/default",
   "rustyline?/default",
   "semver?/std",
   "serde?/default",

@@ -486,9 +486,7 @@ pub mod clap {
 
 #[cfg(feature = "cpal")]
 pub mod cpal {
-    //! Cross-platform audio I/O library.
-    //!
-    //! See crate [`::cpal`].
+    #![doc = include_str!("../doc-src/crate-cpal.md")]
 
     pub use ::cpal::*;
 }
@@ -765,9 +763,7 @@ pub mod reqwest {
 
 #[cfg(feature = "rodio")]
 pub mod rodio {
-    //! Audio playback library.
-    //!
-    //! See crate [`::rodio`].
+    #![doc = include_str!("../doc-src/crate-rodio.md")]
 
     pub use ::rodio::*;
 }
