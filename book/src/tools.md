@@ -28,17 +28,15 @@
 - More general developer tools:
   [`ripgrep`](#user-content--ripgrep)
   [`tokei`](#user-content--tokei)
-  [`basic-http-server`](#user-content--clippy-control)
-  [`gist`](#user-content-gist)
-  [`jaq`](#user-content-jaq)
-  [`jsonxf`](#user-content-jsonxf)
+  [`basic-http-server`](#user-content--basic-http-server)
+  [`gist`](#user-content--gist)
+  [`jaq`](#user-content--jaq)
+  [`jsonxf`](#user-content--jsonxf)
   [`fd`](#user-content--fd)
   [`sd`](#user-content--sd)
-  [`dust`](#user-content-sd)
+  [`dust`](#user-content--dust)
 
 ---
-
-todo say something here
 
 
 ## Standard Rust tools
@@ -54,11 +52,87 @@ usually managed by `rustup`.
 
 
 ### 🌞 `rustc`
+
+The Rust compiler.
+It is usually invoked through `cargo`.
+
+> 👁️  [The `rustc` Book](https://doc.rust-lang.org/rustc/)
+
+
 ### 🌞 `rustup`
+
+The Rust toolchain installer and version manager.
+
+> 👁️  [The `rustup` Book](https://rust-lang.github.io/rustup/)
+
+
 ### 🌞 `rustfmt`
+
+A tool for formatting Rust code.
+Included with Rust toolchains.
+
+```
+rustup component add rustfmt
+```
+
+> 👁️  [The `rustfmt` Book](https://rust-lang.github.io/rustfmt/)
+
+
+### 🌞 `clippy`
+
+A collection of lints to catch common mistakes and improve your Rust code.
+
+```
+rustup component add clippy
+```
+
+> 👁️  [The `clippy` Book](https://doc.rust-lang.org/nightly/clippy/)
+
+
+### 🌞 `rustdoc`
+
+The Rust documentation generator.
+Usually invoked through `cargo doc`.
+
+> 👁️  [The `rustdoc` Book](https://doc.rust-lang.org/rustdoc/)
+
+
 ### 🌞 `mdbook`
+
+A utility to create modern online books from Markdown files.
+
+```
+cargo install mdbook
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/mdbook)\
+> 👁️  [The mdBook Book](https://rust-lang.github.io/mdBook/)
+
+
 ### 🌞 `bindgen`
+
+Automatically generates Rust FFI bindings to C libraries.
+
+```
+cargo install bindgen-cli
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/bindgen)\
+> 👁️  [The bindgen User Guide](https://rust-lang.github.io/rust-bindgen/)
+
+
 ### 🌞 `miri`
+
+An interpreter for Rust's mid-level intermediate representation.
+Useful for detecting undefined behavior.
+
+```
+rustup component add miri
+```
+
+> 👁️  [Source Repository](https://github.com/rust-lang/miri)
+
+
 
 
 
@@ -91,10 +165,66 @@ is built into `cargo` itself.
 
 
 ### 🌞 `cargo-clean-all`
+
+Recursively clean all Cargo projects in a directory tree.
+
+```
+cargo install cargo-clean-all
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/cargo-clean-all)\
+> 👁️  [Source Repository](https://github.com/dnaka91/cargo-clean-all)
+
+
 ### 🌞 `cargo-deny`
+
+Cargo plugin for linting your dependencies.
+Checks for security vulnerabilities, licenses, and more.
+
+```
+cargo install cargo-deny
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/cargo-deny)\
+> 👁️  [Source Repository](https://github.com/EmbarkStudios/cargo-deny)
+
+
 ### 🌞 `cargo-license`
+
+Displays the license of dependencies.
+
+```
+cargo install cargo-license
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/cargo-license)\
+> 👁️  [Source Repository](https://github.com/onur/cargo-license)
+
+
 ### 🌞 `cargo-audit`
+
+Audit Cargo.lock files for known security vulnerabilities.
+
+```
+cargo install cargo-audit
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/cargo-audit)\
+> 👁️  [Source Repository](https://github.com/RustSec/rustsec)
+
+
 ### 🌞 `cargo-generate`
+
+Generate a new Rust project from a template.
+
+```
+cargo install cargo-generate
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/cargo-generate)\
+> 👁️  [Source Repository](https://github.com/cargo-generate/cargo-generate)
+
+
 
 
 
@@ -102,6 +232,17 @@ is built into `cargo` itself.
 ## More Rust tools
 
 ### 🌞 `clippy-control`
+
+Temporarily allow/deny clippy lints from the command line.
+
+```
+cargo install clippy-control
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/clippy-control)\
+> 👁️  [Source Repository](https://github.com/Ogeon/clippy-control)
+
+
 
 
 
@@ -133,6 +274,18 @@ but the Rust Max CLI tool handles this setup automatically.
 ## More general developer tools
 
 ### 🌞 `ripgrep`
+
+A line-oriented search tool that recursively searches your current directory for a regex pattern.
+Faster than grep and respects gitignore.
+
+```
+cargo install ripgrep
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/ripgrep)\
+> 👁️  [Source Repository](https://github.com/BurntSushi/ripgrep)
+
+
 
 ### 🌞 `just`
 
@@ -212,10 +365,98 @@ $ just build
 
 
 ### 🌞 `tokei`
+
+A program for counting lines of code quickly.
+
+```
+cargo install tokei
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/tokei)\
+> 👁️  [Source Repository](https://github.com/XAMPPRocky/tokei)
+
+
 ### 🌞 `basic-http-server`
+
+A simple HTTP server for serving static files.
+
+```
+cargo install basic-http-server
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/basic-http-server)\
+> 👁️  [Source Repository](https://github.com/brson/basic-http-server)
+
+
 ### 🌞 `gist`
+
+Upload code to GitHub Gist from the command line.
+
+```
+cargo install gist
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/gist)\
+> 👁️  [Source Repository](https://github.com/defuz/gist)
+
+
 ### 🌞 `jaq`
+
+A jq clone focused on correctness, speed, and simplicity.
+
+```
+cargo install jaq
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/jaq)\
+> 👁️  [Source Repository](https://github.com/01mf02/jaq)
+
+
 ### 🌞 `jsonxf`
+
+A JSON transformer and formatter.
+
+```
+cargo install jsonxf
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/jsonxf)\
+> 👁️  [Source Repository](https://github.com/gamache/jsonxf)
+
+
 ### 🌞 `fd`
+
+A simple, fast and user-friendly alternative to 'find'.
+
+```
+cargo install fd-find
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/fd-find)\
+> 👁️  [Source Repository](https://github.com/sharkdp/fd)
+
+
 ### 🌞 `sd`
+
+Intuitive find & replace CLI (sed alternative).
+
+```
+cargo install sd
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/sd)\
+> 👁️  [Source Repository](https://github.com/chmln/sd)
+
+
 ### 🌞 `dust`
+
+A more intuitive version of du in Rust.
+
+```
+cargo install du-dust
+```
+
+> 🌞 [`crates.io` Page](https://crates.io/crates/du-dust)\
+> 👁️  [Source Repository](https://github.com/bootandy/dust)
+
+
