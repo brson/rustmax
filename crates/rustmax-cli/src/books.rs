@@ -495,6 +495,9 @@ fn build_book_with_error_detection(book: &Book) -> Result<(), (Vec<String>, Vec<
         sh.set_var("RUSTUP_TOOLCHAIN", "nightly");
     }
 
+    // Disable mdbook redirect file creation
+    sh.set_var("MDBOOK_OUTPUT__HTML__REDIRECT", "{}");
+
     // Run mdbook build and capture output for error analysis
     let output = cmd!(sh, "mdbook build")
         .ignore_status()
@@ -566,6 +569,9 @@ fn build_book(book: &Book) -> AnyResult<()> {
     if book.needs_nightly || book.slug == "reference" {
         sh.set_var("RUSTUP_TOOLCHAIN", "nightly");
     }
+
+    // Disable mdbook redirect file creation
+    sh.set_var("MDBOOK_OUTPUT__HTML__REDIRECT", "{}");
 
     cmd!(sh, "mdbook build").run()?;
 
