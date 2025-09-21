@@ -64,8 +64,11 @@ pub mod prelude {
 
     #[cfg(feature = "rand")]
     pub use ::rand::RngCore as _;
+    #[cfg(feature = "rand")]
     pub use ::rand::Rng as _;
+    #[cfg(feature = "rand")]
     pub use ::rand::SeedableRng as _;
+    #[cfg(feature = "rand")]
     pub use ::rand::Fill as _;
 
     /* extras */
