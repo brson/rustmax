@@ -331,6 +331,9 @@ pub mod extras {
     /// Use in constant contexts to assert a type is `Sync + Sync`.p
     ///
     /// ```
+    /// # use rustmax as rmx;
+    /// use rmx::extras::assert_send_sync;
+    ///
     /// struct DbPathGen(());
     ///
     /// const _ASSERT_SEND_SYNC: () = assert_send_sync::<DbPathGen>();
