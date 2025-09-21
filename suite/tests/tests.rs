@@ -146,13 +146,32 @@ fn get_binary_path() -> String {
         let target_dir = env::var("CARGO_LLVM_COV_TARGET_DIR")
             .unwrap_or_else(|_| "target/llvm-cov-target".to_string());
 
-        let profile = if cfg!(debug_assertions) {
-            "debug"
-        } else {
-            "release"
-        };
+        // Check for custom profile first, then fallback to debug/release
+        let profile = env::var("CARGO_PROFILE")
+            .unwrap_or_else(|_| {
+                if cfg!(debug_assertions) {
+                    "debug".to_string()
+                } else {
+                    "release".to_string()
+                }
+            });
 
-        format!("{}/{}/rustmax-suite", target_dir, profile)
+        let binary_path = format!("{}/{}/rustmax-suite", target_dir, profile);
+
+        // If custom profile binary doesn't exist, try debug fallback
+        if !std::path::Path::new(&binary_path).exists() {
+            let debug_path = format!("{}/debug/rustmax-suite", target_dir);
+            if std::path::Path::new(&debug_path).exists() {
+                return debug_path;
+            }
+            // Also try coverage profile explicitly
+            let coverage_path = format!("{}/coverage/rustmax-suite", target_dir);
+            if std::path::Path::new(&coverage_path).exists() {
+                return coverage_path;
+            }
+        }
+
+        binary_path
     } else {
         // Use the normal binary
         let target_dir = env::var("CARGO_TARGET_DIR")

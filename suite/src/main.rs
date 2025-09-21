@@ -101,3 +101,7 @@ fn run_internal_tests() {
 
     println!("All internal tests passed!");
 }
+
+fn dead_code() {
+    eprintln!("dead code");
+}

@@ -16,6 +16,14 @@ test-integration:
 coverage:
     cargo llvm-cov clean
     cargo llvm-cov
+    mkdir -p target/llvm-cov
+    cargo llvm-cov report --json --output-path target/llvm-cov/cov.json
+    cargo llvm-cov report --html
+
+coverage-full:
+    cargo llvm-cov clean
+    cargo llvm-cov --profile-coverage
+    mkdir -p target/llvm-cov
     cargo llvm-cov report --json --output-path target/llvm-cov/cov.json
     cargo llvm-cov report --html
 
