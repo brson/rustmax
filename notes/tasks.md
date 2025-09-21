@@ -1,12 +1,31 @@
 # Task add-crate: Add a crate to rustmax
 
-- rustmax/Cargo.toml
-- lib.rs, docs and module reexport
-- root-docs.md
-- crates.json5
-- crate-specific markdown in doc-src
+**Files to update:**
+1. `crates/rustmax/Cargo.toml` - Add dependencies and feature groups
+2. `crates/rustmax/src/lib.rs` - Add module reexports with `#![doc = include_str!("../doc-src/crate-NAME.md")]`
+3. `crates/rustmax/doc-src/root-docs.md` - Update category table and profile sections
+4. `src/crates.json5` - Add crate metadata (category, descriptions)
+5. `README.md` - Add to documentation table
+6. `crates/rustmax/doc-src/crate-NAME.md` - Create detailed documentation
+
+**Key steps:**
+- Add crate to appropriate feature group (usually `rmx-crates-std`)
+- Only add feature flags that actually exist (check docs for `default`, `std` features)
+- Remove non-existent features from `rmx-feature-default` and `rmx-feature-std`
+- Run `cargo check` to verify no feature conflicts
+- Use proper descriptions: "Low-level" vs "High-level", match existing patterns
+
+**Common gotchas:**
+- Not all crates have `default` or `std` features
+- Audio crates go in `rmx-crates-std` (require std)
+- Some crates have important features to add to `rmx-feature-more`,
+  ask the user.
+- Keep alphabetical order in all files
+- Test with `cargo check --all-features`
+- Test with `just test`
 
 See also processes.md.
+
 
 # Task add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli
 
