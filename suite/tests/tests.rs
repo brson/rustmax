@@ -140,14 +140,30 @@ fn test_binary_unknown_command() {
 }
 
 fn get_binary_path() -> String {
-    let target_dir = env::var("CARGO_TARGET_DIR")
-        .unwrap_or_else(|_| "target".to_string());
+    // Check if we're running under cargo-llvm-cov
+    if env::var("CARGO_LLVM_COV").is_ok() {
+        // Use the llvm-cov instrumented binary
+        let target_dir = env::var("CARGO_LLVM_COV_TARGET_DIR")
+            .unwrap_or_else(|_| "target/llvm-cov-target".to_string());
 
-    let profile = if cfg!(debug_assertions) {
-        "debug"
+        let profile = if cfg!(debug_assertions) {
+            "debug"
+        } else {
+            "release"
+        };
+
+        format!("{}/{}/rustmax-suite", target_dir, profile)
     } else {
-        "release"
-    };
+        // Use the normal binary
+        let target_dir = env::var("CARGO_TARGET_DIR")
+            .unwrap_or_else(|_| "target".to_string());
 
-    format!("{}/{}/rustmax-suite", target_dir, profile)
+        let profile = if cfg!(debug_assertions) {
+            "debug"
+        } else {
+            "release"
+        };
+
+        format!("{}/{}/rustmax-suite", target_dir, profile)
+    }
 }

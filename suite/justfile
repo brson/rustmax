@@ -16,6 +16,7 @@ test-integration:
 coverage:
     cargo llvm-cov clean
     cargo llvm-cov
+    cargo llvm-cov report --json --output-path target/llvm-cov/cov.json
     cargo llvm-cov report --html
 
 install-tools:
