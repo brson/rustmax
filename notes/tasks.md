@@ -1,4 +1,4 @@
-# Task add-crate: Add a crate to rustmax
+# Task task-add-crate: Add a crate to rustmax
 
 **Files to update:**
 1. `crates/rustmax/Cargo.toml` - Add dependencies and feature groups
@@ -27,7 +27,7 @@
 See also processes.md.
 
 
-# Task add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli
+# Task task-add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli
 
 `rustmax-cli` has four commands that operate on "tools":
 `install-tool`, `uninstall-tool`, `update-tool`, `tool-status`;
@@ -44,7 +44,7 @@ To add a new cargo plugin:
   Do they store caches in the home directory that can be delete on uninstall?
 
 
-# Task add-cargo-tool-cli: Add a cargo tool to rustmax-cli
+# Task task-add-cargo-tool-cli: Add a cargo tool to rustmax-cli
 
 `rustmax-cli` has four commands that operate on "tools":
 `install-tool`, `uninstall-tool`, `update-tool`, `tool-status`;
@@ -61,7 +61,7 @@ To add a new cargo-installable tool that is not a cargo plugin:
   Do they store caches in the home directory that can be delete on uninstall?
 
 
-# Task add-cargo-tool-to-book: Add a cargo-based tool to the rustmax book
+# Task task-add-cargo-tool-to-book: Add a cargo-based tool to the rustmax book
 
 Rust Max documents important Rust tools, most of which can be install by cargo.
 
