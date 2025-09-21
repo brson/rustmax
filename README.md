@@ -32,7 +32,7 @@ It is neither stable nor supported.
 | `cfg-if = "1.0.0"` | Compile-time control flow | [📖](https://docs.rs/cfg-if/1.0.0/cfg_if) |
 | `chrono = "0.4.39"` | Dates and time (legacy) | [📖](https://docs.rs/chrono/0.4.39/chrono) |
 | `clap = "4.5.23"` | Command-line parsing | [📖](https://docs.rs/clap/4.5.23/clap) |
-| `cpal = "0.16.0"` | Cross-platform audio I/O | [📖](https://docs.rs/cpal/0.16.0/cpal) |
+| `cpal = "0.16.0"` | Low-level cross-platform audio I/O | [📖](https://docs.rs/cpal/0.16.0/cpal) |
 | `crossbeam = "0.8.4"` | Fast channels, etc. | [📖](https://docs.rs/crossbeam/0.8.4/crossbeam) |
 | `ctrlc = "3.4.5"` | Handle Ctrl+C | [📖](https://docs.rs/ctrlc/3.4.5/ctrlc) |
 | `cxx = "1.0.135"` | Bridging to/from C++ | [📖](https://docs.rs/cxx/1.0.135/cxx) |
@@ -63,7 +63,7 @@ It is neither stable nor supported.
 | `rayon = "1.10.0"` | Parallel iterators, etc. | [📖](https://docs.rs/rayon/1.10.0/rayon) |
 | `regex = "1.11.1"` | Regural expressions | [📖](https://docs.rs/regex/1.11.1/regex) |
 | `reqwest = "0.12.22"` | HTTP requests, both async and blocking | [📖](https://docs.rs/reqwest/0.12.22/reqwest) |
-| `rodio = "0.21.1"` | Audio playback library | [📖](https://docs.rs/rodio/0.21.1/rodio) |
+| `rodio = "0.21.1"` | High-level audio playback library | [📖](https://docs.rs/rodio/0.21.1/rodio) |
 | `rustyline = "16.0.0"` | Line reading for console apps | [📖](https://docs.rs/rustyline/16.0.0/rustyline) |
 | `semver = "1.0.24"` | Semantic versioning | [📖](https://docs.rs/semver/1.0.24/semver) |
 | `serde = "1.0.216"` | Standard serialization | [📖](https://docs.rs/serde/1.0.216/serde) |

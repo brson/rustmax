@@ -30,6 +30,4 @@ Rodio uses CPAL as its audio backend.
 
 Play an audio file:
 
-```rust
-// fixme
-```
+todo
