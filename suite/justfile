@@ -15,10 +15,8 @@ test-integration:
 
 coverage:
     cargo llvm-cov clean
-    cargo llvm-cov --html --output-dir out/coverage-html
-    cargo llvm-cov --lcov --output-path out/coverage.lcov
-    cargo llvm-cov --json --output-path out/coverage.json
-    cargo llvm-cov report --summary-only
+    cargo llvm-cov
+    cargo llvm-cov report --html
 
 install-tools:
     cargo install cargo-llvm-cov
