@@ -88,7 +88,7 @@ doc-library: prebuild
     @if [ -n "${RUSTMAX_CI:-}" ]; then \
         cargo run -- refresh-library; \
         cargo run -- install-library-deps; \
-    else
+    fi
     cargo run -- build-library --generate-library-page;
     @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-style.css {} \;
     @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-script.js {} \;
