@@ -1,6 +1,9 @@
 [package]
-name = "rustmax"
+name = "rustmax-suite"
 edition = "2024"
+
+[features]
+test-mode = []
 
 [dependencies]
 rmx.path = "../crates/rustmax"

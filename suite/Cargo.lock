@@ -2280,13 +2280,6 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.0"
-dependencies = [
- "rustmax 0.0.5",
-]
-
-[[package]]
-name = "rustmax"
 version = "0.0.5"
 dependencies = [
  "ahash",
@@ -2352,6 +2345,13 @@ dependencies = [
  "url",
  "walkdir",
  "xshell",
+]
+
+[[package]]
+name = "rustmax-suite"
+version = "0.0.0"
+dependencies = [
+ "rustmax",
 ]
 
 [[package]]

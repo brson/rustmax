@@ -1,0 +1,24 @@
+default:
+    just --list
+
+build:
+    cargo build
+
+test:
+    cargo test --all
+
+test-unit:
+    cargo test --lib
+
+test-integration:
+    cargo test --test rustmax-suite-tests
+
+coverage:
+    cargo llvm-cov clean
+    cargo llvm-cov --html --output-dir out/coverage-html
+    cargo llvm-cov --lcov --output-path out/coverage.lcov
+    cargo llvm-cov --json --output-path out/coverage.json
+    cargo llvm-cov report --summary-only
+
+install-tools:
+    cargo install cargo-llvm-cov

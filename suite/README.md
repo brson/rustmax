@@ -13,9 +13,21 @@ and coverage is easy to generate, track and compare.
 ## Running the test suite
 
 ```
-cargo test --all
+just test
 ```
+
 
 ## Generating a coverage report
 
-todo
+```
+just coverage
+```
+
+
+### Coverage reports
+
+After running coverage generation, you'll have:
+
+- **HTML report**: `out/coverage-html/index.html` - Interactive web-based coverage viewer
+- **LCOV report**: `out/coverage.lcov` - Standard format for CI/CD integration
+- **JSON report**: `out/coverage.json` - Machine-readable format for tooling
