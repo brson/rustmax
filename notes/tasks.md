@@ -1,3 +1,13 @@
+# Task add-crate: Add a crate to rustmax
+
+- rustmax/Cargo.toml
+- lib.rs, docs and module reexport
+- root-docs.md
+- crates.json5
+- crate-specific markdown in doc-src
+
+See also processes.md.
+
 # Task add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli
 
 `rustmax-cli` has four commands that operate on "tools":
