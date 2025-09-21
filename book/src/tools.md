@@ -426,7 +426,8 @@ cargo install jsonxf
 
 ### 🌞 `fd`
 
-A simple, fast and user-friendly alternative to 'find'.
+Find files recursively. A simple, fast and user-friendly alternative to 'find'.
+Pair with [`sd`](#user-content--sd) to search and replace.
 
 ```
 cargo install fd-find
@@ -438,7 +439,8 @@ cargo install fd-find
 
 ### 🌞 `sd`
 
-Intuitive find & replace CLI (sed alternative).
+Intuitive find & replace CLI, `sed` alternative,
+pair with [`fd`](#user-content--fd).
 
 ```
 cargo install sd
@@ -450,7 +452,7 @@ cargo install sd
 
 ### 🌞 `dust`
 
-A more intuitive version of du in Rust.
+Show disk usage. A more intuitive version of `du`.
 
 ```
 cargo install du-dust
