@@ -38,6 +38,7 @@ as a "batteries included" supercrate.
 | asyncronous I/O | [`futures`], [`tokio`] |
 | networking and web | [`axum`], [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`tower`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
+| audio | … |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
 | system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
