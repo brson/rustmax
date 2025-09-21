@@ -38,7 +38,7 @@ as a "batteries included" supercrate.
 | asyncronous I/O | [`futures`], [`tokio`] |
 | networking and web | [`axum`], [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`tower`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
-| audio | … |
+| audio | [`cpal`], [`rodio`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
 | system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
@@ -180,11 +180,13 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 ### Crates in `rmx-profile-std`
 
 - [`clap`] - Command line parsing.
+- [`cpal`] - Cross-platform audio I/O library.
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
 - [`num_cpus`] - Get the number of CPUS on a machine.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.
+- [`rodio`] - Audio playback library.
 - [`tempfile`] - Temporary files and directories.
 - [`tera`] - A text template engine based on Jinja2.
 - [`thiserror`] - Tools for defining custom error types.

@@ -484,6 +484,15 @@ pub mod clap {
     pub use ::clap::*;
 }
 
+#[cfg(feature = "cpal")]
+pub mod cpal {
+    //! Cross-platform audio I/O library.
+    //!
+    //! See crate [`::cpal`].
+
+    pub use ::cpal::*;
+}
+
 #[cfg(feature = "ctrlc")]
 pub mod ctrlc {
     //! Simple handling of CTRL-C for CLI programs.
@@ -752,6 +761,15 @@ pub mod reqwest {
     //! See crate [`::reqwest`].
 
     pub use ::reqwest::*;
+}
+
+#[cfg(feature = "rodio")]
+pub mod rodio {
+    //! Audio playback library.
+    //!
+    //! See crate [`::rodio`].
+
+    pub use ::rodio::*;
 }
 
 #[cfg(feature = "rustyline")]
