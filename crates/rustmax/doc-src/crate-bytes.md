@@ -30,7 +30,7 @@ and is used extensively in async I/O operations.
 
 Creating and sharing byte buffers efficiently:
 
-```rust,ignore
+```rust
 use bytes::{Bytes, BytesMut};
 
 // Create a mutable buffer
@@ -51,7 +51,7 @@ assert_eq!(&slice[..], b"hello");
 
 Using the `Buf` trait for reading:
 
-```rust,ignore
+```rust
 use bytes::Buf;
 
 fn read_u32(buf: &mut impl Buf) -> u32 {
