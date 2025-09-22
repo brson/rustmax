@@ -65,4 +65,24 @@
     "crate::regex::Regex::is_match":
     "https://docs.rs/regex/latest/regex/struct.Regex.html#method.is_match",
 
+    // itertools
+    "crate::itertools::Itertools":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html",
+    "crate::itertools::Itertools::group_by":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.group_by",
+    "crate::itertools::Itertools::chunks":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.chunks",
+    "crate::itertools::Itertools::sorted":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.sorted",
+    "crate::itertools::Itertools::dedup":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.dedup",
+    "crate::itertools::Itertools::intersperse":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.intersperse",
+    "crate::itertools::Itertools::cartesian_product":
+    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.cartesian_product",
+    "crate::itertools::zip_eq":
+    "https://docs.rs/itertools/latest/itertools/fn.zip_eq.html",
+    "crate::itertools::repeat_n":
+    "https://docs.rs/itertools/latest/itertools/fn.repeat_n.html",
+
 }

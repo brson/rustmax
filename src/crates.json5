@@ -154,7 +154,7 @@
             name: "itertools",
             category: "collections",
             short_desc: "Advanced iterator extension methods",
-            oneline_desc: "todo",
+            oneline_desc: "Extra iterator methods and utilities for functional programming",
         },
         {
             name: "jiff",

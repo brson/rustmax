@@ -584,9 +584,7 @@ pub mod hyper {
 
 #[cfg(feature = "itertools")]
 pub mod itertools {
-    //! Additional methods for iterators.
-    //!
-    //! See crate [`::itertools`].
+    #![doc = include_str!("../doc-src/crate-itertools.md")]
 
     pub use ::itertools::*;
 }
