@@ -85,12 +85,6 @@
             oneline_desc: "Command-line parsing",
         },
         {
-            name: "cpal",
-            category: "audio",
-            short_desc: "Low-level cross-platform audio I/O",
-            oneline_desc: "Low-level cross-platform audio I/O library",
-        },
-        {
             name: "crossbeam",
             category: "parallelism",
             short_desc: "Fast channels, etc.",
@@ -269,12 +263,6 @@
             category: "web",
             short_desc: "HTTP requests, both async and blocking",
             oneline_desc: "todo",
-        },
-        {
-            name: "rodio",
-            category: "audio",
-            short_desc: "High-level audio playback library",
-            oneline_desc: "High-level audio playback library",
         },
         {
             name: "rustyline",

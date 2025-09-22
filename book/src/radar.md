@@ -14,6 +14,8 @@ but that are not yet part of Rust Max.
   WireGuard.
 - [`comrak`](https://docs.rs/comrak).
   Markdown parser.
+- [`cpal`](https://docs.rs/cpal).
+  Cross-platform audio I/O.
 - [`console`](https://docs.rs/console),
   [`dialoguer`](https://docs.rs/dialoguer), and
   [`indicatif`](https://docs.rs/indicatif).
@@ -66,6 +68,8 @@ but that are not yet part of Rust Max.
 - [`ratatui`](https://docs.rs/ratatui).
   Seriously cool CLIs.
 - [`rangetools`](https://docs.rs/rangetools)
+- [`rodio`](https://docs.rs/rodio).
+  Cross-platform audio playback.
 - [`rustls`](https://docs.rs/rustls). TLS.
 - [`rustversion`](https://docs.rs/rustversion)
 - [`rust-embed`](https://docs.rs/rust-embed).

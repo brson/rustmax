@@ -482,12 +482,6 @@ pub mod clap {
     pub use ::clap::*;
 }
 
-#[cfg(feature = "cpal")]
-pub mod cpal {
-    #![doc = include_str!("../doc-src/crate-cpal.md")]
-
-    pub use ::cpal::*;
-}
 
 #[cfg(feature = "ctrlc")]
 pub mod ctrlc {
@@ -759,12 +753,6 @@ pub mod reqwest {
     pub use ::reqwest::*;
 }
 
-#[cfg(feature = "rodio")]
-pub mod rodio {
-    #![doc = include_str!("../doc-src/crate-rodio.md")]
-
-    pub use ::rodio::*;
-}
 
 #[cfg(feature = "rustyline")]
 pub mod rustyline {
