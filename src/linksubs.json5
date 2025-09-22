@@ -39,4 +39,12 @@
     "crate::bytes::BufMut":
     "https://docs.rs/bytes/latest/bytes/trait.BufMut.html",
 
+    // serde
+    "crate::serde::Serialize":
+    "https://docs.rs/serde/latest/serde/trait.Serialize.html",
+    "crate::serde::Deserialize":
+    "https://docs.rs/serde/latest/serde/trait.Deserialize.html",
+    "crate::serde_json":
+    "https://docs.rs/serde_json",
+
 }

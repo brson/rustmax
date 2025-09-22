@@ -786,9 +786,7 @@ pub mod semver {
 
 #[cfg(feature = "serde")]
 pub mod serde {
-    //! The standard Rust serialization framework.
-    //!
-    //! See crate [`::serde`].
+    #![doc = include_str!("../doc-src/crate-serde.md")]
 
     pub use ::serde::*;
 }
