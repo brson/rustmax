@@ -29,6 +29,10 @@ Do not import the rustmax prelude or reference anything under the rustmax namesp
 Keep examples simple, practical, and minimal.
 Just one or a few examples.
 
+Note that the examples need to compile within whatever rustmax
+profile that crate is in - so e.g. the thiserror example can't use reqwest.
+Run `just test` to test in all profiles.
+
 
 # Task task-add-crate: Add a crate to rustmax
 
