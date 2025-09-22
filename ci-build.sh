@@ -2,11 +2,11 @@
 
 set +euxo pipefail
 
+# Unfortunate this is needed.
+sudo apt install libasound2-dev
+
 TOOLCHAIN=1.88.0
-
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $TOOLCHAIN
-
-source ~/.cargo/env
+rustup toolchain default $TOOLCHAIN
 
 cargo install just@1.36.0
 
