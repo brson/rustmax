@@ -17,6 +17,12 @@ not documented and document it. Include the docs via lib.rs per previous crates.
 6. **Test with `just doc-crates`:** Run and check for "unreplaced link" warnings
 7. **Verify crates.json5:** Usually already has the crate entry, but check it has appropriate metadata
 
+Examples should be runnable. Test with
+
+```
+cargo test --doc -p rustmax --features=rmx-profile-max
+```
+
 
 # Task task-add-crate: Add a crate to rustmax
 
