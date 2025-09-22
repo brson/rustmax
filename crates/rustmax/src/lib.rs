@@ -441,9 +441,7 @@ pub mod byteorder {
 
 #[cfg(feature = "bytes")]
 pub mod bytes {
-    //! Abstractions for working with byte buffers: [`Bytes`], [`Buf`], and [`BufMut`].
-    //!
-    //! See crate [`::bytes`].
+    #![doc = include_str!("../doc-src/crate-bytes.md")]
 
     pub use ::bytes::*;
 }

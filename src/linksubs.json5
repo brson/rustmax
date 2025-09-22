@@ -29,4 +29,14 @@
     "crate::std::error::Error":
     "https://doc.rust-lang.org/stable/std/error/trait.Error.html",
 
+    // bytes
+    "crate::bytes::Bytes":
+    "https://docs.rs/bytes/latest/bytes/struct.Bytes.html",
+    "crate::bytes::BytesMut":
+    "https://docs.rs/bytes/latest/bytes/struct.BytesMut.html",
+    "crate::bytes::Buf":
+    "https://docs.rs/bytes/latest/bytes/trait.Buf.html",
+    "crate::bytes::BufMut":
+    "https://docs.rs/bytes/latest/bytes/trait.BufMut.html",
+
 }
