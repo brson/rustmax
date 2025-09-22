@@ -23,6 +23,9 @@ Examples should be runnable. Test with
 cargo test --doc -p rustmax --features=rmx-profile-max
 ```
 
+The examples should be testing the crates, not the rustmax prelude.
+Do not import the rustmax prelude or reference anything under the rustmax namespace.
+
 
 # Task task-add-crate: Add a crate to rustmax
 
