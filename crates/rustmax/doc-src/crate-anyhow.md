@@ -39,20 +39,29 @@ use [`thiserror`] instead of `anyhow`.
 Use [`Result<T>`] as your main error type,
 and [`.context()`] to add helpful error messages:
 
-```rust,ignore
-use anyhow::{Context, Result};
+```
+use anyhow::{anyhow, bail, Context, Result};
 
-fn get_cluster_info() -> Result<ClusterMap> {
-    let config = std::fs::read_to_string("cluster.json")
-        .context("Failed to read cluster config")?;
-    let map: ClusterMap = serde_json::from_str(&config)
-        .context("Failed to parse cluster config")?;
-    Ok(map)
+fn load_config() -> Result<Config> {
+    let content = read_config_file()
+        .context("Unable to load config file")?;
+
+    let config = parse_config(&content)
+        .context("Invalid configuration format")?;
+
+    Ok(config)
 }
 
-#[derive(serde::Deserialize)]
-struct ClusterMap {
-    // ..
+struct Config {
+    name: String,
+}
+
+fn read_config_file() -> Result<String> {
+    Ok(std::fs::read_to_string("config.toml")?)
+}
+
+fn parse_config(content: &str) -> Result<Config> {
+   Ok(Config { name: content.to_string() })
 }
 ```
 
