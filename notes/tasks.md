@@ -1,3 +1,14 @@
+# Task task-document-one-crate
+
+Each crate should have a doc file in crates/rustmax/doc-src/.
+Most don't.
+
+Pick one of the crate dependencies of the rustmax crate that is
+not documented and document it. Include the docs via lib.rs per previous crates.
+
+Test with `just doc-crates`.
+
+
 # Task task-add-crate: Add a crate to rustmax
 
 **Files to update:**
