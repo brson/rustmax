@@ -8,6 +8,10 @@ not documented and document it. Include the docs via lib.rs per previous crates.
 
 Test with `just doc-crates`.
 
+Pay attention to "unreplaced links" warnings and adjust linksubs.json5 as needed.
+
+crates.json5 may need to be updated too.
+
 
 # Task task-add-crate: Add a crate to rustmax
 
