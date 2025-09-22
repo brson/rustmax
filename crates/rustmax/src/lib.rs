@@ -874,9 +874,7 @@ pub mod thiserror {
 
 #[cfg(feature = "tokio")]
 pub mod tokio {
-    //! An async task runtime and I/O library.
-    //!
-    //! See crate [`::tokio`].
+    #![doc = include_str!("../doc-src/crate-tokio.md")]
 
     pub use ::tokio::*;
 }

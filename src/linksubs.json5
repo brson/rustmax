@@ -47,4 +47,14 @@
     "crate::serde_json":
     "https://docs.rs/serde_json",
 
+    // tokio
+    "crate::tokio::runtime::Runtime":
+    "https://docs.rs/tokio/latest/tokio/runtime/struct.Runtime.html",
+    "crate::tokio::main":
+    "https://docs.rs/tokio/latest/tokio/attr.main.html",
+    "crate::tokio::net::TcpListener":
+    "https://docs.rs/tokio/latest/tokio/net/struct.TcpListener.html",
+    "crate::tokio::net::TcpStream":
+    "https://docs.rs/tokio/latest/tokio/net/struct.TcpStream.html",
+
 }
