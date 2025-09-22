@@ -737,9 +737,7 @@ pub mod rayon {
 
 #[cfg(feature = "regex")]
 pub mod regex {
-    //! Regular expressions.
-    //!
-    //! See crate [`::regex`].
+    #![doc = include_str!("../doc-src/crate-regex.md")]
 
     pub use ::regex::*;
 }

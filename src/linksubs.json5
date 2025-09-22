@@ -57,4 +57,12 @@
     "crate::tokio::net::TcpStream":
     "https://docs.rs/tokio/latest/tokio/net/struct.TcpStream.html",
 
+    // regex
+    "crate::regex::Regex":
+    "https://docs.rs/regex/latest/regex/struct.Regex.html",
+    "crate::regex::Regex::new":
+    "https://docs.rs/regex/latest/regex/struct.Regex.html#method.new",
+    "crate::regex::Regex::is_match":
+    "https://docs.rs/regex/latest/regex/struct.Regex.html#method.is_match",
+
 }

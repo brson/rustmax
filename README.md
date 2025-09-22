@@ -60,7 +60,7 @@ It is neither stable nor supported.
 | `rand_chacha = "0.9.0"` | Secure random numbers | [📖](https://docs.rs/rand_chacha/0.9.0/rand_chacha) |
 | `rand_pcg = "0.9.0"` | Fast random numbers | [📖](https://docs.rs/rand_pcg/0.9.0/rand_pcg) |
 | `rayon = "1.10.0"` | Parallel iterators, etc. | [📖](https://docs.rs/rayon/1.10.0/rayon) |
-| `regex = "1.11.1"` | Regural expressions | [📖](https://docs.rs/regex/1.11.1/regex) |
+| `regex = "1.11.1"` | Regular expressions | [📖](https://docs.rs/regex/1.11.1/regex) |
 | `reqwest = "0.12.22"` | HTTP requests, both async and blocking | [📖](https://docs.rs/reqwest/0.12.22/reqwest) |
 | `rustyline = "16.0.0"` | Line reading for console apps | [📖](https://docs.rs/rustyline/16.0.0/rustyline) |
 | `semver = "1.0.24"` | Semantic versioning | [📖](https://docs.rs/semver/1.0.24/semver) |

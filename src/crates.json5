@@ -255,8 +255,8 @@
         {
             name: "regex",
             category: "encoding",
-            short_desc: "Regural expressions",
-            oneline_desc: "todo",
+            short_desc: "Regular expressions",
+            oneline_desc: "Regular expression engine with support for Unicode",
         },
         {
             name: "reqwest",
