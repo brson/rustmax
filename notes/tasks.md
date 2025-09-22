@@ -6,11 +6,16 @@ Most don't.
 Pick one of the crate dependencies of the rustmax crate that is
 not documented and document it. Include the docs via lib.rs per previous crates.
 
-Test with `just doc-crates`.
+**Steps to follow:**
 
-Pay attention to "unreplaced links" warnings and adjust linksubs.json5 as needed.
-
-crates.json5 may need to be updated too.
+1. **Check existing documentation:** Look in `crates/rustmax/doc-src/` for existing `crate-*.md` files
+2. **Pick an undocumented crate:** Choose from dependencies in `crates/rustmax/Cargo.toml`
+3. **Create documentation file:** `crates/rustmax/doc-src/crate-NAME.md`
+  - follow existing conventions to create content
+4. **Update lib.rs:** replace module contents per other crates
+5. **Update linksubs.json5:** Add entries for any cross-references in your documentation
+6. **Test with `just doc-crates`:** Run and check for "unreplaced link" warnings
+7. **Verify crates.json5:** Usually already has the crate entry, but check it has appropriate metadata
 
 
 # Task task-add-crate: Add a crate to rustmax
