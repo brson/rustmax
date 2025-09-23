@@ -123,6 +123,8 @@ rmx-profile-std = [
   "rmx-feature-std",
   "rmx-feature-default",
   "rmx-feature-more",
+  "rmx-feature-derive",
+  "rmx-feature-serde",
   "rmx-crates-std",
 ]
 
@@ -157,8 +159,6 @@ rmx-profile-full = [
 
 rmx-profile-max = [
   "rmx-profile-full",
-  "rmx-feature-derive",
-  "rmx-feature-serde",
   "rmx-feature-backtrace",
   "rmx-feature-tokio",
 ]
