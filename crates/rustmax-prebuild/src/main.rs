@@ -43,7 +43,6 @@ struct CrateInfo {
     category: String,
     version: String,
     short_desc: String,
-    oneline_desc: String,
     example: String,
 }
 
@@ -60,7 +59,6 @@ mod meta {
         pub name: String,
         pub category: String,
         pub short_desc: String,
-        pub oneline_desc: String,
     }
 
     #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -73,7 +71,6 @@ mod meta {
         pub name: String,
         pub category: String,
         pub short_desc: String,
-        pub oneline_desc: String,
     }
 }
 
@@ -166,7 +163,6 @@ fn build_crate_info(
             category: meta.category.to_string(),
             version: crate_.version.to_string(),
             short_desc: meta.short_desc.to_string(),
-            oneline_desc: meta.oneline_desc.to_string(),
             example,
         });
     }
