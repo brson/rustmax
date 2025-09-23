@@ -466,9 +466,7 @@ pub mod cfg_if {
 
 #[cfg(feature = "chrono")]
 pub mod chrono {
-    //! Dates and time (legacy).
-    //!
-    //! See crate [`::chrono`].
+    #![doc = include_str!("../doc-src/crate-chrono.md")]
 
     pub use ::chrono::*;
 }
@@ -589,9 +587,7 @@ pub mod itertools {
 
 #[cfg(feature = "jiff")]
 pub mod jiff {
-    //! Dates and time.
-    //!
-    //! See crate [`::jiff`].
+    #![doc = include_str!("../doc-src/crate-jiff.md")]
 
     pub use ::jiff::*;
 }

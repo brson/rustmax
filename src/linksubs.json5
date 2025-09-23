@@ -39,6 +39,32 @@
     "crate::bytes::BufMut":
     "https://docs.rs/bytes/latest/bytes/trait.BufMut.html",
 
+    // chrono
+    "crate::chrono::NaiveDate":
+    "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html",
+    "crate::chrono::NaiveTime":
+    "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveTime.html",
+    "crate::chrono::NaiveDateTime":
+    "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDateTime.html",
+    "crate::chrono::DateTime":
+    "https://docs.rs/chrono/latest/chrono/struct.DateTime.html",
+    "crate::chrono::TimeZone":
+    "https://docs.rs/chrono/latest/chrono/trait.TimeZone.html",
+    "crate::jiff":
+    "https://docs.rs/jiff",
+
+    // jiff
+    "crate::jiff::Timestamp":
+    "https://docs.rs/jiff/latest/jiff/struct.Timestamp.html",
+    "crate::jiff::Zoned":
+    "https://docs.rs/jiff/latest/jiff/struct.Zoned.html",
+    "crate::jiff::civil::DateTime":
+    "https://docs.rs/jiff/latest/jiff/civil/struct.DateTime.html",
+    "crate::jiff::civil::Date":
+    "https://docs.rs/jiff/latest/jiff/civil/struct.Date.html",
+    "crate::jiff::civil::Time":
+    "https://docs.rs/jiff/latest/jiff/civil/struct.Time.html",
+
     // serde
     "crate::serde::Serialize":
     "https://docs.rs/serde/latest/serde/trait.Serialize.html",
