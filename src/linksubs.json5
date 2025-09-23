@@ -95,4 +95,14 @@
     "crate::anyhow":
     "https://docs.rs/anyhow",
 
+    // clap
+    "crate::clap::Parser":
+    "https://docs.rs/clap/latest/clap/trait.Parser.html",
+    "crate::clap::Subcommand":
+    "https://docs.rs/clap/latest/clap/trait.Subcommand.html",
+    "crate::clap::Command":
+    "https://docs.rs/clap/latest/clap/struct.Command.html",
+    "crate::clap::Arg":
+    "https://docs.rs/clap/latest/clap/struct.Arg.html",
+
 }

@@ -475,9 +475,7 @@ pub mod chrono {
 
 #[cfg(feature = "clap")]
 pub mod clap {
-    //! Command line parsing.
-    //!
-    //! See crate [`::clap`].
+    #![doc = include_str!("../doc-src/crate-clap.md")]
 
     pub use ::clap::*;
 }
