@@ -162,11 +162,11 @@ table#rmx-crate-table tr > td:is(:nth-child(3)) {
 }
 
 table#rmx-crate-table tr.example-row {
-    visibility: collapse;
+    display: none;
 }
 
 table#rmx-crate-table tr.example-row-visible {
-    visibility: visible;
+    display: table-row;
 }
 
 table#rmx-crate-table tr.example-row-visible > td {
