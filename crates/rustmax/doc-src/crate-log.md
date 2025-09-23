@@ -56,6 +56,6 @@ fn process_data(value: i32) {
 [`debug!`]: crate::log::debug
 [`trace!`]: crate::log::trace
 [`env_logger`]: crate::env_logger
-[`simplelog`]: crate::simplelog
-[`fern`]: crate::fern
-[`tracing-subscriber`]: crate::tracing-subscriber
+[`simplelog`]: https://docs.rs/simplelog
+[`fern`]: https://docs.rs/fern
+[`tracing-subscriber`]: https://docs.rs/tracing-subscriber
