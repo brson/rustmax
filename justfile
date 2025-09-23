@@ -94,18 +94,21 @@ doc-library: prebuild
     @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-script.js {} \;
     @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/rustmax-themes.css {} \;
 
-doc-build: doc-crates doc-library doc-book
+doc-www: prebuild
+    mkdir -p out/
+    cp -r www/* out/
+    cp work/crates.html out/
+    cp work/build-info.json out/
+    
+
+doc-build: doc-www doc-crates doc-library doc-book
     rm -rf book/yapp~
-    #rm -rf out
     mkdir -p out/book
     mkdir -p out/api
     mkdir -p out/library
-    cp -r www/* out/
     cp -r book/book/* out/book/
     cp -rlf target/doc/* out/api/
     cp -r work/library/* out/library/
-    cp work/crates.html out/
-    cp work/build-info.json out/
 
 publish-dry:
     cargo publish -p rustmax --dry-run
