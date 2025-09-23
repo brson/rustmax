@@ -278,6 +278,8 @@ but the Rust Max CLI tool handles this setup automatically.
 A line-oriented search tool that recursively searches your current directory for a regex pattern.
 Faster than grep and respects gitignore.
 
+Documented in the legendary blog post, ["ripgrep is faster than ..."](https://burntsushi.net/ripgrep/).
+
 ```
 cargo install ripgrep
 ```
