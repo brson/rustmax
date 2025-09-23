@@ -85,4 +85,14 @@
     "crate::itertools::repeat_n":
     "https://docs.rs/itertools/latest/itertools/fn.repeat_n.html",
 
+    // thiserror
+    "crate::thiserror::Error":
+    "https://docs.rs/thiserror/latest/thiserror/derive.Error.html",
+    "crate::std::fmt::Display":
+    "https://doc.rust-lang.org/stable/std/fmt/trait.Display.html",
+    "crate::std::convert::From":
+    "https://doc.rust-lang.org/stable/std/convert/trait.From.html",
+    "crate::anyhow":
+    "https://docs.rs/anyhow",
+
 }

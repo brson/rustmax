@@ -849,9 +849,7 @@ pub mod termcolor {
 
 #[cfg(feature = "thiserror")]
 pub mod thiserror {
-    //! Tools for defining custom error types.
-    //!
-    //! See crate [`::thiserror`].
+    #![doc = include_str!("../doc-src/crate-thiserror.md")]
 
     pub use ::thiserror::*;
 }

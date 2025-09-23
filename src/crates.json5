@@ -334,7 +334,7 @@
             name: "thiserror",
             category: "errors",
             short_desc: "Precise error handling",
-            oneline_desc: "todo",
+            oneline_desc: "Derive macros for creating custom error types with minimal boilerplate",
         },
         {
             name: "tokio",
