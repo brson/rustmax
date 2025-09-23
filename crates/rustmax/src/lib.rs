@@ -616,9 +616,7 @@ pub mod libc {
 
 #[cfg(feature = "log")]
 pub mod log {
-    //! A simple logging framework.
-    //!
-    //! See crate [`::log`].
+    #![doc = include_str!("../doc-src/crate-log.md")]
 
     pub use ::log::*;
 }

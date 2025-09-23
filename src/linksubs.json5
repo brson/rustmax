@@ -85,6 +85,26 @@
     "crate::itertools::repeat_n":
     "https://docs.rs/itertools/latest/itertools/fn.repeat_n.html",
 
+    // log
+    "crate::log::error":
+    "https://docs.rs/log/latest/log/macro.error.html",
+    "crate::log::warn":
+    "https://docs.rs/log/latest/log/macro.warn.html",
+    "crate::log::info":
+    "https://docs.rs/log/latest/log/macro.info.html",
+    "crate::log::debug":
+    "https://docs.rs/log/latest/log/macro.debug.html",
+    "crate::log::trace":
+    "https://docs.rs/log/latest/log/macro.trace.html",
+    "crate::env_logger":
+    "https://docs.rs/env_logger",
+    "crate::simplelog":
+    "https://docs.rs/simplelog",
+    "crate::fern":
+    "https://docs.rs/fern",
+    "crate::tracing-subscriber":
+    "https://docs.rs/tracing-subscriber",
+
     // thiserror
     "crate::thiserror::Error":
     "https://docs.rs/thiserror/latest/thiserror/derive.Error.html",

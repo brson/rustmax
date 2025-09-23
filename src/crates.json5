@@ -177,8 +177,8 @@
         {
             name: "log",
             category: "errors",
-            short_desc: "Simple logging",
-            oneline_desc: "todo",
+            short_desc: "Logging facade",
+            oneline_desc: "A lightweight logging facade for Rust",
         },
         {
             name: "mime",

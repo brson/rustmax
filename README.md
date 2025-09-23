@@ -47,7 +47,7 @@ It is neither stable nor supported.
 | `jiff = "0.2.1"` | Dates and time | [📖](https://docs.rs/jiff/0.2.1/jiff) |
 | `json5 = "0.4.1"` | JSON with comments, etc. | [📖](https://docs.rs/json5/0.4.1/json5) |
 | `libc = "0.2.169"` | C interop | [📖](https://docs.rs/libc/0.2.169/libc) |
-| `log = "0.4.22"` | Simple logging | [📖](https://docs.rs/log/0.4.22/log) |
+| `log = "0.4.22"` | Logging facade | [📖](https://docs.rs/log/0.4.22/log) |
 | `mime = "0.3.17"` | Shared MIME definitions | [📖](https://docs.rs/mime/0.3.17/mime) |
 | `nom = "8.0.0"` | Parser combinators | [📖](https://docs.rs/nom/8.0.0/nom) |
 | `num-bigint = "0.4.6"` | Big integers | [📖](https://docs.rs/num-bigint/0.4.6/num_bigint) |
