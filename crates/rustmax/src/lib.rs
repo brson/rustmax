@@ -635,9 +635,7 @@ pub mod nom {
 
 #[cfg(feature = "num-bigint")]
 pub mod num_bigint {
-    //! Arbitrary-sized integers.
-    //!
-    //! See crate [`::num_bigint`].
+    #![doc = include_str!("../doc-src/crate-num-bigint.md")]
 
     pub use ::num_bigint::*;
 }

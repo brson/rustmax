@@ -193,4 +193,10 @@
     "crate::rayon::ThreadPool":
     "https://docs.rs/rayon/latest/rayon/struct.ThreadPool.html",
 
+    // num-bigint
+    "crate::num_bigint::BigInt":
+    "https://docs.rs/num-bigint/latest/num_bigint/struct.BigInt.html",
+    "crate::num_bigint::BigUint":
+    "https://docs.rs/num-bigint/latest/num_bigint/struct.BigUint.html",
+
 }
