@@ -18,6 +18,14 @@ window.addEventListener("load", () => {
     loadBuildInfo();
 });
 
+// Initialize highlight.js after HTMX loads content
+document.addEventListener("htmx:afterSettle", function(evt) {
+    // Highlight all code blocks in the dynamically loaded content
+    document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+    });
+});
+
 async function loadBuildInfo() {
     try {
         const response = await fetch('build-info.json');
