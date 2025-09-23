@@ -544,9 +544,7 @@ pub mod extension_trait {
 
 #[cfg(feature = "futures")]
 pub mod futures {
-    //! Abstractions for asynchronous programming.
-    //!
-    //! See crate [`::futures`].
+    #![doc = include_str!("../doc-src/crate-futures.md")]
 
     pub use ::futures::*;
 }

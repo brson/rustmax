@@ -39,6 +39,28 @@
     "crate::bytes::BufMut":
     "https://docs.rs/bytes/latest/bytes/trait.BufMut.html",
 
+    // futures
+    "crate::futures::Future":
+    "https://docs.rs/futures/latest/futures/future/trait.Future.html",
+    "crate::futures::Stream":
+    "https://docs.rs/futures/latest/futures/stream/trait.Stream.html",
+    "crate::futures::Sink":
+    "https://docs.rs/futures/latest/futures/sink/trait.Sink.html",
+    "crate::futures::future":
+    "https://docs.rs/futures/latest/futures/future/index.html",
+    "crate::futures::stream":
+    "https://docs.rs/futures/latest/futures/stream/index.html",
+    "crate::futures::sink":
+    "https://docs.rs/futures/latest/futures/sink/index.html",
+    "crate::futures::executor":
+    "https://docs.rs/futures/latest/futures/executor/index.html",
+    "crate::futures::channel":
+    "https://docs.rs/futures/latest/futures/channel/index.html",
+    "crate::futures::channel::mpsc":
+    "https://docs.rs/futures/latest/futures/channel/mpsc/index.html",
+    "crate::futures::channel::oneshot":
+    "https://docs.rs/futures/latest/futures/channel/oneshot/index.html",
+
     // chrono
     "crate::chrono::NaiveDate":
     "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html",
