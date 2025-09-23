@@ -249,8 +249,8 @@
         {
             name: "rayon",
             category: "parallelism",
-            short_desc: "Parallel iterators, etc.",
-            oneline_desc: "todo",
+            short_desc: "Parallel iterators, thread pools, etc.",
+            oneline_desc: "Parallel computing tools, including iterators and thread pools.",
         },
         {
             name: "regex",

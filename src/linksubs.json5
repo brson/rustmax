@@ -125,4 +125,24 @@
     "crate::clap::Arg":
     "https://docs.rs/clap/latest/clap/struct.Arg.html",
 
+    // rayon
+    "crate::rayon::iter::ParallelIterator":
+    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html",
+    "crate::rayon::slice::ParallelSlice":
+    "https://docs.rs/rayon/latest/rayon/slice/trait.ParallelSlice.html",
+    "crate::rayon::iter::ParallelIterator::map":
+    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html#method.map",
+    "crate::rayon::iter::ParallelIterator::filter":
+    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html#method.filter",
+    "crate::rayon::iter::ParallelIterator::reduce":
+    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html#method.reduce",
+    "crate::rayon::slice::ParallelSliceMut::par_sort":
+    "https://docs.rs/rayon/latest/rayon/slice/trait.ParallelSliceMut.html#method.par_sort",
+    "crate::rayon::join":
+    "https://docs.rs/rayon/latest/rayon/fn.join.html",
+    "crate::rayon::scope":
+    "https://docs.rs/rayon/latest/rayon/fn.scope.html",
+    "crate::rayon::ThreadPool":
+    "https://docs.rs/rayon/latest/rayon/struct.ThreadPool.html",
+
 }
