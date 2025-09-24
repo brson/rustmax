@@ -685,9 +685,7 @@ pub mod quote {
 
 #[cfg(feature = "rand")]
 pub mod rand {
-    //! Random number generators.
-    //!
-    //! See crate [`::rand`].
+    #![doc = include_str!("../doc-src/crate-rand.md")]
 
     pub use ::rand::*;
 }

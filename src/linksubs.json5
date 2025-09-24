@@ -225,4 +225,28 @@
     "crate::serde_json::Value":
     "https://docs.rs/serde_json/latest/serde_json/enum.Value.html",
 
+    // rand
+    "crate::rand::rng":
+    "https://docs.rs/rand/latest/rand/fn.rng.html",
+    "crate::rand::Rng":
+    "https://docs.rs/rand/latest/rand/trait.Rng.html",
+    "crate::rand::random":
+    "https://docs.rs/rand/latest/rand/fn.random.html",
+    "crate::rand::RngCore":
+    "https://docs.rs/rand/latest/rand/trait.RngCore.html",
+    "crate::rand::SeedableRng":
+    "https://docs.rs/rand/latest/rand/trait.SeedableRng.html",
+    "crate::rand::rngs::StdRng":
+    "https://docs.rs/rand/latest/rand/rngs/struct.StdRng.html",
+    "crate::rand::rngs::SmallRng":
+    "https://docs.rs/rand/latest/rand/rngs/struct.SmallRng.html",
+    "crate::rand_chacha":
+    "https://docs.rs/rand_chacha",
+    "crate::rand_pcg":
+    "https://docs.rs/rand_pcg",
+    "crate::rand_chacha::ChaCha12Rng":
+    "https://docs.rs/rand_chacha/latest/rand_chacha/struct.ChaCha12Rng.html",
+    "crate::rand_pcg::Pcg64":
+    "https://docs.rs/rand_pcg/latest/rand_pcg/type.Pcg64.html",
+
 }
