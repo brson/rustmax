@@ -199,4 +199,12 @@
     "crate::num_bigint::BigUint":
     "https://docs.rs/num-bigint/latest/num_bigint/struct.BigUint.html",
 
+    // base64
+    "crate::base64::encode":
+    "https://docs.rs/base64/latest/base64/fn.encode.html",
+    "crate::base64::decode":
+    "https://docs.rs/base64/latest/base64/fn.decode.html",
+    "crate::base64::Engine":
+    "https://docs.rs/base64/latest/base64/trait.Engine.html",
+
 }

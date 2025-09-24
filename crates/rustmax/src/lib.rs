@@ -398,9 +398,7 @@ pub mod backtrace {
 
 #[cfg(feature = "base64")]
 pub mod base64 {
-    //! Base-64 encoding and decoding.
-    //!
-    //! See crate [`::base64`].
+    #![doc = include_str!("../doc-src/crate-base64.md")]
 
     pub use ::base64::*;
 }
