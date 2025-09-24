@@ -612,9 +612,7 @@ pub mod log {
 
 #[cfg(feature = "mime")]
 pub mod mime {
-    //! MIME media types.
-    //!
-    //! See crate [`::mime`].
+    #![doc = include_str!("../doc-src/crate-mime.md")]
 
     pub use ::mime::*;
 }
