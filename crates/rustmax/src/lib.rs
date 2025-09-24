@@ -761,9 +761,7 @@ pub mod serde {
 
 #[cfg(feature = "serde_json")]
 pub mod serde_json {
-    //! JSON serialization / deserialization with [`serde`](super::serde).
-    //!
-    //! See crate [`::serde_json`].
+    #![doc = include_str!("../doc-src/crate-serde_json.md")]
 
     pub use ::serde_json::*;
 }

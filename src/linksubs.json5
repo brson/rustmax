@@ -88,6 +88,8 @@
     "https://docs.rs/jiff/latest/jiff/civil/struct.Time.html",
 
     // serde
+    "crate::serde":
+    "https://docs.rs/serde",
     "crate::serde::Serialize":
     "https://docs.rs/serde/latest/serde/trait.Serialize.html",
     "crate::serde::Deserialize":
@@ -206,5 +208,21 @@
     "https://docs.rs/base64/latest/base64/fn.decode.html",
     "crate::base64::Engine":
     "https://docs.rs/base64/latest/base64/trait.Engine.html",
+
+    // serde_json
+    "crate::serde_json::to_string":
+    "https://docs.rs/serde_json/latest/serde_json/fn.to_string.html",
+    "crate::serde_json::from_str":
+    "https://docs.rs/serde_json/latest/serde_json/fn.from_str.html",
+    "crate::serde_json::to_writer":
+    "https://docs.rs/serde_json/latest/serde_json/fn.to_writer.html",
+    "crate::serde_json::from_reader":
+    "https://docs.rs/serde_json/latest/serde_json/fn.from_reader.html",
+    "crate::serde_json::to_value":
+    "https://docs.rs/serde_json/latest/serde_json/fn.to_value.html",
+    "crate::serde_json::from_value":
+    "https://docs.rs/serde_json/latest/serde_json/fn.from_value.html",
+    "crate::serde_json::Value":
+    "https://docs.rs/serde_json/latest/serde_json/enum.Value.html",
 
 }
