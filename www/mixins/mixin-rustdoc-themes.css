@@ -18,6 +18,7 @@ pre {
     background-color: var(--rmx-color-bg-alt);
 }
 
+code, pre,
 .item-table dt > a {
     font: var(--rmx-font-code);
 }
