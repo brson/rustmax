@@ -151,6 +151,8 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
         content.push_str("    that affect the Cargo build process.\n");
         content.push_str("  - 🔖 [Configuration format](../library/cargo-book/reference/config.html).\n");
         content.push_str("    Cargo has many interesting configuration options.\n");
+        content.push_str("  - 🔖 [SemVer compatibility](../library/cargo-book/reference/semver.html).\n");
+        content.push_str("    Guidelines for maintaining semver compatibility.\n");
     }
     if let Some(book) = book_map.get("rustc-book") {
         let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);

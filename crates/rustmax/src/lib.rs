@@ -740,9 +740,7 @@ pub mod rustyline {
 
 #[cfg(feature = "semver")]
 pub mod semver {
-    //! The software versioning standard used by Rust
-    //!
-    //! See crate [`::semver`].
+    #![doc = include_str!("../doc-src/crate-semver.md")]
 
     pub use ::semver::*;
 }

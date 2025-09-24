@@ -50,6 +50,8 @@ notable or useful chapters within a book.
     that affect the Cargo build process.
   - 🔖 [Configuration format](../library/cargo-book/reference/config.html).
     Cargo has many interesting configuration options.
+  - 🔖 [SemVer compatibility](../library/cargo-book/reference/semver.html).
+    Guidelines for maintaining semver compatibility.
 - [The rustc Book](../library/rustc-book/) ([upstream](https://doc.rust-lang.org/rustc/))
   - 🔖 [The lint system and built-in lints](../library/rustc-book/lints/index.html)
   - 🔖 [Rust platform support tiers](../library/rustc-book/platform-support.html)
