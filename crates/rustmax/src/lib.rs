@@ -868,9 +868,7 @@ pub mod unicode_segmentation {
 
 #[cfg(feature = "url")]
 pub mod url {
-    //! URL parsing and data structures.
-    //!
-    //! See crate [`::url`].
+    #![doc = include_str!("../doc-src/crate-url.md")]
 
     pub use ::url::*;
 }
