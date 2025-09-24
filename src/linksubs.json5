@@ -249,4 +249,12 @@
     "crate::rand_pcg::Pcg64":
     "https://docs.rs/rand_pcg/latest/rand_pcg/type.Pcg64.html",
 
+    // hex
+    "crate::hex::encode":
+    "https://docs.rs/hex/latest/hex/fn.encode.html",
+    "crate::hex::decode":
+    "https://docs.rs/hex/latest/hex/fn.decode.html",
+    "crate::hex::encode_upper":
+    "https://docs.rs/hex/latest/hex/fn.encode_upper.html",
+
 }

@@ -548,11 +548,8 @@ pub mod futures {
 }
 
 #[cfg(feature = "hex")]
+#[doc = include_str!("../doc-src/crate-hex.md")]
 pub mod hex {
-    //! Encoding and decoding hexidecimal strings.
-    //!
-    //! See crate [`::hex`].
-
     pub use ::hex::*;
 }
 
