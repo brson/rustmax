@@ -869,9 +869,7 @@ pub mod url {
 
 #[cfg(feature = "walkdir")]
 pub mod walkdir {
-    //! Efficient directory traversal.
-    //!
-    //! See crate [`::walkdir`].
+    #![doc = include_str!("../doc-src/crate-walkdir.md")]
 
     pub use ::walkdir::*;
 }
