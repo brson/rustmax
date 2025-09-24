@@ -6,24 +6,42 @@
 
 :root[data-theme="light"],
 :root:not([data-theme]) {
-    --rmx-color-fg: #444;      /* black */
-    --rmx-color-bg: #fafafa;   /* white */
-    --rmx-color-bg-alt: #f4f4f4;
+    /* Fallback colors for older browsers */
+    --rmx-color-fg: #3d3d3d;
+    --rmx-color-bg: #fefefe;
+    --rmx-color-bg-alt: #f2f2f2;
+    --rmx-color-links: #1057a7;
+    --rmx-color-accents: #c4441a;
+    --rmx-color-border: #9e9e9e;
+
+    --rmx-color-fg: oklch(25% 0.02 90);      /* warm dark gray */
+    --rmx-color-bg: oklch(98% 0.02 90);      /* warm white */
+    --rmx-color-bg-alt: oklch(95% 0.02 90);  /* subtle warm gray */
+    --rmx-color-links: oklch(45% 0.15 250);  /* accessible blue */
+    --rmx-color-accents: oklch(55% 0.18 25); /* warm red-orange */
+    --rmx-color-border: oklch(70% 0.02 90);  /* neutral mid-tone */
+
     --rmx-color-bg-odd: var(--rmx-color-bg-alt);
     --rmx-color-bg-even: var(--rmx-color-bg);
-    --rmx-color-links: #07f;   /* blue */
-    --rmx-color-accents: #f30; /* red */
-    --rmx-color-border: #888;
 }
 
 :root[data-theme="dark"] {
-    --rmx-color-fg: #fff;      /* white */
-    --rmx-color-bg: #111;   /* black */
-    --rmx-color-bg-alt: #222;
+    /* Fallback colors for older browsers */
+    --rmx-color-fg: #d9d9d9;
+    --rmx-color-bg: #1e1e2e;
+    --rmx-color-bg-alt: #2a2a3e;
+    --rmx-color-links: #6cb6ff;
+    --rmx-color-accents: #ff6b6b;
+    --rmx-color-border: #5a5a6e;
+
+    --rmx-color-fg: oklch(85% 0.02 90);      /* warm off-white */
+    --rmx-color-bg: oklch(18% 0.02 270);     /* deep blue-gray */
+    --rmx-color-bg-alt: oklch(22% 0.02 270); /* slightly lighter blue-gray */
+    --rmx-color-links: oklch(70% 0.12 230);  /* accessible light blue */
+    --rmx-color-accents: oklch(65% 0.15 35); /* warm coral */
+    --rmx-color-border: oklch(45% 0.02 270); /* mid-tone gray */
+
     --rmx-color-bg-odd: var(--rmx-color-bg-alt);
     --rmx-color-bg-even: var(--rmx-color-bg);
-    --rmx-color-links: #5af;   /* blue */
-    --rmx-color-accents: #f30; /* red */
-    --rmx-color-border: #888;
 }
 

@@ -61,6 +61,6 @@ ul {
 	--link-color: var(--rmx-color-links);
 	--sidebar-link-color: var(--rmx-color-links);
 
-    --code-block-background-color: color-mix(in srgb, var(--rmx-color-bg), var(--rmx-color-accents) 10%);
-	--table-alt-row-background-color: color-mix(in srgb, var(--rmx-color-bg-deep), var(--rmx-color-accents) 5%);
+    --code-block-background-color: var(--rmx-color-bg-alt);
+	--table-alt-row-background-color: var(--rmx-color-bg-alt);
 }
