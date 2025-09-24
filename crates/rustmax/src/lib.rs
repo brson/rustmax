@@ -850,9 +850,7 @@ pub mod tower {
 
 #[cfg(feature = "toml")]
 pub mod toml {
-    //! TOML serialization / deserialization with `serde`.
-    //!
-    //! See crate [`::toml`].
+    #![doc = include_str!("../doc-src/crate-toml.md")]
 
     pub use ::toml::*;
 }
