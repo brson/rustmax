@@ -33,6 +33,49 @@ The suite should continuously expand to cover more rustmax crates
 as they are added or as existing crates gain new features.
 
 
+## Current Coverage
+
+The suite currently implements **20 commands** exercising various rustmax crates:
+
+### Core Functionality
+- **greet** - Basic string operations and formatting
+- **count** - Numeric operations and control flow
+- **math** - Arithmetic operations and error handling
+- **test** - Internal self-testing capabilities
+
+### File & I/O Operations
+- **file** - File I/O operations with tempfile integration
+- **walk** - Directory traversal using walkdir
+
+### Parsing & Serialization
+- **parse** - CLI argument parsing with clap
+- **serialize** - JSON/TOML serialization with serde
+- **nom** - Parser combinators for structured text parsing
+- **regex** - Pattern matching and text processing
+
+### Cryptography & Hashing
+- **crypto** - Cryptographic operations (BLAKE3, SHA2)
+
+### Date & Time
+- **time** - Date/time handling with chrono and jiff
+
+### Networking & URLs
+- **url** - URL parsing, manipulation, and validation
+
+### Concurrency & Parallelism
+- **async** - Async/await patterns with tokio and futures
+- **parallel** - Parallel processing with rayon
+- **crossbeam** - Advanced concurrency primitives
+
+### Utilities & System
+- **util** - Utility crates (itertools, bytes, bigint, semver, base64)
+- **rand** - Random number generation and shuffling
+- **xshell** - Cross-platform shell command execution
+- **thiserror** - Custom error type definitions and handling
+
+**Test Coverage**: 48 integration tests with 72%+ line coverage maintained through comprehensive binary invocation testing.
+
+
 ## Running the test suite
 
 ```
@@ -51,6 +94,7 @@ just coverage
 
 After running coverage generation, you'll have:
 
-- **HTML report**: `out/coverage-html/index.html` - Interactive web-based coverage viewer
-- **LCOV report**: `out/coverage.lcov` - Standard format for CI/CD integration
-- **JSON report**: `out/coverage.json` - Machine-readable format for tooling
+- **HTML report**: `target/llvm-cov/html/index.html` - Interactive web-based coverage viewer
+- **JSON report**: `target/llvm-cov/cov.json` - Machine-readable format for tooling
+
+The HTML report provides an interactive, line-by-line coverage analysis that helps identify untested code paths and areas for improvement.
