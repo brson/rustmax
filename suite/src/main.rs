@@ -89,24 +89,70 @@ fn main() -> AnyResult<()> {
                     Err(e) => println!("  Error: {}", e),
                 }
             }
+            "async" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("futures");
+                let count = args.get(3)
+                    .and_then(|s| s.parse::<usize>().ok())
+                    .unwrap_or(3);
+                println!("Async/futures test with {}:", operation);
+                match async_demo(operation, count) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "parallel" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("map");
+                let size = args.get(3)
+                    .and_then(|s| s.parse::<usize>().ok())
+                    .unwrap_or(1000);
+                println!("Parallel processing test with {}:", operation);
+                match parallel_demo(operation, size) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "util" => {
+                let utility = args.get(2).map(|s| s.as_str()).unwrap_or("itertools");
+                let data = args.get(3).map(|s| s.as_str()).unwrap_or("test data");
+                println!("Utility crates test with {}:", utility);
+                match util_demo(utility, data) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "walk" => {
+                let path = args.get(2).map(|s| s.as_str()).unwrap_or(".");
+                let max_depth = args.get(3)
+                    .and_then(|s| s.parse::<usize>().ok())
+                    .unwrap_or(2);
+                println!("Directory walk test:");
+                match walk_demo(path, max_depth) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
             _ => {
-                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex");
+                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk");
             }
         }
     } else {
         println!("Rustmax Suite - Integration test application");
         println!("Usage: {} <command> [args...]", args[0]);
         println!("Commands:");
-        println!("  greet [name]             - Greet someone");
-        println!("  count [num]              - Count to a number");
-        println!("  math [a] [b]             - Perform math operations");
-        println!("  test                     - Run internal tests");
-        println!("  file [content]           - Test file I/O operations");
-        println!("  parse <args...>          - Test CLI parsing with clap");
-        println!("  serialize [fmt] [data]   - Test JSON/TOML serialization");
-        println!("  crypto [algo] [data]     - Test cryptographic operations");
-        println!("  time [lib] [op]          - Test date/time operations");
-        println!("  regex [pattern] [text]   - Test regex pattern matching");
+        println!("  greet [name]              - Greet someone");
+        println!("  count [num]               - Count to a number");
+        println!("  math [a] [b]              - Perform math operations");
+        println!("  test                      - Run internal tests");
+        println!("  file [content]            - Test file I/O operations");
+        println!("  parse <args...>           - Test CLI parsing with clap");
+        println!("  serialize [fmt] [data]    - Test JSON/TOML serialization");
+        println!("  crypto [algo] [data]      - Test cryptographic operations");
+        println!("  time [lib] [op]           - Test date/time operations");
+        println!("  regex [pattern] [text]    - Test regex pattern matching");
+        println!("  async [op] [count]        - Test async/futures with tokio");
+        println!("  parallel [op] [size]      - Test parallel processing with rayon");
+        println!("  util [crate] [data]       - Test utility crates (itertools, bytes, etc.)");
+        println!("  walk [path] [depth]       - Test directory walking with walkdir");
     }
 
     Ok(())
@@ -382,6 +428,206 @@ fn regex_demo(pattern: &str, text: &str) -> AnyResult<String> {
         },
         Err(e) => Ok(format!("Invalid regex pattern '{}': {}", pattern, e))
     }
+}
+
+fn async_demo(operation: &str, count: usize) -> AnyResult<String> {
+    use rmx::tokio;
+    use std::time::Duration;
+
+    let runtime = tokio::runtime::Runtime::new()?;
+
+    match operation {
+        "futures" => {
+            let result = runtime.block_on(async {
+                let futures: Vec<_> = (0..count)
+                    .map(|i| async move {
+                        tokio::time::sleep(Duration::from_millis(10)).await;
+                        i * i
+                    })
+                    .collect();
+
+                let results = rmx::futures::future::join_all(futures).await;
+                results
+            });
+
+            Ok(format!("Ran {} async futures, results: {:?}", count, result))
+        },
+        "spawn" => {
+            let result = runtime.block_on(async {
+                let handles: Vec<_> = (0..count)
+                    .map(|i| {
+                        tokio::spawn(async move {
+                            tokio::time::sleep(Duration::from_millis(10)).await;
+                            format!("task-{}", i)
+                        })
+                    })
+                    .collect();
+
+                let mut results = Vec::new();
+                for handle in handles {
+                    results.push(handle.await.unwrap());
+                }
+                results
+            });
+
+            Ok(format!("Spawned {} tasks, completed: {}", count, result.len()))
+        },
+        "select" => {
+            let result = runtime.block_on(async {
+                let fut1 = async {
+                    tokio::time::sleep(Duration::from_millis(20)).await;
+                    "fast"
+                };
+
+                let fut2 = async {
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    "slow"
+                };
+
+                use rmx::futures::future::Either;
+                let winner = rmx::futures::future::select(Box::pin(fut1), Box::pin(fut2)).await;
+
+                match winner {
+                    Either::Left((val, _)) => format!("Left won: {}", val),
+                    Either::Right((val, _)) => format!("Right won: {}", val),
+                }
+            });
+
+            Ok(format!("Select result: {}", result))
+        },
+        _ => Ok(format!("Unsupported operation '{}', use 'futures', 'spawn', or 'select'", operation))
+    }
+}
+
+fn parallel_demo(operation: &str, size: usize) -> AnyResult<String> {
+    use rmx::rayon::prelude::*;
+    use std::time::Instant;
+
+    match operation {
+        "map" => {
+            let data: Vec<usize> = (0..size).collect();
+
+            let start = Instant::now();
+            let result: Vec<usize> = data.par_iter().map(|&x| x * x).collect();
+            let duration = start.elapsed();
+
+            let sum: usize = result.iter().sum();
+            Ok(format!("Parallel map on {} items: sum={}, time={:?}", size, sum, duration))
+        },
+        "filter" => {
+            let data: Vec<usize> = (0..size).collect();
+
+            let start = Instant::now();
+            let result: Vec<usize> = data.par_iter()
+                .filter(|&&x| x % 2 == 0)
+                .copied()
+                .collect();
+            let duration = start.elapsed();
+
+            Ok(format!("Parallel filter on {} items: {} even numbers, time={:?}",
+                      size, result.len(), duration))
+        },
+        "reduce" => {
+            let data: Vec<usize> = (1..=size).collect();
+
+            let start = Instant::now();
+            let result = data.par_iter().map(|&x| x as u64).reduce(|| 0, |a, b| a + b);
+            let duration = start.elapsed();
+
+            Ok(format!("Parallel reduce on {} items: sum={}, time={:?}", size, result, duration))
+        },
+        "sort" => {
+            let mut data: Vec<usize> = (0..size).rev().collect();
+
+            let start = Instant::now();
+            data.par_sort();
+            let duration = start.elapsed();
+
+            let is_sorted = data.windows(2).all(|w| w[0] <= w[1]);
+            Ok(format!("Parallel sort on {} items: sorted={}, time={:?}", size, is_sorted, duration))
+        },
+        _ => Ok(format!("Unsupported operation '{}', use 'map', 'filter', 'reduce', or 'sort'", operation))
+    }
+}
+
+fn util_demo(utility: &str, data: &str) -> AnyResult<String> {
+    match utility {
+        "itertools" => {
+            let numbers = vec![1, 2, 3, 4, 5];
+            let result = numbers.iter()
+                .cartesian_product(numbers.iter())
+                .take(5)
+                .map(|(a, b)| format!("({},{})", a, b))
+                .join(", ");
+
+            let chunks: Vec<Vec<i32>> = (1..=10).chunks(3).into_iter().map(|c| c.collect()).collect();
+
+            Ok(format!("Itertools - cartesian: {} | chunks: {:?}", result, chunks))
+        },
+        "bytes" => {
+            use rmx::bytes::{BytesMut, BufMut};
+
+            let mut buf = BytesMut::with_capacity(64);
+            buf.put_slice(data.as_bytes());
+            buf.put_u8(b'!');
+            buf.put_u32(12345);
+
+            let frozen = buf.freeze();
+
+            Ok(format!("Bytes - len: {}, capacity was 64, data: {:?}...",
+                      frozen.len(), &frozen[..data.len().min(10)]))
+        },
+        "bigint" => {
+            use rmx::num_bigint::BigInt;
+
+            let a: BigInt = data.parse().unwrap_or_else(|_| BigInt::from(12345));
+            let b = &a * &a;
+            let c = &b + &a;
+
+            Ok(format!("BigInt - a: {}, a²: {}, a²+a: {}", a, b, c))
+        },
+        "semver" => {
+            use rmx::semver::Version;
+
+            let v1 = Version::parse(data).unwrap_or(Version::new(1, 2, 3));
+            let v2 = Version::new(v1.major, v1.minor, v1.patch + 1);
+
+            Ok(format!("Semver - v1: {}, v2: {}, v1<v2: {}", v1, v2, v1 < v2))
+        },
+        "base64" => {
+            use rmx::base64::{Engine as _, engine::general_purpose};
+
+            let encoded = general_purpose::STANDARD.encode(data.as_bytes());
+            let decoded = general_purpose::STANDARD.decode(&encoded)?;
+            let decoded_str = String::from_utf8(decoded)?;
+
+            Ok(format!("Base64 - encoded: '{}', roundtrip: {}", encoded, decoded_str == data))
+        },
+        _ => Ok(format!("Unsupported utility '{}', use 'itertools', 'bytes', 'bigint', 'semver', or 'base64'", utility))
+    }
+}
+
+fn walk_demo(path: &str, max_depth: usize) -> AnyResult<String> {
+    use rmx::walkdir::WalkDir;
+
+    let mut file_count = 0;
+    let mut dir_count = 0;
+    let mut total_size = 0u64;
+
+    for entry in WalkDir::new(path).max_depth(max_depth) {
+        let entry = entry?;
+        if entry.file_type().is_file() {
+            file_count += 1;
+            if let Ok(metadata) = entry.metadata() {
+                total_size += metadata.len();
+            }
+        } else if entry.file_type().is_dir() {
+            dir_count += 1;
+        }
+    }
+
+    Ok(format!("Walked '{}' (depth {}): {} dirs, {} files, total size: {} bytes",
+              path, max_depth, dir_count, file_count, total_size))
 }
 
 fn dead_code() {

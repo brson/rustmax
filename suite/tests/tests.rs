@@ -259,6 +259,136 @@ fn test_binary_regex_command() {
     assert!(stdout.contains("First: 'hello'"));
 }
 
+#[test]
+fn test_binary_async_futures() {
+    let output = Command::new(get_binary_path())
+        .args(&["async", "futures", "3"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Async/futures test with futures:"));
+    assert!(stdout.contains("Ran 3 async futures"));
+}
+
+#[test]
+fn test_binary_async_spawn() {
+    let output = Command::new(get_binary_path())
+        .args(&["async", "spawn", "4"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Async/futures test with spawn:"));
+    assert!(stdout.contains("Spawned 4 tasks"));
+}
+
+#[test]
+fn test_binary_parallel_map() {
+    let output = Command::new(get_binary_path())
+        .args(&["parallel", "map", "100"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Parallel processing test with map:"));
+    assert!(stdout.contains("Parallel map on 100 items"));
+}
+
+#[test]
+fn test_binary_parallel_filter() {
+    let output = Command::new(get_binary_path())
+        .args(&["parallel", "filter", "100"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Parallel processing test with filter:"));
+    assert!(stdout.contains("50 even numbers"));
+}
+
+#[test]
+fn test_binary_util_itertools() {
+    let output = Command::new(get_binary_path())
+        .args(&["util", "itertools"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Utility crates test with itertools:"));
+    assert!(stdout.contains("cartesian:"));
+}
+
+#[test]
+fn test_binary_util_bytes() {
+    let output = Command::new(get_binary_path())
+        .args(&["util", "bytes", "test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Utility crates test with bytes:"));
+    assert!(stdout.contains("Bytes - len:"));
+}
+
+#[test]
+fn test_binary_util_bigint() {
+    let output = Command::new(get_binary_path())
+        .args(&["util", "bigint", "123"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Utility crates test with bigint:"));
+    assert!(stdout.contains("BigInt - a: 123"));
+}
+
+#[test]
+fn test_binary_util_semver() {
+    let output = Command::new(get_binary_path())
+        .args(&["util", "semver", "2.0.0"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Utility crates test with semver:"));
+    assert!(stdout.contains("Semver - v1: 2.0.0"));
+}
+
+#[test]
+fn test_binary_util_base64() {
+    let output = Command::new(get_binary_path())
+        .args(&["util", "base64", "hello"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Utility crates test with base64:"));
+    assert!(stdout.contains("roundtrip: true"));
+}
+
+#[test]
+fn test_binary_walk_command() {
+    let output = Command::new(get_binary_path())
+        .args(&["walk", "src", "1"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Directory walk test:"));
+    assert!(stdout.contains("Walked 'src'"));
+}
+
 fn get_binary_path() -> String {
     // Check if we're running under cargo-llvm-cov
     if env::var("CARGO_LLVM_COV").is_ok() {
