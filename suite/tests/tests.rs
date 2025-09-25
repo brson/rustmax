@@ -626,6 +626,127 @@ fn test_binary_crossbeam_deque() {
     assert!(stdout.contains("Work-stealing deque: pushed=5"));
 }
 
+#[test]
+fn test_binary_tempfile_create() {
+    let output = Command::new(get_binary_path())
+        .args(&["tempfile", "create", "hello tempfile"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Temporary file operations test with create:"));
+    assert!(stdout.contains("Created anonymous tempfile, wrote 14 bytes"));
+    assert!(stdout.contains("read back: 'hello tempfile'"));
+}
+
+#[test]
+fn test_binary_tempfile_named() {
+    let output = Command::new(get_binary_path())
+        .args(&["tempfile", "named", "test data"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Temporary file operations test with named:"));
+    assert!(stdout.contains("Created named tempfile at"));
+    assert!(stdout.contains("content: 'test data'"));
+}
+
+#[test]
+fn test_binary_tempfile_dir() {
+    let output = Command::new(get_binary_path())
+        .args(&["tempfile", "dir", "directory test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Temporary file operations test with dir:"));
+    assert!(stdout.contains("Created tempdir"));
+    assert!(stdout.contains("wrote file with content: 'directory test'"));
+}
+
+#[test]
+fn test_binary_json5_parse() {
+    let output = Command::new(get_binary_path())
+        .args(&["json5", "parse", "{name: 'test', value: 42}"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("JSON5 relaxed parsing test with parse:"));
+    assert!(stdout.contains("JSON5 parsed successfully:"));
+    assert!(stdout.contains(r#"{"name":"test","value":42}"#));
+}
+
+#[test]
+fn test_binary_json5_comments() {
+    let output = Command::new(get_binary_path())
+        .args(&["json5", "comments"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("JSON5 relaxed parsing test with comments:"));
+    assert!(stdout.contains("JSON5 with comments parsed:"));
+}
+
+#[test]
+fn test_binary_json5_trailing() {
+    let output = Command::new(get_binary_path())
+        .args(&["json5", "trailing"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("JSON5 relaxed parsing test with trailing:"));
+    assert!(stdout.contains("JSON5 with trailing commas:"));
+}
+
+#[test]
+fn test_binary_tera_render() {
+    let output = Command::new(get_binary_path())
+        .args(&["tera", "render", "Alice"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Template engine test with render:"));
+    assert!(stdout.contains("Template rendered: 'Hello Alice! Welcome to Rustmax Suite.'"));
+}
+
+#[test]
+fn test_binary_tera_loops() {
+    let output = Command::new(get_binary_path())
+        .args(&["tera", "loops"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Template engine test with loops:"));
+    assert!(stdout.contains("Loop template: 'Items: apple, banana, cherry'"));
+}
+
+#[test]
+fn test_binary_tera_filters() {
+    let output = Command::new(get_binary_path())
+        .args(&["tera", "filters", "Test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Template engine test with filters:"));
+    assert!(stdout.contains("Original: Test | Upper: TEST | Length: 4"));
+}
+
 fn get_binary_path() -> String {
     // Check if we're running under cargo-llvm-cov
     if env::var("CARGO_LLVM_COV").is_ok() {

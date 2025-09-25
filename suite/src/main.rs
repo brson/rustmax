@@ -193,8 +193,35 @@ fn main() -> AnyResult<()> {
                     Err(e) => println!("  Error: {}", e),
                 }
             }
+            "tempfile" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("create");
+                let content = args.get(3).map(|s| s.as_str()).unwrap_or("temp content");
+                println!("Temporary file operations test with {}:", operation);
+                match tempfile_demo(operation, content) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "json5" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("parse");
+                let data = args.get(3).map(|s| s.as_str()).unwrap_or(r#"{ name: 'test', /* comment */ value: 42 }"#);
+                println!("JSON5 relaxed parsing test with {}:", operation);
+                match json5_demo(operation, data) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "tera" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("render");
+                let name = args.get(3).map(|s| s.as_str()).unwrap_or("World");
+                println!("Template engine test with {}:", operation);
+                match tera_demo(operation, name) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
             _ => {
-                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url, nom, thiserror, xshell, crossbeam");
+                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url, nom, thiserror, xshell, crossbeam, tempfile, json5, tera");
             }
         }
     } else {
@@ -221,6 +248,9 @@ fn main() -> AnyResult<()> {
         println!("  thiserror [type] [msg]    - Test custom error types with thiserror");
         println!("  xshell [op] [cmd]         - Test shell execution with xshell");
         println!("  crossbeam [op] [count]    - Test advanced concurrency with crossbeam");
+        println!("  tempfile [op] [content]   - Test temporary file operations with tempfile");
+        println!("  json5 [op] [data]         - Test relaxed JSON parsing with json5");
+        println!("  tera [op] [name]          - Test template engine with tera");
     }
 
     Ok(())
@@ -1263,6 +1293,346 @@ fn crossbeam_demo(operation: &str, count: usize) -> AnyResult<String> {
         },
         _ => {
             Ok(format!("Unsupported operation '{}'. Available: channel, bounded, select, scope, deque", operation))
+        }
+    }
+}
+
+fn tempfile_demo(operation: &str, content: &str) -> AnyResult<String> {
+    use rmx::tempfile::{tempfile, tempdir, NamedTempFile, TempDir};
+    use std::io::{Write, Read, Seek, SeekFrom};
+
+    match operation {
+        "create" => {
+            let mut temp_file = tempfile()?;
+            write!(temp_file, "{}", content)?;
+            temp_file.seek(SeekFrom::Start(0))?;
+
+            let mut read_content = String::new();
+            temp_file.read_to_string(&mut read_content)?;
+
+            Ok(format!("Created anonymous tempfile, wrote {} bytes, read back: '{}'",
+                     content.len(), read_content))
+        },
+        "named" => {
+            let mut named_file = NamedTempFile::new()?;
+            let path = named_file.path().display().to_string();
+
+            write!(named_file, "{}", content)?;
+            named_file.seek(SeekFrom::Start(0))?;
+
+            let mut read_content = String::new();
+            named_file.read_to_string(&mut read_content)?;
+
+            Ok(format!("Created named tempfile at '{}', content: '{}'",
+                     path, read_content))
+        },
+        "persist" => {
+            let temp_file = NamedTempFile::new()?;
+            let temp_path = temp_file.path().display().to_string();
+
+            let mut file = temp_file.reopen()?;
+            write!(file, "{}", content)?;
+
+            // Note: In a real scenario we'd persist, but for testing we'll just show the path
+            Ok(format!("Would persist tempfile '{}' with content: '{}'",
+                     temp_path, content))
+        },
+        "dir" => {
+            let temp_dir = tempdir()?;
+            let dir_path = temp_dir.path().display().to_string();
+
+            // Create a file inside the temp directory
+            let file_path = temp_dir.path().join("test.txt");
+            std::fs::write(&file_path, content)?;
+
+            let read_content = std::fs::read_to_string(&file_path)?;
+
+            Ok(format!("Created tempdir '{}', wrote file with content: '{}'",
+                     dir_path, read_content))
+        },
+        "scoped" => {
+            let temp_dir = TempDir::new()?;
+            let dir_path = temp_dir.path().display().to_string();
+
+            // Create multiple files
+            for i in 0..3 {
+                let file_path = temp_dir.path().join(format!("file_{}.txt", i));
+                std::fs::write(&file_path, format!("{}-{}", content, i))?;
+            }
+
+            let entries = std::fs::read_dir(temp_dir.path())?
+                .filter_map(|entry| entry.ok())
+                .filter_map(|entry| entry.file_name().to_str().map(|s| s.to_string()))
+                .collect::<Vec<_>>();
+
+            Ok(format!("Created scoped tempdir '{}' with {} files: {:?}",
+                     dir_path, entries.len(), entries))
+        },
+        "builder" => {
+            use rmx::tempfile::Builder;
+
+            let temp_file = Builder::new()
+                .prefix("rustmax-")
+                .suffix(".tmp")
+                .tempfile()?;
+
+            let path = temp_file.path().display().to_string();
+            let mut file = temp_file.reopen()?;
+            write!(file, "{}", content)?;
+
+            Ok(format!("Built custom tempfile '{}' with prefix/suffix, content: '{}'",
+                     path, content))
+        },
+        "multiple" => {
+            let mut files = Vec::new();
+            let mut paths = Vec::new();
+
+            // Create multiple temporary files
+            for i in 0..3 {
+                let mut temp_file = NamedTempFile::new()?;
+                let path = temp_file.path().display().to_string();
+                write!(temp_file, "{}-{}", content, i)?;
+
+                paths.push(path);
+                files.push(temp_file);
+            }
+
+            Ok(format!("Created {} tempfiles: first at '{}', last at '{}'",
+                     files.len(), paths.first().unwrap_or(&"none".to_string()),
+                     paths.last().unwrap_or(&"none".to_string())))
+        },
+        _ => {
+            Ok(format!("Unsupported operation '{}'. Available: create, named, persist, dir, scoped, builder, multiple", operation))
+        }
+    }
+}
+
+fn json5_demo(operation: &str, data: &str) -> AnyResult<String> {
+    use rmx::json5;
+    use rmx::serde_json::Value;
+
+    match operation {
+        "parse" => {
+            match json5::from_str::<Value>(data) {
+                Ok(value) => Ok(format!("JSON5 parsed successfully: {}", value)),
+                Err(e) => Ok(format!("JSON5 parse error: {}", e)),
+            }
+        },
+        "comments" => {
+            let json5_with_comments = r#"{
+                // This is a comment
+                "name": "example", /* inline comment */
+                "numbers": [1, 2, 3], // trailing comment
+                /* multi-line
+                   comment */
+                "value": 42
+            }"#;
+
+            match json5::from_str::<Value>(json5_with_comments) {
+                Ok(value) => Ok(format!("JSON5 with comments parsed: {}", value)),
+                Err(e) => Ok(format!("JSON5 comments parse error: {}", e)),
+            }
+        },
+        "trailing" => {
+            let json5_with_trailing = r#"{
+                "items": [1, 2, 3,],  // trailing comma in array
+                "object": {
+                    "key1": "value1",
+                    "key2": "value2", // trailing comma in object
+                },
+            }"#;
+
+            match json5::from_str::<Value>(json5_with_trailing) {
+                Ok(value) => Ok(format!("JSON5 with trailing commas: {}", value)),
+                Err(e) => Ok(format!("JSON5 trailing commas error: {}", e)),
+            }
+        },
+        "keys" => {
+            let json5_unquoted = r#"{
+                unquoted: "value1",
+                'single-quoted': "value2",
+                "double-quoted": "value3",
+                validIdentifier: 123,
+                number: 42,
+            }"#;
+
+            match json5::from_str::<Value>(json5_unquoted) {
+                Ok(value) => Ok(format!("JSON5 with unquoted keys: {}", value)),
+                Err(e) => Ok(format!("JSON5 unquoted keys error: {}", e)),
+            }
+        },
+        "strings" => {
+            let json5_strings = r#"{
+                "multiline": "This is a \
+long string that spans \
+multiple lines",
+                "escapes": "\x41\u0042\u{43}",
+                "single": 'Single quoted string',
+                "template": `Template ${literal} string`,
+            }"#;
+
+            match json5::from_str::<Value>(json5_strings) {
+                Ok(value) => Ok(format!("JSON5 string features: {}", value)),
+                Err(e) => Ok(format!("JSON5 strings error: {}", e)),
+            }
+        },
+        "numbers" => {
+            let json5_numbers = r#"{
+                "hex": 0xFF,
+                "positive": +42,
+                "infinity": Infinity,
+                "negative_infinity": -Infinity,
+                "not_a_number": NaN,
+            }"#;
+
+            match json5::from_str::<Value>(json5_numbers) {
+                Ok(value) => Ok(format!("JSON5 number formats: {}", value)),
+                Err(e) => Ok(format!("JSON5 numbers error: {}", e)),
+            }
+        },
+        "compare" => {
+            let standard_json = r#"{"name": "test", "value": 42}"#;
+            let json5_equivalent = r#"{
+                // JSON5 version with comments
+                name: 'test', /* unquoted key, single quotes */
+                value: +42,   // explicit positive sign
+            }"#;
+
+            let json_result = json5::from_str::<Value>(standard_json)?;
+            let json5_result = json5::from_str::<Value>(json5_equivalent)?;
+
+            Ok(format!("Standard JSON: {} | JSON5: {} | Equal: {}",
+                     json_result, json5_result, json_result == json5_result))
+        },
+        _ => {
+            Ok(format!("Unsupported operation '{}'. Available: parse, comments, trailing, keys, strings, numbers, compare", operation))
+        }
+    }
+}
+
+fn tera_demo(operation: &str, name: &str) -> AnyResult<String> {
+    use rmx::tera::{Tera, Context};
+    use rmx::serde_json::json;
+
+    match operation {
+        "render" => {
+            let mut tera = Tera::new("templates/**/*").unwrap_or_else(|_| Tera::default());
+            let template = "Hello {{ name }}! Welcome to {{ app_name }}.";
+
+            let mut context = Context::new();
+            context.insert("name", name);
+            context.insert("app_name", "Rustmax Suite");
+
+            match tera.render_str(template, &context) {
+                Ok(result) => Ok(format!("Template rendered: '{}'", result)),
+                Err(e) => Ok(format!("Template error: {}", e)),
+            }
+        },
+        "loops" => {
+            let mut tera = Tera::default();
+            let template = r#"Items: {% for item in items %}{{ item }}{% if not loop.last %}, {% endif %}{% endfor %}"#;
+
+            let mut context = Context::new();
+            context.insert("items", &vec!["apple", "banana", "cherry"]);
+
+            match tera.render_str(template, &context) {
+                Ok(result) => Ok(format!("Loop template: '{}'", result)),
+                Err(e) => Ok(format!("Loop template error: {}", e)),
+            }
+        },
+        "conditions" => {
+            let mut tera = Tera::default();
+            let template = r#"{% if user.admin %}Admin: {{ user.name }}{% else %}User: {{ user.name }}{% endif %}"#;
+
+            let mut context = Context::new();
+            context.insert("user", &json!({
+                "name": name,
+                "admin": name == "admin"
+            }));
+
+            match tera.render_str(template, &context) {
+                Ok(result) => Ok(format!("Conditional template: '{}'", result)),
+                Err(e) => Ok(format!("Conditional template error: {}", e)),
+            }
+        },
+        "filters" => {
+            let mut tera = Tera::default();
+            let template = r#"Original: {{ text }} | Upper: {{ text | upper }} | Length: {{ text | length }}"#;
+
+            let mut context = Context::new();
+            context.insert("text", name);
+
+            match tera.render_str(template, &context) {
+                Ok(result) => Ok(format!("Filter template: '{}'", result)),
+                Err(e) => Ok(format!("Filter template error: {}", e)),
+            }
+        },
+        "inheritance" => {
+            let mut tera = Tera::default();
+
+            // Add base template
+            let base_template = r#"<!DOCTYPE html>
+<html>
+<head><title>{{ title }}</title></head>
+<body>
+    <header>{{ app_name }}</header>
+    <main>{% block content %}Default content{% endblock %}</main>
+</body>
+</html>"#;
+
+            let child_template = r#"{% extends "base.html" %}
+{% block content %}
+<h1>Hello {{ name }}!</h1>
+<p>This is child template content.</p>
+{% endblock %}"#;
+
+            tera.add_raw_template("base.html", base_template).unwrap();
+            tera.add_raw_template("child.html", child_template).unwrap();
+
+            let mut context = Context::new();
+            context.insert("title", "Tera Demo");
+            context.insert("app_name", "Rustmax Suite");
+            context.insert("name", name);
+
+            match tera.render("child.html", &context) {
+                Ok(result) => Ok(format!("Inheritance template rendered ({} chars)", result.len())),
+                Err(e) => Ok(format!("Inheritance template error: {}", e)),
+            }
+        },
+        "macros" => {
+            let mut tera = Tera::default();
+            let template = r#"
+{% macro input(label, name, type="text") %}
+<label>{{ label }}: <input type="{{ type }}" name="{{ name }}" /></label>
+{% endmacro %}
+
+Form: {{ self::input(label="Name", name="user_name") }}
+"#;
+
+            let context = Context::new();
+            match tera.render_str(template, &context) {
+                Ok(result) => Ok(format!("Macro template: '{}'", result.trim())),
+                Err(e) => Ok(format!("Macro template error: {}", e)),
+            }
+        },
+        "globals" => {
+            let mut tera = Tera::default();
+
+            // Add global variables
+            tera.add_raw_template("test", "App: {{ APP_NAME }} | Version: {{ VERSION }} | User: {{ user }}").unwrap();
+
+            let mut context = Context::new();
+            context.insert("APP_NAME", "Rustmax Suite");
+            context.insert("VERSION", "1.0.0");
+            context.insert("user", name);
+
+            match tera.render("test", &context) {
+                Ok(result) => Ok(format!("Global variables: '{}'", result)),
+                Err(e) => Ok(format!("Globals template error: {}", e)),
+            }
+        },
+        _ => {
+            Ok(format!("Unsupported operation '{}'. Available: render, loops, conditions, filters, inheritance, macros, globals", operation))
         }
     }
 }
