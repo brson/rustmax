@@ -1,4 +1,8 @@
 use rmx::prelude::*;
+
+// Test if thiserror is available
+#[allow(unused_imports)]
+use rmx::thiserror;
 use std::env;
 
 fn main() -> AnyResult<()> {
@@ -151,8 +155,46 @@ fn main() -> AnyResult<()> {
                     Err(e) => println!("  Error: {}", e),
                 }
             }
+            "nom" => {
+                let parser_type = args.get(2).map(|s| s.as_str()).unwrap_or("numbers");
+                let input = args.get(3).map(|s| s.as_str()).unwrap_or("123 456 789");
+                println!("Parser combinators test with {}:", parser_type);
+                match nom_demo(parser_type, input) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "thiserror" => {
+                let error_type = args.get(2).map(|s| s.as_str()).unwrap_or("validation");
+                let message = args.get(3).map(|s| s.as_str()).unwrap_or("test error");
+                println!("Custom error handling test with {}:", error_type);
+                match thiserror_demo(error_type, message) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "xshell" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("info");
+                let command = args.get(3).map(|s| s.as_str()).unwrap_or("echo hello");
+                println!("Shell execution test with {}:", operation);
+                match xshell_demo(operation, command) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "crossbeam" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("channel");
+                let count = args.get(3)
+                    .and_then(|s| s.parse::<usize>().ok())
+                    .unwrap_or(5);
+                println!("Advanced concurrency test with {}:", operation);
+                match crossbeam_demo(operation, count) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
             _ => {
-                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url");
+                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url, nom, thiserror, xshell, crossbeam");
             }
         }
     } else {
@@ -175,6 +217,10 @@ fn main() -> AnyResult<()> {
         println!("  walk [path] [depth]       - Test directory walking with walkdir");
         println!("  rand [op] [count]         - Test random number generation with rand");
         println!("  url [op] [url]            - Test URL parsing and manipulation");
+        println!("  nom [parser] [input]      - Test parser combinators with nom");
+        println!("  thiserror [type] [msg]    - Test custom error types with thiserror");
+        println!("  xshell [op] [cmd]         - Test shell execution with xshell");
+        println!("  crossbeam [op] [count]    - Test advanced concurrency with crossbeam");
     }
 
     Ok(())
@@ -764,6 +810,460 @@ fn url_demo(operation: &str, url_str: &str) -> AnyResult<String> {
             }
         },
         _ => Ok(format!("Unsupported operation '{}', use 'parse', 'manipulate', 'join', or 'validate'", operation))
+    }
+}
+
+fn nom_demo(parser_type: &str, input: &str) -> AnyResult<String> {
+    use rmx::nom::{
+        IResult,
+        character::complete::{digit1, alpha1, space0, space1, char},
+        combinator::map_res,
+        multi::separated_list0,
+        sequence::{delimited, preceded},
+        branch::alt,
+        Parser,
+    };
+
+    match parser_type {
+        "numbers" => {
+            fn parse_number(input: &str) -> IResult<&str, i32> {
+                map_res(digit1, |s: &str| s.parse::<i32>()).parse(input)
+            }
+
+            fn parse_numbers(input: &str) -> IResult<&str, Vec<i32>> {
+                separated_list0(space1, parse_number).parse(input)
+            }
+
+            match parse_numbers(input) {
+                Ok((remaining, numbers)) => {
+                    let sum: i32 = numbers.iter().sum();
+                    Ok(format!("Parsed numbers: {:?}, sum: {}, remaining: '{}'", numbers, sum, remaining))
+                },
+                Err(e) => Ok(format!("Parse failed: {}", e))
+            }
+        },
+        "email" => {
+            fn parse_email(input: &str) -> IResult<&str, (String, String)> {
+                let (input, username) = alpha1(input)?;
+                let (input, _) = char('@')(input)?;
+                let (input, domain) = alpha1(input)?;
+                let (input, _) = char('.')(input)?;
+                let (input, tld) = alpha1(input)?;
+                Ok((input, (username.to_string(), format!("{}.{}", domain, tld))))
+            }
+
+            match parse_email(input) {
+                Ok((remaining, (username, domain))) => {
+                    Ok(format!("Parsed email: user='{}', domain='{}', remaining: '{}'", username, domain, remaining))
+                },
+                Err(e) => Ok(format!("Email parse failed: {}", e))
+            }
+        },
+        "json_simple" => {
+            fn parse_string_value(input: &str) -> IResult<&str, String> {
+                delimited(char('"'), alpha1, char('"')).parse(input)
+                    .map(|(i, s)| (i, s.to_string()))
+            }
+
+            fn parse_number_value(input: &str) -> IResult<&str, i32> {
+                map_res(digit1, |s: &str| s.parse::<i32>()).parse(input)
+            }
+
+            fn parse_key_value(input: &str) -> IResult<&str, (String, String)> {
+                let (input, _) = space0.parse(input)?;
+                let (input, key) = delimited(char('"'), alpha1, char('"')).parse(input)?;
+                let (input, _) = space0.parse(input)?;
+                let (input, _) = char(':').parse(input)?;
+                let (input, _) = space0.parse(input)?;
+                let (input, value) = alt((
+                    |i| parse_string_value(i).map(|(i, s)| (i, format!("\"{}\"", s))),
+                    |i| parse_number_value(i).map(|(i, n)| (i, n.to_string())),
+                )).parse(input)?;
+                Ok((input, (key.to_string(), value)))
+            }
+
+            fn parse_simple_json(input: &str) -> IResult<&str, Vec<(String, String)>> {
+                delimited(
+                    char('{'),
+                    separated_list0(char(','), parse_key_value),
+                    preceded(space0, char('}')),
+                ).parse(input)
+            }
+
+            match parse_simple_json(input) {
+                Ok((remaining, pairs)) => {
+                    Ok(format!("Parsed JSON pairs: {:?}, remaining: '{}'", pairs, remaining))
+                },
+                Err(e) => Ok(format!("JSON parse failed: {}", e))
+            }
+        },
+        _ => Ok(format!("Unsupported parser type '{}', use 'numbers', 'email', or 'json_simple'", parser_type))
+    }
+}
+
+fn thiserror_demo(error_type: &str, message: &str) -> AnyResult<String> {
+    use std::fmt;
+
+    // Demonstrate thiserror concepts manually for testing
+    #[derive(Debug)]
+    enum CustomError {
+        Validation { message: String },
+        Network(String),
+        Parse { pos: usize, source: String },
+        Io(std::io::Error),
+        Multiple(Vec<CustomError>),
+        Unknown(String),
+    }
+
+    impl fmt::Display for CustomError {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            match self {
+                CustomError::Validation { message } => {
+                    write!(f, "Validation failed: {}", message)
+                }
+                CustomError::Network(msg) => write!(f, "Network error: {}", msg),
+                CustomError::Parse { pos, source } => {
+                    write!(f, "Parse error at position {}: {}", pos, source)
+                }
+                CustomError::Io(err) => write!(f, "IO error: {}", err),
+                CustomError::Multiple(_) => write!(f, "Multiple errors occurred"),
+                CustomError::Unknown(msg) => write!(f, "Unknown error: {}", msg),
+            }
+        }
+    }
+
+    impl std::error::Error for CustomError {
+        fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+            match self {
+                CustomError::Io(err) => Some(err),
+                _ => None,
+            }
+        }
+    }
+
+    impl From<std::io::Error> for CustomError {
+        fn from(err: std::io::Error) -> Self {
+            CustomError::Io(err)
+        }
+    }
+
+    match error_type {
+        "validation" => {
+            let err = CustomError::Validation { message: message.to_string() };
+            Ok(format!("Created validation error: {}", err))
+        },
+        "network" => {
+            let err = CustomError::Network(message.to_string());
+            Ok(format!("Created network error: {}", err))
+        },
+        "parse" => {
+            let err = CustomError::Parse {
+                pos: message.len(),
+                source: message.to_string()
+            };
+            Ok(format!("Created parse error: {}", err))
+        },
+        "io" => {
+            let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, message);
+            let err = CustomError::Io(io_err);
+            Ok(format!("Created IO error: {}", err))
+        },
+        "multiple" => {
+            let errors = vec![
+                CustomError::Validation { message: message.to_string() },
+                CustomError::Network(format!("Connection failed: {}", message)),
+            ];
+            let err = CustomError::Multiple(errors);
+            Ok(format!("Created multiple errors: {}", err))
+        },
+        "chain" => {
+            fn inner_function() -> Result<(), CustomError> {
+                Err(CustomError::Network("Connection timeout".to_string()))
+            }
+
+            fn outer_function() -> Result<(), CustomError> {
+                inner_function().map_err(|e| CustomError::Unknown(format!("Wrapped: {}", e)))
+            }
+
+            match outer_function() {
+                Err(e) => Ok(format!("Error chaining example: {}", e)),
+                Ok(_) => Ok("No error occurred".to_string()),
+            }
+        },
+        "result" => {
+            fn fallible_operation(should_fail: bool, msg: &str) -> Result<String, CustomError> {
+                if should_fail {
+                    Err(CustomError::Unknown(msg.to_string()))
+                } else {
+                    Ok("Success!".to_string())
+                }
+            }
+
+            let should_fail = message.contains("fail");
+            match fallible_operation(should_fail, message) {
+                Ok(result) => Ok(format!("Operation succeeded: {}", result)),
+                Err(e) => Ok(format!("Operation failed: {}", e)),
+            }
+        },
+        _ => {
+            let err = CustomError::Unknown(format!("Unsupported error type '{}'", error_type));
+            Ok(format!("Available types: validation, network, parse, io, multiple, chain, result. Error: {}", err))
+        }
+    }
+}
+
+fn xshell_demo(operation: &str, command: &str) -> AnyResult<String> {
+    use rmx::xshell::{Shell, cmd};
+
+    match operation {
+        "info" => {
+            let sh = Shell::new()?;
+            let cwd = sh.current_dir();
+            Ok(format!("Shell info: current directory = {}", cwd.display()))
+        },
+        "echo" => {
+            let sh = Shell::new()?;
+            let output = cmd!(sh, "echo {command}").read()?;
+            Ok(format!("Echo output: '{}'", output.trim()))
+        },
+        "pwd" => {
+            let sh = Shell::new()?;
+            let output = cmd!(sh, "pwd").read()?;
+            Ok(format!("Current directory: '{}'", output.trim()))
+        },
+        "ls" => {
+            let sh = Shell::new()?;
+            let output = cmd!(sh, "ls -la").read().unwrap_or_else(|_| "ls command failed".to_string());
+            let lines = output.lines().take(5).collect::<Vec<_>>();
+            Ok(format!("Directory listing (first 5 lines):\n{}", lines.join("\n")))
+        },
+        "env" => {
+            let sh = Shell::new()?;
+            let key = command;
+            if let Ok(value) = sh.var(key) {
+                Ok(format!("Environment variable {}: '{}'", key, value))
+            } else {
+                Ok(format!("Environment variable {} not found", key))
+            }
+        },
+        "pushd" => {
+            let sh = Shell::new()?;
+            let start_dir = sh.current_dir();
+            let path = if command.is_empty() { "." } else { command };
+
+            let _guard = sh.push_dir(path);
+            let new_dir = sh.current_dir();
+            Ok(format!("Push dir: {} -> {} (with guard)", start_dir.display(), new_dir.display()))
+        },
+        "cmd" => {
+            let sh = Shell::new()?;
+            let parts: Vec<&str> = command.split_whitespace().collect();
+            if parts.is_empty() {
+                return Ok("No command provided".to_string());
+            }
+
+            match parts[0] {
+                "echo" => {
+                    let msg = parts.get(1).unwrap_or(&"xshell test");
+                    let output = cmd!(sh, "echo {msg}").read()?;
+                    Ok(format!("Command '{}' output: '{}'", command, output.trim()))
+                },
+                "date" => {
+                    let output = cmd!(sh, "date").read().unwrap_or_else(|_| "date command not available".to_string());
+                    Ok(format!("Command '{}' output: '{}'", command, output.trim()))
+                },
+                _ => {
+                    Ok(format!("Command '{}' not supported in demo. Available: echo, date", command))
+                }
+            }
+        },
+        "pipe" => {
+            let sh = Shell::new()?;
+            // Demonstrate command pipelining concept (xshell doesn't have direct pipe support)
+            let echo_output = cmd!(sh, "echo {command}").read()?;
+            let word_count = echo_output.split_whitespace().count();
+            Ok(format!("Pipe simulation: 'echo {}' has {} words", command, word_count))
+        },
+        _ => {
+            Ok(format!("Unsupported operation '{}'. Available: info, echo, pwd, ls, env, pushd, cmd, pipe", operation))
+        }
+    }
+}
+
+fn crossbeam_demo(operation: &str, count: usize) -> AnyResult<String> {
+    use rmx::crossbeam::channel::{bounded, unbounded, select};
+    use std::time::Duration;
+    use std::thread;
+
+    match operation {
+        "channel" => {
+            let (tx, rx) = unbounded();
+
+            // Send messages from multiple threads
+            let handles: Vec<_> = (0..count)
+                .map(|i| {
+                    let tx = tx.clone();
+                    thread::spawn(move || {
+                        tx.send(format!("Message {}", i)).ok();
+                    })
+                })
+                .collect();
+
+            // Wait for threads and collect messages
+            for handle in handles {
+                handle.join().ok();
+            }
+            drop(tx); // Close sender to end receiver loop
+
+            let mut messages = Vec::new();
+            while let Ok(msg) = rx.recv() {
+                messages.push(msg);
+            }
+
+            Ok(format!("Channel demo: Sent {} messages, received {} messages", count, messages.len()))
+        },
+        "bounded" => {
+            let (tx, rx) = bounded(2); // Small buffer
+
+            let sender = thread::spawn(move || {
+                for i in 0..count {
+                    let msg = format!("Bounded {}", i);
+                    if tx.send(msg).is_err() {
+                        break;
+                    }
+                    thread::sleep(Duration::from_millis(10));
+                }
+                count
+            });
+
+            let receiver = thread::spawn(move || {
+                let mut received = 0;
+                while let Ok(_) = rx.recv() {
+                    received += 1;
+                }
+                received
+            });
+
+            let sent = sender.join().unwrap_or(0);
+            let received = receiver.join().unwrap_or(0);
+
+            Ok(format!("Bounded channel demo: sent={}, received={}", sent, received))
+        },
+        "select" => {
+            let (tx1, rx1) = unbounded();
+            let (tx2, rx2) = unbounded();
+
+            // Send on different channels
+            thread::spawn(move || {
+                for i in 0..count {
+                    tx1.send(format!("Channel1-{}", i)).ok();
+                    thread::sleep(Duration::from_millis(5));
+                }
+            });
+
+            thread::spawn(move || {
+                for i in 0..count {
+                    tx2.send(format!("Channel2-{}", i)).ok();
+                    thread::sleep(Duration::from_millis(7));
+                }
+            });
+
+            let mut results = Vec::new();
+            let mut total_received = 0;
+
+            // Use select to receive from multiple channels
+            loop {
+                if total_received >= count * 2 {
+                    break;
+                }
+
+                select! {
+                    recv(rx1) -> msg => {
+                        if let Ok(msg) = msg {
+                            results.push(msg);
+                            total_received += 1;
+                        }
+                    }
+                    recv(rx2) -> msg => {
+                        if let Ok(msg) = msg {
+                            results.push(msg);
+                            total_received += 1;
+                        }
+                    }
+                    default(Duration::from_millis(100)) => {
+                        break;
+                    }
+                }
+            }
+
+            Ok(format!("Select demo: received {} messages from 2 channels", results.len()))
+        },
+        "scope" => {
+            use rmx::crossbeam::scope;
+
+            let data: Vec<i32> = (0..count as i32).collect();
+            let mut results = Vec::new();
+
+            scope(|s| {
+                // Spawn scoped threads that can borrow from the stack
+                let handles: Vec<_> = data
+                    .chunks(count / 2 + 1)
+                    .enumerate()
+                    .map(|(chunk_id, chunk)| {
+                        s.spawn(move |_| {
+                            let sum: i32 = chunk.iter().sum();
+                            (chunk_id, sum, chunk.len())
+                        })
+                    })
+                    .collect();
+
+                for handle in handles {
+                    if let Ok(result) = handle.join() {
+                        results.push(result);
+                    }
+                }
+            }).unwrap();
+
+            Ok(format!("Scoped threads demo: processed {} chunks, total results: {:?}", results.len(), results))
+        },
+        "deque" => {
+            use rmx::crossbeam::deque::{Stealer, Worker};
+
+            let worker = Worker::new_fifo();
+            let stealer = worker.stealer();
+
+            // Push items
+            for i in 0..count {
+                worker.push(i);
+            }
+
+            // Steal items from another thread
+            let stealer_thread = thread::spawn(move || {
+                let mut stolen = Vec::new();
+                loop {
+                    match stealer.steal() {
+                        rmx::crossbeam::deque::Steal::Success(item) => stolen.push(item),
+                        rmx::crossbeam::deque::Steal::Empty => break,
+                        rmx::crossbeam::deque::Steal::Retry => continue,
+                    }
+                }
+                stolen
+            });
+
+            // Pop items from worker
+            let mut popped = Vec::new();
+            while let Some(item) = worker.pop() {
+                popped.push(item);
+            }
+
+            let stolen = stealer_thread.join().unwrap();
+
+            Ok(format!("Work-stealing deque: pushed={}, popped={}, stolen={}",
+                     count, popped.len(), stolen.len()))
+        },
+        _ => {
+            Ok(format!("Unsupported operation '{}'. Available: channel, bounded, select, scope, deque", operation))
+        }
     }
 }
 

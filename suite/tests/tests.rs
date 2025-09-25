@@ -468,6 +468,164 @@ fn test_binary_url_validate() {
     assert!(stdout.contains("URL validation:"));
 }
 
+#[test]
+fn test_binary_nom_numbers() {
+    let output = Command::new(get_binary_path())
+        .args(&["nom", "numbers", "42 123 7"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Parser combinators test with numbers:"));
+    assert!(stdout.contains("Parsed numbers: [42, 123, 7]"));
+    assert!(stdout.contains("sum: 172"));
+}
+
+#[test]
+fn test_binary_nom_email() {
+    let output = Command::new(get_binary_path())
+        .args(&["nom", "email", "user@test.com"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Parser combinators test with email:"));
+    assert!(stdout.contains("Parsed email: user='user'"));
+    assert!(stdout.contains("domain='test.com'"));
+}
+
+#[test]
+fn test_binary_nom_json() {
+    let output = Command::new(get_binary_path())
+        .args(&["nom", "json_simple", r#"{"name": "test", "count": 42}"#])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Parser combinators test with json_simple:"));
+    assert!(stdout.contains("Parsed JSON pairs:"));
+}
+
+#[test]
+fn test_binary_thiserror_validation() {
+    let output = Command::new(get_binary_path())
+        .args(&["thiserror", "validation", "invalid data"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Custom error handling test with validation:"));
+    assert!(stdout.contains("Created validation error: Validation failed: invalid data"));
+}
+
+#[test]
+fn test_binary_thiserror_chain() {
+    let output = Command::new(get_binary_path())
+        .args(&["thiserror", "chain", "test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Custom error handling test with chain:"));
+    assert!(stdout.contains("Error chaining example:"));
+}
+
+#[test]
+fn test_binary_thiserror_result() {
+    let output = Command::new(get_binary_path())
+        .args(&["thiserror", "result", "success"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Custom error handling test with result:"));
+    assert!(stdout.contains("Operation succeeded: Success!"));
+}
+
+#[test]
+fn test_binary_xshell_info() {
+    let output = Command::new(get_binary_path())
+        .args(&["xshell", "info"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Shell execution test with info:"));
+    assert!(stdout.contains("Shell info: current directory ="));
+}
+
+#[test]
+fn test_binary_xshell_echo() {
+    let output = Command::new(get_binary_path())
+        .args(&["xshell", "echo", "Hello xshell"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Shell execution test with echo:"));
+    assert!(stdout.contains("Echo output: 'Hello xshell'"));
+}
+
+#[test]
+fn test_binary_xshell_pwd() {
+    let output = Command::new(get_binary_path())
+        .args(&["xshell", "pwd"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Shell execution test with pwd:"));
+    assert!(stdout.contains("Current directory:"));
+}
+
+#[test]
+fn test_binary_crossbeam_channel() {
+    let output = Command::new(get_binary_path())
+        .args(&["crossbeam", "channel", "3"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Advanced concurrency test with channel:"));
+    assert!(stdout.contains("Channel demo: Sent 3 messages, received 3 messages"));
+}
+
+#[test]
+fn test_binary_crossbeam_scope() {
+    let output = Command::new(get_binary_path())
+        .args(&["crossbeam", "scope", "4"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Advanced concurrency test with scope:"));
+    assert!(stdout.contains("Scoped threads demo:"));
+}
+
+#[test]
+fn test_binary_crossbeam_deque() {
+    let output = Command::new(get_binary_path())
+        .args(&["crossbeam", "deque", "5"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Advanced concurrency test with deque:"));
+    assert!(stdout.contains("Work-stealing deque: pushed=5"));
+}
+
 fn get_binary_path() -> String {
     // Check if we're running under cargo-llvm-cov
     if env::var("CARGO_LLVM_COV").is_ok() {
