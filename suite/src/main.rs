@@ -131,8 +131,28 @@ fn main() -> AnyResult<()> {
                     Err(e) => println!("  Error: {}", e),
                 }
             }
+            "rand" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("generate");
+                let count = args.get(3)
+                    .and_then(|s| s.parse::<usize>().ok())
+                    .unwrap_or(5);
+                println!("Random number test with {}:", operation);
+                match rand_demo(operation, count) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "url" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("parse");
+                let url_str = args.get(3).map(|s| s.as_str()).unwrap_or("https://example.com/path?key=value#fragment");
+                println!("URL test with {}:", operation);
+                match url_demo(operation, url_str) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
             _ => {
-                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk");
+                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url");
             }
         }
     } else {
@@ -153,6 +173,8 @@ fn main() -> AnyResult<()> {
         println!("  parallel [op] [size]      - Test parallel processing with rayon");
         println!("  util [crate] [data]       - Test utility crates (itertools, bytes, etc.)");
         println!("  walk [path] [depth]       - Test directory walking with walkdir");
+        println!("  rand [op] [count]         - Test random number generation with rand");
+        println!("  url [op] [url]            - Test URL parsing and manipulation");
     }
 
     Ok(())
@@ -207,29 +229,32 @@ fn run_internal_tests() {
 }
 
 fn file_operations(content: &str) -> AnyResult<String> {
-    use std::fs;
+    use rmx::tempfile::NamedTempFile;
     use std::io::Write;
 
-    // Create a temporary file with the content.
-    let temp_path = "temp_rustmax_suite.txt";
+    // Create a temporary file using tempfile crate.
+    let mut temp_file = NamedTempFile::new()?;
 
-    // Write content to file.
-    let mut file = fs::File::create(temp_path)?;
-    writeln!(file, "{}", content)?;
-    drop(file);
+    // Write content to the temporary file.
+    writeln!(temp_file, "{}", content)?;
+
+    // Get the path before reading.
+    let temp_path = temp_file.path();
 
     // Read content back.
-    let read_content = fs::read_to_string(temp_path)?;
+    let read_content = std::fs::read_to_string(temp_path)?;
     let read_content = read_content.trim();
 
     // Check if content matches.
     let matches = read_content == content;
 
-    // Clean up.
-    fs::remove_file(temp_path)?;
+    // Get file info.
+    let file_size = temp_file.as_file().metadata()?.len();
 
-    Ok(format!("Wrote '{}', read '{}', matches: {}",
-               content, read_content, matches))
+    // File will be automatically cleaned up when temp_file is dropped!
+
+    Ok(format!("Wrote '{}' ({} bytes), read '{}', matches: {}",
+               content, file_size, read_content, matches))
 }
 
 fn cli_parsing_demo(args: &[String]) -> AnyResult<String> {
@@ -628,6 +653,118 @@ fn walk_demo(path: &str, max_depth: usize) -> AnyResult<String> {
 
     Ok(format!("Walked '{}' (depth {}): {} dirs, {} files, total size: {} bytes",
               path, max_depth, dir_count, file_count, total_size))
+}
+
+fn rand_demo(operation: &str, count: usize) -> AnyResult<String> {
+    use rmx::rand::{rng, Rng};
+
+    match operation {
+        "generate" => {
+            let mut rng = rng();
+            let numbers: Vec<u32> = (0..count).map(|_| rng.random_range(1..=100)).collect();
+            let sum: u32 = numbers.iter().sum();
+            let avg = sum as f64 / count as f64;
+
+            Ok(format!("Generated {} random numbers (1-100): {:?}, avg: {:.1}",
+                      count, numbers, avg))
+        },
+        "shuffle" => {
+            let mut data: Vec<usize> = (1..=count).collect();
+            let original = data.clone();
+
+            // Simple Fisher-Yates shuffle
+            let mut rng = rng();
+            for i in (1..data.len()).rev() {
+                let j = rng.random_range(0..=i);
+                data.swap(i, j);
+            }
+
+            Ok(format!("Shuffled 1-{}: {:?} -> {:?}",
+                      count, original, data))
+        },
+        "types" => {
+            let mut rng = rng();
+
+            let bool_val: bool = rng.random();
+            let f64_val: f64 = rng.random_range(0.0..1.0);
+            let char_val = rng.random_range('a'..='z');
+            let bytes: Vec<u8> = (0..count.min(8)).map(|_| rng.random()).collect();
+
+            Ok(format!("Random types: bool={}, f64={:.3}, char='{}', bytes={:?}",
+                      bool_val, f64_val, char_val, bytes))
+        },
+        "choice" => {
+            let choices = vec!["apple", "banana", "cherry", "date", "elderberry"];
+            let mut rng = rng();
+
+            let selected: Vec<&str> = (0..count)
+                .map(|_| choices[rng.random_range(0..choices.len())])
+                .collect();
+
+            Ok(format!("Random choices from {:?}: {:?}", choices, selected))
+        },
+        _ => Ok(format!("Unsupported operation '{}', use 'generate', 'shuffle', 'types', or 'choice'", operation))
+    }
+}
+
+fn url_demo(operation: &str, url_str: &str) -> AnyResult<String> {
+    use rmx::url::Url;
+
+    match operation {
+        "parse" => {
+            let url = Url::parse(url_str)?;
+
+            Ok(format!("Parsed URL: scheme='{}', host={:?}, port={:?}, path='{}', query={:?}, fragment={:?}",
+                      url.scheme(),
+                      url.host_str(),
+                      url.port(),
+                      url.path(),
+                      url.query(),
+                      url.fragment()))
+        },
+        "manipulate" => {
+            let mut url = Url::parse(url_str)?;
+
+            // Add/modify query parameters.
+            url.query_pairs_mut()
+                .append_pair("added", "by_rustmax")
+                .append_pair("timestamp", "12345");
+
+            // Try to set a new path.
+            url.set_path("/new/path");
+
+            Ok(format!("Modified URL: {} -> {}",
+                      url_str, url.as_str()))
+        },
+        "join" => {
+            let base = Url::parse(url_str)?;
+            let relative_paths = vec!["../other", "subdir/file.html", "/absolute"];
+
+            let joined: Vec<String> = relative_paths.iter()
+                .filter_map(|&path| base.join(path).ok())
+                .map(|url| url.to_string())
+                .collect();
+
+            Ok(format!("Joined with base '{}': {:?}",
+                      url_str, joined))
+        },
+        "validate" => {
+            match Url::parse(url_str) {
+                Ok(url) => {
+                    let has_host = url.host().is_some();
+                    let is_secure = url.scheme() == "https";
+                    let has_query = url.query().is_some();
+
+                    Ok(format!("URL validation: valid=true, has_host={}, is_secure={}, has_query={}",
+                              has_host, is_secure, has_query))
+                },
+                Err(e) => {
+                    Ok(format!("URL validation: valid=false, error='{}'", e))
+                }
+            }
+        },
+        _ => Ok(format!("Unsupported operation '{}', use 'parse', 'manipulate', 'join', or 'validate'", operation))
+    }
 }
 
 fn dead_code() {

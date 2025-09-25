@@ -389,6 +389,85 @@ fn test_binary_walk_command() {
     assert!(stdout.contains("Walked 'src'"));
 }
 
+#[test]
+fn test_binary_rand_generate() {
+    let output = Command::new(get_binary_path())
+        .args(&["rand", "generate", "3"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Random number test with generate:"));
+    assert!(stdout.contains("Generated 3 random numbers"));
+}
+
+#[test]
+fn test_binary_rand_shuffle() {
+    let output = Command::new(get_binary_path())
+        .args(&["rand", "shuffle", "4"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Random number test with shuffle:"));
+    assert!(stdout.contains("Shuffled 1-4"));
+}
+
+#[test]
+fn test_binary_rand_types() {
+    let output = Command::new(get_binary_path())
+        .args(&["rand", "types", "2"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Random number test with types:"));
+    assert!(stdout.contains("Random types:"));
+}
+
+#[test]
+fn test_binary_url_parse() {
+    let output = Command::new(get_binary_path())
+        .args(&["url", "parse", "https://example.com:8080/path?q=test#frag"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("URL test with parse:"));
+    assert!(stdout.contains("scheme='https'"));
+    assert!(stdout.contains("host=Some(\"example.com\")"));
+}
+
+#[test]
+fn test_binary_url_manipulate() {
+    let output = Command::new(get_binary_path())
+        .args(&["url", "manipulate", "http://test.com/old"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("URL test with manipulate:"));
+    assert!(stdout.contains("Modified URL:"));
+}
+
+#[test]
+fn test_binary_url_validate() {
+    let output = Command::new(get_binary_path())
+        .args(&["url", "validate", "https://valid.example.com"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("URL test with validate:"));
+    assert!(stdout.contains("URL validation:"));
+}
+
 fn get_binary_path() -> String {
     // Check if we're running under cargo-llvm-cov
     if env::var("CARGO_LLVM_COV").is_ok() {
