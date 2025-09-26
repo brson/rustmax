@@ -65,6 +65,9 @@ doc-clean:
     rm -rf out
 
 doc-crates: prebuild
+    # Copy standard library docs first (dynamically find toolchain location)
+    mkdir -p target/doc
+    cp -a "$(rustup which rustc | sed 's|/bin/rustc|/share/doc/rust/html|')/"* target/doc/
     RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \
       cargo doc -p rustmax --features rmx-profile-max
     cp www/mixins/mixin-rustdoc-themes.css target/doc/
