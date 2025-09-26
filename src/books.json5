@@ -7,12 +7,6 @@
             upstream_url: "https://doc.rust-lang.org/book/",
         },
         {
-            slug: "rust-by-example",
-            name: "Rust By Example",
-            repo: "https://github.com/rust-lang/rust-by-example",
-            upstream_url: "https://doc.rust-lang.org/rust-by-example/",
-        },
-        {
             slug: "reference",
             name: "The Rust Reference",
             repo: "https://github.com/rust-lang/reference",

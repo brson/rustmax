@@ -11,7 +11,7 @@ notable or useful chapters within a book.
 ## The Rust language
 
 - **[The Rust Programming Language](../library/trpl/)** ([upstream](https://doc.rust-lang.org/book/))
-- **[Rust By Example](../library/rust-by-example/)** ([upstream](https://doc.rust-lang.org/rust-by-example/))
+- **[Rust By Example](https://doc.rust-lang.org/rust-by-example/)**
 - **[The Rust Reference](../library/reference/)** ([upstream](https://doc.rust-lang.org/reference/))
   - 🔖 [Conditional compilation](../library/reference/conditional-compilation.html).
        Including which cfgs are set by rustc.

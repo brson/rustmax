@@ -66,13 +66,8 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
             book.name, book.slug, upstream_link
         ));
     }
-    if let Some(book) = book_map.get("rust-by-example") {
-        let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
-        content.push_str(&format!(
-            "- **[{}](../library/{}/)** ([upstream]({}))\n",
-            book.name, book.slug, upstream_link
-        ));
-    }
+    // External link to rust-by-example (not built locally due to rendering issues)
+    content.push_str("- **[Rust By Example](https://doc.rust-lang.org/rust-by-example/)**\n");
     if let Some(book) = book_map.get("reference") {
         let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
         content.push_str(&format!(
