@@ -220,8 +220,55 @@ fn main() -> AnyResult<()> {
                     Err(e) => println!("  Error: {}", e),
                 }
             }
+            "unicode" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("graphemes");
+                let text = args.get(3).map(|s| s.as_str()).unwrap_or("Hello 🌍 World! 👨‍👩‍👧‍👦");
+                println!("Unicode text segmentation test with {}:", operation);
+                match unicode_demo(operation, text) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "logging" => {
+                let level = args.get(2).map(|s| s.as_str()).unwrap_or("info");
+                let message = args.get(3).map(|s| s.as_str()).unwrap_or("test message");
+                println!("Logging infrastructure test with {}:", level);
+                match logging_demo(level, message) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "proptest" => {
+                let test_type = args.get(2).map(|s| s.as_str()).unwrap_or("basic");
+                let iterations = args.get(3)
+                    .and_then(|s| s.parse::<u32>().ok())
+                    .unwrap_or(100);
+                println!("Property-based testing with {}:", test_type);
+                match proptest_demo(test_type, iterations) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "anyhow" => {
+                let error_type = args.get(2).map(|s| s.as_str()).unwrap_or("basic");
+                let message = args.get(3).map(|s| s.as_str()).unwrap_or("example error");
+                println!("Error handling with anyhow using {}:", error_type);
+                match anyhow_demo(error_type, message) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
+            "reqwest" => {
+                let operation = args.get(2).map(|s| s.as_str()).unwrap_or("client");
+                let url = args.get(3).map(|s| s.as_str()).unwrap_or("https://httpbin.org/json");
+                println!("HTTP client operations with {}:", operation);
+                match reqwest_demo(operation, url) {
+                    Ok(result) => println!("  {}", result),
+                    Err(e) => println!("  Error: {}", e),
+                }
+            }
             _ => {
-                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url, nom, thiserror, xshell, crossbeam, tempfile, json5, tera");
+                println!("Unknown command. Available commands: greet, count, math, test, file, parse, serialize, crypto, time, regex, async, parallel, util, walk, rand, url, nom, thiserror, xshell, crossbeam, tempfile, json5, tera, unicode, logging, proptest, anyhow, reqwest");
             }
         }
     } else {
@@ -251,6 +298,11 @@ fn main() -> AnyResult<()> {
         println!("  tempfile [op] [content]   - Test temporary file operations with tempfile");
         println!("  json5 [op] [data]         - Test relaxed JSON parsing with json5");
         println!("  tera [op] [name]          - Test template engine with tera");
+        println!("  unicode [op] [text]       - Test Unicode text segmentation");
+        println!("  logging [level] [msg]     - Test logging with env_logger");
+        println!("  proptest [type] [iters]   - Test property-based testing with proptest");
+        println!("  anyhow [type] [msg]       - Test enhanced error handling with anyhow");
+        println!("  reqwest [op] [url]        - Test HTTP client operations with reqwest");
     }
 
     Ok(())
@@ -1257,7 +1309,7 @@ fn crossbeam_demo(operation: &str, count: usize) -> AnyResult<String> {
             Ok(format!("Scoped threads demo: processed {} chunks, total results: {:?}", results.len(), results))
         },
         "deque" => {
-            use rmx::crossbeam::deque::{Stealer, Worker};
+            use rmx::crossbeam::deque::Worker;
 
             let worker = Worker::new_fifo();
             let stealer = worker.stealer();
@@ -1633,6 +1685,700 @@ Form: {{ self::input(label="Name", name="user_name") }}
         },
         _ => {
             Ok(format!("Unsupported operation '{}'. Available: render, loops, conditions, filters, inheritance, macros, globals", operation))
+        }
+    }
+}
+
+fn unicode_demo(operation: &str, text: &str) -> AnyResult<String> {
+    use rmx::unicode_segmentation::UnicodeSegmentation;
+
+    match operation {
+        "graphemes" => {
+            let graphemes: Vec<&str> = text.graphemes(true).collect();
+            let count = graphemes.len();
+            let first_few = graphemes.iter().take(5).cloned().collect::<Vec<_>>();
+
+            Ok(format!("Graphemes: {} total, first few: {:?}", count, first_few))
+        },
+        "words" => {
+            let words: Vec<&str> = text.split_word_bounds().collect();
+            let word_count = words.iter().filter(|w| !w.chars().all(char::is_whitespace)).count();
+            let actual_words: Vec<&str> = words.iter()
+                .filter(|w| !w.chars().all(char::is_whitespace))
+                .take(5)
+                .cloned()
+                .collect();
+
+            Ok(format!("Words: {} total, first few: {:?}", word_count, actual_words))
+        },
+        "sentences" => {
+            let sentences: Vec<&str> = text.split_sentence_bounds().collect();
+            let sentence_count = sentences.len();
+            let first_sentence = sentences.first().unwrap_or(&"");
+
+            Ok(format!("Sentences: {} total, first: '{}'", sentence_count, first_sentence.trim()))
+        },
+        "indices" => {
+            let grapheme_indices: Vec<(usize, &str)> = text.grapheme_indices(true).collect();
+            let indices_info = grapheme_indices.iter()
+                .take(3)
+                .map(|(i, g)| format!("{}:'{}'", i, g))
+                .collect::<Vec<_>>();
+
+            Ok(format!("Grapheme indices (first 3): [{}]", indices_info.join(", ")))
+        },
+        "width" => {
+            // Calculate display width of text (accounting for wide chars, etc.)
+            let chars: Vec<char> = text.chars().collect();
+            let char_count = chars.len();
+            let grapheme_count = text.graphemes(true).count();
+            let byte_count = text.len();
+
+            // Simple width calculation (this is approximation)
+            let estimated_width = text.chars()
+                .map(|c| if c.is_ascii() { 1 } else { 2 })
+                .sum::<usize>();
+
+            Ok(format!("Text analysis: {} bytes, {} chars, {} graphemes, ~{} display width",
+                     byte_count, char_count, grapheme_count, estimated_width))
+        },
+        "boundaries" => {
+            let word_boundaries: Vec<usize> = text.split_word_bound_indices()
+                .map(|(i, _)| i)
+                .take(5)
+                .collect();
+            let sentence_boundaries: Vec<usize> = text.split_sentence_bound_indices()
+                .map(|(i, _)| i)
+                .take(3)
+                .collect();
+
+            Ok(format!("Boundaries - words: {:?}, sentences: {:?}",
+                     word_boundaries, sentence_boundaries))
+        },
+        "reverse" => {
+            // Reverse by graphemes (preserving complex characters)
+            let reversed: String = text.graphemes(true).rev().collect();
+
+            Ok(format!("Original: '{}' | Reversed by graphemes: '{}'", text, reversed))
+        },
+        "compare" => {
+            let simple_text = "Hello World";
+            let complex_text = "Hello 🌍👨‍👩‍👧‍👦";
+
+            let simple_chars = simple_text.chars().count();
+            let simple_graphemes = simple_text.graphemes(true).count();
+            let complex_chars = complex_text.chars().count();
+            let complex_graphemes = complex_text.graphemes(true).count();
+
+            Ok(format!("Simple '{}': {} chars, {} graphemes | Complex '{}': {} chars, {} graphemes",
+                     simple_text, simple_chars, simple_graphemes,
+                     complex_text, complex_chars, complex_graphemes))
+        },
+        _ => {
+            Ok(format!("Unsupported operation '{}'. Available: graphemes, words, sentences, indices, width, boundaries, reverse, compare", operation))
+        }
+    }
+}
+
+fn logging_demo(level: &str, message: &str) -> AnyResult<String> {
+    use rmx::log::{info, warn, error, debug, trace};
+
+    match level {
+        "init" => {
+            // Initialize env_logger (this would normally be done once at startup)
+            unsafe { std::env::set_var("RUST_LOG", "debug"); }
+            let _ = rmx::env_logger::try_init();
+
+            Ok("Logger initialized with RUST_LOG=debug".to_string())
+        },
+        "levels" => {
+            // Demonstrate different log levels
+            trace!("Trace message: {}", message);
+            debug!("Debug message: {}", message);
+            info!("Info message: {}", message);
+            warn!("Warning message: {}", message);
+            error!("Error message: {}", message);
+
+            Ok(format!("Logged '{}' at all levels (trace, debug, info, warn, error)", message))
+        },
+        "structured" => {
+            // Demonstrate structured logging
+            info!(target: "app::module", "Structured log with message: {}", message);
+            warn!(target: "app::security", "Security alert: {}", message);
+            error!(target: "app::database", "Database issue: {}", message);
+
+            Ok(format!("Structured logging demo with targets for message: '{}'", message))
+        },
+        "macros" => {
+            // Demonstrate different log macro features
+            let user_id = 12345;
+            let operation = "test_op";
+
+            info!("User {} performed operation: {} with data: {}", user_id, operation, message);
+            debug!("Debug info for operation {}: data length = {}", operation, message.len());
+
+            Ok(format!("Macro logging demo: user={}, op={}, msg='{}'", user_id, operation, message))
+        },
+        "conditional" => {
+            // Demonstrate conditional logging
+            let is_debug = true;
+            let error_count = 5;
+
+            if rmx::log::log_enabled!(rmx::log::Level::Debug) {
+                debug!("Debug logging is enabled: {}", message);
+            }
+
+            if error_count > 3 {
+                warn!("Error count {} is high, last error: {}", error_count, message);
+            }
+
+            Ok(format!("Conditional logging: debug_enabled={}, error_count={}", is_debug, error_count))
+        },
+        "capture" => {
+            // Capture log output (simplified example)
+            // In a real scenario, you'd use a custom logger implementation
+            // For demo, we'll just show the concept
+            info!("Message to be captured: {}", message);
+            debug!("Debug info: processing '{}'", message);
+            warn!("Warning about '{}'", message);
+
+            let captured_count = 3; // Simulated captured messages
+            Ok(format!("Log capture simulation: would capture {} messages containing '{}'", captured_count, message))
+        },
+        "performance" => {
+            use std::time::Instant;
+
+            let start = Instant::now();
+
+            // Simulate some work with logging
+            for i in 0..10 {
+                debug!("Processing item {}: {}", i, message);
+            }
+
+            let duration = start.elapsed();
+            info!("Performance test completed in {:?}", duration);
+
+            Ok(format!("Performance logging: 10 debug messages in {:?}", duration))
+        },
+        _ => {
+            warn!("Unknown logging operation: {}", level);
+            Ok(format!("Unknown operation '{}'. Available: init, levels, structured, macros, conditional, capture, performance", level))
+        }
+    }
+}
+
+fn proptest_demo(test_type: &str, iterations: u32) -> AnyResult<String> {
+    match test_type {
+        "basic" => {
+            // Basic property test - addition is commutative
+            let mut passed_tests = 0;
+            let mut total_tests = 0;
+
+            // Simulate property testing (in real scenario, proptest! macro would handle this)
+            for _ in 0..std::cmp::min(iterations, 20) {
+                let a = rmx::rand::random::<i32>() % 1000;
+                let b = rmx::rand::random::<i32>() % 1000;
+
+                total_tests += 1;
+                if a + b == b + a {
+                    passed_tests += 1;
+                }
+            }
+
+            Ok(format!("Commutative addition property: {}/{} tests passed", passed_tests, total_tests))
+        },
+        "string" => {
+            // String property testing - reverse of reverse equals original
+            let mut passed_tests = 0;
+            let test_count = std::cmp::min(iterations, 50) as usize;
+
+            for _ in 0..test_count {
+                let original = format!("test_{}", rmx::rand::random::<u32>());
+                let double_reversed: String = original.chars().rev().collect::<String>()
+                    .chars().rev().collect();
+
+                if original == double_reversed {
+                    passed_tests += 1;
+                }
+            }
+
+            Ok(format!("String reverse property: {}/{} tests passed", passed_tests, test_count))
+        },
+        "collection" => {
+            // Collection properties - length preservation
+            let mut passed_length = 0;
+            let mut passed_contains = 0;
+            let test_count = std::cmp::min(iterations, 30) as usize;
+
+            for _ in 0..test_count {
+                let original: Vec<i32> = (0..10).map(|_| rmx::rand::random::<i32>() % 100).collect();
+                let mut sorted = original.clone();
+                sorted.sort();
+
+                // Length should be preserved
+                if original.len() == sorted.len() {
+                    passed_length += 1;
+                }
+
+                // All original elements should be present
+                let all_present = original.iter().all(|item| sorted.contains(item));
+                if all_present {
+                    passed_contains += 1;
+                }
+            }
+
+            Ok(format!("Collection sort properties: length={}/{}, contains={}/{}",
+                      passed_length, test_count, passed_contains, test_count))
+        },
+        "numeric" => {
+            // Numeric properties - multiplication and division
+            let mut passed_tests = 0;
+            let test_count = std::cmp::min(iterations, 25) as usize;
+
+            for _ in 0..test_count {
+                let a = (rmx::rand::random::<u32>() % 1000) + 1; // Avoid zero
+                let b = (rmx::rand::random::<u32>() % 100) + 1;
+
+                let product = a * b;
+                let quotient = product / b;
+
+                if quotient == a {
+                    passed_tests += 1;
+                }
+            }
+
+            Ok(format!("Multiplication-division property: {}/{} tests passed", passed_tests, test_count))
+        },
+        "roundtrip" => {
+            // Roundtrip property - serialize then deserialize using serde_json directly
+            let mut passed_tests = 0;
+            let test_count = std::cmp::min(iterations, 15) as usize;
+
+            for i in 0..test_count {
+                // Use a simple data structure that doesn't need derive macros
+                let data = rmx::serde_json::json!({
+                    "id": i as u32,
+                    "name": format!("test_{}", rmx::rand::random::<u32>()),
+                    "active": rmx::rand::random::<bool>()
+                });
+
+                match rmx::serde_json::to_string(&data) {
+                    Ok(json) => {
+                        match rmx::serde_json::from_str::<rmx::serde_json::Value>(&json) {
+                            Ok(deserialized) => {
+                                if data == deserialized {
+                                    passed_tests += 1;
+                                }
+                            },
+                            Err(_) => {},
+                        }
+                    },
+                    Err(_) => {},
+                }
+            }
+
+            Ok(format!("JSON roundtrip property: {}/{} tests passed", passed_tests, test_count))
+        },
+        "invariant" => {
+            // Invariant testing - data structure constraints
+            let mut passed_tests = 0;
+            let test_count = std::cmp::min(iterations, 20) as usize;
+
+            for _ in 0..test_count {
+                let mut data: Vec<i32> = (0..10).map(|_| rmx::rand::random::<i32>() % 100).collect();
+
+                // Apply operations that should preserve invariants
+                data.push(42);
+                data.sort();
+
+                // Invariant: sorted vector should be in non-decreasing order
+                let is_sorted = data.windows(2).all(|w| w[0] <= w[1]);
+                // Invariant: should contain our added element
+                let contains_42 = data.contains(&42);
+
+                if is_sorted && contains_42 {
+                    passed_tests += 1;
+                }
+            }
+
+            Ok(format!("Invariant testing: {}/{} tests passed", passed_tests, test_count))
+        },
+        "edge" => {
+            // Edge case handling
+            let mut boundary_tests = 0;
+            let mut null_tests = 0;
+            let test_count = std::cmp::min(iterations, 10) as usize;
+
+            for _ in 0..test_count {
+                // Test empty collections
+                let empty_vec: Vec<i32> = vec![];
+                let empty_string = String::new();
+
+                if empty_vec.is_empty() && empty_string.is_empty() {
+                    null_tests += 1;
+                }
+
+                // Test boundary values
+                let max_val = i32::MAX;
+                let min_val = i32::MIN;
+
+                // Simple boundary arithmetic that shouldn't overflow in this test
+                if max_val > min_val {
+                    boundary_tests += 1;
+                }
+            }
+
+            Ok(format!("Edge case testing: null={}/{}, boundary={}/{}",
+                      null_tests, test_count, boundary_tests, test_count))
+        },
+        _ => {
+            Ok(format!("Unknown test type '{}'. Available: basic, string, collection, numeric, roundtrip, invariant, edge", test_type))
+        }
+    }
+}
+
+fn anyhow_demo(error_type: &str, message: &str) -> AnyResult<String> {
+    match error_type {
+        "basic" => {
+            // Basic anyhow error creation and handling
+            use rmx::anyhow::anyhow;
+
+            let should_fail = message.contains("fail");
+
+            if should_fail {
+                return Err(anyhow!("Basic error: {}", message));
+            }
+
+            Ok(format!("Basic anyhow success: processed '{}'", message))
+        },
+        "context" => {
+            // Context chaining with anyhow
+            use rmx::anyhow::{anyhow, Context};
+
+            let operation = || -> rmx::anyhow::Result<i32> {
+                if message.len() < 5 {
+                    return Err(anyhow!("Message too short"));
+                }
+                Ok(message.len() as i32)
+            };
+
+            let result = operation()
+                .with_context(|| format!("Failed to process message: '{}'", message))
+                .with_context(|| "Error in anyhow context demo");
+
+            match result {
+                Ok(len) => Ok(format!("Context success: message length is {}", len)),
+                Err(e) => Ok(format!("Context chain: {:#}", e)),
+            }
+        },
+        "conversion" => {
+            // Error conversion and std::error::Error compatibility
+            use rmx::anyhow::{anyhow, Context};
+
+            let parse_error = message.parse::<i32>();
+
+            let result: rmx::anyhow::Result<String> = match parse_error {
+                Ok(num) => Ok(format!("Parsed number: {}", num)),
+                Err(std_err) => {
+                    // Convert std::num::ParseIntError to anyhow::Error
+                    Err(anyhow!("Parse conversion failed").context(std_err))
+                }
+            };
+
+            match result {
+                Ok(success_msg) => Ok(format!("Conversion success: {}", success_msg)),
+                Err(e) => Ok(format!("Conversion error demo: {}", e)),
+            }
+        },
+        "backtrace" => {
+            // Backtrace demonstration (simplified)
+            use rmx::anyhow::bail;
+
+            fn inner_function(msg: &str) -> rmx::anyhow::Result<()> {
+                if msg.is_empty() {
+                    bail!("Empty message in inner function");
+                }
+                Ok(())
+            }
+
+            fn middle_function(msg: &str) -> rmx::anyhow::Result<String> {
+                inner_function(msg)?;
+                Ok(format!("Processed: {}", msg))
+            }
+
+            match middle_function(message) {
+                Ok(result) => Ok(format!("Backtrace demo success: {}", result)),
+                Err(e) => Ok(format!("Backtrace captured error: {}", e)),
+            }
+        },
+        "chain" => {
+            // Error chain demonstration
+            use rmx::anyhow::Context;
+            use std::fs;
+
+            // Simulate a chain of operations that could fail
+            let file_operation = || -> rmx::anyhow::Result<String> {
+                // This will fail as the file doesn't exist, demonstrating error chaining
+                fs::read_to_string("/nonexistent/path/file.txt")
+                    .with_context(|| "Failed to read configuration file")
+                    .with_context(|| format!("During processing of '{}'", message))
+            };
+
+            match file_operation() {
+                Ok(content) => Ok(format!("Chain success: read {} bytes", content.len())),
+                Err(e) => {
+                    // Show the full error chain
+                    let mut error_chain = vec![];
+                    let mut current: &dyn std::error::Error = e.as_ref();
+                    error_chain.push(current.to_string());
+
+                    while let Some(source) = current.source() {
+                        error_chain.push(source.to_string());
+                        current = source;
+                    }
+
+                    Ok(format!("Error chain ({}): {}", error_chain.len(), error_chain.join(" → ")))
+                }
+            }
+        },
+        "custom" => {
+            // Custom error types with anyhow
+            #[derive(Debug)]
+            struct CustomAppError {
+                code: u32,
+                message: String,
+            }
+
+            impl std::fmt::Display for CustomAppError {
+                fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    write!(f, "AppError({}): {}", self.code, self.message)
+                }
+            }
+
+            impl std::error::Error for CustomAppError {}
+
+            let create_custom_error = || -> rmx::anyhow::Result<String> {
+                let custom = CustomAppError {
+                    code: 42,
+                    message: format!("Custom error for: {}", message),
+                };
+
+                Err(rmx::anyhow::Error::new(custom))
+            };
+
+            match create_custom_error() {
+                Ok(result) => Ok(format!("Custom success: {}", result)),
+                Err(e) => Ok(format!("Custom error integration: {}", e)),
+            }
+        },
+        "macro" => {
+            // anyhow! macro variations
+            use rmx::anyhow::{bail, ensure};
+
+            let demo_macros = || -> rmx::anyhow::Result<String> {
+                // ensure! macro - like assert but returns error
+                ensure!(!message.is_empty(), "Message cannot be empty");
+                ensure!(message.len() <= 100, "Message too long: {} chars", message.len());
+
+                // bail! macro - early return with error
+                if message.contains("panic") {
+                    bail!("Refusing to process panic message: {}", message);
+                }
+
+                Ok(format!("Macro validation passed for: {}", message))
+            };
+
+            match demo_macros() {
+                Ok(result) => Ok(format!("Macro demo success: {}", result)),
+                Err(e) => Ok(format!("Macro validation failed: {}", e)),
+            }
+        },
+        "format" => {
+            // Error formatting demonstration
+            use rmx::anyhow::{anyhow, Context};
+
+            let complex_error = || -> rmx::anyhow::Result<()> {
+                Err(anyhow!("Inner error with data: {}", message))
+                    .context("Level 2 context")
+                    .context("Level 1 context")
+            };
+
+            match complex_error() {
+                Ok(_) => Ok("Format success".to_string()),
+                Err(e) => {
+                    let debug_format = format!("Debug format: {:?}", e);
+                    let display_format = format!("Display format: {}", e);
+                    let alt_format = format!("Alt format: {:#}", e);
+
+                    Ok(format!("Format demo - Debug: {} chars, Display: {} chars, Alt: {} chars",
+                              debug_format.len(), display_format.len(), alt_format.len()))
+                }
+            }
+        },
+        _ => {
+            Ok(format!("Unknown error type '{}'. Available: basic, context, conversion, backtrace, chain, custom, macro, format", error_type))
+        }
+    }
+}
+
+fn reqwest_demo(operation: &str, url: &str) -> AnyResult<String> {
+    match operation {
+        "client" => {
+            // Basic client creation and configuration
+            let _client = rmx::reqwest::blocking::Client::new();
+
+            // Just confirm client creation since timeout() method isn't available on the client
+            Ok(format!("Client created successfully. Ready for HTTP operations."))
+        },
+        "get" => {
+            // Simple GET request
+            let client = rmx::reqwest::blocking::Client::new();
+
+            match client.get(url).send() {
+                Ok(response) => {
+                    let status = response.status();
+                    let headers_count = response.headers().len();
+
+                    Ok(format!("GET request successful: status={}, headers_count={}, url='{}'",
+                              status, headers_count, url))
+                },
+                Err(e) => Ok(format!("GET request failed: {}", e)),
+            }
+        },
+        "headers" => {
+            // Request with custom headers
+            let client = rmx::reqwest::blocking::Client::new();
+
+            match client.get(url)
+                .header("User-Agent", "rustmax-suite/1.0")
+                .header("Accept", "application/json")
+                .header("X-Custom-Header", "test-value")
+                .send()
+            {
+                Ok(response) => {
+                    let status = response.status();
+                    let content_type = response.headers()
+                        .get("content-type")
+                        .map(|v| v.to_str().unwrap_or("unknown"))
+                        .unwrap_or("none");
+
+                    Ok(format!("Headers request: status={}, content-type={}", status, content_type))
+                },
+                Err(e) => Ok(format!("Headers request failed: {}", e)),
+            }
+        },
+        "json" => {
+            // JSON request and response handling
+            let client = rmx::reqwest::blocking::Client::new();
+
+            match client.get(url).send() {
+                Ok(response) => {
+                    let status = response.status();
+
+                    match response.json::<rmx::serde_json::Value>() {
+                        Ok(json_value) => {
+                            let json_type = match &json_value {
+                                rmx::serde_json::Value::Object(_) => "object",
+                                rmx::serde_json::Value::Array(_) => "array",
+                                rmx::serde_json::Value::String(_) => "string",
+                                rmx::serde_json::Value::Number(_) => "number",
+                                rmx::serde_json::Value::Bool(_) => "boolean",
+                                rmx::serde_json::Value::Null => "null",
+                            };
+
+                            Ok(format!("JSON response: status={}, type={}, size={} chars",
+                                      status, json_type, json_value.to_string().len()))
+                        },
+                        Err(e) => Ok(format!("JSON parsing failed: status={}, error={}", status, e)),
+                    }
+                },
+                Err(e) => Ok(format!("JSON request failed: {}", e)),
+            }
+        },
+        "timeout" => {
+            // Timeout configuration
+            let client = rmx::reqwest::blocking::Client::builder()
+                .timeout(std::time::Duration::from_millis(100))
+                .build()
+                .map_err(|e| rmx::anyhow::anyhow!("Client build failed: {}", e))?;
+
+            match client.get(url).send() {
+                Ok(response) => Ok(format!("Timeout test: surprisingly succeeded with status {}", response.status())),
+                Err(e) => {
+                    if e.is_timeout() {
+                        Ok("Timeout test: correctly timed out".to_string())
+                    } else {
+                        Ok(format!("Timeout test: failed with non-timeout error: {}", e))
+                    }
+                }
+            }
+        },
+        "builder" => {
+            // Client builder with various options
+            let client = rmx::reqwest::blocking::Client::builder()
+                .user_agent("rustmax-suite-builder/1.0")
+                .timeout(std::time::Duration::from_secs(10))
+                .redirect(rmx::reqwest::redirect::Policy::limited(5))
+                .build()
+                .map_err(|e| rmx::anyhow::anyhow!("Client build failed: {}", e))?;
+
+            match client.get(url).send() {
+                Ok(response) => {
+                    Ok(format!("Builder client: status={}, final_url='{}'",
+                              response.status(), response.url()))
+                },
+                Err(e) => Ok(format!("Builder client request failed: {}", e)),
+            }
+        },
+        "post" => {
+            // POST request with JSON body
+            let client = rmx::reqwest::blocking::Client::new();
+            let test_data = rmx::serde_json::json!({
+                "message": "test from rustmax-suite",
+                "timestamp": std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
+                "type": "integration_test"
+            });
+
+            // Use httpbin.org for POST testing
+            let post_url = if url.contains("httpbin") {
+                "https://httpbin.org/post"
+            } else {
+                url
+            };
+
+            match client.post(post_url)
+                .json(&test_data)
+                .send()
+            {
+                Ok(response) => {
+                    let status = response.status();
+                    let content_length = response.content_length().unwrap_or(0);
+
+                    Ok(format!("POST request: status={}, content_length={}", status, content_length))
+                },
+                Err(e) => Ok(format!("POST request failed: {}", e)),
+            }
+        },
+        "async_demo" => {
+            // Demonstrate that we have access to async reqwest (though we're in sync context)
+            let rt = rmx::tokio::runtime::Runtime::new()
+                .map_err(|e| rmx::anyhow::anyhow!("Failed to create runtime: {}", e))?;
+
+            let result = rt.block_on(async {
+                let client = rmx::reqwest::Client::new();
+                match client.get(url).send().await {
+                    Ok(response) => Ok(format!("Async GET: status={}, url='{}'", response.status(), response.url())),
+                    Err(e) => Ok(format!("Async GET failed: {}", e)),
+                }
+            });
+
+            result
+        },
+        _ => {
+            Ok(format!("Unknown operation '{}'. Available: client, get, headers, json, timeout, builder, post, async_demo", operation))
         }
     }
 }

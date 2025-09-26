@@ -747,6 +747,232 @@ fn test_binary_tera_filters() {
     assert!(stdout.contains("Original: Test | Upper: TEST | Length: 4"));
 }
 
+#[test]
+fn test_binary_unicode_graphemes() {
+    let output = Command::new(get_binary_path())
+        .args(&["unicode", "graphemes", "Hello 🌍 World!"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Unicode text segmentation test with graphemes:"));
+    assert!(stdout.contains("Graphemes:"));
+    assert!(stdout.contains("total"));
+}
+
+#[test]
+fn test_binary_unicode_words() {
+    let output = Command::new(get_binary_path())
+        .args(&["unicode", "words", "Hello world! This is a test."])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Unicode text segmentation test with words:"));
+    assert!(stdout.contains("Words:"));
+}
+
+#[test]
+fn test_binary_unicode_compare() {
+    let output = Command::new(get_binary_path())
+        .args(&["unicode", "compare"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Unicode text segmentation test with compare:"));
+    assert!(stdout.contains("Simple 'Hello World'"));
+    assert!(stdout.contains("graphemes"));
+}
+
+#[test]
+fn test_binary_logging_levels() {
+    let output = Command::new(get_binary_path())
+        .args(&["logging", "levels", "test message"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Logging infrastructure test with levels:"));
+    assert!(stdout.contains("Logged 'test message' at all levels"));
+}
+
+#[test]
+fn test_binary_logging_init() {
+    let output = Command::new(get_binary_path())
+        .args(&["logging", "init"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Logging infrastructure test with init:"));
+    assert!(stdout.contains("Logger initialized with RUST_LOG=debug"));
+}
+
+#[test]
+fn test_binary_logging_performance() {
+    let output = Command::new(get_binary_path())
+        .args(&["logging", "performance", "perf test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Logging infrastructure test with performance:"));
+    assert!(stdout.contains("Performance logging: 10 debug messages"));
+}
+
+#[test]
+fn test_binary_proptest_basic() {
+    let output = Command::new(get_binary_path())
+        .args(&["proptest", "basic", "10"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Property-based testing with basic:"));
+    assert!(stdout.contains("Commutative addition property:"));
+    assert!(stdout.contains("tests passed"));
+}
+
+#[test]
+fn test_binary_proptest_string() {
+    let output = Command::new(get_binary_path())
+        .args(&["proptest", "string", "15"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Property-based testing with string:"));
+    assert!(stdout.contains("String reverse property:"));
+}
+
+#[test]
+fn test_binary_proptest_collection() {
+    let output = Command::new(get_binary_path())
+        .args(&["proptest", "collection", "12"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Property-based testing with collection:"));
+    assert!(stdout.contains("Collection sort properties:"));
+}
+
+#[test]
+fn test_binary_proptest_roundtrip() {
+    let output = Command::new(get_binary_path())
+        .args(&["proptest", "roundtrip", "8"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Property-based testing with roundtrip:"));
+    assert!(stdout.contains("JSON roundtrip property:"));
+}
+
+#[test]
+fn test_binary_proptest_invariant() {
+    let output = Command::new(get_binary_path())
+        .args(&["proptest", "invariant", "10"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Property-based testing with invariant:"));
+    assert!(stdout.contains("Invariant testing:"));
+}
+
+#[test]
+fn test_binary_anyhow_basic() {
+    let output = Command::new(get_binary_path())
+        .args(&["anyhow", "basic", "success test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Error handling with anyhow using basic:"));
+    assert!(stdout.contains("Basic anyhow success:"));
+}
+
+#[test]
+fn test_binary_anyhow_context() {
+    let output = Command::new(get_binary_path())
+        .args(&["anyhow", "context", "test"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Error handling with anyhow using context:"));
+    assert!(stdout.contains("Context chain:"));
+}
+
+#[test]
+fn test_binary_anyhow_conversion() {
+    let output = Command::new(get_binary_path())
+        .args(&["anyhow", "conversion", "42"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("Error handling with anyhow using conversion:"));
+    assert!(stdout.contains("Conversion success:"));
+}
+
+#[test]
+fn test_binary_reqwest_client() {
+    let output = Command::new(get_binary_path())
+        .args(&["reqwest", "client"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("HTTP client operations with client:"));
+    assert!(stdout.contains("Client created successfully"));
+}
+
+#[test]
+fn test_binary_reqwest_get() {
+    let output = Command::new(get_binary_path())
+        .args(&["reqwest", "get", "https://httpbin.org/json"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("HTTP client operations with get:"));
+    // This might fail if no network access, so we check for either success or failure
+    assert!(stdout.contains("GET request") && (stdout.contains("successful") || stdout.contains("failed")));
+}
+
+#[test]
+fn test_binary_reqwest_json() {
+    let output = Command::new(get_binary_path())
+        .args(&["reqwest", "json", "https://httpbin.org/json"])
+        .output()
+        .expect("Failed to execute binary");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("HTTP client operations with json:"));
+    // Check for either JSON response or request failure
+    assert!(stdout.contains("JSON") && (stdout.contains("response") || stdout.contains("failed")));
+}
+
 fn get_binary_path() -> String {
     // Check if we're running under cargo-llvm-cov
     if env::var("CARGO_LLVM_COV").is_ok() {
