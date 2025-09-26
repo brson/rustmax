@@ -1956,7 +1956,7 @@ fn proptest_demo(test_type: &str, iterations: u32) -> AnyResult<String> {
 
             for i in 0..test_count {
                 // Use a simple data structure that doesn't need derive macros
-                let data = rmx::serde_json::json!({
+                let data = rmx::rmx::serde_json::json!({
                     "id": i as u32,
                     "name": format!("test_{}", rmx::rand::random::<u32>()),
                     "active": rmx::rand::random::<bool>()
@@ -2333,7 +2333,7 @@ fn reqwest_demo(operation: &str, url: &str) -> AnyResult<String> {
         "post" => {
             // POST request with JSON body
             let client = rmx::reqwest::blocking::Client::new();
-            let test_data = rmx::serde_json::json!({
+            let test_data = rmx::rmx::serde_json::json!({
                 "message": "test from rustmax-suite",
                 "timestamp": std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)

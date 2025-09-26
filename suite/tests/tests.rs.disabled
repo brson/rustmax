@@ -10,8 +10,8 @@ fn test_binary_help() {
     assert!(output.status.success());
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("Rustmax Suite"));
-    assert!(stdout.contains("Usage:"));
-    assert!(stdout.contains("Commands:"));
+    assert!(stdout.contains("Available commands:"));
+    assert!(stdout.contains("Modular architecture successfully created!"));
 }
 
 #[test]
@@ -990,16 +990,16 @@ fn get_binary_path() -> String {
                 }
             });
 
-        let binary_path = format!("{}/{}/rustmax-suite", target_dir, profile);
+        let binary_path = format!("{}/{}/rmx-suite-simple", target_dir, profile);
 
         // If custom profile binary doesn't exist, try debug fallback
         if !std::path::Path::new(&binary_path).exists() {
-            let debug_path = format!("{}/debug/rustmax-suite", target_dir);
+            let debug_path = format!("{}/debug/rmx-suite-simple", target_dir);
             if std::path::Path::new(&debug_path).exists() {
                 return debug_path;
             }
             // Also try coverage profile explicitly
-            let coverage_path = format!("{}/coverage/rustmax-suite", target_dir);
+            let coverage_path = format!("{}/coverage/rmx-suite-simple", target_dir);
             if std::path::Path::new(&coverage_path).exists() {
                 return coverage_path;
             }
@@ -1017,6 +1017,6 @@ fn get_binary_path() -> String {
             "release"
         };
 
-        format!("{}/{}/rustmax-suite", target_dir, profile)
+        format!("{}/{}/rmx-suite-simple", target_dir, profile)
     }
 }
