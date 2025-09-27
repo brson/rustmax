@@ -10,6 +10,8 @@ but that are not yet part of Rust Max.
   Nice missing feature, but code looks underdeveloped.
 - [`bitvec`](https://docs.rs/bitvec).
   Operate directly on bits.
+- [`borsh`](https://docs.rs/borsh).
+  Fast and stable binary serialization.
 - [`boringtun`](https://docs.rs/boringtun).
   WireGuard.
 - [`comrak`](https://docs.rs/comrak).
