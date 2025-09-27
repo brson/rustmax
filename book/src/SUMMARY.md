@@ -1,6 +1,6 @@
 # Summary
 
-- [What is Rustmax?](what-is-rmx.md)
+- [What is Rustmax?](what-is-rustmax.md)
 - [Easy-mode Rust](easy-mode-rust.md)
 
 ---
