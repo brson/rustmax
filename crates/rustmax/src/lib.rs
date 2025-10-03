@@ -663,9 +663,7 @@ pub mod proc_macro2 {
 
 #[cfg(feature = "proptest")]
 pub mod proptest {
-    //! Testing over generated inputs, ala QuickCheck.
-    //!
-    //! See crate [`::proptest`].
+    #![doc = include_str!("../doc-src/crate-proptest.md")]
 
     pub use ::proptest::*;
 }

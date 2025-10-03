@@ -311,4 +311,12 @@
     "crate::walkdir::WalkDir::max_depth":
     "https://docs.rs/walkdir/latest/walkdir/struct.WalkDir.html#method.max_depth",
 
+    // proptest
+    "crate::proptest::strategy::Strategy":
+    "https://docs.rs/proptest/latest/proptest/strategy/trait.Strategy.html",
+    "crate::proptest::proptest":
+    "https://docs.rs/proptest/latest/proptest/macro.proptest.html",
+    "crate::proptest::prop_assert":
+    "https://docs.rs/proptest/latest/proptest/macro.prop_assert.html",
+
 }
