@@ -1,10 +1,5 @@
 # How Do I … in Rust?
 
-<!-- note the organization here is similar but not
-     identical to crates/rmx/src-doc/root-docs.md -->
-
-
-
 
 ## Discovery
 
@@ -16,6 +11,13 @@
 
 
 ## Project organization
+
+### … init a Rustmax project from template?
+
+```
+cargo generate brson/rustmax
+```
+
 
 ### … organize a Rust workspace?
 
