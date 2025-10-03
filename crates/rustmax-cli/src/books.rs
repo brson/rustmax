@@ -426,8 +426,8 @@ fn get_repo(book: &Book) -> AnyResult<()> {
 
     let sh = Shell::new()?;
     if !fs::exists(dir)? {
-        println!("  Cloning {} from {}", book.slug, repo);
-        cmd!(sh, "git clone {repo} {dir}").run()?;
+        println!("  Cloning {} from {} (blobless)", book.slug, repo);
+        cmd!(sh, "git clone --filter=blob:none {repo} {dir}").run()?;
     } else {
         println!("  Updating {}", book.slug);
         let _pd = sh.push_dir(dir);
