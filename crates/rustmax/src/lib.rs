@@ -548,8 +548,9 @@ pub mod futures {
 }
 
 #[cfg(feature = "hex")]
-#[doc = include_str!("../doc-src/crate-hex.md")]
 pub mod hex {
+    #![doc = include_str!("../doc-src/crate-hex.md")]
+
     pub use ::hex::*;
 }
 
@@ -794,8 +795,9 @@ pub mod syn {
 }
 
 #[cfg(feature = "tempfile")]
-#[doc = include_str!("../doc-src/crate-tempfile.md")]
 pub mod tempfile {
+    #![doc = include_str!("../doc-src/crate-tempfile.md")]
+
     pub use ::tempfile::*;
 }
 
