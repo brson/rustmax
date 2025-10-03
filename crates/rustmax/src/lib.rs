@@ -794,11 +794,8 @@ pub mod syn {
 }
 
 #[cfg(feature = "tempfile")]
+#[doc = include_str!("../doc-src/crate-tempfile.md")]
 pub mod tempfile {
-    //! Temporary files and directories.
-    //!
-    //! See crate [`::tempfile`].
-
     pub use ::tempfile::*;
 }
 

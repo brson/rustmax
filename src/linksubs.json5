@@ -277,6 +277,16 @@
     "https://doc.rust-lang.org/cargo/reference/semver.html":
     "https://doc.rust-lang.org/cargo/reference/semver.html",
 
+    // tempfile
+    "crate::tempfile::tempfile":
+    "https://docs.rs/tempfile/latest/tempfile/fn.tempfile.html",
+    "crate::tempfile::NamedTempFile":
+    "https://docs.rs/tempfile/latest/tempfile/struct.NamedTempFile.html",
+    "crate::tempfile::TempDir":
+    "https://docs.rs/tempfile/latest/tempfile/struct.TempDir.html",
+    "crate::tempfile::spooled_tempfile":
+    "https://docs.rs/tempfile/latest/tempfile/fn.spooled_tempfile.html",
+
     // toml
     "crate::toml::Value":
     "https://docs.rs/toml/latest/toml/enum.Value.html",
