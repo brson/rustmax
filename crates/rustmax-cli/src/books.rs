@@ -22,6 +22,7 @@ struct Book {
     book_path: Option<String>,
     #[serde(default)]
     needs_nightly: bool,
+    commit: String,
 }
 
 #[derive(Debug, Clone)]
@@ -418,6 +419,7 @@ fn book_out_dir(book: &Book) -> String {
 fn get_repo(book: &Book) -> AnyResult<()> {
     let ref repo = book.repo;
     let ref dir = book_src_dir(book);
+    let ref commit = book.commit;
 
     // Ensure parent directory exists
     fs::create_dir_all(BOOK_GIT_DIR)?;
@@ -432,6 +434,12 @@ fn get_repo(book: &Book) -> AnyResult<()> {
         cmd!(sh, "git checkout -f").run()?;
         cmd!(sh, "git pull").run()?;
     }
+
+    // Checkout the specific commit
+    println!("  Checking out commit {} for {}", commit, book.slug);
+    let _pd = sh.push_dir(dir);
+    cmd!(sh, "git checkout {commit}").run()?;
+
     Ok(())
 }
 
