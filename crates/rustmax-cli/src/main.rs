@@ -18,6 +18,7 @@ fn main() -> AnyResult<()> {
 }
 
 #[derive(clap::Parser)]
+#[command(version)]
 struct CliOpts {
     #[command(subcommand)]
     cmd: CliCmd,
