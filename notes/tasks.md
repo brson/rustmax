@@ -1,3 +1,17 @@
+# Task: task-check-crate-root-docs
+
+The rustmax crate docs are extensive,
+with categories and lists and descriptions.
+It's easy to fall out of sync with the actual state of the rustmax
+crate dependencies and their descriptions and docs.
+
+These docs live in `root-docs.md`.
+The crate descriptions live in `crate-XYZ.md` next to it,
+with metadata in the `rustmax/Cargo.toml` file as well as `crates.json5`.
+
+Do a pass over `root-docs.md` and fix any inconsistencies.
+
+
 # Task: task-improve-one-book-section
 
 This project is rustmax,
