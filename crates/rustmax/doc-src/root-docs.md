@@ -35,7 +35,7 @@ as a "batteries included" supercrate.
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
 | parallelism | [`crossbeam`], [`rayon`] |
-| asyncronous I/O | [`futures`], [`tokio`] |
+| asynchronous I/O | [`futures`], [`tokio`] |
 | networking and web | [`axum`], [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`tower`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`] |
@@ -129,7 +129,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 ### Crates in `rmx-profile-no-std`
 
 - [`ahash`] - A fast and DOS-resistent hash function, for use in `HashMap`s.
-- [`anyhow`] - Easy error handling.
+- [`anyhow`] - Flexible error handling.
 - [`backtrace`] - Callstack backtraces on demand.
 - [`base64`] - Base-64 encoding and decoding.
 - [`bitflags`] - Types in which the bits are individually addressable.
@@ -142,7 +142,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`derive_more`] - `derive` for more standard traits.
 - [`extension-trait`](extension_trait) - A macro for defining extension methods to external types.
 - [`futures`] - Abstractions for asynchronous programming.
-- [`hex`] - Encoding and decoding hexidecimal strings.
+- [`hex`] - Encoding and decoding hexadecimal strings.
 - [`itertools`] - Additional methods for iterators.
 - [`jiff`] - Dates and time.
 - [`libc`] - Bindings to the C standard library.
@@ -150,7 +150,6 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`nom`] - An efficient parser combinator.
 - [`num_bigint`] - Arbitrary-sized integers.
 - [`num_enum`] - Conversions between numbers and enums.
-- [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rand`] - Random number generators.
 - [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
 - [`rand_pcg`] - The PCG non-cryptographically-secure random number generators.
@@ -173,6 +172,8 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 💡 This profile also enables [`rmx-feature-std`].\
 💡 This profile also enables [`rmx-feature-default`].\
 💡 This profile also enables [`rmx-feature-more`].\
+💡 This profile also enables [`rmx-feature-derive`].\
+💡 This profile also enables [`rmx-feature-serde`].\
 💡 This profile also enables [`rmx-rustlibs-std`].
 
 
@@ -182,6 +183,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
 - [`num_cpus`] - Get the number of CPUS on a machine.
+- [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.
 - [`tempfile`] - Temporary files and directories.
