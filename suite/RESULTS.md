@@ -2,11 +2,11 @@
 
 ## Summary
 
-Created comprehensive dependency coverage tests that exercise rustmax dependencies.
+Created comprehensive dependency coverage tests across two rounds.
 
-## Test File
+## Round 1: `tests/dependency_coverage.rs`
 
-`tests/dependency_coverage.rs` - 23 tests covering:
+23 tests covering:
 - Core utilities: serde_json, itertools
 - Crypto/hashing: blake3, sha2, base64, hex
 - Date/time: chrono, jiff
@@ -30,13 +30,31 @@ Sample run (5 dependencies) showed:
 - backtrace: 0%
 - base64: 0% → 22.00% ✓
 
+## Round 2: `tests/dependency_coverage_round2.rs`
+
+11 additional tests targeting:
+- Rayon: Parallel iteration, sorting, find operations
+- Proptest: Property-based testing with strategies
+- Nom: Parser combinators
+- Num-bigint: Big integer arithmetic
+- Tera: Template engine
+- Xshell: Shell command execution
+- Termcolor: Colored terminal output
+- Env_logger: Logger initialization
+
+Note: Serde and Clap tests were skipped due to re-export complexities.
+
+## Total Test Count
+
+34 tests (23 from round1 + 11 from round2)
+
 ## Next Steps
 
-1. Run full coverage collection: `./collect-dep-coverage.sh`
-2. Analyze which dependencies still have 0% coverage
-3. Add more tests for uncovered dependencies
-4. Focus on higher-value dependencies (tokio, reqwest, hyper for web stack)
-5. Consider adding async/web tests when async binaries are re-enabled
+1. Run full coverage collection: `./collect-dep-coverage.sh` (takes ~10min for all 63 deps)
+2. Analyze round2 improvements: rayon, proptest, nom, tera, etc.
+3. Focus on async stack: tokio, reqwest, hyper, axum (requires async runtime setup)
+4. Add more specialized tests for deps still at 0%
+5. Consider async/web integration when suite's async binaries are re-enabled
 
 ## Notes
 
