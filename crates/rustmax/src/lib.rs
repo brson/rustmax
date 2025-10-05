@@ -488,9 +488,7 @@ pub mod ctrlc {
 
 #[cfg(feature = "crossbeam")]
 pub mod crossbeam {
-    //! Concurrency tools to supplement [`std::sync`], including fast channels.
-    //!
-    //! See crate [`::crossbeam`].
+    #![doc = include_str!("../doc-src/crate-crossbeam.md")]
 
     pub use ::crossbeam::*;
 }

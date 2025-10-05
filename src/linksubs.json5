@@ -39,6 +39,24 @@
     "crate::bytes::BufMut":
     "https://docs.rs/bytes/latest/bytes/trait.BufMut.html",
 
+    // crossbeam
+    "crate::crossbeam::channel":
+    "https://docs.rs/crossbeam/latest/crossbeam/channel/index.html",
+    "crate::crossbeam::scope":
+    "https://docs.rs/crossbeam/latest/crossbeam/fn.scope.html",
+    "crate::crossbeam::select":
+    "https://docs.rs/crossbeam/latest/crossbeam/macro.select.html",
+    "crate::crossbeam::utils::Backoff":
+    "https://docs.rs/crossbeam/latest/crossbeam/utils/struct.Backoff.html",
+    "crate::std::sync":
+    "https://doc.rust-lang.org/stable/std/sync/index.html",
+    "crate::std::thread":
+    "https://doc.rust-lang.org/stable/std/thread/index.html",
+    "crate::std::sync::mpsc":
+    "https://doc.rust-lang.org/stable/std/sync/mpsc/index.html",
+    "crate::std::thread::spawn":
+    "https://doc.rust-lang.org/stable/std/thread/fn.spawn.html",
+
     // futures
     "crate::futures::Future":
     "https://docs.rs/futures/latest/futures/future/trait.Future.html",
