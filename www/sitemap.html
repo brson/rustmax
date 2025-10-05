@@ -29,6 +29,41 @@
     <script src='set-theme.js'></script>
     <script src='script.js'></script>
 
+    <style>
+      /* Inline crate lists */
+      .crate-list {
+          display: block;
+          text-align: right;
+          text-wrap: balance;
+      }
+
+      .crate-list li {
+          display: inline;
+          list-style: none;
+      }
+
+      .crate-list li a {
+          white-space: nowrap;
+      }
+
+      .crate-list li::after {
+          content: ' · ';
+          white-space: nowrap;
+      }
+
+      .crate-list li:last-child::after {
+          content: '';
+      }
+      ul {
+          padding-top: 20px;
+          padding-bottom: 20px;
+      }
+      ul.crate-list {
+          padding-top: 20px;
+          padding-bottom: 20px;
+      }
+    </style>
+
   </head>
 
   <main>
@@ -49,37 +84,333 @@
     <section>
       <ul>
         <li>
-          <a href="todo">The Rustmax crate directory</a>
-          <!-- these are links to the entries on the homepage, which probably don't have anchors yet -->
-          <ul>
-            <li><a href="todo">ahash</a>
-            <li>etc
+          <a href="index.html">The Rustmax crate directory</a>
+          <ul class="crate-list">
+            <li><a href="api/rustmax/ahash/index.html">ahash</a>
+            <li><a href="api/rustmax/alloc/index.html">alloc</a>
+            <li><a href="api/rustmax/anyhow/index.html">anyhow</a>
+            <li><a href="api/rustmax/axum/index.html">axum</a>
+            <li><a href="api/rustmax/backtrace/index.html">backtrace</a>
+            <li><a href="api/rustmax/base64/index.html">base64</a>
+            <li><a href="api/rustmax/bindgen/index.html">bindgen</a>
+            <li><a href="api/rustmax/bitflags/index.html">bitflags</a>
+            <li><a href="api/rustmax/blake3/index.html">blake3</a>
+            <li><a href="api/rustmax/byteorder/index.html">byteorder</a>
+            <li><a href="api/rustmax/bytes/index.html">bytes</a>
+            <li><a href="api/rustmax/cc/index.html">cc</a>
+            <li><a href="api/rustmax/cfg_if/index.html">cfg-if</a>
+            <li><a href="api/rustmax/chrono/index.html">chrono</a>
+            <li><a href="api/rustmax/clap/index.html">clap</a>
+            <li><a href="api/rustmax/core/index.html">core</a>
+            <li><a href="api/rustmax/cpal/index.html">cpal</a>
+            <li><a href="api/rustmax/crossbeam/index.html">crossbeam</a>
+            <li><a href="api/rustmax/ctrlc/index.html">ctrlc</a>
+            <li><a href="api/rustmax/cxx/index.html">cxx</a>
+            <li><a href="api/rustmax/cxx_build/index.html">cxx-build</a>
+            <li><a href="api/rustmax/derive_more/index.html">derive_more</a>
+            <li><a href="api/rustmax/env_logger/index.html">env_logger</a>
+            <li><a href="api/rustmax/extension_trait/index.html">extension-trait</a>
+            <li><a href="api/rustmax/extras/index.html">extras</a>
+            <li><a href="api/rustmax/futures/index.html">futures</a>
+            <li><a href="api/rustmax/hex/index.html">hex</a>
+            <li><a href="api/rustmax/http/index.html">http</a>
+            <li><a href="api/rustmax/hyper/index.html">hyper</a>
+            <li><a href="api/rustmax/itertools/index.html">itertools</a>
+            <li><a href="api/rustmax/jiff/index.html">jiff</a>
+            <li><a href="api/rustmax/json5/index.html">json5</a>
+            <li><a href="api/rustmax/libc/index.html">libc</a>
+            <li><a href="api/rustmax/log/index.html">log</a>
+            <li><a href="api/rustmax/mime/index.html">mime</a>
+            <li><a href="api/rustmax/nom/index.html">nom</a>
+            <li><a href="api/rustmax/num_bigint/index.html">num-bigint</a>
+            <li><a href="api/rustmax/num_cpus/index.html">num_cpus</a>
+            <li><a href="api/rustmax/num_enum/index.html">num_enum</a>
+            <li><a href="api/rustmax/prelude/index.html">prelude</a>
+            <li><a href="api/rustmax/proc_macro/index.html">proc_macro</a>
+            <li><a href="api/rustmax/proc_macro2/index.html">proc-macro2</a>
+            <li><a href="api/rustmax/proptest/index.html">proptest</a>
+            <li><a href="api/rustmax/quote/index.html">quote</a>
+            <li><a href="api/rustmax/rand/index.html">rand</a>
+            <li><a href="api/rustmax/rand_chacha/index.html">rand_chacha</a>
+            <li><a href="api/rustmax/rand_pcg/index.html">rand_pcg</a>
+            <li><a href="api/rustmax/rayon/index.html">rayon</a>
+            <li><a href="api/rustmax/regex/index.html">regex</a>
+            <li><a href="api/rustmax/reqwest/index.html">reqwest</a>
+            <li><a href="api/rustmax/rodio/index.html">rodio</a>
+            <li><a href="api/rustmax/rustyline/index.html">rustyline</a>
+            <li><a href="api/rustmax/semver/index.html">semver</a>
+            <li><a href="api/rustmax/serde/index.html">serde</a>
+            <li><a href="api/rustmax/serde_json/index.html">serde_json</a>
+            <li><a href="api/rustmax/sha2/index.html">sha2</a>
+            <li><a href="api/rustmax/socket2/index.html">socket2</a>
+            <li><a href="api/rustmax/static_assertions/index.html">static_assertions</a>
+            <li><a href="api/rustmax/std/index.html">std</a>
+            <li><a href="api/rustmax/syn/index.html">syn</a>
+            <li><a href="api/rustmax/tempfile/index.html">tempfile</a>
+            <li><a href="api/rustmax/tera/index.html">tera</a>
+            <li><a href="api/rustmax/termcolor/index.html">termcolor</a>
+            <li><a href="api/rustmax/thiserror/index.html">thiserror</a>
+            <li><a href="api/rustmax/tokio/index.html">tokio</a>
+            <li><a href="api/rustmax/toml/index.html">toml</a>
+            <li><a href="api/rustmax/tower/index.html">tower</a>
+            <li><a href="api/rustmax/unicode_segmentation/index.html">unicode-segmentation</a>
+            <li><a href="api/rustmax/url/index.html">url</a>
+            <li><a href="api/rustmax/walkdir/index.html">walkdir</a>
+            <li><a href="api/rustmax/xshell/index.html">xshell</a>
           </ul>
         </li>
-        <li>The Rustmax Book
-          <!-- this should include second-level headings in the book,
-               e.g. we dig one level into each page in the book -->
+        <li><a href="book/index.html">The Rustmax Book</a>
           <ul>
-            <li>What is Rustmax?
-            <li>Simple Rust Tips
+            <li><a href="book/what-is-rustmax.html">What is Rustmax?</a>
+            <li><a href="book/easy-mode-rust.html">Easy-mode Rust</a>
               <ul>
-                <li>Assert `Send` / `Sync`
-                <li>etc
+                <li><a href="book/easy-mode-rust.html#install-rust-with-rustup">Install Rust with `rustup`</a>
+                <li><a href="book/easy-mode-rust.html#rust-workspace-considerations">Rust workspace considerations</a>
+                <li><a href="book/easy-mode-rust.html#start-a-new-rustmax-project-with-cargo-generate">Start a new `rustmax` project with `cargo-generate`</a>
+                <li><a href="book/easy-mode-rust.html#updating-dependencies-in-lockfile">Updating dependencies in lockfile</a>
+                <li><a href="book/easy-mode-rust.html#updating-dependencies-in-cargotoml">Updating dependencies in Cargo.toml</a>
+                <li><a href="book/easy-mode-rust.html#upgrading-dependencies-across-minor-versions-in-cargotoml">Upgrading dependencies across minor versions in Cargo.toml</a>
+                <li><a href="book/easy-mode-rust.html#topics">Topics</a>
               </ul>
-            </li>
-            <li>etc
+            <li><a href="book/crates.html">Rustmax: The Crates</a>
+            <li><a href="book/tools.html">Rustmax: The Tools</a>
+              <ul>
+                <li><a href="book/tools.html#standard-rust-tools">Standard Rust tools</a>
+                <li><a href="book/tools.html#cargo-plugins">Cargo plugins</a>
+                <li><a href="book/tools.html#more-rust-tools">More Rust tools</a>
+                <li><a href="book/tools.html#non-rust-tools-for-rust">Non-Rust tools for Rust</a>
+                <li><a href="book/tools.html#more-general-developer-tools">More general developer tools</a>
+              </ul>
+            <li><a href="book/library.html">The Rustmax Library</a>
+              <ul>
+                <li><a href="book/library.html#the-rust-language">The Rust language</a>
+                <li><a href="book/library.html#the-rust-standard-library">The Rust standard library</a>
+                <li><a href="book/library.html#standard-rust-tools">Standard Rust tools</a>
+                <li><a href="book/library.html#the-rust-crate-ecosystem">The Rust crate ecosystem</a>
+                <li><a href="book/library.html#domain-specific-rust">Domain-specific Rust</a>
+                <li><a href="book/library.html#the-rust-project-internals">The Rust Project internals</a>
+              </ul>
+            <li><a href="book/cli.html">The Rustmax CLI</a>
+              <ul>
+                <li><a href="book/cli.html#print-rust-system-status">Print Rust system status</a>
+              </ul>
+            <li><a href="book/simple-tips.html">Simple Rust Tips</a>
+              <ul>
+                <li><a href="book/simple-tips.html#assert-sync--sync">Assert `Send` / `Sync`</a>
+                <li><a href="book/simple-tips.html#copy-a-directory-recursively">Copy a directory recursively</a>
+                <li><a href="book/simple-tips.html#theres-an-either-hiding-in-the-futures-crate">There's an `Either` hiding in the `futures` crate!</a>
+                <li><a href="book/simple-tips.html#import-traits-with-as-_">Import traits with `as _`</a>
+                <li><a href="book/simple-tips.html#set-up-the-mold-linker">Set up the `mold` linker</a>
+                <li><a href="book/simple-tips.html#use-rustfmtskip">Use `rustfmt::skip`</a>
+                <li><a href="book/simple-tips.html#use-option-with-">Use `Option` with `?`</a>
+                <li><a href="book/simple-tips.html#put-common-development-commands-in-a-justfile">Put common development commands in a `justfile`</a>
+              </ul>
+            <li><a href="book/rust-cli-one-liners.html">Rust CLI One-Liners</a>
+              <ul>
+                <li><a href="book/rust-cli-one-liners.html#find-all-rust-files">Find all Rust files</a>
+                <li><a href="book/rust-cli-one-liners.html#replace-text-in-all-rust-files">Replace text in all Rust files</a>
+                <li><a href="book/rust-cli-one-liners.html#delete-trailing-newlines-in-all-python-and-rust-files">Delete trailing newlines in all Python and Rust files</a>
+              </ul>
+            <li><a href="book/std.html">The Rust Standard Library Revisited</a>
+              <ul>
+                <li><a href="book/std.html#api-docs">API docs</a>
+                <li><a href="book/std.html#rust-standard-library-classics">Rust standard library classics</a>
+                <li><a href="book/std.html#a-new-tour-of-the-rust-standard-library">A (New) Tour of the Rust standard library</a>
+              </ul>
+            <li><a href="book/ecosystem.html">The Rust Ecosystem</a>
+              <ul>
+                <li><a href="book/ecosystem.html#rust-resources">Rust resources</a>
+                <li><a href="book/ecosystem.html#error-handling---anyhow-and-thiserror">Error handling - `anyhow` and `thiserror`</a>
+                <li><a href="book/ecosystem.html#serialization---serde">Serialization - `serde`</a>
+                <li><a href="book/ecosystem.html#command-line-handling---clap">Command line handling - `clap`</a>
+                <li><a href="book/ecosystem.html#derive-all-the-things">Derive all the things</a>
+                <li><a href="book/ecosystem.html#logging---log-and-env_logger">Logging - `log` and `env_logger`</a>
+                <li><a href="book/ecosystem.html#async-io---tokio">Async I/O - `tokio`</a>
+                <li><a href="book/ecosystem.html#managing-rust-toolchains">Managing Rust toolchains</a>
+                <li><a href="book/ecosystem.html#procedural-macros">Procedural macros</a>
+                <li><a href="book/ecosystem.html#rust-build-scripts">Rust build scripts</a>
+                <li><a href="book/ecosystem.html#todo-topics">TODO topics</a>
+              </ul>
+            <li><a href="book/how-do-i.html">How Do I … ?</a>
+              <ul>
+                <li><a href="book/how-do-i.html#discovery">Discovery</a>
+                <li><a href="book/how-do-i.html#project-organization">Project organization</a>
+                <li><a href="book/how-do-i.html#conveniences">Conveniences</a>
+                <li><a href="book/how-do-i.html#error-handling-and-debugging">Error handling and debugging</a>
+                <li><a href="book/how-do-i.html#collections">Collections</a>
+                <li><a href="book/how-do-i.html#numerics">Numerics</a>
+                <li><a href="book/how-do-i.html#encoding-serialization-parsing">Encoding, serialization, parsing</a>
+                <li><a href="book/how-do-i.html#time">Time</a>
+                <li><a href="book/how-do-i.html#random-numbers">Random numbers</a>
+                <li><a href="book/how-do-i.html#cryptography">Cryptography</a>
+                <li><a href="book/how-do-i.html#parallelism-and-concurrency">Parallelism and Concurrency</a>
+                <li><a href="book/how-do-i.html#asynchronous-io">Asynchronous I/O</a>
+                <li><a href="book/how-do-i.html#networking-and-web">Networking and web</a>
+                <li><a href="book/how-do-i.html#text--unicode">Text / unicode</a>
+                <li><a href="book/how-do-i.html#terminal--cli">Terminal / CLI</a>
+                <li><a href="book/how-do-i.html#system--os">System / OS</a>
+                <li><a href="book/how-do-i.html#testing">Testing</a>
+                <li><a href="book/how-do-i.html#build-scripts">Build scripts</a>
+                <li><a href="book/how-do-i.html#ffi--interop">FFI / interop</a>
+                <li><a href="book/how-do-i.html#procedural-macros">Procedural macros</a>
+              </ul>
+            <li><a href="book/modern-rust.html">Modern Rust Features</a>
+              <ul>
+                <li><a href="book/modern-rust.html#let-else">`let else`</a>
+                <li><a href="book/modern-rust.html#topics">Topics</a>
+              </ul>
+            <li><a href="book/radar.html">The Rustmax Radar</a>
+              <ul>
+                <li><a href="book/radar.html#crates">Crates</a>
+                <li><a href="book/radar.html#tools">Tools</a>
+                <li><a href="book/radar.html#wanted">Wanted</a>
+                <li><a href="book/radar.html#replacements">Replacements</a>
+                <li><a href="book/radar.html#graveyard">Graveyard</a>
+              </ul>
+            <li><a href="book/resources.html">External Rust Resources</a>
+              <ul>
+                <li><a href="book/resources.html#must-know-urls-">Must know URLS 🤯</a>
+                <li><a href="book/resources.html#tier-1---looks-good-">Tier 1 - looks good 👍</a>
+                <li><a href="book/resources.html#tier-2---unvetted-">Tier 2 - unvetted 😒</a>
+              </ul>
           </ul>
         </li>
-        <li>The Rustmax Library
-          <!-- links to the rustmax library go here -->
-          <!-- offsite library books included but indicated by (offsite) -->
-          <!-- including links to the hot chapters called out explicitly in the book's library index -->
+        <li><a href="book/library.html">The Rustmax Library</a>
+          <ul>
+            <li><a href="library/trpl/index.html">The Rust Programming Language</a> (<a href="https://doc.rust-lang.org/book/">offsite</a>)
+            <li><a href="https://doc.rust-lang.org/rust-by-example/">Rust By Example</a> (offsite)
+            <li><a href="library/reference/index.html">The Rust Reference</a> (<a href="https://doc.rust-lang.org/reference/">offsite</a>)
+              <ul>
+                <li>🔖 <a href="library/reference/conditional-compilation.html">Conditional compilation</a>
+                <li>🔖 <a href="library/reference/behavior-considered-undefined.html">Behavior considered undefined</a>
+              </ul>
+            <li><a href="library/nomicon/index.html">The Rustonomicon</a> (<a href="https://doc.rust-lang.org/nomicon/">offsite</a>)
+            <li><a href="library/edition-guide/index.html">The Rust Edition Guide</a> (<a href="https://doc.rust-lang.org/edition-guide/">offsite</a>)
+            <li><a href="https://veykril.github.io/tlborm/">The Little Book of Rust Macros</a> (offsite)
+            <li><a href="library/api-guidelines/index.html">Rust API Guidelines</a> (<a href="https://rust-lang.github.io/api-guidelines/">offsite</a>)
+            <li><a href="library/unsafe-code-guidelines/index.html">Rust Unsafe Code Guidelines</a> (<a href="https://rust-lang.github.io/unsafe-code-guidelines/">offsite</a>)
+            <li><a href="https://doc.rust-lang.org/stable/error_codes/error-index.html">Rust Error Codes Index</a> (offsite)
+            <li><a href="https://doc.rust-lang.org/unstable-book/">The Rust Unstable Book</a> (offsite)
+            <li><a href="https://doc.rust-lang.org/nightly/style-guide/index.html">The Rust Style Guide</a> (offsite)
+            <li><a href="https://doc.rust-lang.org/nightly/releases.html">Rust Release Notes</a> (offsite)
+            <li><a href="https://doc.rust-lang.org/std/index.html">`std`</a> (offsite)
+              <ul>
+                <li>🔖 <a href="https://doc.rust-lang.org/std/collections/index.html">`std::collections`</a>
+                <li>🔖 <a href="https://doc.rust-lang.org/stable/std/error/index.html">`std::error`</a>
+                <li>🔖 <a href="https://doc.rust-lang.org/std/ptr/index.html">`std::ptr`</a>
+                <li>🔖 <a href="https://doc.rust-lang.org/std/sync/index.html">`std::sync`</a>
+                <li>🔖 <a href="https://doc.rust-lang.org/std/atomic/index.html">`std::sync::atomic`</a>
+              </ul>
+            <li><a href="https://doc.rust-lang.org/core/index.html">`core`</a> (offsite)
+            <li><a href="https://doc.rust-lang.org/alloc/index.html">`alloc`</a> (offsite)
+            <li><a href="https://doc.rust-lang.org/proc_macro/index.html">`proc_macro`</a> (offsite)
+            <li><a href="library/cargo-book/index.html">The Cargo Book</a> (<a href="https://doc.rust-lang.org/cargo/">offsite</a>)
+              <ul>
+                <li>🔖 <a href="library/cargo-book/reference/manifest.html">The manifest format</a>
+                <li>🔖 <a href="library/cargo-book/reference/environment-variables.html">Environment variables</a>
+                <li>🔖 <a href="library/cargo-book/reference/config.html">Configuration format</a>
+                <li>🔖 <a href="library/cargo-book/reference/semver.html">SemVer compatibility</a>
+              </ul>
+            <li><a href="library/rustc-book/index.html">The rustc Book</a> (<a href="https://doc.rust-lang.org/rustc/">offsite</a>)
+              <ul>
+                <li>🔖 <a href="library/rustc-book/lints/index.html">The lint system and built-in lints</a>
+                <li>🔖 <a href="library/rustc-book/platform-support.html">Rust platform support tiers</a>
+              </ul>
+            <li><a href="https://rust-lang.github.io/rustup/index.html">The `rustup` Book</a> (offsite)
+            <li><a href="library/rustdoc-book/index.html">The rustdoc Book</a> (<a href="https://doc.rust-lang.org/rustdoc/">offsite</a>)
+            <li><a href="https://doc.rust-lang.org/nightly/clippy/development/infrastructure/book.html">The `clippy` Book</a> (offsite)
+            <li><a href="https://just.systems/man/en/">The `just` Programmer's Manual</a> (offsite)
+            <li><a href="library/mdbook/index.html">The mdBook Book</a> (<a href="https://rust-lang.github.io/mdBook/">offsite</a>)
+            <li><a href="library/bindgen/index.html">The bindgen User Guide</a> (<a href="https://rust-lang.github.io/rust-bindgen/">offsite</a>)
+            <li><a href="library/rand-book/index.html">The Rand Book</a> (<a href="https://rust-random.github.io/book/">offsite</a>)
+            <li><a href="https://proptest-rs.github.io/proptest/intro.html">The `proptest` Book</a> (offsite)
+            <li><a href="https://serde.rs/">The `serde` Book</a> (offsite)
+            <li><a href="library/rust-cookbook/index.html">Rust Cookbook</a> (<a href="https://rust-lang-nursery.github.io/rust-cookbook/">offsite</a>)
+            <li><a href="library/embedded-book/index.html">The Embedded Rust Book</a> (<a href="https://doc.rust-lang.org/stable/embedded-book/">offsite</a>)
+            <li><a href="https://rust-lang.github.io/rust-project-goals/">Rust Project Goals</a> (offsite)
+            <li><a href="library/rustc-dev-guide/index.html">Guide to rustc Development</a> (<a href="https://rustc-dev-guide.rust-lang.org/">offsite</a>)
+            <li><a href="library/std-dev-guide/index.html">Standard Library Developers Guide</a> (<a href="https://std-dev-guide.rust-lang.org/">offsite</a>)
+            <li><a href="library/rust-forge/index.html">Rust Forge</a> (<a href="https://forge.rust-lang.org/">offsite</a>)
+              <ul>
+                <li>🔖 <a href="library/rust-forge/infra/other-installation-methods.html">Alternative Rust Installation Methods</a>
+              </ul>
+            <li><a href="library/rfcs/index.html">Rust RFCs</a> (<a href="https://rust-lang.github.io/rfcs/">offsite</a>)
+          </ul>
         </li>
         <li>
-          The `rustmax` crate API rustdocs
-          <ul>
-            <li>ahash
-            <li>etc
+          <a href="api/rustmax/index.html">The `rustmax` crate API rustdocs</a>
+          <ul class="crate-list">
+            <li><a href="api/rustmax/ahash/index.html">ahash</a>
+            <li><a href="api/rustmax/alloc/index.html">alloc</a>
+            <li><a href="api/rustmax/anyhow/index.html">anyhow</a>
+            <li><a href="api/rustmax/axum/index.html">axum</a>
+            <li><a href="api/rustmax/backtrace/index.html">backtrace</a>
+            <li><a href="api/rustmax/base64/index.html">base64</a>
+            <li><a href="api/rustmax/bindgen/index.html">bindgen</a>
+            <li><a href="api/rustmax/bitflags/index.html">bitflags</a>
+            <li><a href="api/rustmax/blake3/index.html">blake3</a>
+            <li><a href="api/rustmax/byteorder/index.html">byteorder</a>
+            <li><a href="api/rustmax/bytes/index.html">bytes</a>
+            <li><a href="api/rustmax/cc/index.html">cc</a>
+            <li><a href="api/rustmax/cfg_if/index.html">cfg-if</a>
+            <li><a href="api/rustmax/chrono/index.html">chrono</a>
+            <li><a href="api/rustmax/clap/index.html">clap</a>
+            <li><a href="api/rustmax/core/index.html">core</a>
+            <li><a href="api/rustmax/cpal/index.html">cpal</a>
+            <li><a href="api/rustmax/crossbeam/index.html">crossbeam</a>
+            <li><a href="api/rustmax/ctrlc/index.html">ctrlc</a>
+            <li><a href="api/rustmax/cxx/index.html">cxx</a>
+            <li><a href="api/rustmax/cxx_build/index.html">cxx-build</a>
+            <li><a href="api/rustmax/derive_more/index.html">derive_more</a>
+            <li><a href="api/rustmax/env_logger/index.html">env_logger</a>
+            <li><a href="api/rustmax/extension_trait/index.html">extension-trait</a>
+            <li><a href="api/rustmax/extras/index.html">extras</a>
+            <li><a href="api/rustmax/futures/index.html">futures</a>
+            <li><a href="api/rustmax/hex/index.html">hex</a>
+            <li><a href="api/rustmax/http/index.html">http</a>
+            <li><a href="api/rustmax/hyper/index.html">hyper</a>
+            <li><a href="api/rustmax/itertools/index.html">itertools</a>
+            <li><a href="api/rustmax/jiff/index.html">jiff</a>
+            <li><a href="api/rustmax/json5/index.html">json5</a>
+            <li><a href="api/rustmax/libc/index.html">libc</a>
+            <li><a href="api/rustmax/log/index.html">log</a>
+            <li><a href="api/rustmax/mime/index.html">mime</a>
+            <li><a href="api/rustmax/nom/index.html">nom</a>
+            <li><a href="api/rustmax/num_bigint/index.html">num-bigint</a>
+            <li><a href="api/rustmax/num_cpus/index.html">num_cpus</a>
+            <li><a href="api/rustmax/num_enum/index.html">num_enum</a>
+            <li><a href="api/rustmax/prelude/index.html">prelude</a>
+            <li><a href="api/rustmax/proc_macro/index.html">proc_macro</a>
+            <li><a href="api/rustmax/proc_macro2/index.html">proc-macro2</a>
+            <li><a href="api/rustmax/proptest/index.html">proptest</a>
+            <li><a href="api/rustmax/quote/index.html">quote</a>
+            <li><a href="api/rustmax/rand/index.html">rand</a>
+            <li><a href="api/rustmax/rand_chacha/index.html">rand_chacha</a>
+            <li><a href="api/rustmax/rand_pcg/index.html">rand_pcg</a>
+            <li><a href="api/rustmax/rayon/index.html">rayon</a>
+            <li><a href="api/rustmax/regex/index.html">regex</a>
+            <li><a href="api/rustmax/reqwest/index.html">reqwest</a>
+            <li><a href="api/rustmax/rodio/index.html">rodio</a>
+            <li><a href="api/rustmax/rustyline/index.html">rustyline</a>
+            <li><a href="api/rustmax/semver/index.html">semver</a>
+            <li><a href="api/rustmax/serde/index.html">serde</a>
+            <li><a href="api/rustmax/serde_json/index.html">serde_json</a>
+            <li><a href="api/rustmax/sha2/index.html">sha2</a>
+            <li><a href="api/rustmax/socket2/index.html">socket2</a>
+            <li><a href="api/rustmax/static_assertions/index.html">static_assertions</a>
+            <li><a href="api/rustmax/std/index.html">std</a>
+            <li><a href="api/rustmax/syn/index.html">syn</a>
+            <li><a href="api/rustmax/tempfile/index.html">tempfile</a>
+            <li><a href="api/rustmax/tera/index.html">tera</a>
+            <li><a href="api/rustmax/termcolor/index.html">termcolor</a>
+            <li><a href="api/rustmax/thiserror/index.html">thiserror</a>
+            <li><a href="api/rustmax/tokio/index.html">tokio</a>
+            <li><a href="api/rustmax/toml/index.html">toml</a>
+            <li><a href="api/rustmax/tower/index.html">tower</a>
+            <li><a href="api/rustmax/unicode_segmentation/index.html">unicode-segmentation</a>
+            <li><a href="api/rustmax/url/index.html">url</a>
+            <li><a href="api/rustmax/walkdir/index.html">walkdir</a>
+            <li><a href="api/rustmax/xshell/index.html">xshell</a>
           </ul>
         </li>
       </ul>
