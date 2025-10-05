@@ -233,6 +233,18 @@
     "crate::num_bigint::BigUint":
     "https://docs.rs/num-bigint/latest/num_bigint/struct.BigUint.html",
 
+    // sha2
+    "crate::sha2::Digest":
+    "https://docs.rs/sha2/latest/sha2/trait.Digest.html",
+    "crate::sha2::Digest::digest":
+    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.digest",
+    "crate::sha2::Digest::new":
+    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.new",
+    "crate::sha2::Digest::update":
+    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.update",
+    "crate::sha2::Digest::finalize":
+    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.finalize",
+
     // base64
     "crate::base64::encode":
     "https://docs.rs/base64/latest/base64/fn.encode.html",

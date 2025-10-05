@@ -754,9 +754,7 @@ pub mod serde_json {
 
 #[cfg(feature = "sha2")]
 pub mod sha2 {
-    //! The SHA2 cryptographic hash functions.
-    //!
-    //! See crate [`::sha2`].
+    #![doc = include_str!("../doc-src/crate-sha2.md")]
 
     pub use ::sha2::*;
 }
