@@ -176,10 +176,47 @@
             <li><a href="book/tools.html">Rustmax: The Tools</a>
               <ul>
                 <li><a href="book/tools.html#standard-rust-tools">Standard Rust tools</a>
+                  <ul>
+                    <li><a href="book/tools.html#-cargo">`cargo`</a>
+                    <li><a href="book/tools.html#-rustc">`rustc`</a>
+                    <li><a href="book/tools.html#-rustup">`rustup`</a>
+                    <li><a href="book/tools.html#-rustfmt">`rustfmt`</a>
+                    <li><a href="book/tools.html#-clippy">`clippy`</a>
+                    <li><a href="book/tools.html#-rustdoc">`rustdoc`</a>
+                    <li><a href="book/tools.html#-mdbook">`mdbook`</a>
+                    <li><a href="book/tools.html#-bindgen">`bindgen`</a>
+                    <li><a href="book/tools.html#-miri">`miri`</a>
+                  </ul>
                 <li><a href="book/tools.html#cargo-plugins">Cargo plugins</a>
+                  <ul>
+                    <li><a href="book/tools.html#-cargo-edit">`cargo-edit`</a>
+                    <li><a href="book/tools.html#-cargo-clean-all">`cargo-clean-all`</a>
+                    <li><a href="book/tools.html#-cargo-deny">`cargo-deny`</a>
+                    <li><a href="book/tools.html#-cargo-license">`cargo-license`</a>
+                    <li><a href="book/tools.html#-cargo-audit">`cargo-audit`</a>
+                    <li><a href="book/tools.html#-cargo-generate">`cargo-generate`</a>
+                    <li><a href="book/tools.html#-clippy-control">`clippy-control`</a>
+                  </ul>
                 <li><a href="book/tools.html#more-rust-tools">More Rust tools</a>
+                  <ul>
+                    <li><a href="book/tools.html#-mold">`mold`</a>
+                    <li><a href="book/tools.html#-ripgrep">`ripgrep`</a>
+                    <li><a href="book/tools.html#-just">`just`</a>
+                    <li><a href="book/tools.html#-tokei">`tokei`</a>
+                    <li><a href="book/tools.html#-basic-http-server">`basic-http-server`</a>
+                  </ul>
                 <li><a href="book/tools.html#non-rust-tools-for-rust">Non-Rust tools for Rust</a>
+                  <ul>
+                    <li><a href="book/tools.html#-gist">`gist`</a>
+                  </ul>
                 <li><a href="book/tools.html#more-general-developer-tools">More general developer tools</a>
+                  <ul>
+                    <li><a href="book/tools.html#-jaq">`jaq`</a>
+                    <li><a href="book/tools.html#-jsonxf">`jsonxf`</a>
+                    <li><a href="book/tools.html#-fd">`fd`</a>
+                    <li><a href="book/tools.html#-sd">`sd`</a>
+                    <li><a href="book/tools.html#-dust">`dust`</a>
+                  </ul>
               </ul>
             <li><a href="book/library.html">The Rustmax Library</a>
               <ul>
@@ -234,24 +271,103 @@
             <li><a href="book/how-do-i.html">How Do I … ?</a>
               <ul>
                 <li><a href="book/how-do-i.html#discovery">Discovery</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-find-a-crate-for-a-given-purpose">… find a crate for a given purpose?</a>
+                    <li><a href="book/how-do-i.html#-find-the-latest-version-of-a-crate">… find the latest version of a crate?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#project-organization">Project organization</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-init-a-rustmax-project-from-template">… init a Rustmax project from template?</a>
+                    <li><a href="book/how-do-i.html#-organize-a-rust-workspace">… organize a Rust workspace?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#conveniences">Conveniences</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-define-extension-methods-on-a-type-in-another-crate">… define "extension" methods on a type in another crate?</a>
+                    <li><a href="book/how-do-i.html#-guarantee-a-trait-is-object-safe">… guarantee a trait is object-safe?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#error-handling-and-debugging">Error handling and debugging</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-handle-errors-simply-and-correctly">… handle errors simply and correctly?</a>
+                    <li><a href="book/how-do-i.html#-structure-errors-in-a-public-api">… structure errors in a public API?</a>
+                    <li><a href="book/how-do-i.html#-set-up-basic-logging">… set up basic logging?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#collections">Collections</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-create-a-fast-hashmap">… create a fast `HashMap`?</a>
+                    <li><a href="book/how-do-i.html#-convert-from-slices-to-fixed-length-arrays">… convert from slices to fixed-length arrays?</a>
+                    <li><a href="book/how-do-i.html#-implement-an-impl-iterator-with-todo">… Implement an `impl Iterator` with `todo!`?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#numerics">Numerics</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-convert-between-numeric-types-ideomatically">… convert between numeric types ideomatically?</a>
+                    <li><a href="book/how-do-i.html#-perform-math-ideomatically">… perform math ideomatically?</a>
+                    <li><a href="book/how-do-i.html#-convert-between-ints-and-bytes">… convert between ints and bytes?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#encoding-serialization-parsing">Encoding, serialization, parsing</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-serialize-to-and-from-json">… serialize to and from JSON?</a>
+                    <li><a href="book/how-do-i.html#-decide-what-format-to-use-with-serde">… decide what format to use with `serde`?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#time">Time</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-parse-and-render-standard-time-formats">… parse and render standard time formats?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#random-numbers">Random numbers</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-generate-a-strong-random-anything">… generate a strong random anything?</a>
+                    <li><a href="book/how-do-i.html#-generate-a-strong-random-number-from-a-seed">… generate a strong random number from a seed?</a>
+                    <li><a href="book/how-do-i.html#-generate-a-fast-random-number-from-a-seed">… generate a fast random number from a seed?</a>
+                    <li><a href="book/how-do-i.html#-generate-a-strong-random-number-from-a-seed-with-stable-algorithm">… generate a strong random number from a seed with stable algorithm?</a>
+                    <li><a href="book/how-do-i.html#-generate-a-fast-random-number-from-a-seed-with-stable-algorithm">… generate a fast random number from a seed with stable algorithm?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#cryptography">Cryptography</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-calculate-a-cryptographic-content-hash">… calculate a cryptographic content hash?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#parallelism-and-concurrency">Parallelism and Concurrency</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-initialize-a-global-value">… initialize a global value?</a>
+                    <li><a href="book/how-do-i.html#-send-messages-tofrom-async-code">… send messages to/from async code?</a>
+                    <li><a href="book/how-do-i.html#-use-a-thread-pool">… use a thread pool?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#asynchronous-io">Asynchronous I/O</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-set-up-the-tokio-event-loop">… set up the `tokio` event loop?</a>
+                    <li><a href="book/how-do-i.html#-stub-an-unwritten-async-fn">… stub an unwritten `async fn`?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#networking-and-web">Networking and web</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-make-a-synchronous-http-request">… make a synchronous HTTP request?</a>
+                    <li><a href="book/how-do-i.html#-configure-a-basic-http-server">… configure a basic HTTP server?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#text--unicode">Text / unicode</a>
                 <li><a href="book/how-do-i.html#terminal--cli">Terminal / CLI</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-set-up-a-simple-cli-parser-with-subcommands">… set up a simple CLI parser with subcommands?</a>
+                    <li><a href="book/how-do-i.html#-display-colors-in-the-terminal">… display colors in the terminal?</a>
+                    <li><a href="book/how-do-i.html#-read-line-based-input-from-the-terminal">… read line-based input from the terminal?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#system--os">System / OS</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-read-environment-variables">… read environment variables?</a>
+                    <li><a href="book/how-do-i.html#-work-with-a-temporary-file">… work with a temporary file?</a>
+                    <li><a href="book/how-do-i.html#-work-with-multiple-files-in-a-temporary-directory">… work with multiple files in a temporary directory?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#testing">Testing</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-create-a-custom-test-harness">… create a custom test harness?</a>
+                    <li><a href="book/how-do-i.html#-create-a-custom-table-based-test-harness">… create a custom table-based test harness?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#build-scripts">Build scripts</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-write-build-scripts-ideomatically">… write build scripts ideomatically?</a>
+                    <li><a href="book/how-do-i.html#-link-to-a-native-static-library">… link to a native static library?</a>
+                    <li><a href="book/how-do-i.html#-compile-and-link-a-c-source-file">… compile and link a C source file?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#ffi--interop">FFI / interop</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-create-rust-bindings-to-a-cc-program">… create Rust bindings to a C/C++ program?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#procedural-macros">Procedural macros</a>
               </ul>
             <li><a href="book/modern-rust.html">Modern Rust Features</a>
