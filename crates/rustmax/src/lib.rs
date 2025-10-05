@@ -421,9 +421,7 @@ pub mod bitflags {
 
 #[cfg(feature = "blake3")]
 pub mod blake3 {
-    //! The BLAKE3 cryptographic hash function.
-    //!
-    //! See crate [`::blake3`].
+    #![doc = include_str!("../doc-src/crate-blake3.md")]
 
     pub use ::blake3::*;
 }

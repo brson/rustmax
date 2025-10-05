@@ -29,6 +29,20 @@
     "crate::std::error::Error":
     "https://doc.rust-lang.org/stable/std/error/trait.Error.html",
 
+    // blake3
+    "crate::blake3::hash":
+    "https://docs.rs/blake3/latest/blake3/fn.hash.html",
+    "crate::blake3::Hasher":
+    "https://docs.rs/blake3/latest/blake3/struct.Hasher.html",
+    "crate::blake3::keyed_hash":
+    "https://docs.rs/blake3/latest/blake3/fn.keyed_hash.html",
+    "crate::blake3::derive_key":
+    "https://docs.rs/blake3/latest/blake3/fn.derive_key.html",
+    "crate::blake3::Hasher::finalize_xof":
+    "https://docs.rs/blake3/latest/blake3/struct.Hasher.html#method.finalize_xof",
+    "crate::blake3::OutputReader":
+    "https://docs.rs/blake3/latest/blake3/struct.OutputReader.html",
+
     // bytes
     "crate::bytes::Bytes":
     "https://docs.rs/bytes/latest/bytes/struct.Bytes.html",
