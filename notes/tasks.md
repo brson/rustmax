@@ -1,3 +1,12 @@
+# Task: task-sync-sitemap
+
+The sitemap in sitemap.html is hand-written,
+and index into every piece of info in rustmax.
+
+Cross-reference it with its sources and make sure
+the entries in it are complete and correct.
+
+
 # Task: task-check-crate-root-docs
 
 The rustmax crate docs are extensive,
