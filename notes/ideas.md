@@ -27,6 +27,7 @@
 
 ## Book Other topics
 
+- Rust security practices and RustSec
 - Publishing crates
 - Forward
 - Async Rust recommendations
