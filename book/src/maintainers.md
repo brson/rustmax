@@ -19,12 +19,12 @@ Prolific Rust library author and maintainer.
 Core contributor to the Rust compiler and tooling.
 
 **Notable crates:**
-- `serde` — The standard serialization framework
-- `syn` — Parser for Rust source code, essential for proc macros
-- `quote` — Code generation for proc macros
-- `thiserror` — Derive macro for error types
-- `anyhow` — Flexible error handling for applications
-- `proc-macro2` — Wrapper around proc_macro for better ergonomics
+- [`serde`](https://docs.rs/serde) — The standard serialization framework
+- [`syn`](https://docs.rs/syn) — Parser for Rust source code, essential for proc macros
+- [`quote`](https://docs.rs/quote) — Code generation for proc macros
+- [`thiserror`](https://docs.rs/thiserror) — Derive macro for error types
+- [`anyhow`](https://docs.rs/anyhow) — Flexible error handling for applications
+- [`proc-macro2`](https://docs.rs/proc-macro2) — Wrapper around proc_macro for better ergonomics
 
 David's crates are characterized by exceptional documentation,
 thoughtful API design, and comprehensive testing.
@@ -38,11 +38,11 @@ thoughtful API design, and comprehensive testing.
 Creator of ripgrep and author of numerous widely-used libraries.
 
 **Notable crates:**
-- `regex` — Fast, Unicode-aware regular expressions
-- `walkdir` — Recursive directory traversal
-- `byteorder` — Reading/writing numbers in big-endian and little-endian
-- `jiff` — Modern date and time library
-- `csv` — Fast CSV parser
+- [`regex`](https://docs.rs/regex) — Fast, Unicode-aware regular expressions
+- [`walkdir`](https://docs.rs/walkdir) — Recursive directory traversal
+- [`byteorder`](https://docs.rs/byteorder) — Reading/writing numbers in big-endian and little-endian
+- [`jiff`](https://docs.rs/jiff) — Modern date and time library
+- [`csv`](https://docs.rs/csv) — Fast CSV parser
 
 Andrew's libraries are known for their performance,
 correctness, and extensive documentation.
@@ -57,8 +57,8 @@ His blog posts often provide deep insights into Rust performance optimization.
 Former Rust core team member and prolific contributor to foundational crates.
 
 **Notable crates:**
-- `toml` — TOML parser
-- `wasm-bindgen` — Facilitating WebAssembly and JavaScript interop
+- [`toml`](https://docs.rs/toml) — TOML parser
+- [`wasm-bindgen`](https://docs.rs/wasm-bindgen) — Facilitating WebAssembly and JavaScript interop
 - Many foundational async and FFI crates in the ecosystem
 
 Alex's contributions span compiler internals, tooling,
@@ -74,9 +74,9 @@ Creator and maintainer of core HTTP ecosystem libraries.
 Member of the Tokio team.
 
 **Notable crates:**
-- `hyper` — Low-level HTTP library
-- `reqwest` — High-level HTTP client
-- `tower` — Service abstractions for building robust clients and servers
+- [`hyper`](https://docs.rs/hyper) — Low-level HTTP library
+- [`reqwest`](https://docs.rs/reqwest) — High-level HTTP client
+- [`tower`](https://docs.rs/tower) — Service abstractions for building robust clients and servers
 
 Sean's HTTP libraries form the foundation of most HTTP
 and web applications in Rust.
@@ -90,7 +90,7 @@ and web applications in Rust.
 Author and maintainer of itertools and other iterator-focused utility crates.
 
 **Notable crates:**
-- `itertools` — Extra iterator adaptors and methods
+- [`itertools`](https://docs.rs/itertools) — Extra iterator adaptors and methods
 
 ---
 
@@ -101,7 +101,7 @@ Author and maintainer of itertools and other iterator-focused utility crates.
 The Servo browser engine project, maintaining web-platform crates.
 
 **Notable crates:**
-- `url` — URL parser
+- [`url`](https://docs.rs/url) — URL parser
 - Many other web platform implementation crates
 
 ---
@@ -113,7 +113,7 @@ The Servo browser engine project, maintaining web-platform crates.
 Creator of rust-analyzer. Former Rust core team member.
 
 **Notable crates:**
-- `xshell` — Ergonomic shell scripting in Rust
+- [`xshell`](https://docs.rs/xshell) — Ergonomic shell scripting in Rust
 
 ---
 
@@ -125,11 +125,11 @@ The official Rust project organization.
 
 Maintains the Rust compiler, standard library, and core tooling:
 - `rustc` — The Rust compiler
-- `cargo` — Rust's package manager and build system
+- [`cargo`](https://docs.rs/cargo) — Rust's package manager and build system
 - `rustup` — Rust toolchain installer
 - `rustfmt` — Code formatter
 - `clippy` — Linting tool
-- `futures` — Fundamental async primitives
+- [`futures`](https://docs.rs/futures) — Fundamental async primitives
 
 All official Rust tooling is developed under this organization.
 
@@ -142,10 +142,10 @@ All official Rust tooling is developed under this organization.
 Organization maintaining the async runtime ecosystem.
 
 **Notable crates:**
-- `tokio` — Async runtime for writing reliable network applications
-- `axum` — Web application framework
-- `tower` — Library of modular and reusable components for networking
-- `bytes` — Utilities for working with bytes
+- [`tokio`](https://docs.rs/tokio) — Async runtime for writing reliable network applications
+- [`axum`](https://docs.rs/axum) — Web application framework
+- [`tower`](https://docs.rs/tower) — Library of modular and reusable components for networking
+- [`bytes`](https://docs.rs/bytes) — Utilities for working with bytes
 
 The Tokio project provides the foundation for async programming
 in Rust, including runtime, I/O, and HTTP abstractions.
@@ -160,7 +160,7 @@ Organization maintaining pure Rust implementations of cryptographic
 algorithms and protocols.
 
 **Notable crates:**
-- `sha2` — SHA-2 hash functions
+- [`sha2`](https://docs.rs/sha2) — SHA-2 hash functions
 - Many other cryptographic primitives following uniform APIs
 
 RustCrypto crates are characterized by rigorous security practices,
@@ -177,7 +177,7 @@ Organization maintaining the Rust security advisory database
 and related security tooling.
 
 **Notable projects:**
-- `cargo-audit` — Audits Cargo.lock for crates with security vulnerabilities
+- [`cargo-audit`](https://docs.rs/cargo-audit) — Audits Cargo.lock for crates with security vulnerabilities
 - Rust Security Advisory Database
 
 RustSec provides essential security infrastructure for the Rust ecosystem.
