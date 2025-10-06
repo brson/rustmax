@@ -42,6 +42,10 @@ Here take this:
 
 It's also at `rustmax::extras::copy_dir_recursive`.
 
+Now doing it in a way that is mindful of the infinite curveballs
+different OSes will throw at you via the filesystem …
+well that's probably why `std` doesn't try.
+
 
 ## There's an `Either` hiding in the `futures` crate!
 
