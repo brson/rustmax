@@ -1,6 +1,6 @@
 # External Rust Resources
 
-These are not part of Rust Max.
+These are not part of Rustmax.
 
 ## Must know URLS 🤯
 

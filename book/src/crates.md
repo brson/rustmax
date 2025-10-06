@@ -1,1 +1,1 @@
-# Rust Max: Crates
+# Rustmax: Crates

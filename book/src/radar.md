@@ -1,7 +1,7 @@
-# The Rust Max Radar
+# The Rustmax Radar
 
 This is where we collect crates and tools of interest,
-but that are not yet part of Rust Max.
+but that are not yet part of Rustmax.
 
 
 ## Crates

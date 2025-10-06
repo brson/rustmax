@@ -1,6 +1,6 @@
 <!-- GENERATED FILE DO NOT EDIT -->
 
-# The Rust Max Library
+# The Rustmax Library
 
 The Rust language and its ecosystem is documented in "books"
 (rendered with [`mdbook`]), and most of these links are to books.

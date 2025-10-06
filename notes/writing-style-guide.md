@@ -1,3 +1,3 @@
-# Rust Max writing style guide
+# Rustmax writing style guide
 
 ## Use Unicode … instead of "...".

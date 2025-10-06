@@ -1,4 +1,4 @@
-# Rust Max: Tools
+# Rustmax: Tools
 
 ---
 
@@ -266,7 +266,7 @@ On Linux the `mold` linker is faster than the default linker.
 
 Setting up `mold` manually requires configuring `.cargo/config.toml`
 and ensuring the linker is properly installed,
-but the Rust Max CLI tool handles this setup automatically.
+but the Rustmax CLI tool handles this setup automatically.
 
 
 

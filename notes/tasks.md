@@ -143,7 +143,7 @@ To add a new cargo-installable tool that is not a cargo plugin:
 
 # Task task-add-cargo-tool-to-book: Add a cargo-based tool to the rustmax book
 
-Rust Max documents important Rust tools, most of which can be install by cargo.
+Rustmax documents important Rust tools, most of which can be install by cargo.
 
 These are documented in book/src/tools.md
 

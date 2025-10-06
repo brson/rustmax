@@ -1,4 +1,4 @@
-# Rust Max
+# Rustmax
 
 A collection of crates, tools, and documentation for the Rust programming language.
 
@@ -12,7 +12,7 @@ It is neither stable nor supported.
 
 ---
 
-*Rust Max is not an official Rust project.*
+*Rustmax is not an official Rust project.*
 
 ---
 
@@ -42,7 +42,7 @@ documents and reexports other Rust crates.
 
 ## License
 
-Rust Max is licensed
+Rustmax is licensed
 
     CC0-1.0 OR MIT OR Apache-2.0 WITH LLVM-exception OR Apache-2.0
 

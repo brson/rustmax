@@ -100,7 +100,7 @@ Setting it up manually is not difficult,
 but just hard enough that I have to look it up
 every time.
 
-The Rust Max CLI tool can do it instead:
+The Rustmax CLI tool can do it instead:
 
 `rustmax install-tool mold`
 

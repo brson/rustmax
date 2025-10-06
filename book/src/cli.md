@@ -1,4 +1,4 @@
-# The Rust Max CLI
+# The Rustmax CLI
 
 To install:
 
@@ -6,15 +6,15 @@ To install:
 cargo install rustmax-cli --locked
 ```
 
-The Rust Max CLI provides a number of small
+The Rustmax CLI provides a number of small
 tools that help manage a Rust development environment,
 Rust tools, and Rust projects.
 
 - Print Rust sytem status
 - Install the `mold` linker
-- Install all Rust Max tools
-- Create a Rust Max project from template
-- Build the Rust Max documentation
+- Install all Rustmax tools
+- Create a Rustmax project from template
+- Build the Rustmax documentation
 - Run all lint-style checks
 - Emit opinionated `rustfmt.toml`
 - Emit opinionated `deny.toml`
@@ -22,8 +22,8 @@ Rust tools, and Rust projects.
 
 ## Print Rust system status
 
-Rust Max understands your rustup toolchain status,
-Rust Max tools installed via cargo,
+Rustmax understands your rustup toolchain status,
+Rustmax tools installed via cargo,
 and other tools like the `mold` linker.
 
 ```

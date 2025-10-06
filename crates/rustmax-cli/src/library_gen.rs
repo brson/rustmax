@@ -42,7 +42,7 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
     content.push_str("<!-- GENERATED FILE DO NOT EDIT -->\n\n");
 
     // Header
-    content.push_str("# The Rust Max Library\n\n");
+    content.push_str("# The Rustmax Library\n\n");
     content.push_str("The Rust language and its ecosystem is documented in \"books\"\n");
     content.push_str("(rendered with [`mdbook`]), and most of these links are to books.\n\n");
     content.push_str("Links with a bookmark icon, 🔖, are to particularly\n");
