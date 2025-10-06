@@ -134,11 +134,11 @@ table#rmx-crate-table tr:not(:last-child):has(+ tr.example-row-visible) {
     border-bottom: none;
 }
 
-table#rmx-crate-table tr:not(:last-child):has(+ tr.example-row-visible) > td:is(:nth-child(2)) {
+table#rmx-crate-table tr:not(:last-child):has(+ tr.example-row-visible) > td:is(:nth-child(3)) {
     color: rgba(0, 0, 0, 0);
 }
 
-table#rmx-crate-table tr > td:is(:nth-child(3)) {
+table#rmx-crate-table tr > td:is(:nth-child(4)) {
     vertical-align: middle;
 }
 
@@ -157,7 +157,7 @@ table#rmx-crate-table tr > td button:hover {
     color: var(--rmx-color-accents);
 }
 
-table#rmx-crate-table tr > td:is(:nth-child(3)) {
+table#rmx-crate-table tr > td:is(:nth-child(4)) {
     text-align: center;
 }
 
@@ -175,5 +175,25 @@ table#rmx-crate-table tr.example-row-visible > td {
 
 table#rmx-crate-table tr.example-row-visible > td > p:is(:first-child) {
     margin-top: 0;
+}
+
+table#rmx-crate-table tr > td:is(:nth-child(1)) {
+    width: 2em;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.maintainer-badge {
+    font-size: 1em;
+    white-space: nowrap;
+}
+
+.maintainer-badge a {
+    color: var(--rmx-color-fg-dim);
+    text-decoration: none;
+}
+
+.maintainer-badge a:hover {
+    color: var(--rmx-color-accents);
 }
 

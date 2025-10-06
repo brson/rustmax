@@ -19,4 +19,5 @@
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
 - [The Rustmax Radar](radar.md)
+- [Trusted Maintainers](maintainers.md)
 - [External Rust Resources](resources.md)

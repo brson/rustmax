@@ -24,6 +24,7 @@ use std::{env, fs};
 
 const CRATES_META: &str = "src/crates.json5";
 const TOOLS_META: &str = "src/tools.json5";
+const MAINTAINERS_META: &str = "src/maintainers.json5";
 const RMX_MANIFEST: &str = "crates/rustmax/Cargo.toml";
 const EXAMPLES_DIR: &str = "crates/rustmax/doc-src";
 const LINK_SUBS: &str = "src/linksubs.json5";
@@ -44,6 +45,14 @@ struct CrateInfo {
     version: String,
     short_desc: String,
     example: String,
+    maintainer: Option<MaintainerInfo>,
+}
+
+#[derive(Debug, Clone)]
+struct MaintainerInfo {
+    id: String,
+    display_name: String,
+    url: String,
 }
 
 mod meta {
@@ -59,6 +68,8 @@ mod meta {
         pub name: String,
         pub category: String,
         pub short_desc: String,
+        #[serde(default)]
+        pub maintainer: Option<String>,
     }
 
     #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -72,6 +83,19 @@ mod meta {
         pub category: String,
         pub short_desc: String,
     }
+
+    #[derive(Serialize, Deserialize, Clone, Debug)]
+    pub struct Maintainers {
+        pub maintainers: Vec<Maintainer>,
+    }
+
+    #[derive(Serialize, Deserialize, Clone, Debug)]
+    pub struct Maintainer {
+        pub id: String,
+        pub display_name: String,
+        pub description: String,
+        pub url: String,
+    }
 }
 
 fn main() -> AnyResult<()> {
@@ -79,6 +103,7 @@ fn main() -> AnyResult<()> {
 
     let crates_meta_file = workspace_dir.join(CRATES_META);
     let tools_meta_file = workspace_dir.join(TOOLS_META);
+    let maintainers_meta_file = workspace_dir.join(MAINTAINERS_META);
     let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
     let examples_dir = workspace_dir.join(EXAMPLES_DIR);
     let link_subs_file = workspace_dir.join(LINK_SUBS);
@@ -88,6 +113,8 @@ fn main() -> AnyResult<()> {
         fs::read_to_string(&crates_meta_file).context(crates_meta_file.display().to_string())?;
     let tools_meta_str =
         fs::read_to_string(&tools_meta_file).context(tools_meta_file.display().to_string())?;
+    let maintainers_meta_str =
+        fs::read_to_string(&maintainers_meta_file).context(maintainers_meta_file.display().to_string())?;
     let rmx_manifest_str =
         fs::read_to_string(&rmx_manifest_file).context(rmx_manifest_file.display().to_string())?;
     let link_subs_str =
@@ -95,13 +122,14 @@ fn main() -> AnyResult<()> {
 
     let crates_meta: meta::Crates = json5::from_str(&crates_meta_str).context("crates meta")?;
     let tools_meta: meta::Tools = json5::from_str(&tools_meta_str).context("tools meta")?;
+    let maintainers_meta: meta::Maintainers = json5::from_str(&maintainers_meta_str).context("maintainers meta")?;
     let rmx_manifest: toml::Value =
         toml::from_str(&rmx_manifest_str).context("rmx manifest meta")?;
     let examples_dir = fs::read_dir(&examples_dir).context(examples_dir.display().to_string())?;
     let link_subs: BTreeMap<String, String> =
         json5::from_str(&link_subs_str).context("crates meta")?;
 
-    let crate_info = build_crate_info(&crates_meta, &rmx_manifest, examples_dir)?;
+    let crate_info = build_crate_info(&crates_meta, &maintainers_meta, &rmx_manifest, examples_dir)?;
 
     let out_crates_md_file = workspace_dir.join(OUT_CRATES_MD);
     let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
@@ -137,6 +165,7 @@ where
 
 fn build_crate_info(
     crates_meta: &meta::Crates,
+    maintainers_meta: &meta::Maintainers,
     rmx_manifest: &toml::Value,
     examples_dir: fs::ReadDir,
 ) -> AnyResult<Vec<CrateInfo>> {
@@ -158,12 +187,23 @@ fn build_crate_info(
             .map(|ce| ce.text.to_string())
             .unwrap_or_default();
 
+        let maintainer = meta.maintainer.as_ref().and_then(|maintainer_id| {
+            maintainers_meta.maintainers.iter().find(|m| &m.id == maintainer_id).map(|m| {
+                MaintainerInfo {
+                    id: m.id.clone(),
+                    display_name: m.display_name.clone(),
+                    url: m.url.clone(),
+                }
+            })
+        });
+
         infos.push(CrateInfo {
             name: crate_.name.to_string(),
             category: meta.category.to_string(),
             version: crate_.version.to_string(),
             short_desc: meta.short_desc.to_string(),
             example,
+            maintainer,
         });
     }
 
@@ -277,6 +317,7 @@ fn make_crate_lists(
     json.push_str("[\n");
     html.push_str("<table id='rmx-crate-table'>\n");
     html.push_str("<thead>\n");
+    html.push_str("<th></th>\n");
     html.push_str("<th>Crate</th>\n");
     html.push_str("<th>Feature</th>\n");
     html.push_str("<th>Example</th>\n");
@@ -306,11 +347,22 @@ fn make_crate_lists(
             "<tr class='{}'>\n",
             if i % 2 == 0 { "row-even" } else { "row-odd" }
         ));
+
+        let maintainer_badge = if let Some(ref maintainer) = krate.maintainer {
+            format!(
+                "<span class='maintainer-badge'><a href='book/maintainers.html#{}' title='Trusted maintainer: {}'>👤</a></span>",
+                maintainer.id, maintainer.display_name
+            )
+        } else {
+            String::new()
+        };
+
+        html.push_str(&format!("<td>{}</td>\n", maintainer_badge));
         html.push_str(&format!(
             "<td><a href='{}'><code>{} = \"{}\"</code></a></td>\n",
             docrs_link, krate.name, krate.version,
         ));
-        html.push_str(&format!("<td>{}</td>\n", krate.short_desc,));
+        html.push_str(&format!("<td>{}</td>\n", krate.short_desc));
         if example_html.is_some() {
             html.push_str(&format!(
                 "<td><button id='button-{}' class='example-button' data-name='{}' type='button'>+</button></td>\n",
@@ -328,7 +380,7 @@ fn make_crate_lists(
                     krate.name,
                     if i % 2 == 0 { "row-even" } else { "row-odd" }
                 ));
-                html.push_str("<td colspan=3>\n");
+                html.push_str("<td colspan=4>\n");
                 html.push_str(&example_html);
                 html.push_str("</td>\n");
                 html.push_str("</tr>\n");

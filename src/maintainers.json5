@@ -1,0 +1,70 @@
+{
+    maintainers: [
+        {
+            id: "dtolnay",
+            display_name: "David Tolnay",
+            description: "Prolific Rust library author and maintainer. Core contributor to Rust compiler and tooling. Author of serde ecosystem, syn, quote, thiserror, anyhow, and many other foundational crates.",
+            url: "https://github.com/dtolnay",
+        },
+        {
+            id: "burntsushi",
+            display_name: "Andrew Gallant (BurntSushi)",
+            description: "Creator and maintainer of ripgrep. Author of regex, csv, byteorder, walkdir, and numerous other widely-used crates. Known for high-quality, well-documented libraries.",
+            url: "https://github.com/BurntSushi",
+        },
+        {
+            id: "alexcrichton",
+            display_name: "Alex Crichton",
+            description: "Former Rust core team member and prolific contributor. Maintainer of tokio ecosystem, wasm-bindgen, and many foundational async and FFI crates.",
+            url: "https://github.com/alexcrichton",
+        },
+        {
+            id: "rust-lang",
+            display_name: "Rust Language Team",
+            description: "The official Rust project organization. Maintains the Rust compiler, standard library, and core tooling including cargo, rustup, and rustfmt.",
+            url: "https://github.com/rust-lang",
+        },
+        {
+            id: "rustcrypto",
+            display_name: "RustCrypto",
+            description: "Organization maintaining pure Rust implementations of cryptographic algorithms and protocols. Known for rigorous security practices and comprehensive cryptographic library ecosystem.",
+            url: "https://github.com/RustCrypto",
+        },
+        {
+            id: "rustsec",
+            display_name: "RustSec",
+            description: "Organization maintaining the Rust security advisory database and cargo-audit tool. Provides security vulnerability tracking for the Rust ecosystem.",
+            url: "https://github.com/rustsec",
+        },
+        {
+            id: "seanmonstar",
+            display_name: "Sean McArthur",
+            description: "Creator and maintainer of hyper, reqwest, and other core HTTP ecosystem crates. Tokio core team member.",
+            url: "https://github.com/seanmonstar",
+        },
+        {
+            id: "tokio-rs",
+            display_name: "Tokio Project",
+            description: "Organization maintaining tokio and the async runtime ecosystem including axum, tower, and related crates.",
+            url: "https://github.com/tokio-rs",
+        },
+        {
+            id: "bluss",
+            display_name: "Ulrik Sverdrup (bluss)",
+            description: "Author and maintainer of itertools and other iterator-focused utility crates.",
+            url: "https://github.com/bluss",
+        },
+        {
+            id: "servo",
+            display_name: "Servo Project",
+            description: "The Servo browser engine project, maintaining url and other web-platform crates.",
+            url: "https://github.com/servo",
+        },
+        {
+            id: "matklad",
+            display_name: "Aleksey Kladov",
+            description: "Creator of rust-analyzer. Former Rust core team member.",
+            url: "https://github.com/matklad",
+        },
+    ],
+}

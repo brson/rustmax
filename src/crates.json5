@@ -9,11 +9,13 @@
             name: "anyhow",
             category: "errors",
             short_desc: "Easy error handling",
+            maintainer: "dtolnay",
         },
         {
             name: "axum",
             category: "web",
             short_desc: "Web framework",
+            maintainer: "tokio-rs",
         },
         {
             name: "backtrace",
@@ -44,11 +46,13 @@
             name: "byteorder",
             category: "encoding",
             short_desc: "Big/little endianness",
+            maintainer: "burntsushi",
         },
         {
             name: "bytes",
             category: "collections",
             short_desc: "Byte buffers",
+            maintainer: "tokio-rs",
         },
         {
             name: "cc",
@@ -109,6 +113,7 @@
             name: "futures",
             category: "async",
             short_desc: "Basic async definitions and helpers",
+            maintainer: "rust-lang",
         },
         {
             name: "hex",
@@ -124,16 +129,19 @@
             name: "hyper",
             category: "web",
             short_desc: "HTTP server",
+            maintainer: "seanmonstar",
         },
         {
             name: "itertools",
             category: "collections",
             short_desc: "Advanced iterator extension methods",
+            maintainer: "bluss",
         },
         {
             name: "jiff",
             category: "time",
             short_desc: "Dates and time",
+            maintainer: "burntsushi",
         },
         {
             name: "json5",
@@ -179,6 +187,7 @@
             name: "proc-macro2",
             category: "proc-macro",
             short_desc: "Additional support for procedural macros",
+            maintainer: "dtolnay",
         },
         {
             name: "proptest",
@@ -189,6 +198,7 @@
             name: "quote",
             category: "proc-macro",
             short_desc: "Quasiquoter for proceducal macros",
+            maintainer: "dtolnay",
         },
         {
             name: "rand",
@@ -214,11 +224,13 @@
             name: "regex",
             category: "encoding",
             short_desc: "Regular expressions",
+            maintainer: "burntsushi",
         },
         {
             name: "reqwest",
             category: "web",
             short_desc: "HTTP requests, both async and blocking",
+            maintainer: "seanmonstar",
         },
         {
             name: "rustyline",
@@ -234,16 +246,19 @@
             name: "serde",
             category: "encoding",
             short_desc: "Standard serialization",
+            maintainer: "dtolnay",
         },
         {
             name: "serde_json",
             category: "encoding",
             short_desc: "JSON",
+            maintainer: "dtolnay",
         },
         {
             name: "sha2",
             category: "cryptography",
             short_desc: "Cryptographic hashing",
+            maintainer: "rustcrypto",
         },
         {
             name: "socket2",
@@ -259,6 +274,7 @@
             name: "syn",
             category: "proc-macro",
             short_desc: "Parsing for procedural macros",
+            maintainer: "dtolnay",
         },
         {
             name: "tempfile",
@@ -279,21 +295,25 @@
             name: "thiserror",
             category: "errors",
             short_desc: "Precise error handling",
+            maintainer: "dtolnay",
         },
         {
             name: "tokio",
             category: "async",
             short_desc: "The asyncronous runtime",
+            maintainer: "tokio-rs",
         },
         {
             name: "toml",
             category: "encoding",
             short_desc: "TOML serialization",
+            maintainer: "alexcrichton",
         },
         {
             name: "tower",
             category: "web",
             short_desc: "Middleware for tokio",
+            maintainer: "tokio-rs",
         },
         {
             name: "unicode-segmentation",
@@ -304,16 +324,19 @@
             name: "url",
             category: "web",
             short_desc: "URL parsing",
+            maintainer: "servo",
         },
         {
             name: "walkdir",
             category: "system",
             short_desc: "Directory traversal",
+            maintainer: "burntsushi",
         },
         {
             name: "xshell",
             category: "system",
             short_desc: "Easy shell-like command execution",
+            maintainer: "matklad",
         },
     ]
 }
