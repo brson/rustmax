@@ -189,3 +189,43 @@ Available recipes:
     test
     test-min-version-build
 ```
+
+
+## Merge message streams with `futures::stream::select`
+
+An async event loop often needs to receive messages from multiple sources.
+Use `futures::stream::select` to merge two streams of the same type into one.
+
+A common pattern: an event loop that handles both external messages
+and internally-generated events (like async task completions):
+
+```rust
+use futures::channel::mpsc;
+use futures::stream::StreamExt;
+
+async fn run_event_loop(
+    mut rx_external: mpsc::Receiver<Msg>,
+) {
+    // Create channel for loop to send messages to itself.
+    let (tx_self, rx_self) = mpsc::channel::<Msg>(10);
+
+    // Merge both streams.
+    let mut rx_combined = futures::stream::select(rx_external, rx_self);
+
+    while let Some(msg) = rx_combined.next().await {
+        match msg {
+            Msg::StartTask => {
+                // Spawn async task that reports completion.
+                let mut tx_self = tx_self.clone();
+                tokio::spawn(async move {
+                    do_work().await;
+                    tx_self.send(Msg::TaskComplete).await.ok();
+                });
+            }
+            Msg::TaskComplete => {
+                // Handle completion sent from spawned task.
+            }
+        }
+    }
+}
+```
