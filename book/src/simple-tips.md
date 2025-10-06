@@ -1,4 +1,4 @@
-## Assert `Sync` / `Sync`
+## Assert `Send` / `Sync`
 
 ```
 struct DbPathGen(());
