@@ -5,11 +5,6 @@ but certain individuals and organizations have established
 exceptional reputations for creating and maintaining
 high-quality, widely-trusted libraries.
 
-This page recognizes these "trusted maintainers" —
-developers and organizations whose crates are known
-for their reliability, documentation, maintenance,
-and adherence to Rust best practices.
-
 For new Rustaceans, understanding who maintains the crates
 you depend on can help you make informed decisions
 about which libraries to use in your projects.
