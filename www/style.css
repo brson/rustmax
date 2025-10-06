@@ -177,7 +177,7 @@ table#rmx-crate-table tr.example-row-visible > td > p:is(:first-child) {
     margin-top: 0;
 }
 
-table#rmx-crate-table tr > td:is(:nth-child(1)) {
+table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
     width: 2em;
     text-align: center;
     vertical-align: middle;
@@ -195,5 +195,105 @@ table#rmx-crate-table tr > td:is(:nth-child(1)) {
 
 .maintainer-badge a:hover {
     color: var(--rmx-color-accents);
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    :root {
+        font-size: 14pt;
+    }
+
+    body {
+        padding: 1em;
+    }
+
+    table#rmx-crate-table th,
+    table#rmx-crate-table td {
+        padding: 0.5rem;
+    }
+
+    /* Hide example column on tablets */
+    table#rmx-crate-table th:nth-child(4),
+    table#rmx-crate-table td:nth-child(4) {
+        display: none;
+    }
+
+    table#rmx-crate-table code {
+        font-size: 0.9em;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    :root {
+        font-size: 12pt;
+    }
+
+    h1 {
+        letter-spacing: 0.3em;
+        font-size: 1.5em;
+    }
+
+    table#rmx-crate-table {
+        display: block;
+    }
+
+    table#rmx-crate-table thead {
+        display: none;
+    }
+
+    table#rmx-crate-table tbody {
+        display: block;
+    }
+
+    table#rmx-crate-table tr {
+        display: grid;
+        grid-template-columns: 2em 1fr;
+        grid-template-rows: auto auto;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border: 1px solid var(--rmx-color-border) !important;
+    }
+
+    table#rmx-crate-table tr.row-even,
+    table#rmx-crate-table tr.row-odd {
+        background-color: var(--rmx-color-bg);
+    }
+
+    table#rmx-crate-table td {
+        padding: 0;
+    }
+
+    table#rmx-crate-table td:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: start;
+    }
+
+    table#rmx-crate-table td:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    table#rmx-crate-table td:nth-child(3) {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        font-size: 0.9em;
+    }
+
+    table#rmx-crate-table td:nth-child(4) {
+        display: none;
+    }
+
+    table#rmx-crate-table tr.example-row {
+        display: none !important;
+    }
+
+    table#rmx-crate-table code {
+        font-size: 0.85em;
+    }
 }
 
