@@ -20,7 +20,7 @@
         },
         {
             id: "rust-lang",
-            display_name: "Rust Language Team",
+            display_name: "The Rust Project",
             description: "The official Rust project organization. Maintains the Rust compiler, standard library, and core tooling including cargo, rustup, and rustfmt.",
             url: "https://github.com/rust-lang",
         },

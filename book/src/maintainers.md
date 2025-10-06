@@ -117,7 +117,7 @@ Creator of rust-analyzer. Former Rust core team member.
 
 ---
 
-## <a id="rust-lang"></a> Rust Language Team
+## <a id="rust-lang"></a> The Rust Project
 
 **GitHub:** [rust-lang](https://github.com/rust-lang)
 
