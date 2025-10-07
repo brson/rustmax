@@ -21,17 +21,17 @@ function setupExampleButtons() {
         const isExpanded = getExpandedState(name);
         if (isExpanded) {
             exampleRow.classList.add("example-row-visible");
-            button.innerText = "-";
+            button.innerText = "📖";
         }
 
         button.addEventListener("click", () => {
             exampleRow.classList.toggle("example-row-visible");
             const isVisible = exampleRow.classList.contains("example-row-visible");
             if (isVisible) {
-                button.innerText = "-";
+                button.innerText = "📖";
                 saveExpandedState(name, true);
             } else {
-                button.innerText = "+";
+                button.innerText = "📘";
                 saveExpandedState(name, false);
             }
         });

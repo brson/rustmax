@@ -154,16 +154,15 @@ table#rmx-crate-table tr > td:is(:nth-child(4)) {
 table#rmx-crate-table tr > td button {
     width: 1.5em;
     height: 1.5em;
-    background-color: inherit;
-    border: 1px solid var(--rmx-color-links);
-    font: var(--rmx-font-code);
+    background-color: transparent;
+    border: none;
+    font-size: 1.2em;
     cursor: pointer;
-    color: var(--rmx-color-links);
+    padding: 0;
 }
 
 table#rmx-crate-table tr > td button:hover {
-    border: 1px solid var(--rmx-color-accents);
-    color: var(--rmx-color-accents);
+    transform: scale(1.2);
 }
 
 table#rmx-crate-table tr > td:is(:nth-child(4)) {

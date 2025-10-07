@@ -365,7 +365,7 @@ fn make_crate_lists(
         html.push_str(&format!("<td>{}</td>\n", krate.short_desc));
         if example_html.is_some() {
             html.push_str(&format!(
-                "<td><button id='button-{}' class='example-button' data-name='{}' type='button'>+</button></td>\n",
+                "<td><button id='button-{}' class='example-button' data-name='{}' type='button'>📘</button></td>\n",
                 krate.name,
                 krate.name,
             ));
