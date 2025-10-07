@@ -16,7 +16,7 @@
 
     --rmx-color-fg: oklch(25% 0.02 90);      /* warm dark gray */
     --rmx-color-bg: oklch(100% 0.0 40);      /* warm white */
-    --rmx-color-bg-alt: oklch(99% 0.01 40);  /* subtle warm gray */
+    --rmx-color-bg-alt: oklch(99% 0.0 40);   /* subtle neutral gray */
     --rmx-color-links: oklch(45% 0.15 250);  /* accessible blue */
     --rmx-color-accents: oklch(55% 0.18 25); /* warm red-orange */
     --rmx-color-border: oklch(70% 0.02 90);  /* neutral mid-tone */
