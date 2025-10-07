@@ -307,7 +307,6 @@
             name: "toml",
             category: "encoding",
             short_desc: "TOML serialization",
-            maintainer: "alexcrichton",
         },
         {
             name: "tower",

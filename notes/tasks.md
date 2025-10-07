@@ -1,3 +1,16 @@
+# Task: task-review-existing-trusted-maintainers
+
+We have a notion of a "trusted maintainer"
+with the list in maintainers.json5,
+and the crates they maintain in crates.json5
+
+Review each crates maintainer and make sure the crate is still maintained by them.
+
+If you see a crate mantained by a trusted mantainer, add them to our crate metadata.
+
+Do not add any new trusted maintainers.
+
+
 # Task: task-sync-sitemap
 
 The sitemap in sitemap.html is hand-written,
