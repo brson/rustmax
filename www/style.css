@@ -101,7 +101,7 @@ table#rmx-crate-table {
 table#rmx-crate-table th,
 table#rmx-crate-table td
 {
-    padding: 1rem;
+    padding: 0.5rem;
 }
 
 table#rmx-crate-table th {
@@ -152,11 +152,10 @@ table#rmx-crate-table tr > td:is(:nth-child(4)) {
 }
 
 table#rmx-crate-table tr > td button {
-    width: 1.5em;
-    height: 1.5em;
     background-color: transparent;
     border: none;
-    font-size: 1.2em;
+    font-size: 1em;
+    line-height: 1;
     cursor: pointer;
     padding: 0;
 }
