@@ -2198,6 +2198,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "powerletters"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5244cec16ac161174272a6c7c72abf95dd6fd86938b15598a234d1e45d131a77"
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2604,6 +2610,7 @@ dependencies = [
  "num-bigint",
  "num_cpus",
  "num_enum",
+ "powerletters",
  "proc-macro2",
  "proptest",
  "quote",

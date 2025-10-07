@@ -53,6 +53,7 @@ It is neither stable nor supported.
 | `num-bigint = "0.4.6"` | Big integers | [📖](https://docs.rs/num-bigint/0.4.6/num_bigint) |
 | `num_cpus = "1.16.0"` | Get number of CPUs | [📖](https://docs.rs/num_cpus/1.16.0/num_cpus) |
 | `num_enum = "0.7.3"` | Number-enum interop | [📖](https://docs.rs/num_enum/0.7.3/num_enum) |
+| `powerletters = "0.1.0"` | Concise single-letter methods for common operations | [📖](https://docs.rs/powerletters/0.1.0/powerletters) |
 | `proc-macro2 = "1.0.92"` | Additional support for procedural macros | [📖](https://docs.rs/proc-macro2/1.0.92/proc_macro2) |
 | `proptest = "1.6.0"` | Property testing | [📖](https://docs.rs/proptest/1.6.0/proptest) |
 | `quote = "1.0.37"` | Quasiquoter for proceducal macros | [📖](https://docs.rs/quote/1.0.37/quote) |

@@ -78,28 +78,13 @@ pub mod prelude {
     #[cfg(feature = "rmx-rustlib-core")]
     pub use crate::bug;
 
-    #[cfg(feature = "rmx-rustlib-alloc")]
-    pub use crate::extras::S;
-
-    #[cfg(feature = "rmx-rustlib-alloc")]
-    pub use crate::extras::O;
-
-    #[cfg(all(feature = "extension-trait", feature = "anyhow"))]
-    pub use crate::extras::AnyResultExpect as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::OptionExpect as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::QuickClone as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::QuickToOwned as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::QuickToString as _;
     #[cfg(feature = "extension-trait")]
     pub use crate::extras::RangeExt as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::ResultExpect as _;
-    #[cfg(feature = "extension-trait")]
-    pub use crate::extras::ResultIgnore as _;
+
+    /* powerletters */
+
+    #[cfg(feature = "powerletters")]
+    pub use ::powerletters::*;
 }
 
 pub mod extras {
@@ -163,118 +148,6 @@ pub mod extras {
     {
         // todo could grow stack here
         f()
-    }
-
-    #[cfg(feature = "rmx-rustlib-alloc")]
-    #[allow(non_snake_case)]
-    pub fn S<T>(s: &T) -> crate::alloc::string::String
-    where
-        T: crate::alloc::string::ToString + ?Sized,
-    {
-        crate::alloc::string::ToString::to_string(s)
-    }
-
-    #[cfg(feature = "rmx-rustlib-alloc")]
-    #[allow(non_snake_case)]
-    pub fn O<T>(o: &T) -> T::Owned
-    where
-        T: crate::alloc::borrow::ToOwned + ?Sized,
-    {
-        crate::alloc::borrow::ToOwned::to_owned(o)
-    }
-
-    #[cfg(feature = "extension-trait")]
-    #[extension_trait::extension_trait]
-    pub impl<T> QuickToString for T
-    where
-        T: crate::alloc::string::ToString + ?Sized,
-    {
-        #[allow(non_snake_case)]
-        fn S(&self) -> crate::alloc::string::String {
-            crate::alloc::string::ToString::to_string(self)
-        }
-    }
-
-    #[cfg(feature = "extension-trait")]
-    #[extension_trait::extension_trait]
-    pub impl<T> QuickToOwned for T
-    where
-        T: crate::alloc::borrow::ToOwned,
-    {
-        type Owned = T::Owned;
-
-        #[allow(non_snake_case)]
-        fn O(&self) -> Self::Owned {
-            crate::alloc::borrow::ToOwned::to_owned(self)
-        }
-    }
-
-    #[cfg(feature = "extension-trait")]
-    #[extension_trait::extension_trait]
-    pub impl<T> QuickClone<T> for T
-    where
-        T: Clone,
-    {
-        #[allow(non_snake_case)]
-        fn C(&self) -> T {
-            self.clone()
-        }
-    }
-
-    #[cfg(feature = "extension-trait")]
-    #[extension_trait::extension_trait]
-    pub impl<T> OptionExpect<T> for Option<T> {
-        #[track_caller]
-        #[allow(non_snake_case)]
-        fn X(self) -> T {
-            match self {
-                Some(v) => v,
-                None => panic!("impossible `None` option"),
-            }
-        }
-    }
-
-    #[cfg(feature = "extension-trait")]
-    #[extension_trait::extension_trait]
-    pub impl<T, E> ResultExpect<T, E> for Result<T, E>
-    where
-        E: core::error::Error,
-    {
-        #[track_caller]
-        #[allow(non_snake_case)]
-        fn X(self) -> T {
-            match self {
-                Ok(v) => v,
-                Err(e) => panic!("impossible `Err` result: {e}"),
-            }
-        }
-    }
-
-    #[cfg(all(feature = "extension-trait", feature = "anyhow"))]
-    #[extension_trait::extension_trait]
-    pub impl<T> AnyResultExpect<T> for AnyResult<T> {
-        #[track_caller]
-        #[allow(non_snake_case)]
-        fn X(self) -> T {
-            match self {
-                Ok(v) => v,
-                Err(e) => panic!("impossible `Err` result: {e}"),
-            }
-        }
-    }
-
-    /// Ignore a `Result`.
-    ///
-    /// This is nice because the common idiom of `let _ = ...` is untyped
-    /// and can accidentally be applied to non-`Result` types like `Future`s.
-    #[cfg(feature = "extension-trait")]
-    #[extension_trait::extension_trait]
-    pub impl<T, E> ResultIgnore<T, E> for Result<T, E> {
-        #[track_caller]
-        #[allow(non_snake_case)]
-        fn I(self) {
-            let _ = self;
-        }
     }
 
     // todo: define this for generic Range<N>
@@ -646,6 +519,13 @@ pub mod num_enum {
     //! See crate [`::num_enum`].
 
     pub use ::num_enum::*;
+}
+
+#[cfg(feature = "powerletters")]
+pub mod powerletters {
+    #![doc = include_str!("../doc-src/crate-powerletters.md")]
+
+    pub use ::powerletters::*;
 }
 
 #[cfg(feature = "proc-macro2")]

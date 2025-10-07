@@ -184,6 +184,11 @@
             short_desc: "Number-enum interop",
         },
         {
+            name: "powerletters",
+            category: "convenience",
+            short_desc: "Concise single-letter methods for common operations",
+        },
+        {
             name: "proc-macro2",
             category: "proc-macro",
             short_desc: "Additional support for procedural macros",
