@@ -21,6 +21,8 @@ These are not part of Rustmax.
   Look here to figure out if your nightly toolchain had component build failures.
 - [The Little Book of Rust Books](https://lborb.github.io/book/)
 - ["Can I Use _?"](https://caniuse.rs/)
+- [releases.rs](https://releases.rs/).
+  Rust release history.
 
 
 ## Tier 2 - unvetted 😒
