@@ -2199,9 +2199,9 @@ dependencies = [
 
 [[package]]
 name = "powerletters"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5244cec16ac161174272a6c7c72abf95dd6fd86938b15598a234d1e45d131a77"
+checksum = "3f2888cd0750af1ac7708ddd3e4567aaabaaffc0298dc775a64a2e0880ae11f6"
 
 [[package]]
 name = "ppv-lite86"
