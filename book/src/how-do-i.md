@@ -77,6 +77,7 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … convert between ints and bytes?
 
+### … perform typical byte order conversions?
 
 
 
