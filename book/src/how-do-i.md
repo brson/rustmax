@@ -79,6 +79,23 @@ static_assertions::assert_obj_safe!(MyTrait);
 
 ### … perform typical byte order conversions?
 
+Since Rust 1.32, all integer types have built-in methods for byte order conversion:
+
+```rust
+// Convert integers to bytes
+let x: u32 = 0x12345678;
+let be_bytes = x.to_be_bytes(); // big-endian: [0x12, 0x34, 0x56, 0x78]
+let le_bytes = x.to_le_bytes(); // little-endian: [0x78, 0x56, 0x34, 0x12]
+let ne_bytes = x.to_ne_bytes(); // native-endian (platform-dependent)
+
+// Convert bytes back to integers
+let y = u32::from_be_bytes([0x12, 0x34, 0x56, 0x78]); // 0x12345678
+let z = u32::from_le_bytes([0x78, 0x56, 0x34, 0x12]); // 0x12345678
+```
+
+These methods work on all integer types: `u8`, `u16`, `u32`, `u64`, `u128`, `usize`, and their signed equivalents.
+
+
 
 
 ## Encoding, serialization, parsing
