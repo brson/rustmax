@@ -1,3 +1,16 @@
+# Task: task-review-unreplaced-links
+
+Our crate docs in `doc-src` are displayed in both rustdocs
+and on the website. The links are written for rustdoc,
+and need to be replaced in the website build.
+
+Run `just doc-www` and look for "unreplaced link" lines.
+
+The ones that are just rust module paths need to be replaced
+with appropriate links to docs.rs, or perhaps to the standard library docs,
+by editing linksubs.json5.
+
+
 # Task: task-review-existing-trusted-maintainers
 
 We have a notion of a "trusted maintainer"
