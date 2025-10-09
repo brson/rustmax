@@ -23,7 +23,7 @@ providing flexibility in different coding contexts.
 Cloning with `C`:
 
 ```rust
-use powerletters::C;
+use powerletters::*;
 
 let vec = vec![1, 2, 3];
 let cloned = vec.C();
@@ -33,7 +33,7 @@ assert_eq!(vec, cloned);
 Converting to string with `S`:
 
 ```rust
-use powerletters::S;
+use powerletters::*;
 
 let num = 42;
 let s = num.S();
@@ -43,7 +43,7 @@ assert_eq!(s, "42");
 Ignoring a result with `I`:
 
 ```rust
-use powerletters::I;
+use powerletters::*;
 use std::io::Write;
 
 let mut vec = Vec::new();
