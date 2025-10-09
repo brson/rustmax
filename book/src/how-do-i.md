@@ -215,6 +215,11 @@ todo example
 
 ### … read line-based input from the terminal?
 
+### … handle ctrl-?
+
+Either use the [`ctrl`] crate or [`tokio::signal::ctrlc`].
+
+todo say more w/ example
 
 
 
