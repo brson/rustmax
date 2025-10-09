@@ -21,6 +21,7 @@
             name: "backtrace",
             category: "errors",
             short_desc: "Stack traces",
+            maintainer: "rust-lang",
         },
         {
             name: "base64",
@@ -58,11 +59,13 @@
             name: "cc",
             category: "ffi",
             short_desc: "Compile C/C++ files",
+            maintainer: "rust-lang",
         },
         {
             name: "cfg-if",
             category: "convenience",
             short_desc: "Compile-time control flow",
+            maintainer: "rust-lang",
         },
         {
             name: "chrono",
@@ -152,11 +155,13 @@
             name: "libc",
             category: "ffi",
             short_desc: "C interop",
+            maintainer: "rust-lang",
         },
         {
             name: "log",
             category: "errors",
             short_desc: "Logging facade",
+            maintainer: "rust-lang",
         },
         {
             name: "mime",
@@ -246,6 +251,7 @@
             name: "semver",
             category: "deployment",
             short_desc: "Semantic versioning",
+            maintainer: "dtolnay",
         },
         {
             name: "serde",
@@ -269,6 +275,7 @@
             name: "socket2",
             category: "web",
             short_desc: "Low-level sockets",
+            maintainer: "rust-lang",
         },
         {
             name: "static_assertions",
