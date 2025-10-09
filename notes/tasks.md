@@ -114,6 +114,8 @@ Run `just test` to test in all profiles.
 - Some crates have important features to add to `rmx-feature-more`,
   ask the user.
 - Keep alphabetical order in all files
+- If the crate is maintained by a trusted maintainer in src/maintainers.json5,
+  remember to add it to the crates.json5 meta.
 - Test with `cargo check --all-features`
 - Test with `just test`
 
