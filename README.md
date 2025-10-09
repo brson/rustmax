@@ -39,7 +39,9 @@ It is neither stable nor supported.
 | `derive_more = "2.0.1"` | More standard trait derives | [📖](https://docs.rs/derive_more/2.0.1/derive_more) |
 | `env_logger = "0.11.6"` | Simple logging | [📖](https://docs.rs/env_logger/0.11.6/env_logger) |
 | `extension-trait = "1.0.2"` | Define methods for out-of-crate types | [📖](https://docs.rs/extension-trait/1.0.2/extension_trait) |
+| `flate2 = "1.0.36"` | Deflate, gzip, and zlib compression | [📖](https://docs.rs/flate2/1.0.36/flate2) |
 | `futures = "0.3.31"` | Basic async definitions and helpers | [📖](https://docs.rs/futures/0.3.31/futures) |
+| `glob = "0.3.2"` | Unix shell style pattern matching | [📖](https://docs.rs/glob/0.3.2/glob) |
 | `hex = "0.4.3"` | Hexidecimal encoding | [📖](https://docs.rs/hex/0.4.3/hex) |
 | `http = "1.2.0"` | Shared HTTP definitions | [📖](https://docs.rs/http/1.2.0/http) |
 | `hyper = "1.6.0"` | HTTP server | [📖](https://docs.rs/hyper/1.6.0/hyper) |

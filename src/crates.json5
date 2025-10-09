@@ -113,9 +113,21 @@
             short_desc: "Define methods for out-of-crate types",
         },
         {
+            name: "flate2",
+            category: "encoding",
+            short_desc: "Deflate, gzip, and zlib compression",
+            maintainer: "rust-lang",
+        },
+        {
             name: "futures",
             category: "async",
             short_desc: "Basic async definitions and helpers",
+            maintainer: "rust-lang",
+        },
+        {
+            name: "glob",
+            category: "system",
+            short_desc: "Unix shell style pattern matching",
             maintainer: "rust-lang",
         },
         {

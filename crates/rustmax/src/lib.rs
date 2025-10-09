@@ -409,11 +409,25 @@ pub mod extension_trait {
     pub use ::extension_trait::*;
 }
 
+#[cfg(feature = "flate2")]
+pub mod flate2 {
+    #![doc = include_str!("../doc-src/crate-flate2.md")]
+
+    pub use ::flate2::*;
+}
+
 #[cfg(feature = "futures")]
 pub mod futures {
     #![doc = include_str!("../doc-src/crate-futures.md")]
 
     pub use ::futures::*;
+}
+
+#[cfg(feature = "glob")]
+pub mod glob {
+    #![doc = include_str!("../doc-src/crate-glob.md")]
+
+    pub use ::glob::*;
 }
 
 #[cfg(feature = "hex")]
