@@ -26,7 +26,6 @@ It is neither stable nor supported.
 | `bindgen = "0.72.0"` | C/C++ interop | [📖](https://docs.rs/bindgen/0.72.0/bindgen) |
 | `bitflags = "2"` | Bitfields | [📖](https://docs.rs/bitflags/2/bitflags) |
 | `blake3 = "1.5.5"` | Cryptographic hashing | [📖](https://docs.rs/blake3/1.5.5/blake3) |
-| `byteorder = "1.5.0"` | Big/little endianness | [📖](https://docs.rs/byteorder/1.5.0/byteorder) |
 | `bytes = "1.9.0"` | Byte buffers | [📖](https://docs.rs/bytes/1.9.0/bytes) |
 | `cc = "1.2.5"` | Compile C/C++ files | [📖](https://docs.rs/cc/1.2.5/cc) |
 | `cfg-if = "1.0.0"` | Compile-time control flow | [📖](https://docs.rs/cfg-if/1.0.0/cfg_if) |

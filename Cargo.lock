@@ -2582,7 +2582,6 @@ dependencies = [
  "bindgen",
  "bitflags 2.9.1",
  "blake3",
- "byteorder",
  "bytes",
  "cc",
  "cfg-if",

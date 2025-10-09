@@ -40,7 +40,6 @@ Creator of ripgrep and author of numerous widely-used libraries.
 **Notable crates:**
 - [`regex`](https://docs.rs/regex) — Fast, Unicode-aware regular expressions
 - [`walkdir`](https://docs.rs/walkdir) — Recursive directory traversal
-- [`byteorder`](https://docs.rs/byteorder) — Reading/writing numbers in big-endian and little-endian
 - [`jiff`](https://docs.rs/jiff) — Modern date and time library
 - [`csv`](https://docs.rs/csv) — Fast CSV parser
 

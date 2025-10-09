@@ -299,15 +299,6 @@ pub mod blake3 {
     pub use ::blake3::*;
 }
 
-#[cfg(feature = "byteorder")]
-pub mod byteorder {
-    //! Big-endian and little-endian encoding.
-    //!
-    //! See crate [`::byteorder`].
-
-    pub use ::byteorder::*;
-}
-
 #[cfg(feature = "bytes")]
 pub mod bytes {
     #![doc = include_str!("../doc-src/crate-bytes.md")]

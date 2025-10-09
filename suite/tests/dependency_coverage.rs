@@ -171,7 +171,7 @@ fn test_anyhow_error_handling() {
     assert!(err_str.contains("additional context"));
 }
 
-// Data structures: bytes, bitflags, byteorder.
+// Data structures: bytes, bitflags.
 
 #[test]
 fn test_bytes_operations() {
@@ -202,18 +202,6 @@ fn test_bitflags_operations() {
     assert!(flags.contains(Flags::A));
     assert!(!flags.contains(Flags::B));
     assert!(flags.contains(Flags::C));
-}
-
-#[test]
-fn test_byteorder_operations() {
-    use rmx::byteorder::{ByteOrder, LittleEndian, BigEndian};
-
-    let mut buf = [0u8; 8];
-    LittleEndian::write_u64(&mut buf, 0x0102030405060708);
-    assert_eq!(LittleEndian::read_u64(&buf), 0x0102030405060708);
-
-    BigEndian::write_u32(&mut buf[0..4], 0x01020304);
-    assert_eq!(BigEndian::read_u32(&buf[0..4]), 0x01020304);
 }
 
 // I/O: tempfile, walkdir.

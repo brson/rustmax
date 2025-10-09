@@ -44,12 +44,6 @@
             short_desc: "Cryptographic hashing",
         },
         {
-            name: "byteorder",
-            category: "encoding",
-            short_desc: "Big/little endianness",
-            maintainer: "burntsushi",
-        },
-        {
             name: "bytes",
             category: "collections",
             short_desc: "Byte buffers",

@@ -30,7 +30,7 @@ as a "batteries included" supercrate.
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`byteorder`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
+| encoding, serialization, parsing | [`base64`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
@@ -134,7 +134,6 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`base64`] - Base-64 encoding and decoding.
 - [`bitflags`] - Types in which the bits are individually addressable.
 - [`blake3`] - The BLAKE3 cryptographic hash function.
-- [`byteorder`] - Big-endian and little-endian encoding.
 - [`bytes`] - Abstractions for working with byte buffers: [`Bytes`](bytes::Bytes), [`Buf`](bytes::Buf), and [`BufMut`](bytes::BufMut).
 - [`cfg-if`](cfg_if) - A macro for writing conditional compilation as `if` / `else` blocks.
 - [`chrono`] - Dates and time (legacy).

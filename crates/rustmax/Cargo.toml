@@ -29,7 +29,6 @@ rmx-crates-no-std = [
   "base64",
   "bitflags",
   "blake3",
-  "byteorder",
   "bytes",
   "cfg-if",
   "chrono",
@@ -177,7 +176,6 @@ rmx-profile-max-nightly = [
 
 rmx-feature-no-std = [
   "ahash?/compile-time-rng",
-  "byteorder?/i128",
   "derive_more?/full",
   "jiff?/alloc",
   "serde_json?/alloc",
@@ -191,7 +189,6 @@ rmx-feature-std = [
   "base64?/std",
   "bitflags?/std",
   "blake3?/std",
-  "byteorder?/std",
   "bytes?/std",
   "chrono?/std",
   "clap?/std",
@@ -224,7 +221,6 @@ rmx-feature-default = [
   "ahash?/default",
   "axum?/default",
   "bindgen?/default",
-  "byteorder?/default",
   "chrono?/default",
   "clap?/default",
   "derive_more?/default",
@@ -332,7 +328,6 @@ base64 = { version = "0.22.1", optional = true, default-features = false }
 bindgen = { version = "0.72.0", optional = true, default-features = false }
 bitflags = { version = "2", optional = true, default-features = false }
 blake3 = { version = "1.5.5", optional = true, default-features = false }
-byteorder = {version = "1.5.0", optional = true, default-features = false }
 bytes = { version = "1.9.0", optional = true, default-features = false }
 cc = { version = "1.2.5", optional = true, default-features = false }
 cfg-if = { version = "1.0.0", optional = true, default-features = false }
