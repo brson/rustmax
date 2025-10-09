@@ -93,6 +93,28 @@
     "crate::futures::channel::oneshot":
     "https://docs.rs/futures/latest/futures/channel/oneshot/index.html",
 
+    // flate2
+    "crate::flate2::write::DeflateEncoder":
+    "https://docs.rs/flate2/latest/flate2/write/struct.DeflateEncoder.html",
+    "crate::flate2::read::DeflateDecoder":
+    "https://docs.rs/flate2/latest/flate2/read/struct.DeflateDecoder.html",
+    "crate::flate2::write::GzEncoder":
+    "https://docs.rs/flate2/latest/flate2/write/struct.GzEncoder.html",
+    "crate::flate2::read::GzDecoder":
+    "https://docs.rs/flate2/latest/flate2/read/struct.GzDecoder.html",
+    "crate::flate2::write::ZlibEncoder":
+    "https://docs.rs/flate2/latest/flate2/write/struct.ZlibEncoder.html",
+    "crate::flate2::read::ZlibDecoder":
+    "https://docs.rs/flate2/latest/flate2/read/struct.ZlibDecoder.html",
+
+    // glob
+    "crate::glob::glob":
+    "https://docs.rs/glob/latest/glob/fn.glob.html",
+    "crate::glob::glob_with":
+    "https://docs.rs/glob/latest/glob/fn.glob_with.html",
+    "crate::glob::Pattern":
+    "https://docs.rs/glob/latest/glob/struct.Pattern.html",
+
     // chrono
     "crate::chrono::NaiveDate":
     "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html",
@@ -362,5 +384,17 @@
     "https://docs.rs/proptest/latest/proptest/macro.proptest.html",
     "crate::proptest::prop_assert":
     "https://docs.rs/proptest/latest/proptest/macro.prop_assert.html",
+
+    // powerletters
+    "crate::powerletters::C":
+    "https://docs.rs/powerletters/latest/powerletters/trait.C.html",
+    "crate::powerletters::O":
+    "https://docs.rs/powerletters/latest/powerletters/trait.O.html",
+    "crate::powerletters::S":
+    "https://docs.rs/powerletters/latest/powerletters/trait.S.html",
+    "crate::powerletters::I":
+    "https://docs.rs/powerletters/latest/powerletters/trait.I.html",
+    "crate::powerletters::X":
+    "https://docs.rs/powerletters/latest/powerletters/trait.X.html",
 
 }
