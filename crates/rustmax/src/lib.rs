@@ -519,9 +519,7 @@ pub mod num_cpus {
 
 #[cfg(feature = "num_enum")]
 pub mod num_enum {
-    //! Conversions between numbers and enums.
-    //!
-    //! See crate [`::num_enum`].
+    #![doc = include_str!("../doc-src/crate-num_enum.md")]
 
     pub use ::num_enum::*;
 }

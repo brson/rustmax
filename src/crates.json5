@@ -191,7 +191,7 @@
         },
         {
             name: "num_enum",
-            category: "convenienc",
+            category: "convenience",
             short_desc: "Number-enum interop",
         },
         {
