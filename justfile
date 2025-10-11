@@ -113,6 +113,13 @@ doc-build: doc-www doc-crates doc-library doc-book
     cp -rlf target/doc/* out/api/
     cp -r work/library/* out/library/
 
+doc-build-basic: doc-www doc-crates doc-book
+    rm -rf book/yapp~
+    mkdir -p out/book
+    mkdir -p out/api
+    cp -r book/book/* out/book/
+    cp -rlf target/doc/* out/api/
+
 publish-dry:
     cargo publish -p rustmax --dry-run
     cargo publish -p rustmax-cli --dry-run
