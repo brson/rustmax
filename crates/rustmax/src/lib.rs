@@ -653,9 +653,7 @@ pub mod socket2 {
 
 #[cfg(feature = "static_assertions")]
 pub mod static_assertions {
-    //! Compile-time assertions about constants, types, etc.
-    //!
-    //! See crate [`::static_assertions`].
+    #![doc = include_str!("../doc-src/crate-static_assertions.md")]
 
     pub use ::static_assertions::*;
 }
