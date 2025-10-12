@@ -58,6 +58,21 @@ rmx-crates-no-std = [
 
 rmx-crates-wasm = [
   "rmx-crates-no-std",
+  "clap",
+  "env_logger",
+  "flate2",
+  "glob",
+  "json5",
+  "num_cpus",
+  #"proptest",
+  "rayon",
+  "regex",
+  "tempfile",
+  "tera",
+  "thiserror",
+  "unicode-segmentation",
+  "walkdir",
+  #"xshell",
 ]
 
 rmx-crates-std = [
