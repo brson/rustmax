@@ -382,9 +382,7 @@ pub mod derive_more {
 
 #[cfg(feature = "env_logger")]
 pub mod env_logger {
-    //! A basic logger to use with the [`log`](super::log) crate.
-    //!
-    //! See crate [`::env_logger`].
+    #![doc = include_str!("../doc-src/crate-env_logger.md")]
 
     pub use ::env_logger::*;
 }
