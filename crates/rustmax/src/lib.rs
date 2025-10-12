@@ -375,9 +375,7 @@ pub mod cxx_build {
 
 #[cfg(feature = "derive_more")]
 pub mod derive_more {
-    //! `derive` for more standard traits.
-    //!
-    //! See crate [`::derive_more`].
+    #![doc = include_str!("../doc-src/crate-derive_more.md")]
 
     pub use ::derive_more::*;
 }

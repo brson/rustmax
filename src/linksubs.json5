@@ -219,6 +219,20 @@
     "crate::anyhow":
     "https://docs.rs/anyhow",
 
+    // derive_more
+    "crate::std::ops::Add":
+    "https://doc.rust-lang.org/stable/std/ops/trait.Add.html",
+    "crate::std::ops::Mul":
+    "https://doc.rust-lang.org/stable/std/ops/trait.Mul.html",
+    "crate::std::ops::Deref":
+    "https://doc.rust-lang.org/stable/std/ops/trait.Deref.html",
+    "crate::std::convert::Into":
+    "https://doc.rust-lang.org/stable/std/convert/trait.Into.html",
+    "crate::std::convert::TryFrom":
+    "https://doc.rust-lang.org/stable/std/convert/trait.TryFrom.html",
+    "crate::std::iter::IntoIterator":
+    "https://doc.rust-lang.org/stable/std/iter/trait.IntoIterator.html",
+
     // clap
     "crate::clap::Parser":
     "https://docs.rs/clap/latest/clap/trait.Parser.html",
