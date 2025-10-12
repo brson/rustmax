@@ -490,9 +490,7 @@ pub mod mime {
 
 #[cfg(feature = "nom")]
 pub mod nom {
-    //! An efficient parser combinator.
-    //!
-    //! See crate [`::nom`].
+    #![doc = include_str!("../doc-src/crate-nom.md")]
 
     pub use ::nom::*;
 }

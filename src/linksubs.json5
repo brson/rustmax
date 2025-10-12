@@ -345,6 +345,10 @@
     "crate::mime::APPLICATION_JSON":
     "https://docs.rs/mime/latest/mime/constant.APPLICATION_JSON.html",
 
+    // nom
+    "crate::nom::IResult":
+    "https://docs.rs/nom/latest/nom/type.IResult.html",
+
     // semver
     "crate::semver::Version":
     "https://docs.rs/semver/latest/semver/struct.Version.html",
