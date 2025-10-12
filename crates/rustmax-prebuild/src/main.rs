@@ -14,6 +14,8 @@
 
 #![allow(unused)]
 
+mod feed;
+
 use anyhow::Context;
 use anyhow::Result as AnyResult;
 use anyhow::anyhow as A;
@@ -29,6 +31,7 @@ const RMX_MANIFEST: &str = "crates/rustmax/Cargo.toml";
 const EXAMPLES_DIR: &str = "crates/rustmax/doc-src";
 const LINK_SUBS: &str = "src/linksubs.json5";
 const CLI_DIR: &str = "crates/rustmax-cli";
+const POSTS_DIR: &str = "src/posts";
 
 const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
@@ -146,6 +149,17 @@ fn main() -> AnyResult<()> {
     write(out_crates_json_file, &out_crates_json_str)?;
     write(out_crates_html_file, &out_crates_html_str)?;
     write(out_build_info_file, &build_info_str)?;
+
+    // Generate feed content.
+    let posts_dir = workspace_dir.join(POSTS_DIR);
+    let posts = feed::parse_posts(&posts_dir)?;
+
+    let mut tera = tera::Tera::new("src/*.template.*")?;
+    let out_dir = workspace_dir.join(OUT_DIR);
+
+    feed::generate_feed_page(&posts, &tera, &out_dir)?;
+    feed::generate_latest_post(&posts, &tera, &out_dir)?;
+    feed::generate_rss(&posts, &out_dir, "https://rustmax.org")?;
 
     create_readme(&workspace_dir, &out_crates_md_str)?;
 

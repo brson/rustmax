@@ -88,7 +88,7 @@ footer {
 
 .build-info {
     font-size: 0.7em;
-    color: var(--rmx-color-fg-dim);
+    color: var(--rmx-color-border);
     margin-top: 0.5em;
 }
 
@@ -241,6 +241,176 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
     table#rmx-crate-table code {
         font-size: 0.9em;
     }
+}
+
+/* Feed styles */
+.latest-post-container {
+    padding: 1rem;
+    border: 1px dashed var(--rmx-color-border);
+}
+
+.latest-post-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.latest-post-header .latest-post-category {
+    min-width: 5em;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.latest-post-header h2 {
+    margin: 0;
+    font: var(--rmx-font-em);
+    flex-grow: 1;
+}
+
+.latest-post-header h2 a {
+    color: var(--rmx-color-fg);
+    text-decoration: none;
+}
+
+.latest-post-header h2 a:hover {
+    color: var(--rmx-color-accents);
+}
+
+.latest-post-header .latest-post-date {
+    font-size: 0.9em;
+    color: var(--rmx-color-border);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.latest-post-category {
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.category-crates {
+    background-color: var(--rmx-color-accents);
+    color: var(--rmx-color-bg);
+}
+
+.category-tips {
+    background-color: var(--rmx-color-links);
+    color: var(--rmx-color-bg);
+}
+
+.category-news {
+    background-color: var(--rmx-color-border);
+    color: var(--rmx-color-bg);
+}
+
+.latest-post-clickable {
+    cursor: pointer;
+}
+
+.latest-post-teaser {
+    position: relative;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.latest-post-teaser .latest-post-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(transparent, var(--rmx-color-bg));
+}
+
+.latest-post-full {
+    display: none;
+}
+
+.latest-post-content {
+    line-height: 1.6;
+}
+
+/* Post page styles */
+.post {
+    max-width: 40em;
+    margin: 0 auto;
+}
+
+.post-header h2 {
+    margin-bottom: 0.5rem;
+}
+
+.post-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    font-size: 0.9em;
+    color: var(--rmx-color-border);
+}
+
+.post-category {
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.post-content {
+    line-height: 1.6;
+}
+
+.post-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rmx-color-border);
+}
+
+/* Feed index styles */
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.feed-item {
+    padding: 1rem;
+    border: 1px dashed var(--rmx-color-border);
+}
+
+.feed-item-header h3 {
+    margin-top: 0;
+}
+
+.feed-item-header h3 a {
+    color: var(--rmx-color-fg);
+}
+
+.feed-item-header h3 a:hover {
+    color: var(--rmx-color-accents);
+}
+
+.feed-item-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9em;
+    color: var(--rmx-color-border);
+}
+
+.feed-item-category {
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.feed-item-summary {
+    margin: 0;
+    font-style: italic;
 }
 
 /* Mobile breakpoint */

@@ -11,6 +11,7 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow.version = "1"
+chrono.version = "0.4.39"
 clap.version = "4.5.23"
 json5.version = "0.4.1"
 regex.version = "1.11.1"

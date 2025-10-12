@@ -104,23 +104,17 @@ doc-www: prebuild
     cp -r www/* out/
     cp work/crates.html out/
     cp work/build-info.json out/
-    
+    cp work/latest-post.html out/ || true
+    cp work/feed.html out/ || true
+    cp work/feed.xml out/ || true
 
-doc-build: doc-www doc-crates doc-library doc-book
-    rm -rf book/yapp~
+doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book
+    cp -r book/book/* out/book/
     mkdir -p out/api
+    cp -rlf target/doc/* out/api/
     mkdir -p out/library
-    cp -r book/book/* out/book/
-    cp -rlf target/doc/* out/api/
     cp -r work/library/* out/library/
-
-doc-build-basic: doc-www doc-crates doc-book
-    rm -rf book/yapp~
-    mkdir -p out/book
-    mkdir -p out/api
-    cp -r book/book/* out/book/
-    cp -rlf target/doc/* out/api/
 
 publish-dry:
     cargo publish -p rustmax --dry-run

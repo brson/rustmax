@@ -8,6 +8,9 @@ document.addEventListener("htmx:afterSettle", function(evt) {
     // Set up example buttons for dynamically loaded content
     setupExampleButtons();
 
+    // Set up post expand button for dynamically loaded content
+    setupPostExpandButton();
+
     loadBuildInfo();
 });
 
@@ -84,5 +87,77 @@ async function loadBuildInfo() {
         }
     } catch (error) {
         console.log('Build info not available:', error);
+    }
+}
+
+function setupPostExpandButton() {
+    const clickableArea = document.getElementById('latest-post-clickable');
+    const titleLink = document.getElementById('latest-post-title-link');
+
+    if (!clickableArea) {
+        return;
+    }
+
+    // Check if already set up to avoid duplicate listeners
+    if (clickableArea.dataset.initialized === 'true') {
+        return;
+    }
+    clickableArea.dataset.initialized = 'true';
+
+    const teaser = document.getElementById('latest-post-teaser');
+    const full = document.getElementById('latest-post-full');
+
+    if (!teaser || !full) {
+        return;
+    }
+
+    // Initialize display states
+    const isExpanded = getPostExpandedState();
+    if (isExpanded) {
+        teaser.style.display = 'none';
+        full.style.display = 'block';
+    } else {
+        teaser.style.display = 'block';
+        full.style.display = 'none';
+    }
+
+    // Prevent title link from triggering expand
+    if (titleLink) {
+        titleLink.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    // Click on clickable area toggles expand/collapse
+    clickableArea.addEventListener('click', () => {
+        const isCurrentlyExpanded = full.style.display === 'block';
+
+        if (isCurrentlyExpanded) {
+            teaser.style.display = 'block';
+            full.style.display = 'none';
+            savePostExpandedState(false);
+        } else {
+            teaser.style.display = 'none';
+            full.style.display = 'block';
+            savePostExpandedState(true);
+        }
+    });
+}
+
+function getPostExpandedState() {
+    try {
+        const saved = localStorage.getItem('rustmax-post-expanded');
+        return saved === 'true';
+    } catch (e) {
+        console.log('Error reading post expanded state:', e);
+    }
+    return false;
+}
+
+function savePostExpandedState(isExpanded) {
+    try {
+        localStorage.setItem('rustmax-post-expanded', isExpanded ? 'true' : 'false');
+    } catch (e) {
+        console.log('Error saving post expanded state:', e);
     }
 }

@@ -1,0 +1,24 @@
+<div class="latest-post-container">
+  <article class="latest-post">
+    <header class="latest-post-header">
+      <span class="latest-post-category category-{{ category }}">{{ category }}</span>
+      <h2><a href="feed.html#{{ slug }}" id="latest-post-title-link">{{ title }}</a></h2>
+      <span class="latest-post-date">{{ date }}</span>
+    </header>
+
+    <div class="latest-post-clickable" id="latest-post-clickable">
+      <div class="latest-post-teaser" id="latest-post-teaser">
+        <div class="latest-post-content">
+          {{ content | safe }}
+        </div>
+        <div class="latest-post-fade"></div>
+      </div>
+
+      <div class="latest-post-full" id="latest-post-full">
+        <div class="latest-post-content">
+          {{ content | safe }}
+        </div>
+      </div>
+    </div>
+  </article>
+</div>
