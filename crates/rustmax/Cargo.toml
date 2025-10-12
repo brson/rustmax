@@ -68,10 +68,10 @@ rmx-crates-wasm = [
   "rayon",
   "regex",
   "tempfile",
-  "tera",
+  #"tera",
   "thiserror",
   "unicode-segmentation",
-  "walkdir",
+  #"walkdir",
   #"xshell",
 ]
 
@@ -292,6 +292,7 @@ rmx-feature-default-wasm = [
   "derive_more?/default",
   "env_logger?/default",
   "futures?/default",
+  "_getrandom?/js",
   "jiff?/default",
   "nom?/default",
   "proc-macro2?/default",
@@ -499,3 +500,5 @@ xshell = { version = "0.2.7", optional = true, default-features = false }
 _gcc = { package = "gcc", version = "0.3.55", optional = true, default-features = false }
 # cargo audit
 _thread_local = { package = "thread_local", version = "1.1.4", optional = true, default-features = false }
+# need to control this for wasm
+_getrandom = { package = "getrandom", version = "0.2.16", optional = true, default-features = false }
