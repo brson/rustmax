@@ -30,7 +30,7 @@ as a "batteries included" supercrate.
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
+| encoding, serialization, parsing | [`base64`], [`flate2`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
@@ -40,7 +40,7 @@ as a "batteries included" supercrate.
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`], [`powerletters`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
-| system / OS | [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
+| system / OS | [`glob`], [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
 | testing | [`proptest`], [`static_assertions`] |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
 | build scripts | … |
@@ -181,6 +181,8 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 
 - [`clap`] - Command line parsing.
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
+- [`flate2`] - Deflate, gzip, and zlib compression and decompression.
+- [`glob`] - Unix shell style pattern matching for paths.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
 - [`num_cpus`] - Get the number of CPUS on a machine.
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
@@ -199,13 +201,13 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 ## 🌎 Profile: `rmx-profile-wasm`
 
 This profile is designed for WebAssembly (WASM) targets.
-It includes the same crates as [`rmx-profile-no-std`],
-but enables WASM-compatible features from the Rust standard library
-and other crates where available.
+It includes all crates from [`rmx-profile-no-std`],
+plus additional crates that are compatible with WASM environments.
 
 This profile uses WASM-specific variants of ecosystem features
 that exclude features incompatible with WASM environments,
-such as threading and OS-specific APIs.
+such as OS-specific threading APIs and file system operations
+that require native OS support.
 
 💡 This profile also enables [`rmx-rustlibs-std`].\
 💡 This profile also enables [`rmx-feature-std-wasm`].\
@@ -217,7 +219,23 @@ such as threading and OS-specific APIs.
 
 ### Crates in `rmx-profile-wasm`
 
-The same crates as in [`rmx-profile-no-std`].
+All crates from [`rmx-profile-no-std`], plus:
+
+- [`clap`] - Command line parsing.
+- [`env_logger`] - A basic logger to use with the [`log`] crate.
+- [`flate2`] - Deflate, gzip, and zlib compression and decompression.
+- [`glob`] - Unix shell style pattern matching for paths.
+- [`json5`] - JSON5, a superset of JSON with expanded syntax.
+- [`num_cpus`] - Get the number of CPUS on a machine.
+- [`rayon`] - Parallel iterators and other parallel processing tools.
+- [`regex`] - Regular expressions.
+- [`tempfile`] - Temporary files and directories.
+- [`thiserror`] - Tools for defining custom error types.
+- [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.
+
+Note: Some crates from [`rmx-profile-std`] are not included
+because they require native OS features unavailable in WASM environments:
+[`proptest`], [`tera`], [`walkdir`], [`xshell`].
 
 
 
