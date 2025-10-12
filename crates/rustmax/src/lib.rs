@@ -721,9 +721,7 @@ pub mod toml {
 
 #[cfg(feature = "unicode-segmentation")]
 pub mod unicode_segmentation {
-    //! Splitting strings on grapheme cluster, word, and sentence boundaries.
-    //!
-    //! See crate [`::unicode_segmentation`].
+    #![doc = include_str!("../doc-src/crate-unicode-segmentation.md")]
 
     pub use ::unicode_segmentation::*;
 }
