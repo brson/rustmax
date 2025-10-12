@@ -60,6 +60,7 @@ as a "batteries included" supercrate.
   which correspond to common target environments and application types.
   - [🌎 Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
   - **[🌎 Profile: `rmx-profile-std`][`rmx-profile-std`]**
+  - [🌎 Profile: `rmx-profile-wasm`][`rmx-profile-wasm`]
   - [🌎 Profile: `rmx-profile-net`][`rmx-profile-net`]
   - [🌎 Profile: `rmx-profile-cli`][`rmx-profile-cli`]
   - [🌎 Profile: `rmx-profile-build-script`][`rmx-profile-build-script`]
@@ -191,6 +192,32 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 - [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.
 - [`walkdir`] - Efficient directory traversal.
 - [`xshell`] - A Swiss-army knife for writing shell-style scripts in Rust.
+
+
+
+
+## 🌎 Profile: `rmx-profile-wasm`
+
+This profile is designed for WebAssembly (WASM) targets.
+It includes the same crates as [`rmx-profile-no-std`],
+but enables WASM-compatible features from the Rust standard library
+and other crates where available.
+
+This profile uses WASM-specific variants of ecosystem features
+that exclude features incompatible with WASM environments,
+such as threading and OS-specific APIs.
+
+💡 This profile also enables [`rmx-rustlibs-std`].\
+💡 This profile also enables [`rmx-feature-std-wasm`].\
+💡 This profile also enables [`rmx-feature-default-wasm`].\
+💡 This profile also enables [`rmx-feature-more-wasm`].\
+💡 This profile also enables [`rmx-feature-derive`].\
+💡 This profile also enables [`rmx-feature-serde`].
+
+
+### Crates in `rmx-profile-wasm`
+
+The same crates as in [`rmx-profile-no-std`].
 
 
 
@@ -333,12 +360,31 @@ It enables the "std" feature of crates
 and other default features that require the standard library.
 
 
+## ⛲ Feature: `rmx-feature-std-wasm`
+
+This feature is enabled by [`rmx-profile-wasm`].
+It does not typically need to be set manually.
+
+Similar to [`rmx-feature-std`], but excludes features
+that are incompatible with WebAssembly targets,
+such as those requiring threading or OS-specific APIs.
+
+
 ## ⛲ Feature: `rmx-feature-default`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
 
 It enables the "default" feature of crates.
+
+
+## ⛲ Feature: `rmx-feature-default-wasm`
+
+This feature is enabled by [`rmx-profile-wasm`].
+It does not typically need to be set manually.
+
+Similar to [`rmx-feature-default`], but uses WASM-compatible
+default features where necessary.
 
 
 ## ⛲ Feature: `rmx-feature-more`
@@ -348,6 +394,16 @@ It does not typically need to be set manually.
 
 This activates extra crate features for convenience
 that the crates themselves do not typically activate by default.
+
+
+## ⛲ Feature: `rmx-feature-more-wasm`
+
+This feature is enabled by [`rmx-profile-wasm`].
+It does not typically need to be set manually.
+
+Similar to [`rmx-feature-more`], but excludes features
+that are incompatible with WebAssembly targets,
+such as blocking I/O and threading.
 
 
 ## ⛲ Feature: `rmx-feature-derive`
@@ -507,6 +563,7 @@ through cargo features like `rmx-profile-std`.
 
 [`rmx-profile-no-std`]: #-profile-rmx-profile-no-std
 [`rmx-profile-std`]: #-profile-rmx-profile-std
+[`rmx-profile-wasm`]: #-profile-rmx-profile-wasm
 [`rmx-profile-net`]: #-profile-rmx-profile-net
 [`rmx-profile-cli`]: #-profile-rmx-profile-cli
 [`rmx-profile-build-script`]: #-profile-rmx-profile-build-script
@@ -516,8 +573,11 @@ through cargo features like `rmx-profile-std`.
 [`rmx-profile-max-nightly`]: #-profile-rmx-profile-max-nightly
 [`rmx-feature-no-std`]: #-feature-rmx-feature-no-std
 [`rmx-feature-std`]: #-feature-rmx-feature-std
+[`rmx-feature-std-wasm`]: #-feature-rmx-feature-std-wasm
 [`rmx-feature-default`]: #-feature-rmx-feature-default
+[`rmx-feature-default-wasm`]: #-feature-rmx-feature-default-wasm
 [`rmx-feature-more`]: #-feature-rmx-feature-more
+[`rmx-feature-more-wasm`]: #-feature-rmx-feature-more-wasm
 [`rmx-feature-derive`]: #-feature-rmx-feature-derive
 [`rmx-feature-serde`]: #-feature-rmx-feature-serde
 [`rmx-feature-backtrace`]: #-feature-rmx-feature-backtrace
