@@ -19,6 +19,7 @@ check:
     cargo check -p rustmax --features rmx-profile-full
     cargo check -p rustmax --features rmx-profile-max
     cargo check -p rustmax-cli
+    cargo check -p rustmax --features=rmx-profile-wasm --target=wasm32-unknown-unknown
 
 test:
     cargo test -p rustmax
@@ -26,6 +27,7 @@ test:
     cargo test -p rustmax --features rmx-profile-std
     cargo test -p rustmax --features rmx-profile-full
     cargo test -p rustmax --features rmx-profile-max
+    cargo check -p rustmax --features=rmx-profile-wasm --target=wasm32-unknown-unknown
 
 test-min-version-build: maint-lock-minimum-versions
     cargo test -p rustmax --features rmx-profile-std
