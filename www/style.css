@@ -76,6 +76,10 @@ aside, #warning {
     text-align: right;
 }
 
+#warning p {
+    margin-bottom: 0;
+}
+
 nav.bookmarks {
     display: flex;
     justify-content: center;
