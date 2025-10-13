@@ -76,6 +76,31 @@ aside, #warning {
     text-align: right;
 }
 
+nav.bookmarks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3em;
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+nav.bookmarks a {
+    display: block;
+    text-decoration: none;
+    transition: transform 0.2s;
+}
+
+nav.bookmarks a svg {
+    width: 2em;
+    height: 2em;
+    display: block;
+}
+
+nav.bookmarks a:hover {
+    transform: scale(1.2);
+}
+
 section.crates
 {
     border: 1px dashed var(--rmx-color-border);
