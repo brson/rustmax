@@ -41,6 +41,12 @@ just anthology-process [post-id]
 
 # Process all posts
 just anthology-process-all
+
+# Generate HTML index for fetched directory
+just anthology-index
+
+# Build the mdbook
+just anthology-build
 ```
 
 ### Direct Commands
@@ -76,6 +82,21 @@ Process all posts:
 ./target/debug/anthology --metadata-dir crates/rustmax-anthology/metadata \
                          --fetched-dir crates/rustmax-anthology/fetched \
                          process all
+```
+
+Generate HTML index for fetched directory:
+```bash
+./target/debug/anthology --metadata-dir crates/rustmax-anthology/metadata \
+                         --fetched-dir crates/rustmax-anthology/fetched \
+                         generate-index
+```
+
+Build the mdbook:
+```bash
+./target/debug/anthology --metadata-dir crates/rustmax-anthology/metadata \
+                         --fetched-dir crates/rustmax-anthology/fetched \
+                         --book-dir crates/rustmax-anthology/book \
+                         build
 ```
 
 Individual pipeline steps:
@@ -122,9 +143,18 @@ This is a big ugly data transformation project. It embraces the mess:
 - Focus on getting something working over perfect architecture
 - Perfect for automation via AI tools
 
+## Output
+
+The anthology generates multiple outputs:
+
+1. **Fetched artifacts** (`fetched/`): Raw HTML, extracted content, and markdown for each post
+   - View the HTML index at `fetched/index.html` (run `just anthology-index` to generate)
+
+2. **mdbook presentation** (`book/rendered/`): A navigable web book of all posts
+   - View at `book/rendered/index.html` (run `just anthology-build` to generate)
+
 ## Future Work
 
-- mdbook integration for generating final presentation
 - More custom extractors for common blog platforms
 - Better error handling and retry logic
 - Incremental updates (re-fetch only stale content)

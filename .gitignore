@@ -1,3 +1,4 @@
 target/
 out/
 work/
+crates/rustmax-anthology/book/rendered/

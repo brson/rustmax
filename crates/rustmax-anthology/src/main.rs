@@ -19,6 +19,10 @@ struct Cli {
     /// Path to fetched content directory.
     #[arg(long, default_value = "fetched")]
     fetched_dir: PathBuf,
+
+    /// Path to book directory.
+    #[arg(long, default_value = "book")]
+    book_dir: PathBuf,
 }
 
 #[derive(Subcommand)]
@@ -52,6 +56,12 @@ enum Commands {
 
     /// Show status of posts.
     Status,
+
+    /// Build the mdbook from processed posts.
+    Build,
+
+    /// Generate HTML index for the fetched directory.
+    GenerateIndex,
 }
 
 fn main() -> AnyResult<()> {
@@ -185,6 +195,14 @@ fn main() -> AnyResult<()> {
             println!("    - fetch-info.toml (fetch metadata)");
             println!("    - extracted.html  (extracted content)");
             println!("    - content.md      (final markdown)");
+        }
+
+        Commands::Build => {
+            build::build_book(&collection, &cli.fetched_dir, &cli.book_dir)?;
+        }
+
+        Commands::GenerateIndex => {
+            index::generate_index(&collection, &cli.fetched_dir)?;
         }
     }
 

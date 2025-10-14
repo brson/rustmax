@@ -132,6 +132,15 @@ anthology-process-all:
     cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
         --fetched-dir crates/rustmax-anthology/fetched process all
 
+anthology-build:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched \
+        --book-dir crates/rustmax-anthology/book build
+
+anthology-index:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched generate-index
+
 publish-dry:
     cargo publish -p rustmax --dry-run
     cargo publish -p rustmax-cli --dry-run

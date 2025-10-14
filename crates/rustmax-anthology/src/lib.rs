@@ -12,5 +12,7 @@ pub mod fetch;
 pub mod extract;
 pub mod markdown;
 pub mod extractors;
+pub mod build;
+pub mod index;
 
 pub use metadata::*;
