@@ -22,7 +22,7 @@ pub fn generate_index(
     html.push_str("    h1 { font-size: 1.2em; margin: 0.5em 0; border-bottom: 1px solid #333; padding-bottom: 0.2em; }\n");
     html.push_str("    h2 { font-size: 1em; margin: 0.8em 0 0.3em 0; font-weight: bold; }\n");
     html.push_str("    .summary { background: #f0f0f0; padding: 0.3em 0.5em; margin-bottom: 0.5em; font-size: 0.9em; }\n");
-    html.push_str("    .post { margin: 0.2em 0; padding: 0.3em 0.5em; border-left: 2px solid #ddd; }\n");
+    html.push_str("    .post { margin: 0.2em 0; padding: 0.3em 0.5em; border-left: 2px solid #ddd; cursor: pointer; }\n");
     html.push_str("    .post:hover { background: #f9f9f9; }\n");
     html.push_str("    .post-line { display: flex; gap: 1em; align-items: baseline; flex-wrap: wrap; }\n");
     html.push_str("    .post-title { font-weight: bold; }\n");
@@ -88,7 +88,7 @@ pub fn generate_index(
         let has_markdown = post_dir.join("content.md").exists();
         let has_fetch_info = post_dir.join("fetch-info.toml").exists();
 
-        html.push_str("    <div class=\"post\">\n");
+        html.push_str(&format!("    <div class=\"post\" data-post-id=\"{}\">\n", post.id));
         html.push_str("      <div class=\"post-line\">\n");
         html.push_str(&format!("        <span class=\"post-title\">{}</span>\n", post.title));
         html.push_str(&format!("        <span class=\"post-meta\">by {} | <code>{}</code> | <a href=\"{}\">orig</a></span>\n",
@@ -120,6 +120,15 @@ pub fn generate_index(
         html.push_str("  </div>\n"); // Close last category
     }
 
+    html.push_str("  <script>\n");
+    html.push_str("    document.querySelectorAll('.post').forEach(function(post) {\n");
+    html.push_str("      post.addEventListener('click', function(e) {\n");
+    html.push_str("        if (e.target.tagName === 'A') return;\n");
+    html.push_str("        var postId = this.getAttribute('data-post-id');\n");
+    html.push_str("        window.location.href = postId + '/content.md';\n");
+    html.push_str("      });\n");
+    html.push_str("    });\n");
+    html.push_str("  </script>\n");
     html.push_str("</body>\n");
     html.push_str("</html>\n");
 
