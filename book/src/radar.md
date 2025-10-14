@@ -106,6 +106,8 @@ but that are not yet part of Rustmax.
 - [`hyperfine`](https://github.com/sharkdp/hyperfine)
 - [`rust-analyzer`](https://rust-analyzer.github.io/)
 - [`wasmtime-cli`](https://crates.io/crates/wasmtime-cli)
+- [`delta`](https://crates.io/crates/git-delta).
+  Improved `git diff` plugin.
 
 
 ## Wanted
