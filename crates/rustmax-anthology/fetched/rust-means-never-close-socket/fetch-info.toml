@@ -1,0 +1,5 @@
+url = "http://blog.skylight.io/rust-means-never-having-to-close-a-socket/"
+fetched_at = "2025-10-14T15:16:39.371546001-06:00[-06:00]"
+status_code = 200
+final_url = "https://blog.skylight.io/rust-means-never-having-to-close-a-socket/"
+content_type = "text/html; charset=utf-8"

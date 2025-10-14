@@ -1,0 +1,1264 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>  Peeking inside Trait Objects |  Huon on the internet</title>
+
+  <link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="Atom feed">
+  <link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="RSS feed">
+  
+  <link rel="canonical" href="https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/">
+
+  <meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+  
+
+  
+  <meta name="description" content="An introduction to the low-level details of trait objects in the Rust programming language.
+" />
+
+  
+  <meta name="twitter:card" content="summary" />
+  
+  <meta name="twitter:site" content="@huon_w" />
+  <meta name="twitter:title" content="Peeking inside Trait Objects" />
+  <meta name="twitter:description" content="An introduction to the low-level details of trait objects in the Rust programming language.
+" />
+  <meta name="twitter:url" content="https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/">
+
+  <!-- facebook -->
+  <meta property="og:url" content="https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/" />
+  <meta property="og:title" content="Peeking inside Trait Objects" />
+  <meta property="og:description" content="An introduction to the low-level details of trait objects in the Rust programming language.
+" />
+  
+  <meta property="og:type" content="article" />
+  
+  
+  
+  <style>
+    /*! modern-normalize v1.1.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
+*,::after,::before{box-sizing:border-box}html{line-height:1.15;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4}body{margin:0;font-family:system-ui, -apple-system,'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'}hr{height:0;color:inherit}abbr[title]{text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-0.25em}sup{top:-0.5em}table{text-indent:0;border-color:inherit}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type='button'],[type='reset'],[type='submit'],button{-webkit-appearance:button}::-moz-focus-inner{border-style:none;padding:0}:-moz-focusring{outline:1px dotted ButtonText}:-moz-ui-invalid{box-shadow:none}legend{padding:0}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type='search']{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}
+
+
+    
+      /* Borrowed from mojombo: https://github.com/mojombo/mojombo.github.com/blob/master/css/syntax.css */
+
+.lineno { width: 2em; text-align:right; }
+.highlight pre {
+  white-space: pre;
+}
+.highlight .c { color: #777; font-style: italic; } /* Comment */
+.highlight .err { color: #a61717; background-color: #e3d2d2 } /* Error */
+.highlight .k { font-weight: bold } /* Keyword */
+.highlight .o { font-weight: bold } /* Operator */
+.highlight .cm { color: #999988; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #999999; font-weight: bold } /* Comment.Preproc */
+.highlight .c1 { color: #999988; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #999999; font-weight: bold; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #000000; background-color: #ffdddd } /* Generic.Deleted */
+.highlight .gd .x { color: #000000; background-color: #ffaaaa } /* Generic.Deleted.Specific */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #aa0000 } /* Generic.Error */
+.highlight .gh { color: #999999 } /* Generic.Heading */
+.highlight .gi { color: #000000; background-color: #ddffdd } /* Generic.Inserted */
+.highlight .gi .x { color: #000000; background-color: #aaffaa } /* Generic.Inserted.Specific */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #555555 } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #aaaaaa } /* Generic.Subheading */
+.highlight .gt { color: #aa0000 } /* Generic.Traceback */
+.highlight .kc { font-weight: bold } /* Keyword.Constant */
+.highlight .kd { font-weight: bold } /* Keyword.Declaration */
+.highlight .kp { font-weight: bold } /* Keyword.Pseudo */
+.highlight .kr { font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #445588; font-weight: bold } /* Keyword.Type */
+.highlight .m { color: #009999 } /* Literal.Number */
+.highlight .s { color: #d14 } /* Literal.String */
+.highlight .na { color: #008080 } /* Name.Attribute */
+.highlight .nb { color: #0086B3 } /* Name.Builtin */
+.highlight .nc { color: #445588; font-weight: bold } /* Name.Class */
+.highlight .no { color: #008080 } /* Name.Constant */
+.highlight .ni { color: #800080 } /* Name.Entity */
+.highlight .ne { color: #990000; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #990000; font-weight: bold } /* Name.Function */
+.highlight .nn { color: #555555 } /* Name.Namespace */
+.highlight .nt { color: #000080 } /* Name.Tag */
+.highlight .nv { color: #008080 } /* Name.Variable */
+.highlight .ow { font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #009999 } /* Literal.Number.Float */
+.highlight .mh { color: #009999 } /* Literal.Number.Hex */
+.highlight .mi { color: #009999 } /* Literal.Number.Integer */
+.highlight .mo { color: #009999 } /* Literal.Number.Oct */
+.highlight .sb { color: #d14 } /* Literal.String.Backtick */
+.highlight .sc { color: #d14 } /* Literal.String.Char */
+.highlight .sd { color: #d14 } /* Literal.String.Doc */
+.highlight .s2 { color: #d14 } /* Literal.String.Double */
+.highlight .se { color: #d14 } /* Literal.String.Escape */
+.highlight .sh { color: #d14 } /* Literal.String.Heredoc */
+.highlight .si { color: #d14 } /* Literal.String.Interpol */
+.highlight .sx { color: #d14 } /* Literal.String.Other */
+.highlight .sr { color: #009926 } /* Literal.String.Regex */
+.highlight .s1 { color: #d14 } /* Literal.String.Single */
+.highlight .ss { color: #990073 } /* Literal.String.Symbol */
+.highlight .bp { color: #999999 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #008080 } /* Name.Variable.Class */
+.highlight .vg { color: #008080 } /* Name.Variable.Global */
+.highlight .vi { color: #008080 } /* Name.Variable.Instance */
+.highlight .il { color: #009999 } /* Literal.Number.Integer.Long */
+
+
+html {
+    min-height:100%;
+}
+
+* {
+  margin: 0;
+}
+* + * {
+  margin-top: 0.75em;
+}
+
+
+body {
+  padding:0px;
+    counter-reset: footnotes;
+    counter-reset: figure;
+    margin:0px;
+    font-size: 18px;
+    background: white;
+    color: #101010;
+
+    font-variant: common-ligatures;
+    -moz-font-feature-settings: "kern" on;
+    -webkit-font-feature-settings: "kern" on;
+    font-feature-settings: "kern" on;
+}
+
+#wrapper {
+    margin: 0 auto;
+    max-width: 630px;
+    padding: 0.75em 15px;
+    width: 100%;
+    position:relative;
+}
+
+.lazily-filled {
+  position: relative;
+}
+.lazily-filled > * {
+  z-index: 0;
+}
+.lazily-filled::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: rgb(229, 236, 246);
+  z-index: 1;
+}
+.lazily-filled::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: "";
+  display: block;
+  width: 128px;
+  height: 128px;
+  margin-left: -64px;
+  margin-top: -64px;
+  border-radius: 50%;
+  border: 12px solid;
+  border-color: white transparent;
+  animation: spinner 5s linear;
+  /* eventually stop animating when it's hidden */
+  animation-iteration-count: 10;
+  z-index: 2;
+}
+.lazily-filled::before, .lazily-filled::after {
+  opacity: 0;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+.lazily-filled:empty::before, .lazily-filled:empty::after {
+  opacity: 1;
+  animation-iteration-count: infinite;
+  visibility: visible;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.plotly-plot * + * {
+  margin-top: 0;
+}
+
+/* wonky safari */
+.plotly text[style*="white-space: pre"] {
+  white-space: nowrap !important;
+}
+
+
+/* lists */
+li + li {
+  margin-top: 0.5em;
+}
+ul, ol {
+  padding-left: 1.5em;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+td, th {
+  padding: 0.1em 0.75em;
+}
+@media (max-width: 500px) {
+  td, th {
+    padding-left: 0.375em;
+    padding-right: 0.375em;
+  }
+}
+tr:nth-child(even) {
+  background: rgba(0, 0, 0, 5%);
+}
+thead {
+  border-bottom: 1px solid grey;
+  font-weight: bold;
+}
+
+header {
+  margin-bottom: 1.5em;
+}
+header a:not(:hover) {
+  text-decoration: none;
+}
+#blog-title {
+  hyphens: none;
+  font-variant: small-caps;
+  font-size: 1.5em;
+  font-weight: normal;
+  text-align: center;
+  line-height: 1em;
+}
+#info-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+#info-list li {
+  margin: 0 1em;
+}
+
+#page-footer {
+  border-top: 1px solid lightgrey;
+  padding-top: 0.75em;
+  color: grey;
+  text-align: right;
+}
+
+.clear { clear: both; margin: 0; }
+
+
+main {
+    text-align:justify;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    line-height: 1.5em;
+
+    position: relative;
+    z-index: 10;
+}
+
+a[href] {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/*  The authorship info */
+#info-intro {
+    font-style: italic;
+    text-align: center;
+}
+
+/* code */
+
+code, pre {
+  font-family: monospace;
+  font-variant: none;
+  -moz-hyphens: none;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+pre {
+  background: #f0f0f0;
+}
+code {
+    background: #f7f7f7;
+    padding: 0 0.1em;
+    font-size: 0.9em;
+    border-radius: 3px;
+    border: 1px solid lightgrey;
+}
+pre code {
+    background: none;
+    padding: 0;
+    -moz-hyphens: none;
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+    border-radius: 0;
+    border-width: 0;
+}
+h1 code, h2 code, h3 code, h4 code {
+  background: rgba(255,255,255,0.1);
+}
+
+.break-all {
+  word-break: break-all;
+}
+
+/* quotes and similar */
+
+blockquote {
+    border: solid #eee;
+    border-width: 0 1px;
+    padding: 0 1.2em;
+    color: #444;
+    position: relative;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+aside {
+  padding: 0 1.2em;
+  color: #444;
+  position: relative;
+}
+aside[data-icon] {
+  padding-left: 2.4em;
+}
+aside[data-icon]:before {
+  content: attr(data-icon);
+  position: absolute;
+  left: 0;
+  text-align: center;
+  width: 2.4em;
+}
+
+/* images/figures */
+img, figure svg {
+  max-width: 100%;
+  height: auto;
+}
+figure svg {
+  width: 100%;
+}
+img:not(.inline-image), figure svg {
+    display: block;
+    margin: 0 auto;
+    clear: both;
+}
+
+.image-positioner {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+img[data-caption]:before {
+    content: attr(data-caption);
+}
+figure {
+  clear: both;
+}
+figure.image {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  min-width: 100%;
+}
+figcaption {
+  margin: 0 auto;
+  max-width: 570px;
+  padding: 0 10px;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9em;
+}
+figcaption p {
+  display: inline;
+}
+figcaption::before {
+  counter-increment: figure;
+  content: "Figure " counter(figure) ". ";
+}
+
+.highlight table {
+  font-size: 0.9em;
+  padding: 0em;
+  width: 100%;
+  table-layout: fixed;
+  overflow-y: hidden;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+[data-lang] {
+  position: relative;
+  display: block;
+}
+[data-lang]::before {
+  content: attr(data-lang);
+  text-transform: capitalize;
+  top: 0;
+  right: 0;
+  position: absolute;
+  font-size: 1.5em;
+  color: #f3f3f3;
+  z-index: 1;
+}
+
+.highlight pre {
+  background: transparent;
+}
+.gutter {
+  padding: 0;
+  border: solid #ccc;
+  border-width: 0 1px 0 0;
+  color: #ccc;
+}
+.lineno {
+  width: 25px;
+  padding-right: 5px;
+}
+.highlight td.code {
+  overflow-x: auto;
+  padding: 0;
+  padding-left: 0.5em;
+}
+
+
+/* HEADINGS */
+
+h1, h2 {
+    font-variant: small-caps;
+}
+
+h1, h2, h3, h4 {
+  -moz-hyphens: none;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  text-align: left;
+}
+
+h1 {
+  font-size: 2.2em;
+  text-align: center;
+  line-height: 1em;
+}
+h2 {
+  font-size: 1.7em;
+}
+h3 {
+  font-size: 1.4em;
+}
+h4 {
+  font-size: 1.2em;
+}
+
+/* crates.io badges */
+
+.lib-info {
+  float: right;
+  width: 150px;
+  text-align: center;
+  margin: 0 1em;
+}
+.lib-badge {
+  vertical-align: middle;
+}
+.centered-libs {
+  text-align: center;
+}
+.centered-libs .lib-info {
+  float: none;
+}
+
+/* external links */
+
+#external-links {
+  margin-top: 2.25em;
+  text-align: center;
+}
+.external-label {
+  font-weight: bold;
+}
+#external-links ul {
+  list-style: none;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+#external-links li {
+  list-style: none;
+  display: inline;
+}
+
+/* "Footnotes" */
+
+/* the div that holds them */
+.footnotes {
+    margin-top: 2.25em;
+    padding-top: 1.5em;
+    border-top: 1px solid rgb(240,240,240);
+    font-size: 0.9em;
+}
+.footnotes ol {
+  padding: 0;
+}
+.footnotes li {
+    list-style-position: outside;
+    margin-left: 30px;
+    margin-right: 10px;
+    color: #333;
+}
+
+.footnotes li:target, .footnotes li:hover {
+    color: black;
+    background-color: lightyellow;
+}
+
+.footnotes .reversefootnote {
+    text-decoration: none;
+}
+
+/* extra info after a post */
+#more {
+  margin-top: 3em;
+  padding-top: 1.5em;
+  border-top: 1px solid lightgray;
+}
+#me-icon {
+  max-width: 150px;
+  height: 150px;
+  background: url("/img/me.jpg");
+  background-size: cover;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 30px;
+}
+#by-line {
+  font-size: 0.8em;
+}
+#latest-list {
+  padding: 0;
+  list-style: none;
+}
+#latest-heading {
+  text-align: center;
+}
+#latest-heading a:not(:hover) {
+  text-decoration: none;
+}
+#latest-list a:hover h3 {
+  text-decoration: underline;
+}
+#latest-list a {
+  text-decoration: none;
+}
+.latest-post {
+  padding: 0;
+  font-size: 0.8em;
+}
+.latest-post > h3 {
+  font-weight: bold;
+}
+.latest-post * {
+  margin: 0;
+}
+
+/* post series */
+
+.post-series {
+  font-size: 0.8em;
+  border: 1px solid lightgray;
+  padding: 0.2em;
+  cursor: pointer;
+}
+
+.post-series-title {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.post-series-list {
+  padding-left: 1.5em;
+  margin: 0;
+}
+.post-series .current {
+  font-style: italic;
+}
+
+/* archive pages */
+ul.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-post {
+  margin: 0;
+}
+
+.post-post + .post-post {
+  border-top: 1px dashed  #ddd;
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+a.post-heading {
+  display: flex;
+  align-items: baseline;
+  text-decoration: none;
+  gap: 1em;
+}
+.post-heading * {
+  margin: 0;
+}
+
+.post-title {
+  font-size: 1.2em;
+  flex-grow: 1;
+  text-decoration: underline;
+}
+
+.post-heading .post-date {
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.post-excerpt p {
+  display: inline;
+}
+
+.post-more {
+  font-style: italic;
+  white-space: nowrap;
+  float: right;
+  margin: 0;
+  font-size: smaller;
+}
+
+.post-list .footnote, .post-list .footnotes, .post-list p:empty {
+  display: none
+}
+
+/* media queries */
+
+
+@media only print {
+    a {
+      text-decoration: none !important;
+    }
+    header {
+        display:none !important;
+    }
+
+    h1, h2, h3, h4 {
+        padding-left: 0 !important;
+    }
+
+    #wrapper {
+       max-width: none !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .footnotes .reversefootnote {
+         display: none !important;
+    }
+    [data-lang]::before {
+      content: "";
+    }
+}
+
+    
+
+    
+  </style>
+  
+</head>
+
+<body>
+<div id="wrapper">
+  <header>
+    <h1 id="blog-title"><a href="/">Huon on the internet</a></h1>
+    <nav>
+      <ul id="info-list" class="no-print">
+        <li><a href="/about">About</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="https://github.com/huonw">GitHub</a></li>
+        <li><a href="https://bsky.app/profile/huonw.bsky.social">Bluesky</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <article>
+      
+        <h1 id="title"> Peeking inside Trait Objects</h1>
+        
+      
+      
+         <div id="info-intro">
+           By <a href="/about">Huon Wilson</a>
+           
+             &mdash; <span class="date pub-date">10 Jan 2015</span>
+           
+           
+         </div>
+      
+      <p>One of the most powerful parts of
+<a href="http://rust-lang.org">the Rust programming language</a><sup id="fnref:version"><a href="#fn:version" class="footnote" rel="footnote" role="doc-noteref">0</a></sup> is the
+<a href="http://doc.rust-lang.org/nightly/book/traits.html">trait system</a>. They form the basis of the generic system and
+polymorphic functions and types. There’s an interesting use of traits,
+as so-called “trait objects”, that allows for dynamic polymorphism and
+heterogeneous uses of types, which I’m going to look at in more detail
+over a short series of posts.</p>
+
+<p><em>Update 2015-02-19</em>: A lot of this document has been copied into
+<a href="http://doc.rust-lang.org/nightly/book/trait-objects.html">the main book</a>, with improvements and updates.</p>
+
+<p>This post will set the scene, with an introduction to the internals of
+a trait object; the remaining posts will look at the <code class="language-plaintext highlighter-rouge">Sized</code> trait and
+“object safety” in detail (a lot of people have encountered trouble
+with somewhat abstruse compiler errors about this recently).</p>
+
+<details class="post-series">
+  <summary class="post-series-title">Other posts in this series on trait objects</summary>
+  <ol class="post-series-list">
+    <li class="current"><a href="/blog/2015/01/peeking-inside-trait-objects/">Peeking inside Trait Objects</a></li>
+    <li class=""><a href="/blog/2015/01/the-sized-trait/">The Sized Trait</a></li>
+    <li class=""><a href="/blog/2015/01/object-safety/">Object Safety</a></li>
+    <li class=""><a href="/blog/2015/05/where-self-meets-sized-revisiting-object-safety/">Where Self Meets Sized: Revisting Object Safety</a></li>
+  </ol>
+</details>
+
+<h2 id="traits">Traits</h2>
+
+<p>A simple example of a <code class="language-plaintext highlighter-rouge">trait</code> is this <code class="language-plaintext highlighter-rouge">Foo</code>. It has one method that is
+expected to return a <code class="language-plaintext highlighter-rouge">String</code>, and, in the real world, there would be
+some expectation about what the string would mean, but this is just a
+blog, so you’re free to make up your own favourite meaning.</p>
+
+<figure class="highlight"><pre><code class="language-rust" data-lang="rust"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="code"><pre><span class="k">trait</span> <span class="n">Foo</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">method</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>This can then be implemented for certain types, stating that these
+types satisfy whatever behaviours the trait is trying to summarise and
+allow polymorphism over. For example, bytes and strings are <code class="language-plaintext highlighter-rouge">Foo</code>,
+apparently:</p>
+
+<figure class="highlight"><pre><code class="language-rust" data-lang="rust"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="k">impl</span> <span class="n">Foo</span> <span class="k">for</span> <span class="nb">u8</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">method</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span> <span class="nd">format!</span><span class="p">(</span><span class="s">"u8: {}"</span><span class="p">,</span> <span class="o">*</span><span class="k">self</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">impl</span> <span class="n">Foo</span> <span class="k">for</span> <span class="nb">String</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">method</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span> <span class="nd">format!</span><span class="p">(</span><span class="s">"string: {}"</span><span class="p">,</span> <span class="o">*</span><span class="k">self</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>There’s two basic ways to use traits to be polymorphic:</p>
+
+<p>The first and most common are generic functions like <code class="language-plaintext highlighter-rouge">fn func&lt;T:
+Foo&gt;(x: &amp;T)</code>. These are implemented via monomorphisation, the compiler
+creates a specialised version of the generic function for every type
+used with it. This has some upsides—static dispatching of any
+method calls<sup id="fnref:upsides"><a href="#fn:upsides" class="footnote" rel="footnote" role="doc-noteref">1</a></sup>, allowing for inlining and hence usually higher
+performance—and some downsides—causing code bloat due to
+many copies of the same function existing in the binary, one for each
+type<sup id="fnref:one-per-type"><a href="#fn:one-per-type" class="footnote" rel="footnote" role="doc-noteref">2</a></sup>.</p>
+
+<p>Fortunately, there’s second option if that trade-off is inappropriate,
+or if being required to know every type everywhere is impossible or
+undesirable.</p>
+
+<h2 id="trait-objects">Trait objects</h2>
+
+<p>Trait objects, like <code class="language-plaintext highlighter-rouge">&amp;Foo</code> or <code class="language-plaintext highlighter-rouge">Box&lt;Foo&gt;</code>, are normal values that store
+a value of <em>any</em> type that implements the given trait, where the
+precise type can only be known at runtime. The methods of the trait
+can be called on a trait object via a special record of function
+pointers (created and managed by the compiler).</p>
+
+<p>A function that takes a trait object—say <code class="language-plaintext highlighter-rouge">fn func(x: &amp;Foo)</code>—is not
+specialised to each of the types that implements <code class="language-plaintext highlighter-rouge">Foo</code>: only one copy
+is generated, often (but not always) resulting in less code
+bloat. However, this comes at the cost of requiring slower virtual
+function calls, and effectively inhibiting any chance of inlining and
+related optimisations from occurring.</p>
+
+<p>Trait objects are both simple and complicated: their core
+representation and layout is quite straight-forward, but there are
+some curly error messages and surprising behaviours to discover.</p>
+
+<h2 id="obtaining-a-trait-object">Obtaining a trait object</h2>
+
+<p>There’s two similar ways to get a trait object value: casts and
+coercions. If <code class="language-plaintext highlighter-rouge">T</code> is a type that implements a trait <code class="language-plaintext highlighter-rouge">Foo</code> (e.g. <code class="language-plaintext highlighter-rouge">u8</code>
+for the <code class="language-plaintext highlighter-rouge">Foo</code> above), then the two ways to get a <code class="language-plaintext highlighter-rouge">Foo</code> trait object
+out of a pointer to <code class="language-plaintext highlighter-rouge">T</code> look like:</p>
+
+<figure class="highlight"><pre><code class="language-rust" data-lang="rust"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="code"><pre><span class="k">let</span> <span class="n">ref_to_t</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">T</span> <span class="o">=</span> <span class="o">...</span><span class="p">;</span>
+
+<span class="c1">// `as` keyword for casting</span>
+<span class="k">let</span> <span class="n">cast</span> <span class="o">=</span> <span class="n">ref_to_t</span> <span class="k">as</span> <span class="o">&amp;</span><span class="n">Foo</span><span class="p">;</span>
+
+<span class="c1">// using a `&amp;T` in a place that has a known type of `&amp;Foo` will implicitly coerce:</span>
+<span class="k">let</span> <span class="n">coerce</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">Foo</span> <span class="o">=</span> <span class="n">ref_to_t</span><span class="p">;</span>
+
+<span class="k">fn</span> <span class="nf">also_coerce</span><span class="p">(</span><span class="n">_unused</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">Foo</span><span class="p">)</span> <span class="p">{}</span>
+<span class="nf">also_coerce</span><span class="p">(</span><span class="n">ref_to_t</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>These trait object coercions and casts also work for pointers like
+<code class="language-plaintext highlighter-rouge">&amp;mut T</code> to <code class="language-plaintext highlighter-rouge">&amp;mut Foo</code> and <code class="language-plaintext highlighter-rouge">Box&lt;T&gt;</code> to <code class="language-plaintext highlighter-rouge">Box&lt;Foo&gt;</code>, but that’s all at
+the moment. Other than some bugs, coercions and casts are identical.</p>
+
+<p>This operation can be seen as “erasing” the compiler’s knowledge about
+the specific type of the pointer, and hence trait objects are
+sometimes referred to “type erasure”.</p>
+
+<h2 id="representation">Representation</h2>
+
+<p>Let’s start simple, with the runtime representation of a trait
+object. The <code class="language-plaintext highlighter-rouge">std::raw</code> module contains structs with layouts that are
+the same as the complicated build-in types,
+<a href="http://doc.rust-lang.org/nightly/std/raw/struct.TraitObject.html">including trait objects</a>:</p>
+
+<figure class="highlight"><pre><code class="language-rust" data-lang="rust"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="k">pub</span> <span class="k">struct</span> <span class="n">TraitObject</span> <span class="p">{</span>
+    <span class="k">pub</span> <span class="n">data</span><span class="p">:</span> <span class="o">*</span><span class="k">mut</span> <span class="p">(),</span>
+    <span class="k">pub</span> <span class="n">vtable</span><span class="p">:</span> <span class="o">*</span><span class="k">mut</span> <span class="p">(),</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>That is, a trait object like <code class="language-plaintext highlighter-rouge">&amp;Foo</code> consists of a “data” pointer and a
+“vtable” pointer.</p>
+
+<p>The data pointer addresses the data (of some unknown type <code class="language-plaintext highlighter-rouge">T</code>) that
+the trait object is storing, and the vtable pointer points to the
+<a href="https://en.wikipedia.org/wiki/Virtual_method_table">vtable</a> (“virtual method table”) corresponding to the implementation
+of <code class="language-plaintext highlighter-rouge">Foo</code> for <code class="language-plaintext highlighter-rouge">T</code>.</p>
+
+<p>A vtable is essentially a struct of function pointers, pointing to the
+concrete piece of machine code for each method in the
+implementation. A method call like <code class="language-plaintext highlighter-rouge">trait_object.method()</code> will
+retrieve the correct pointer out of the vtable and then do a dynamic
+call of it. For example:</p>
+
+<figure class="highlight"><pre><code class="language-rust" data-lang="rust"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre></td><td class="code"><pre><span class="k">struct</span> <span class="n">FooVtable</span> <span class="p">{</span>
+    <span class="n">destructor</span><span class="p">:</span> <span class="k">fn</span><span class="p">(</span><span class="o">*</span><span class="k">mut</span> <span class="p">()),</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">usize</span><span class="p">,</span>
+    <span class="n">align</span><span class="p">:</span> <span class="nb">usize</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="k">fn</span><span class="p">(</span><span class="o">*</span><span class="k">const</span> <span class="p">())</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c1">// u8:</span>
+
+<span class="k">fn</span> <span class="nf">call_method_on_u8</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="o">*</span><span class="k">const</span> <span class="p">())</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+    <span class="c1">// the compiler guarantees that this function is only called</span>
+    <span class="c1">// with `x` pointing to a u8</span>
+    <span class="k">let</span> <span class="n">byte</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">u8</span> <span class="o">=</span> <span class="k">unsafe</span> <span class="p">{</span> <span class="o">&amp;*</span><span class="p">(</span><span class="n">x</span> <span class="k">as</span> <span class="o">*</span><span class="k">const</span> <span class="nb">u8</span><span class="p">)</span> <span class="p">};</span>
+
+    <span class="n">byte</span><span class="nf">.method</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">Foo_for_u8_vtable</span><span class="p">:</span> <span class="n">FooVtable</span> <span class="o">=</span> <span class="n">FooVtable</span> <span class="p">{</span>
+    <span class="n">destructor</span><span class="p">:</span> <span class="cm">/* compiler magic */</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">align</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+
+    <span class="c1">// cast to a function pointer</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">call_method_on_u8</span> <span class="k">as</span> <span class="k">fn</span><span class="p">(</span><span class="o">*</span><span class="k">const</span> <span class="p">())</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">,</span>
+<span class="p">};</span>
+
+
+<span class="c1">// String:</span>
+
+<span class="k">fn</span> <span class="nf">call_method_on_String</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="o">*</span><span class="k">const</span> <span class="p">())</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+    <span class="c1">// the compiler guarantees that this function is only called</span>
+    <span class="c1">// with `x` pointing to a String</span>
+    <span class="k">let</span> <span class="n">string</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">String</span> <span class="o">=</span> <span class="k">unsafe</span> <span class="p">{</span> <span class="o">&amp;*</span><span class="p">(</span><span class="n">x</span> <span class="k">as</span> <span class="o">*</span><span class="k">const</span> <span class="nb">String</span><span class="p">)</span> <span class="p">};</span>
+
+    <span class="n">string</span><span class="nf">.method</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">Foo_for_String_vtable</span><span class="p">:</span> <span class="n">FooVtable</span> <span class="o">=</span> <span class="n">FooVtable</span> <span class="p">{</span>
+    <span class="n">destructor</span><span class="p">:</span> <span class="cm">/* compiler magic */</span><span class="p">,</span>
+    <span class="c1">// values for a 64-bit computer, halve them for 32-bit ones</span>
+    <span class="n">size</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="n">align</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+
+    <span class="n">method</span><span class="p">:</span> <span class="n">call_method_on_String</span> <span class="k">as</span> <span class="k">fn</span><span class="p">(</span><span class="o">*</span><span class="k">const</span> <span class="p">())</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>(The <code class="language-plaintext highlighter-rouge">call_method_on_...</code> functions could also be UFCS: <code class="language-plaintext highlighter-rouge">&lt;... as
+Foo&gt;::method</code>, but that’s somewhat less clear.)</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">destructor</code> field in each vtable points to a function that will
+clean up any resources of the vtable’s type, for <code class="language-plaintext highlighter-rouge">u8</code> it is trivial,
+but for <code class="language-plaintext highlighter-rouge">String</code> it will free the memory. This is necessary for owning
+trait objects like <code class="language-plaintext highlighter-rouge">Box&lt;Foo&gt;</code>, which need to clean-up both the <code class="language-plaintext highlighter-rouge">Box</code>
+allocation and as well as the internal type when they go out of
+scope. The <code class="language-plaintext highlighter-rouge">size</code> and <code class="language-plaintext highlighter-rouge">align</code> fields store the size of the erased
+type, and its alignment requirements; these are essentially unused at
+the moment since the information is embedded in the destructor, but
+will be used in future, as trait objects are progressively made more
+flexible.</p>
+
+<p>Suppose we’ve got some values that implement <code class="language-plaintext highlighter-rouge">Foo</code>, the explicit form
+of construction and use of <code class="language-plaintext highlighter-rouge">Foo</code> trait objects might look a bit like
+(ignoring the type mismatches: they’re all just pointers anyway):</p>
+
+<figure class="highlight"><pre><code class="language-rust" data-lang="rust"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="code"><pre><span class="k">let</span> <span class="n">a</span><span class="p">:</span> <span class="nb">String</span> <span class="o">=</span> <span class="s">"foo"</span><span class="nf">.to_string</span><span class="p">();</span>
+<span class="k">let</span> <span class="n">x</span><span class="p">:</span> <span class="nb">u8</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="c1">// let b: &amp;Foo = &amp;a;</span>
+<span class="k">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">TraitObject</span> <span class="p">{</span>
+    <span class="c1">// store the data</span>
+    <span class="n">data</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span>
+    <span class="c1">// store the methods</span>
+    <span class="n">vtable</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">Foo_for_String_vtable</span>
+<span class="p">};</span>
+
+<span class="c1">// let y: &amp;Foo = x;</span>
+<span class="k">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">TraitObject</span> <span class="p">{</span>
+    <span class="c1">// store the data</span>
+    <span class="n">data</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">,</span>
+    <span class="c1">// store the methods</span>
+    <span class="n">vtable</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">Foo_for_u8_vtable</span>
+<span class="p">};</span>
+
+<span class="c1">// b.method();</span>
+<span class="p">(</span><span class="n">b</span><span class="py">.vtable.method</span><span class="p">)(</span><span class="n">b</span><span class="py">.data</span><span class="p">);</span>
+
+<span class="c1">// y.method();</span>
+<span class="p">(</span><span class="n">y</span><span class="py">.vtable.method</span><span class="p">)(</span><span class="n">y</span><span class="py">.data</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>If <code class="language-plaintext highlighter-rouge">b</code> or <code class="language-plaintext highlighter-rouge">y</code> were owning trait objects (<code class="language-plaintext highlighter-rouge">Box&lt;Foo&gt;</code>), there would be a
+<code class="language-plaintext highlighter-rouge">(b.vtable.destructor)(b.data)</code> (respectively <code class="language-plaintext highlighter-rouge">y</code>) call when they went
+out of scope.</p>
+
+<h3 id="why-pointers">Why pointers?</h3>
+
+<p>The use of language like “fat pointer” implies that a trait object is
+always a pointer of some form, but why? I wrote above that</p>
+
+<blockquote>
+  <p>[Trait objects] are normal values and can store a value of <em>any</em> type
+that implements the given trait, where the precise type can only
+be known at runtime.</p>
+</blockquote>
+
+<p>Rust does not put things behind a pointer by default, unlike many
+managed languages, so types can have different sizes. Knowing the size
+of the value at compile time is important for things like passing it
+as an argument to a function, moving it about on the stack and
+allocating (and deallocating) space on the heap to store it.</p>
+
+<p>For <code class="language-plaintext highlighter-rouge">Foo</code>, we would need to have a value that could be at least either
+a <code class="language-plaintext highlighter-rouge">String</code> (24 bytes) or a <code class="language-plaintext highlighter-rouge">u8</code> (1 byte), as well as any other type
+for which dependent crates may implement <code class="language-plaintext highlighter-rouge">Foo</code> (any number of bytes at
+all). There’s no way to guarantee that this last point can work if the
+values are stored without a pointer, because those other types can be
+arbitrarily large.</p>
+
+<p>Putting the value behind a pointer means the size of the value is not
+relevant when we are tossing a trait object around, only the size of
+the pointer itself.</p>
+
+<section id="external-links" class="no-print">
+  
+  <div id="comments">
+    <span class="external-label">Comments:</span>
+    <ul class="external-list">
+      
+
+      
+<li class="external-link"><a href="http://www.reddit.com/r/rust/comments/2rutqb/peeking_inside_trait_objects/">/r/rust</a></li>
+
+
+      
+
+      
+
+      
+
+      
+    </ul>
+  </div>
+  
+  <div id="external-page">
+    <span class="external-label">Share this on</span>
+    <ul class="external-list">
+      <li class="external-link"><a href="https://bsky.app/intent/compose?text=Peeking%20inside%20Trait%20Objects%20by%20@huonw.bsky.social%20https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/" target="_blank" rel="nofollow noopener" title="Share on Bluesky">Bluesky</a></li>
+      <li class="external-link"><a href="https://twitter.com/intent/tweet?text=Peeking%20inside%20Trait%20Objects%20%23rustlang&amp;url=https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/&amp;via=huon_w" target="_blank" rel="nofollow noopener" title="Share on Twitter">Twitter</a></li>
+      <li class="external-link"><a href="https://facebook.com/sharer.php?u=https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/" rel="nofollow noopener" target="_blank" title="Share on Facebook">Facebook</a></li>
+      <li class="external-link"><a href="https://www.reddit.com/submit?url=https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/&amp;title=Peeking%20inside%20Trait%20Objects" rel="nofollow noopener" target="_blank" title="Share on Reddit">Reddit</a></li>
+    </ul>
+  </div>
+</section>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol start="0">
+    <li id="fn:version">
+      <p>It’s generally good practice for Rust posts to mention
+        their version due to language instability, but this post
+        and the series won’t have much real runnable code and the
+        concepts described are pretty stable… but habits die
+        hard: <code class="language-plaintext highlighter-rouge">rustc 1.0.0-nightly (44a287e6e 2015-01-08 17:03:40 -0800)</code>.</p>
+
+      <p>This should also be the 1.0.0-alpha release (speaking of which,
+the language instability should be starting to settle down now). <a href="#fnref:version" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:upsides">
+      <p>Static dispatching isn’t <em>guaranteed</em> to be an upside:
+        compilers aren’t perfect and may “optimise” code to become
+        slower. For example, functions inlined too eagerly will
+        bloating the instruction cache (cache rules everything
+        around us). This is part of the reason that <code class="language-plaintext highlighter-rouge">#[inline]</code>
+        and <code class="language-plaintext highlighter-rouge">#[inline(always)]</code> that should be used carefully, and
+        one reason why using a trait object—with its dynamic
+        dispatch—is sometimes more efficient.</p>
+
+      <p>However, the common case is that it is more efficient to use
+static dispatch, and one can always have a thin
+statically-dispatched wrapper function that does a dynamic, but
+not vice versa, meaning static calls are more flexible. The
+standard library tries to be statically dispatched where possible
+for this reason. <a href="#fnref:upsides" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:one-per-type">
+      <p>There’s no guarantee that there will actually be a
+             copy of the function for each type that implements
+             the trait, or even for each type that is used with
+             the function, since the compiler is free to combine
+             copies if it can tell that sharing the code would not
+             change semantics. But, in general, this optimisation
+             doesn’t trigger. <a href="#fnref:one-per-type" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+    </article>
+
+    
+    <footer id="more" class="no-print">
+      <div id="by-line">
+  <a href="/about"><div class="no-print" id="me-icon"></div></a>
+
+<p>I'm <a href="https://bsky.app/profile/huonw.bsky.social"><strong>Huon Wilson</strong></a>, a
+ mathematically and statistically inclined software engineer.
+ I have been a long-term volunteer
+ on <a href="http://rust-lang.org">Rust</a>'s core team, a
+ compiler engineer on the <a href="https://swift.org/">Swift</a> team
+ at Apple, and a senior software engineer at CSIRO's Data61, working on the <a href="https://github.com/stellargraph/stellargraph">StellarGraph
+ graph machine learning library</a>.
+</p>
+</div>
+      <h2 id="latest-heading"><a href="/blog">Latest posts</a></h2>
+      
+      <nav>
+        <ul id="latest-list"><!--
+           
+           --><li class="latest-post">
+                <a href="/blog/2025/09/deprecating-vs-removing/">
+                   <h3>Is that a deprecation? Or is it just removed?</h3>
+                     <p>It’s useful to have a specific label for “make changes that discourage use of some code”, different to “remove the code”.
+</p>
+                   
+                 </a>
+            </li><!--
+          
+           --><li class="latest-post">
+                <a href="/blog/2025/08/copy-as-curl/">
+                   <h3>Convenient 'Copy as cURL': explicit, executable, editable request replays</h3>
+                     <p>Developer tools in browsers offer a “copy as cURL” function for network requests, giving an executable and editable ‘replay’ of the request. This is very convenient for sharing and debugging API requests.
+</p>
+                   
+                 </a>
+            </li><!--
+          
+           --><li class="latest-post">
+                <a href="/blog/2025/04/standalone-shell-script-reproducer/">
+                   <h3>Communicating bugs: use a single standalone shell script</h3>
+                     <p>When I file a bug, I can get more reliable minimal working examples using a shell script, leading to better bugs and faster help.
+</p>
+                   
+                 </a>
+            </li><!--
+          
+      --></ul>
+      </nav>
+    </footer>
+    
+  </main>
+
+  <footer id="page-footer">
+    <span>Huon Wilson &mdash; <span class="date">2021</span></span>
+  </footer>
+</div>
+
+
+
+<!-- Default Statcounter code for huonw.github.io
+http://huonw.github.io -->
+<script type="text/javascript">
+var sc_project=7439209;
+var sc_invisible=1;
+var sc_security="b96244c7";
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="hit counter"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/7439209/0/b96244c7/1/"
+alt="hit counter"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-62534856-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-62534856-1');
+</script>
+
+
+
+</body> </html>

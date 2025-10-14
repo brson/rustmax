@@ -53,3 +53,38 @@ title = "Rust: A Scala Engineer's Perspective"
 author = "Beachape"
 url = "https://beachape.com/blog/2017/05/24/rust-from-scala/"
 category = "Experience Report"
+
+[[posts]]
+id = "where-rust-really-shines"
+title = "Where Rust Really Shines"
+author = "Manish Earth"
+url = "https://manishearth.github.io/blog/2015/05/03/where-rust-really-shines/"
+category = "Ownership & Borrowing"
+
+[[posts]]
+id = "rust-means-never-close-socket"
+title = "Rust Means Never Having to Close a Socket"
+author = "Skylight"
+url = "http://blog.skylight.io/rust-means-never-having-to-close-a-socket/"
+category = "Ownership & Borrowing"
+
+[[posts]]
+id = "rust-ownership-hard-way"
+title = "Rust Ownership the Hard Way"
+author = "Chris Morgan"
+url = "https://chrismorgan.info/blog/rust-ownership-the-hard-way.html"
+category = "Ownership & Borrowing"
+
+[[posts]]
+id = "abstraction-without-overhead"
+title = "Abstraction Without Overhead: Traits in Rust"
+author = "Rust Blog"
+url = "https://blog.rust-lang.org/2015/05/11/traits.html"
+category = "Traits"
+
+[[posts]]
+id = "peeking-inside-trait-objects"
+title = "Peeking Inside Trait Objects"
+author = "Huon Wilson"
+url = "https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/"
+category = "Traits"

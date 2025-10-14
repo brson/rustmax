@@ -1,0 +1,280 @@
+<article class="post" no-image="">
+    <header class="post-header">
+      <a class="back-link" href="https://blog.skylight.io"><span class="back-link-description">All Posts</span><span class="blog-title">Inside Skylight</span></a>
+      <a class="blog-logo" href="https://blog.skylight.io">
+        <img alt="Blog Logo" src="https://blog.skylight.io/content/images/2019/11/Skylight-Logo_o.png">
+      </a>
+      <a class="learn-more" href="https://www.skylight.io/?utm_source=skylight-blog&amp;utm_medium=blog-post&amp;utm_campaign=rust-means-never-having-to-close-a-socket">Learn about Skylight</a>
+    </header>
+    <div class="post-body">
+      <div class="container">
+          <div class="post-meta">
+            <time datetime="2014-10-07">October 07, 2014</time> · By
+              <span class="author">Yehuda Katz</span>
+          </div>
+          <h1 class="post-title">Rust Means Never Having to Close a Socket</h1>
+          <section class="post-content">
+            <!--kg-card-begin: markdown--><p>One of the coolest features of Rust is how it automatically manages resources for you, while still guaranteeing both safety (no segfaults) and high performance.</p>
+<p>Because Rust is a different kind of programming language, it might be difficult to understand what I mean, so let me be perfectly clear:</p>
+<ul>
+<li>In Rust, as in garbage collected languages, you never explicitly free memory</li>
+<li>In Rust, unlike in garbage collected languages, you never<sup><a href="#user-content-never">1</a></sup> explicitly close or release resources like files, sockets and locks</li>
+<li>Rust achieves both of these features without runtime costs (garbage collection or reference counting), and without sacrificing safety.</li>
+</ul>
+<p>If you've ever leaked a socket or a file, or used an abstraction that leaked these resources, you know how big of a deal this is.</p>
+<p>You have probably come to expect protection against "use after free" memory bugs, while at the same time not thinking twice about similar bugs that can arise when you explicitly close sockets. I'm here to tell you that there's a better way.</p>
+<p>If you've worked in a language with a garbage collector, you should pay close attention to the resource management aspect of this article. If you've worked in a low-level language, like C or C++, you will likely find the safety aspects most interesting.</p>
+<blockquote>
+<p>Many parts of Rust's system were first explored in other programming languages. What makes Rust interesting is putting them all together, and making strict guarantees across the entire language. In practice, these language-wide guarantees dramatically improve the utility of the ideas.</p>
+</blockquote>
+<h2 id="theownershipsystem">The Ownership System</h2>
+<p>The way that this works is through Rust's "ownership" system. Whenever you create a new object, it is "owned" by the scope that created it.</p>
+<p>Let's take a look at an example of a function that copies an input file into a tempfile, processes it, and then copies the output into an output file.</p>
+<pre><code class="language-rust">fn process(from: &amp;Path, to: &amp;Path) -&gt; IoResult&lt;()&gt; {
+    // creates a new tempdir with the specified suffix
+    let tempdir = try!(TempDir::new("skylight"));
+
+    // open the input file
+    let mut from_file = try!(File::open(from));
+
+    // create a temporary file inside the tempdir
+    let mut tempfile =
+        try!(File::create(&amp;tempdir.path().join("tmp1")));
+
+    // copy the input file into the tempfile
+    try!(io::util::copy(&amp;mut from_file, &amp;mut tempfile));
+
+    // use an external program to process the tmpfile in place
+
+    // after processing, copy the tempfile into the output file
+    let mut out = try!(File::create(to));
+
+    io::util::copy(&amp;mut tempfile, &amp;mut out)
+}
+</code></pre>
+<p>In this example, the scope of the <code>process</code> function is the initial owner of the <code>TempDir</code> created on the first line. In this example, the <code>process</code> function never gave up ownership, so when the function finishes, it will automatically be dropped, which will delete the <code>Tempfile</code>.</p>
+<p>This is an example of <em>automatic resource management</em>. The <code>TempDir</code> object is not just a piece of memory–it represents a managed resource. As soon as the program stops using the resource, its cleanup logic gets invoked.</p>
+<p>This is true about virtually <strong>all</strong> resources in Rust. Just as automatic memory management relieves us from the need to free memory, automatic resource management relieves us from the need to close resources.</p>
+<blockquote>
+<p>Aside: This is called "RAII" (Resource Acquisition Is Initialization) in C++, which is a contender for the most confusingly named, yet useful concept in programming.</p>
+</blockquote>
+<p>It's interesting to me that the most successful technique for relieving programmers of manual memory management makes it very difficult to successfully and efficiently relieve programmers of manual resource management. In high-level languages, we never <code>free</code> memory, but we routinely <code>close</code> sockets and files, and <code>release</code> locks.</p>
+<p>In practice, leaking these resources is shockingly common in languages with garbage collectors, so I really enjoy the fact that forgetting to close sockets is as much a non-issue in Rust as forgetting to free memory. And in Rust, you are protected from "use-after-release" bugs involving resources just as you are protected from "use-after-free" bugs involving memory.</p>
+<p>It sounds like magic, so you probably have a few questions about how it actually works.</p>
+<p>First of all, this system relies on the fact that there can be only one owner at a time. How can I be sure that I didn't make a mistake and reference the <code>TempDir</code> from multiple places? The answer is that the ownership system is not advisory. In Rust, the scope that creates an object owns it. It can then transfer ownership to another scope, or retain ownership until it is finished executing. When a scope finishes executing, Rust destroys any objects it owns.</p>
+<p>Because only one scope owns an object at a time, you can tell just by looking at it which objects will be destroyed when it's done executing.</p>
+<pre><code class="language-rust">struct Person {
+    first: String,
+    last: String
+}
+
+fn hello() {
+    let yehuda = Person {
+        first: "Yehuda".to_string(),
+        last: "Katz".to_string()
+    };
+
+    // `yehuda` is transferred to `name_size`, so it cannot be
+    // used anymore in this function, and it will not be destroyed
+    // when this function returns. It is up to `name_size`,
+    // or possibly a future owner, to destroy it.
+    let size = name_size(yehuda);
+
+    let tom = Person {
+        first: "Tom".to_string(),
+        last: "Dale".to_string()
+    };
+
+    // `tom` wasn't transferred, so it will be
+    // destroyed when this function returns.
+}
+
+fn name_size(person: Person) -&gt; uint {
+    let Person { first, last } = person;
+    first.len() + last.len()
+
+    // this function owns Person, so the Person is destroyed when `name_size` returns
+}
+</code></pre>
+<p>Just by looking at each of the two functions, you can see that <code>yehuda</code> was transferred to <code>name_size</code> and <code>tom</code> was not. By looking at <code>name_size</code>, you can see that it still owns its <code>person</code> argument when it returns. Just by looking at the functions, you can determine exactly which objects (if any) will be destroyed when they finish executing.</p>
+<p>But how does that explain the tempfile example? If you look at the third line of code in the <code>process function</code>, you can see that <code>tempdir.path()</code> is calling a method on the <code>Tempdir</code>. Doesn't this mean that I created a second reference, and therefore have two owners? Or does it mean that we transferred ownership into the <code>path</code> function, which will destroy the directory immediately upon return? Clearly both of those answers will not do.</p>
+<h2 id="borrowingandlending">Borrowing and Lending</h2>
+<p>To understand what's happening here, we need to look at the signature of the <code>path</code> method:</p>
+<pre><code class="language-rust">fn path(&amp;self) -&gt; &amp;Path
+</code></pre>
+<p>The way to read this is:</p>
+<blockquote>
+<p>The path method <strong>borrows</strong> self and returns a <strong>borrowed</strong> Path.</p>
+</blockquote>
+<p>A function that <em>borrows</em> an object does not take ownership of it, and will not destroy it when it returns. It can only use the object during the time that the function is executing–it cannot, for example, spawn a thread and try to use the object inside the thread. To put it another way, a borrowed object must not outlive the scope of the function that borrowed it.</p>
+<p>This means that the Rust compiler can look at every function call and know at compile time whether the code is trying to take over ownership. Once ownership of an object is transferred, the original owner is banned from accessing it.</p>
+<pre><code class="language-rust">struct Person {
+    first: String,
+    last: String,
+    age: uint
+}
+
+fn hello() {
+    let person = Person {
+        first: "Yehuda".to_string(),
+        last: "Katz".to_string(),
+        age: 32
+    };
+
+    let thirties = is_thirties(person);
+    println!("{}, thirties: {}", person, thirties);
+}
+
+// This function tries to take ownership of `Person`; it does not
+// ask to borrow it by taking &amp;Person
+fn is_thirties(person: Person) {
+    person.age &gt;= 30 &amp;&amp; person.age &lt; 40
+}
+</code></pre>
+<p>If I try to compile this program, I will get the following error (slightly abridged):</p>
+<pre><code class="language-plain">move.rs:16:34: 16:40 error: use of moved value: `person`
+move.rs:16     println!("{}, thirties: {}", person, thirties);
+                                            ^~\~~~~
+
+move.rs:15:32: 15:38 note: `person` moved here
+move.rs:15     let thirties = is_thirties(person);
+                                          ^~\~~~~
+</code></pre>
+<p>What this means is that the scope of the <code>hello</code> function was the initial owner of the <code>Person</code>, but when it called <code>is_thirties</code>, it transferred ownership to the scope of the <code>is_thirties</code> function. As the new owner, when <code>is_thirties</code> returns, it frees the memory occupied by the <code>Person</code>.</p>
+<p>Instead you would want to write this program using borrowing and lending:</p>
+<pre><code class="language-rust">fn hello() {
+    let person = Person {
+        first: "Yehuda".to_string(),
+        last: "Katz".to_string(),
+        age: 32
+    };
+
+    // lend the person -- don't transfer ownership
+    let thirties = is_thirties(&amp;person);
+
+    // now this scope still owns the person
+    println!("{}, thirties: {}", person, thirties);
+}
+
+fn is_thirties(person: &amp;Person) {
+    person.age &gt;= 30 &amp;&amp; person.age &lt; 40
+}
+</code></pre>
+<p><strong>Fundamentally, what this means is that verified ownership is part of the interface of your functions.</strong> Rust people sometimes refer to this as "the borrow checker", but the implications are profound.</p>
+<p>In practice, the reason this works so well is that most of the time, functions that take values are "borrowing" them. They take a value, do some work with the value, and return. Holding on to the value for longer, for example by using threads, is both uncommon and an appropriate time to think a little bit about what's happening.</p>
+<p>The starting point when writing new functions is to borrow parameters, not try to take ownership. After a little while of programming with Rust, this imposes no cognitive cost; it's simply the default. If the compiler complains (and that happens less and less as you internalize the rules and they become second nature), it means you're doing something potentially dangerous, and that's when you need to think about it.</p>
+<h2 id="returningaborrowedfieldfromaborrowedobject">Returning a Borrowed Field from a Borrowed Object</h2>
+<p>Earlier on, we looked at this signature:</p>
+<pre><code class="language-rs">fn path(&amp;self) -&gt; &amp;Path
+</code></pre>
+<p>This may have been bothering you. I said before that when a function borrows an object, it must only use the value while the function is executing, and not later. Doesn't returning a piece of that object self-evidently violate the rule?</p>
+<p>The reason this works is that the caller of <code>path</code> obviously has the right to use the <code>Tempfile</code>, since it lent it as an argument. In this case, the Rust compiler will guarantee that the returned <code>Path</code> doesn't outlive the <code>Tempfile</code> that contains it.</p>
+<p>In practice, this means that you can return borrowed contents upstream, and Rust will take care of keeping track of the original container that they came from.</p>
+<p>To illustrate, let's look at an example:</p>
+<pre><code class="language-rust">fn hello() -&gt; &amp;str {
+    let person = Person {
+        first: "Yehuda".to_string(),
+        last: "Katz".to_string(),
+        age: 32
+    };
+
+    first_name(&amp;person)
+}
+
+fn first_name(person: &amp;Person) -&gt; &amp;str {
+    // as_slice borrows a slice "view" out of a string
+    person.first.as_slice()
+}
+</code></pre>
+<p>If you look at this, you can immediately see a problem. the <code>hello</code> function is trying to return a borrowed <code>&amp;str</code>, but the <code>hello</code> function owns the original <code>Person</code> that contains the bytes. As soon as <code>hello</code> returns, the <code>Person</code> no longer exists, so the borrowed contents (the slice) point at an invalid location.</p>
+<p>If you actually try to compile this program today, you get:</p>
+<pre><code class="language-plain">move.rs:8:15: 8:19 error: missing lifetime specifier [E0106]
+move.rs:8 fn hello() -&gt; &amp;str {
+                        ^~\~~
+</code></pre>
+<p>This slightly confusing error message means that we are trying to return borrowed bytes, but the caller of this function didn't lend us the <code>Person</code> we borrowed the bytes from. Rust is asking us to tell it which "lifetime" is it attached to, if not the caller's scope.</p>
+<blockquote>
+<p>Typically, Rust ties the scope of returned values to the scope of a borrowed argument. Here, we have no borrowed arguments, so Rust is asking us to be more explicit.</p>
+</blockquote>
+<p>In practice, this means that a function can easily return borrowed contents contained in a borrowed parameter. Otherwise, you will need to find storage for the value that your caller has access to, or clone the value so the caller has its own copy that it owns.</p>
+<h2 id="ergonomics">Ergonomics</h2>
+<p>At first glance, all of this ownership machinery feels very involved, and looks like it would likely have a large impact on the ergonomics of using Rust. And indeed, it does feel that way initially.</p>
+<p>But several factors make things far more usable than they appear.</p>
+<p>First, a large amount of real-world code fits within the lend/borrow pattern. As I've written more and more Rust, I have come to realize that programs written in Ruby follow similar patterns: functions make some objects and pass them to child functions to do some work, and the child functions return a new value.</p>
+<p>This is, of course, recursive, so it only becomes obvious when the difference (between getting parameters to use during the function call, and using them for longer) is formalized as it is in Rust. Only by making this distinction a function signatures across the board, and checking for mistakes, can we get the guarantees that Rust provides.</p>
+<blockquote>
+<p>In contrast, C++ makes the distinction explicit in some (but not all) cases, and doesn't check for mistakes. Languages with a GC typically hide the distinction between "transferred" and "lent" arguments.</p>
+</blockquote>
+<p>As I said above, this means that Rust programmers quickly learn to treat borrowing as the default when writing new functions, which alleviates a lot of the cognitive load of the system.</p>
+<p>Second, after using Rust for a little while, most people discover that the borrow checker errors are warning them about real, serious, and subtle mistakes. After a while, the borrow checker naturally pushes you into programming patterns that are less subject to these kinds of subtle bugs.</p>
+<p>Third, I have personally found that a very clear understanding of the ownership of my objects significantly improves my ability to reason about my programs. It is both clarifying in general, and makes it much, much harder to introduce accidental memory leaks that cost huge amounts of time to track down later.</p>
+<p>And finally, there are real ergonomic benefits to automatic resource management that both prevent resource leaks (when I'm being lazy) and extra boilerplate or indentation (when I'm being careful).</p>
+<p>Outside of C++, very few programmers have experienced a programming environment where automatic resource management was the norm, and it's very, very easy to turn on the "blub" parts of our brain and assume it isn't that useful. Rust changes enough of the traditional tradeoffs in this space that I would urge you to push back on the little voice in your head that's telling you "if I didn't need it in &lt;my programming language of choice&gt;, how important can it be?"</p>
+<h2 id="referencecountingandgc">Reference Counting (and GC)</h2>
+<p>You may be aware that Rust has reference-counted pointers (and plans to have GC in the future).</p>
+<p>How does that fit into all of this?</p>
+<p>In my experience, once you get used to the ownership paradigm, you very rarely want to reach for <code>Rc</code> pointers. For example, the entire Cargo codebase has no instances of reference counted pointers, and only a single use of an atomically reference counted pointer (for sharing a lock between threads in the code that implements parallel builds).</p>
+<p>I think this is because ownership is extremely clarifying, and really improves local reasoning. If you look at any function that uses normal Rust references, you can tell, locally, which pieces of memory (and resources) will still be alive once the function returns, and which will not. For example, if you use a closure, you can tell immediately whether it outlives the current function, and if it does, what objects that closure owns.</p>
+<p>I also think that the concepts of ownership and lending map onto most real-world programming patterns very nicely. There are some things you can't do, but in most cases, slight tweaks to code structure will get things compiling. In exchange, both memory and resource leaks happen very infrequently, and code clarity is improved.</p>
+<p>If this wasn't the case, I suspect even experienced Rust developers would reach for <code>Rc</code> a lot more often.</p>
+<p>All of that said, there are still occasional cases where reference counting, or even garbage collection, is the right approach. Rust's "smart pointer" system allows <code>Rc</code> pointers to transparently operate within the same ownership and borrowing system, and destructors get run when the reference count is decremented down to 0 (with the obvious cost in local reasoning and runtime performance).</p>
+<h2 id="facilitiesinotherlanguages">Facilities in Other Languages</h2>
+<p>Garbage collected languages often have facilities that can help programmers deal with the problem of manual resource management. In most modern languages, you don't call <code>close</code> explicitly, but you do need to opt into language constructs that tie the resource to a lexical scope and release it when you're done.</p>
+<p>Let's look at a few examples, and then I'll talk about the disadvantages of these approaches.</p>
+<p>In Ruby, you can use a block to indicate that you are going to use the resource within a given scope. Once the block returns, the resource gets cleaned up.</p>
+<pre><code class="language-rb">File.open("/etc/passwd") do |file|
+  # use the file
+end
+</code></pre>
+<p>In Python, a special <code>with</code> language keyword creates a protocol for acquiring a resource, and then releasing it once the block has completed:</p>
+<pre><code class="language-py">with open("/etc/passwd") as file:
+  # use the file
+</code></pre>
+<p>Both the Ruby approach, which uses a general-purpose language construct, and the Python approach, which creates a new protocol, abstracts away the resource-specific closing mechanism. The user never has to know what closing looks like, but they must use a special abstraction to ensure that the closing occurs.</p>
+<p>In Go, a <code>defer</code> keyword allows a programmer to provide cleanup logic next to the original creation of the object that manages the resource:</p>
+<pre><code class="language-go">file, error := os.Open("/etc/passwd")
+if err != nil {
+    return;
+}
+defer file.Close()
+
+// use the file
+</code></pre>
+<p>This has advantages over <code>try/catch/finally</code>, because it keeps the cleanup logic next to the code that acquired the resource, but it does not abstract away the closing logic.</p>
+<p>All of these approaches have a number of problems. Again, I urge you to disengage the "blub" center of your brain, which will probably be telling you that these problems "don't end up mattering in practice".</p>
+<ul>
+<li>It is impossible to add resource releasing logic after the fact to existing constructs, because their clients will have used the normal object creation API. This makes it more difficult to abstract resources inside of higher level objects, because the resource management leaks out into the public API.</li>
+<li>The block-based approaches (Ruby and Python, but not Go) introduce rightward drift. Every time you want to work with a resource, you are forced to create a new scope. This is fairly annoying in Ruby (which has very good blocks) and Python (which uses a language-level construct), and a serious problem in JavaScript, where introducing a new scope prevents you from returning and breaking from surrounding loops.</li>
+<li>These approaches (including Go's <code>defer</code>) require you to use the resource within a given lexical scope. This forces awkward (or impossible) styles of programming when you want to pass the resource around to multiple functions. In effect, it is forcing a scope-based ownership system on languages in which that model is not idiomatic for object management.
+<ul>
+<li>Once you start calling other functions with the resource, it is fairly trivial to accidentally create "use-after-free" bugs, where a function hangs onto the resource (in a closure, say) and then tries to use it after the original function closed the resource.</li>
+</ul>
+</li>
+</ul>
+<p>Automatic resource management in Rust alleviates all of these problems:</p>
+<ul>
+<li>Resource-managing objects can define a destructor, which abstracts away the releasing logic. Creating an object in the normal way will cause the destructor to be invoked at the right time. An object can add a destructor after the fact, without having to modify client code.
+<ul>
+<li>Note that destructors are not like finalizers in languages with GCs. They run predictably, exactly when the object is no longer being used, and do not introduce runtime costs beyond the cost of running the destructor.</li>
+</ul>
+</li>
+<li>Because automatic resource management works the same way as automatic memory management, no indentation is required. This eliminates annoyance, and also preserves the semantics of the surrounding code.</li>
+<li>In Rust, you can pass around the resource the same way you would pass around any other kind of object. If you transfer ownership to a new scope, the resource will be closed when the new scope finishes. Otherwise, the borrowing system will guarantee that "use-after-free" is impossible, just as it is for memory.</li>
+</ul>
+<p>In short, there are real benefits to using the same system for memory and resource management.</p>
+<p>I won't claim that the Rust ownership system is as mindless to use as garbage collection. That said, Rust has done a lot of very smart things to recoup a lot of the costs and even improve on the ergonomics of garbage collected languages in some cases, as we have seen.</p>
+<p>In exchange, you get an extremely fast language that lets you control memory directly with an absolute guarantee of safety.</p>
+<p>Because of that, it enables a whole generation of users of high-level languages to write low-level code, and that really excites me. The communities have a lot to learn from each other.</p>
+<p>Do you want to learn more about the performance of your Rails app? Sign up for a <a href="https://www.skylight.io/?ref=blog.skylight.io">free 30-day trial</a> of Skylight. No credit card required.</p>
+<hr>
+<blockquote>
+<p><sup><a name="user-content-never">1</a></sup> When I say "never", I mean very, very rarely. In garbage collected languages, you sometimes end up directly managing memory, and in Rust, you occasionally end up directly managing resources. In both cases, the dominant programming model is that the language manages resources for you, and that's what's important.</p>
+</blockquote>
+<!--kg-card-end: markdown-->
+            <div class="post-footer">
+              <span class="tags"></span>
+            </div>
+          </section>
+      </div>
+    </div>
+  </article>

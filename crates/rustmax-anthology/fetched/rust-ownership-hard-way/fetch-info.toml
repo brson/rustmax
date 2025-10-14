@@ -1,0 +1,5 @@
+url = "https://chrismorgan.info/blog/rust-ownership-the-hard-way.html"
+fetched_at = "2025-10-14T15:16:40.529301481-06:00[-06:00]"
+status_code = 200
+final_url = "https://chrismorgan.info/blog/rust-ownership-the-hard-way/"
+content_type = "text/html; charset=utf-8"

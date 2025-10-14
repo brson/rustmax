@@ -116,31 +116,6 @@ doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/library
     cp -r work/library/* out/library/
 
-anthology-list:
-    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
-        --fetched-dir crates/rustmax-anthology/fetched list
-
-anthology-status:
-    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
-        --fetched-dir crates/rustmax-anthology/fetched status
-
-anthology-process id:
-    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
-        --fetched-dir crates/rustmax-anthology/fetched process {{id}}
-
-anthology-process-all:
-    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
-        --fetched-dir crates/rustmax-anthology/fetched process all
-
-anthology-build:
-    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
-        --fetched-dir crates/rustmax-anthology/fetched \
-        --book-dir crates/rustmax-anthology/book build
-
-anthology-index:
-    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
-        --fetched-dir crates/rustmax-anthology/fetched generate-index
-
 publish-dry:
     cargo publish -p rustmax --dry-run
     cargo publish -p rustmax-cli --dry-run
@@ -153,3 +128,32 @@ replace-version old new:
     sd "^version = \"{{old}}\"" "version = \"{{new}}\"" Cargo.toml
     fd --type file --exec sd "^rmx\.version = \"{{old}}\"" "rmx.version = \"{{new}}\""
     cargo check # update lockfile
+
+anthology-build: anthology-index
+
+anthology-list:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched list
+
+anthology-status:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched status
+
+anthology-process id:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched process {{id}}
+    just anthology-index
+
+anthology-process-all:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched process all
+    just anthology-index
+
+anthology-build-book: anthology-index
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched \
+        --book-dir crates/rustmax-anthology/book build
+
+anthology-index:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched generate-index
