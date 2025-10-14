@@ -1,0 +1,10 @@
+[book]
+title = "The Rust Anthology"
+authors = ["Rust Community"]
+description = "A curated collection of notable Rust blog posts and essays"
+language = "en"
+
+[build]
+build-dir = "rendered"
+
+[output.html]

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head profile="http://www.w3.org/2006/03/hcard http://purl.org/uF/hAtom/0.1/ http://gmpg.org/xfn/11">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="help" href="https://www.dreamwidth.org/support/faq" />
+<link rel="apple-touch-icon" href="//www.dreamwidth.org/apple-touch-icon.png" />
+<meta property="og:image:width" content="363"/>
+<meta property="og:image:height" content="363"/>
+<meta name="robots" content="noindex, nofollow, noarchive" />
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="prev" href="https://www.dreamwidth.org/go?dir=prev&itemid=218040&journal=graydon2" />
+<link rel="next" href="https://www.dreamwidth.org/go?dir=next&itemid=218040&journal=graydon2" />
+<link rel="canonical" href="https://graydon2.dreamwidth.org/218040.html" />
+<script>
+// don't crawl this.  read http://www.livejournal.com/developer/exporting
+var LJ_cmtinfo = {"journal":"graydon2","668088":{"rc":[],"parent":667832,"u":"graydon2","screened":0,"full":1,"deleted":0},"remote":"","form_auth":"c0:1760414400:2813:86400:1WIDq3Moom-0-4gZthaKZ1Ik1WW4:825406589d47418689f8482edf9562e4","canSpam":"1","667576":{"full":1,"deleted":0,"screened":0,"rc":["667832"],"parent":665784,"u":"graydon2"},"canAdmin":null,"667832":{"deleted":0,"full":1,"rc":["668088"],"parent":667576,"u":"squirrelitude","screened":0},"665784":{"full":1,"deleted":0,"screened":0,"parent":null,"rc":["667576"],"u":"squirrelitude"}}
+</script>
+            <script type="text/javascript">
+                var Site;
+                if (!Site)
+                    Site = {};
+
+                Site = Object.assign(Site, {"imgprefix":"https://www.dreamwidth.org/img","esn_async":1,"inbox_update_poll":1,"has_remote":0,"iconprefix":"https://v2.dreamwidth.org","ctx_popup":1,"statprefix":"https://www.dreamwidth.org/stc","ctx_popup_userhead":1,"ctx_popup_icons":1,"cmax_comment":16000,"media_embed_enabled":1,"siteroot":"https://www.dreamwidth.org","currentJournalBase":"https://graydon2.dreamwidth.org","user_domain":"dreamwidth.org","currentJournal":"graydon2"});
+           </script>
+        <link rel="stylesheet" type="text/css" href="https://www.dreamwidth.org/stc/??lj_base.css,esn.css,jquery/jquery.ui.core.css,jquery/jquery.ui.tooltip.css,jquery.contextualhover.css,css/foundation/foundation_minimal.css?v=1738266478" />
+<link rel="stylesheet" type="text/css" href="https://www.dreamwidth.org/stc/??css/components/quick-reply.css,css/components/icon-select.css,css/components/imageshrink.css,jquery/jquery.ui.theme.smoothness.css,jquery/jquery.ui.button.css,jquery/jquery.ui.dialog.css,jquery.commentmanage.css,controlstrip.css,controlstrip-dark.css,canary.css?v=1738266477" />
+<link rel="stylesheet" href="https://graydon2.dreamwidth.org/res/210725/stylesheet?1737082839" type="text/css" />
+<title>graydon2 | things rust shipped without</title>
+</head><body class="page-entry two-columns column-left any-column multiple-columns two-columns-left  logged-out  not-subscribed no-access  has-navstrip">
+
+<div id='lj_controlstrip'>
+
+<div id='lj_controlstrip_loggedout_userpic'>
+  
+</div>
+  <div id='lj_controlstrip_login'>
+    <form id="login" class="lj_login_form" action="https://www.dreamwidth.org/login?ret=1" method="post"><input type='hidden' name="mode" value="login" /><input type='hidden' name="returnto" value="https://graydon2.dreamwidth.org/218040.html" />      
+        <label for="xc_user" class="invisible">
+            Account name:
+        </label>
+        <input type="text" placeholder="Account name:" id="xc_user" value="" name="user" size="7" class="text" tabindex="1" maxlength="27" />
+      
+        <label for="xc_password" class="invisible">
+            Password
+        </label>
+        <input type="password" id="xc_password" placeholder="Password" value="" name="password" size="7" class="lj_login_password" tabindex="2" />
+      <input type='submit' value="Log in" tabindex="4" class="submit" />
+
+      <div id='lj_controlstrip_login_secondary_controls'>
+        <a href='https://www.dreamwidth.org/openid/' tabindex='5'>(OpenID?)</a>
+        <a href='https://www.dreamwidth.org/lostinfo' tabindex='6'>(Forgot it?)</a>
+        <input type='checkbox' value="1" id="xc_remember" class="checkbox" tabindex="3" name="remember_me" />
+        <label for="xc_remember" class="checkboxlabel">
+            Remember Me
+        </label>
+        
+      </div>
+    </form>
+  </div>
+<div id='lj_controlstrip_actionlinks'>
+  <span id='lj_controlstrip_statustext'>You're viewing <span lj:user='graydon2' style='white-space: nowrap;' class='ljuser'><a href='https://graydon2.dreamwidth.org/profile'><img src='https://www.dreamwidth.org/img/silk/identity/user.png' alt='[personal profile] ' width='17' height='17' style='vertical-align: text-bottom; border: 0; padding-right: 1px;' /></a><a href='https://graydon2.dreamwidth.org/'><b>graydon2</b></a></span>'s journal</span>
+  <br /><a href='https://www.dreamwidth.org/create'>Create a Dreamwidth Account</a>&nbsp;&nbsp;<a href='https://www.dreamwidth.org/'>Learn More</a></div>
+
+<div id='lj_controlstrip_search'><div class='appwidget appwidget-search' id='LJWidget_768'>
+<form action='https://www.dreamwidth.org/multisearch' method='post'>
+<input type="text" class="text" title="Search" size="20" name="q" id="search" /> <select name="type" class="select">
+<option value="int" selected='selected'>Interest</option>
+<option value="region">Region</option>
+<option value="nav_and_user">Site and Account</option>
+<option value="faq">FAQ</option>
+<option value="email">Email</option>
+</select> <input type='submit' value="Go" /></form></div><!-- end .appwidget-search -->
+
+  Reload page in style:&nbsp;&nbsp;<a href='https://graydon2.dreamwidth.org/218040.html?style=site'>site</a>&nbsp;&nbsp; <a href='https://graydon2.dreamwidth.org/218040.html?style=light'>light</a></div>
+
+</div>
+
+    <div id="canvas">
+        <div class="inner">
+            <div id="header">
+                <div class="inner">
+                    <div class="module-wrapper"><div class="separator separator-before"><div class="inner"></div></div>
+<div class="module-section-header">
+<div class="inner"><div class="module-navlinks module"><div class="module-content">
+<ul class="module-list">
+<li class="module-list-item list-item-recent"><a href="https://graydon2.dreamwidth.org/" class="recent">Recent Entries</a></li>
+<li class="module-list-item list-item-archive"><a href="https://graydon2.dreamwidth.org/archive" class="archive">Archive</a></li>
+<li class="module-list-item list-item-read"><a href="https://graydon2.dreamwidth.org/read" class="read">Reading</a></li>
+<li class="module-list-item list-item-network"><a href="https://graydon2.dreamwidth.org/network" class="network">Network</a></li>
+<li class="module-list-item list-item-tags"><a href="https://graydon2.dreamwidth.org/tag/" class="tags">Tags</a></li>
+<li class="module-list-item list-item-memories"><a href="https://www.dreamwidth.org/tools/memories?user=graydon2" class="memories">Memories</a></li>
+<li class="module-list-item list-item-userinfo"><a href="https://graydon2.dreamwidth.org/profile" class="userinfo">Profile</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="separator separator-after"><div class="inner"></div></div>
+</div><h1 id="title"><span><a href='https://graydon2.dreamwidth.org'>frog hop</a></span></h1><h2 id="pagetitle"><span>things rust shipped without</span></h2>
+
+                </div><!-- end header>inner -->
+            </div><!-- end header -->
+            <div id="content">
+                <div class="inner">
+    
+                    <div id="primary"><div class="inner">
+                        <div class="entry-wrapper entry-wrapper-odd security-public restrictions-none journal-type-P poster-graydon2 journal-graydon2 has-userpic  has-subject" id="entry-wrapper-218040">
+<div class="separator separator-before"><div class="inner"></div></div>
+<div class="entry" id="entry-218040">
+<div class="inner">
+<div class="header">
+<div class="inner">
+<h3 class="entry-title"><a title="things rust shipped without" href="https://graydon2.dreamwidth.org/218040.html">things rust shipped without</a></h3><span class="datetime"><span class="date"><a href="/2015/07/">Jul</a>. <a href="/2015/07/03/">3rd</a>, <a href="/2015/">2015</a></span> <span class="time">08:26 am</span></span></div>
+</div>
+<div>
+<div class="contents">
+<div class="inner">
+<div class="userpic"><a href="https://graydon2.dreamwidth.org/icons"><img src="https://v2.dreamwidth.org/709628/684470" title="graydon2: (Default)" alt="graydon2: (Default)"  height="100" width="97" /></a></div>
+<span class="poster entry-poster "><span lj:user='graydon2' style='white-space: nowrap;' class='ljuser'><a href='https://graydon2.dreamwidth.org/profile'><img src='https://www.dreamwidth.org/img/silk/identity/user.png' alt='[personal profile] ' width='17' height='17' style='vertical-align: text-bottom; border: 0; padding-right: 1px;' /></a><a href='https://graydon2.dreamwidth.org/'><b>graydon2</b></a></span></span><div class="entry-content">Well-known things I'm very proud that rust shipped 1.0 without:<br /><br /><ul><br /><li>null pointers<br /><li>array overruns<br /><li>data races<br /><li>wild pointers<br /><li>uninitialized, yet addressable memory<br /><li>unions that allow access to the wrong field<br /></li></li></li></li></li></li></ul><br /><br />Less-well-known things I'm very proud that rust shipped 1.0 without:<br /><br /><ul><br /><li>a shared root namespace<br /><li>variables with runtime "before main" static initialization (the <tt>.ctors</tt> section)<br /><li>a compilation model that relies on textual inclusion (<tt>#include</tt>) or textual elision (#ifdef)<br /><li>a compilation model that relies on the order of declarations (possible caveat: macros)<br /><li>accidental identifier capture in macros<br /><li>random-access strings<br /><li>UTF-16 or UCS-2 support anywhere outside windows API compatibility routines<br /><li>signed character types<br /><li><small>(hah! <a href="http://doc.rust-lang.org/reference.html#literals">vertical tab escapes</a> (as <a href="http://prog21.dadgum.com/76.html">recently discussed</a>) along with the escapes for bell and form-feed)</small><br /><li>"accidental octal" from leading zeroes<br /><li><tt>goto</tt> (not even as a reserved word)<br /><li>dangling <tt>else</tt> (or misgrouped control structure bodies of any sort)<br /><li>case fallthrough<br /><li>a <tt>==</tt> operator you can easily typo as <tt>=</tt> and still compile<br /><li>a <tt>===</tt> operator, or any set of easily-confused equality operators<br /><li>silent coercions between boolean and anything else<br /><li>silent coercions between enums and integers<br /><li>silent arithmetic coercions, promotions<br /><li>implementation-dependent sign for the result of <tt>%</tt> with negative dividend<br /><li>bitwise operators with lower precedence than comparison operators<br /><li>auto-increment operators<br /><li>a poor-quality default hash function<br /><li>pointer-heavy default containers<br /></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></li></ul><br /><br />Next time you're in a conversation about language design and someone sighs, shakes their head and tells you that sad legacy design choices are just the burden of the past and we're helpless to avoid repeating them, try to remember that this is not so.</div><div class="metadata bottom-metadata">
+<ul>
+<li id="metadata-xpost"><span class="metadata-label metadata-label-xpost">Crossposts:</span> <span class="metadata-item metadata-item-xpost"><a href='http://graydon.livejournal.com/220853.html'>http://graydon.livejournal.com/220853.html</a></span></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<div class="inner">
+<div class="tag"><span class="tag-text" data-journal="graydon2" data-ditemid="218040" >Tags:</span><ul>
+<li><a rel="tag" href="https://graydon2.dreamwidth.org/tag/tech">tech</a></li>
+</ul></div><ul class="entry-management-links text-links"><li class="link link_prev first-item"><a href="https://www.dreamwidth.org/go?dir=prev&itemid=218040&journal=graydon2">Previous</a></li>
+<li class="link mem_add"><a href="https://www.dreamwidth.org/tools/memadd?journal=graydon2&amp;itemid=218040" >Memory</a></li>
+<li class="link tell_friend"><a href="https://www.dreamwidth.org/tools/tellafriend?journal=graydon2&amp;itemid=218040" >Share</a></li>
+<li class="link link_next"><a href="https://www.dreamwidth.org/go?dir=next&itemid=218040&journal=graydon2">Next</a></li>
+</ul><hr class="above-entry-interaction-links" /><ul class="entry-interaction-links text-links"><li class="entry-readlink first-item"><a href="https://graydon2.dreamwidth.org/218040.html#comments" data-sing="1 comment" data-dual="2 comments" data-plur="3 comments">4 comments</a></li>
+<li class="entry-replylink"><a onclick='return function(that) {return quickreply("topcomment", 0, "",that)}(this)' href='https://graydon2.dreamwidth.org/218040.html?mode=reply' >Reply</a></li>
+</ul><div  id="ljqrttopcomment" data-quickreply-container="topcomment" style="display: none;"></div><hr class="below-reply-container" /></div>
+</div>
+</div>
+</div>
+<div class="separator separator-after"><div class="inner"></div></div>
+</div>
+<div id='comments'><div class='inner'><div class='comment-pages toppages'><span class="view-flat"><a href="https://graydon2.dreamwidth.org/218040.html?view=flat#comments">Flat</a></span> | <span class="view-top-only"><a href="https://graydon2.dreamwidth.org/218040.html?view=top-only#comments">Top-Level Comments Only</a></span></div><div data-comment-depth='1' style='--comment-depth: 1; --comment-indent-limit-mobile: 8' class='comment-thread comment-depth-indent-desktop comment-depth-indent-mobile comment-depth-odd comment-depth-mod5-1 comment-depth-1'>
+<div id='cmt665784' class='dwexpcomment' style='margin-left: 0px; margin-top: 5px;'>
+<div class="comment-wrapper comment-wrapper-odd visible    poster-squirrelitude  full has-userpic  no-subject">
+<div class="separator separator-before"><div class="inner"></div></div>
+<div class="comment" id="comment-cmt665784">
+<div class="inner">
+<div class="header">
+<div class="inner">
+<h4 class="comment-title"><a title="no subject" href="https://graydon2.dreamwidth.org/218040.html?thread=665784#cmt665784" class=" invisible" >no subject</a></h4><span class="datetime"><span class="comment-date-text">Date: </span> <span title="85 days after journal entry, 10:06 am (squirrelitude&#39;s time)">2015-09-27 02:06 pm (UTC)</span></span></div>
+</div>
+<div class="contents">
+<div class="inner">
+<div class="userpic"><a href="https://squirrelitude.dreamwidth.org/icons"><img src="https://v2.dreamwidth.org/10879684/870654" title="squirrelitude: (Default)" alt="squirrelitude: (Default)"  height="100" width="100" /></a></div>
+<span class="poster comment-poster"><span class="comment-from-text">From:</span> <span lj:user="squirrelitude" style="white-space: nowrap;" class="ljuser"><a href="https://squirrelitude.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://squirrelitude.dreamwidth.org/"><b>squirrelitude</b></a></span></span>
+<div class="comment-content">It all sounds so wonderful! :-D<br /><br />...what's wrong with random-access strings? Unless I'm thinking of something else.</div></div>
+</div>
+<div class="footer">
+<div class="inner">
+<ul class="comment-interaction-links text-links"><li class="link commentpermalink"><a href="https://graydon2.dreamwidth.org/218040.html?thread=665784#cmt665784">Link</a></li>
+<li class="link reply first-item"><a onclick='return function(that) {return quickreply("665784", 2600, "",that)}(this)' href='https://graydon2.dreamwidth.org/218040.html?replyto=665784' >Reply</a></li>
+<li class="link thread"><a href="https://graydon2.dreamwidth.org/218040.html?thread=665784#cmt665784">Thread</a></li>
+<li class="link cmt_hide cmt_show_hide_default" style="display:none;" id="cmt665784_hide"><a href='#cmt665784' onClick="Expander.hideComments(this, '665784'); return false;">Hide 3 comments</a></li>
+<li class="link cmt_unhide" style="display: none;" id="cmt665784_unhide"><a href='https://graydon2.dreamwidth.org/218040.html?thread=665784#cmt665784' onClick="Expander.unhideComments(this, '665784'); return false;">Show 3 comments</a></li>
+</ul><div  id="ljqrt665784" data-quickreply-container="665784" style="display: none;"></div></div>
+</div>
+</div>
+</div>
+<div class="separator separator-after"><div class="inner"></div></div>
+</div>
+</div><div data-comment-depth='2' style='--comment-depth: 2; --comment-indent-limit-mobile: 8' class='comment-thread comment-depth-indent-desktop comment-depth-indent-mobile comment-depth-even comment-depth-mod5-2 comment-depth-2'>
+<div id='cmt667576' class='dwexpcomment' style='margin-left: 25px; margin-top: 5px;'>
+<div class="comment-wrapper comment-wrapper-even visible    poster-graydon2 entry-author full has-userpic  no-subject">
+<div class="separator separator-before"><div class="inner"></div></div>
+<div class="comment" id="comment-cmt667576">
+<div class="inner">
+<div class="header">
+<div class="inner">
+<h4 class="comment-title"><a title="no subject" href="https://graydon2.dreamwidth.org/218040.html?thread=667576#cmt667576" class=" invisible" >no subject</a></h4><span class="datetime"><span class="comment-date-text">Date: </span> <span title="89 days after journal entry, 03:56 pm (graydon2&#39;s time)">2015-09-30 10:56 pm (UTC)</span></span></div>
+</div>
+<div class="contents">
+<div class="inner">
+<div class="userpic"><a href="https://graydon2.dreamwidth.org/icons"><img src="https://v2.dreamwidth.org/709628/684470" title="graydon2: (Default)" alt="graydon2: (Default)"  height="100" width="97" /></a></div>
+<span class="poster comment-poster"><span class="comment-from-text">From:</span> <span lj:user="graydon2" style="white-space: nowrap;" class="ljuser"><a href="https://graydon2.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://graydon2.dreamwidth.org/"><b>graydon2</b></a></span></span>
+<div class="comment-content">It depends what you want random access <em>to</em>. Most people think they want random access to "an element" of "a string" as "a character". But in unicode, most meaningful algorithms operate on graphemes or linguistic units like words, not characters -- a grapheme might be a cluster of several combining characters -- and conversely most encodings you're going to read from streams don't put single codepoints at randomly-accessible locations (neither UTF-8 nor UTF-16 let you grab a codepoint by index in constant time).<br /><br />So ... if you want to convert everything to (say) an array of UCS-4 codepoints on every input, you can random-access the string "as characters", but then you've spent a bunch of time decoding and normalizing and you've still probably only got non-linguistically-useful units, and you need to re-convert on the way back out. Some programming languages do this by default in order to preserve "random access strings", but Rust does not, and this is intentional. Rust's default strings are UTF-8. This is the form you need for I/O 99% of the time, is memory-dense, interoperates well with C strings (UTF-8 is very well designed), but it supports sequential access only.<br /><br />You can convert it "for free" to a byte array -- with random access -- if you want to do byte-level operations on it, but then it's not a string anymore. And you can convert it at some cost to an array of char (UCS-4) if you really want to do random character-based algorithms. We're not trying to be obtuse! Just pick the right default.</div></div>
+</div>
+<div class="footer">
+<div class="inner">
+<ul class="comment-interaction-links text-links"><li class="link commentpermalink"><a href="https://graydon2.dreamwidth.org/218040.html?thread=667576#cmt667576">Link</a></li>
+<li class="link reply first-item"><a onclick='return function(that) {return quickreply("667576", 2607, "",that)}(this)' href='https://graydon2.dreamwidth.org/218040.html?replyto=667576' >Reply</a></li>
+<li class="link threadroot"><a href="https://www.dreamwidth.org/go?redir_type=threadroot&amp;journal=graydon2&amp;talkid=667576">Thread from start</a></li>
+<li class="link commentparent"><a href="https://graydon2.dreamwidth.org/218040.html?thread=665784#cmt665784">Parent</a></li>
+<li class="link thread"><a href="https://graydon2.dreamwidth.org/218040.html?thread=667576#cmt667576">Thread</a></li>
+<li class="link cmt_hide cmt_show_hide_default" style="display:none;" id="cmt667576_hide"><a href='#cmt667576' onClick="Expander.hideComments(this, '667576'); return false;">Hide 2 comments</a></li>
+<li class="link cmt_unhide" style="display: none;" id="cmt667576_unhide"><a href='https://graydon2.dreamwidth.org/218040.html?thread=667576#cmt667576' onClick="Expander.unhideComments(this, '667576'); return false;">Show 2 comments</a></li>
+</ul><div  id="ljqrt667576" data-quickreply-container="667576" style="display: none;"></div></div>
+</div>
+</div>
+</div>
+<div class="separator separator-after"><div class="inner"></div></div>
+</div>
+</div><div data-comment-depth='3' style='--comment-depth: 3; --comment-indent-limit-mobile: 8' class='comment-thread comment-depth-indent-desktop comment-depth-indent-mobile comment-depth-odd comment-depth-mod5-3 comment-depth-3'>
+<div id='cmt667832' class='dwexpcomment' style='margin-left: 50px; margin-top: 5px;'>
+<div class="comment-wrapper comment-wrapper-odd visible    poster-squirrelitude  full has-userpic  no-subject">
+<div class="separator separator-before"><div class="inner"></div></div>
+<div class="comment" id="comment-cmt667832">
+<div class="inner">
+<div class="header">
+<div class="inner">
+<h4 class="comment-title"><a title="no subject" href="https://graydon2.dreamwidth.org/218040.html?thread=667832#cmt667832" class=" invisible" >no subject</a></h4><span class="datetime"><span class="comment-date-text">Date: </span> <span title="89 days after journal entry, 2015-09-30 10:35 pm (squirrelitude&#39;s time)">2015-10-01 02:35 am (UTC)</span></span></div>
+</div>
+<div class="contents">
+<div class="inner">
+<div class="userpic"><a href="https://squirrelitude.dreamwidth.org/icons"><img src="https://v2.dreamwidth.org/10879684/870654" title="squirrelitude: (Default)" alt="squirrelitude: (Default)"  height="100" width="100" /></a></div>
+<span class="poster comment-poster"><span class="comment-from-text">From:</span> <span lj:user="squirrelitude" style="white-space: nowrap;" class="ljuser"><a href="https://squirrelitude.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://squirrelitude.dreamwidth.org/"><b>squirrelitude</b></a></span></span>
+<div class="comment-content">Interesting... right, for string blitting operations I want UTF-8, and for string manipulation I (because of what I work on) want char arrays. The latter is more visible, but the former is perhaps the more important case for performance, depending on what you're doing. Certainly if I were doing linguistics work, UTF-8 would be just fine.<br /><br />I imagine this was a rather controversial one. :-P</div></div>
+</div>
+<div class="footer">
+<div class="inner">
+<ul class="comment-interaction-links text-links"><li class="link commentpermalink"><a href="https://graydon2.dreamwidth.org/218040.html?thread=667832#cmt667832">Link</a></li>
+<li class="link reply first-item"><a onclick='return function(that) {return quickreply("667832", 2608, "",that)}(this)' href='https://graydon2.dreamwidth.org/218040.html?replyto=667832' >Reply</a></li>
+<li class="link threadroot"><a href="https://www.dreamwidth.org/go?redir_type=threadroot&amp;journal=graydon2&amp;talkid=667832">Thread from start</a></li>
+<li class="link commentparent"><a href="https://graydon2.dreamwidth.org/218040.html?thread=667576#cmt667576">Parent</a></li>
+<li class="link thread"><a href="https://graydon2.dreamwidth.org/218040.html?thread=667832#cmt667832">Thread</a></li>
+<li class="link cmt_hide cmt_show_hide_default" style="display:none;" id="cmt667832_hide"><a href='#cmt667832' onClick="Expander.hideComments(this, '667832'); return false;">Hide 1 comment</a></li>
+<li class="link cmt_unhide" style="display: none;" id="cmt667832_unhide"><a href='https://graydon2.dreamwidth.org/218040.html?thread=667832#cmt667832' onClick="Expander.unhideComments(this, '667832'); return false;">Show 1 comment</a></li>
+</ul><div  id="ljqrt667832" data-quickreply-container="667832" style="display: none;"></div></div>
+</div>
+</div>
+</div>
+<div class="separator separator-after"><div class="inner"></div></div>
+</div>
+</div><div data-comment-depth='4' style='--comment-depth: 4; --comment-indent-limit-mobile: 8' class='comment-thread comment-depth-indent-desktop comment-depth-indent-mobile comment-depth-even comment-depth-mod5-4 comment-depth-4'>
+<div id='cmt668088' class='dwexpcomment' style='margin-left: 75px; margin-top: 5px;'>
+<div class="comment-wrapper comment-wrapper-even visible    poster-graydon2 entry-author full has-userpic  no-subject">
+<div class="separator separator-before"><div class="inner"></div></div>
+<div class="comment" id="comment-cmt668088">
+<div class="inner">
+<div class="header">
+<div class="inner">
+<h4 class="comment-title"><a title="no subject" href="https://graydon2.dreamwidth.org/218040.html?thread=668088#cmt668088" class=" invisible" >no subject</a></h4><span class="datetime"><span class="comment-date-text">Date: </span> <span title="89 days after journal entry, 2015-09-30 10:23 pm (graydon2&#39;s time)">2015-10-01 05:23 am (UTC)</span></span></div>
+</div>
+<div class="contents">
+<div class="inner">
+<div class="userpic"><a href="https://graydon2.dreamwidth.org/icons"><img src="https://v2.dreamwidth.org/709628/684470" title="graydon2: (Default)" alt="graydon2: (Default)"  height="100" width="97" /></a></div>
+<span class="poster comment-poster"><span class="comment-from-text">From:</span> <span lj:user="graydon2" style="white-space: nowrap;" class="ljuser"><a href="https://graydon2.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://graydon2.dreamwidth.org/"><b>graydon2</b></a></span></span>
+<div class="comment-content">No, actually we hardly fought over it at all. I think most people in the systems-language space are comfortable with UTF-8. It interoperates very well with C and C++ libraries -- basically anything expecting ASCII will see "ASCII plus some high bytes", which means everything from strlen to regcomp still "works" even if not unicode-aware. It works on the ASCII subset and ignores the rest.<br /><br />A small number of people complain and we point out that all it means is you have to make one extra call in order to unpack-to-char-array if you want a char array. That, combined with the compatibility and efficiency around I/O, seems to quiet most opposition.</div></div>
+</div>
+<div class="footer">
+<div class="inner">
+<ul class="comment-interaction-links text-links"><li class="link commentpermalink"><a href="https://graydon2.dreamwidth.org/218040.html?thread=668088#cmt668088">Link</a></li>
+<li class="link reply first-item"><a onclick='return function(that) {return quickreply("668088", 2609, "",that)}(this)' href='https://graydon2.dreamwidth.org/218040.html?replyto=668088' >Reply</a></li>
+<li class="link threadroot"><a href="https://www.dreamwidth.org/go?redir_type=threadroot&amp;journal=graydon2&amp;talkid=668088">Thread from start</a></li>
+<li class="link commentparent"><a href="https://graydon2.dreamwidth.org/218040.html?thread=667832#cmt667832">Parent</a></li>
+</ul><div  id="ljqrt668088" data-quickreply-container="668088" style="display: none;"></div></div>
+</div>
+</div>
+</div>
+<div class="separator separator-after"><div class="inner"></div></div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+<div class='bottomcomment'><ul class="entry-management-links text-links"><li class="link link_prev first-item"><a href="https://www.dreamwidth.org/go?dir=prev&itemid=218040&journal=graydon2">Previous</a></li>
+<li class="link mem_add"><a href="https://www.dreamwidth.org/tools/memadd?journal=graydon2&amp;itemid=218040" >Memory</a></li>
+<li class="link tell_friend"><a href="https://www.dreamwidth.org/tools/tellafriend?journal=graydon2&amp;itemid=218040" >Share</a></li>
+<li class="link link_next"><a href="https://www.dreamwidth.org/go?dir=next&itemid=218040&journal=graydon2">Next</a></li>
+</ul><ul class="entry-interaction-links text-links"><li class="entry-readlink first-item"><a href="https://graydon2.dreamwidth.org/218040.html#comments" data-sing="1 comment" data-dual="2 comments" data-plur="3 comments">4 comments</a></li>
+<li class="entry-replylink"><a onclick='return function(that) {return quickreply("bottomcomment", 0, "",that)}(this)' href='https://graydon2.dreamwidth.org/218040.html?mode=reply' >Reply</a></li>
+</ul><div  id="ljqrtbottomcomment" data-quickreply-container="bottomcomment" style="display: none;"></div></div><div class='comment-pages bottompages'><span class="view-flat"><a href="https://graydon2.dreamwidth.org/218040.html?view=flat#comments">Flat</a></span> | <span class="view-top-only"><a href="https://graydon2.dreamwidth.org/218040.html?view=top-only#comments">Top-Level Comments Only</a></span></div></div></div>
+                    </div></div><!-- end primary and primary>inner -->
+    
+                    <div id="secondary"><div class="inner">
+    <div class="module-wrapper"><div class="separator separator-before"><div class="inner"></div></div>
+<div class="module-section-one">
+<div class="inner"><div class="module-userprofile module"><h2 class="module-header"><a href="https://graydon2.dreamwidth.org/profile">Profile</a></h2>
+<div class="module-content">
+<div class="userpic"><a href="https://graydon2.dreamwidth.org/icons"><img src="https://v2.dreamwidth.org/709628/684470" title="graydon2: (Default)" alt="graydon2: (Default)"  height="100" width="97" /></a></div><div class='journal-name'>graydon2</div>
+<div class='journal-website-name'><a href='http://www.venge.net/graydon'>My Website</a></div>
+</div>
+</div>
+<div class="module-calendar module"><h2 class="module-header"><a href="/2025/08/">August</a> <a href="/2025/">2025</a></h2>
+<div class="module-content">
+<table summary="Monthly calendar with links to each day's entries">
+<tr>
+<th>S</th>
+<th>M</th>
+<th>T</th>
+<th>W</th>
+<th>T</th>
+<th>F</th>
+<th>S</th>
+</tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="empty-day">1</td><td class="empty-day">2</td></tr>
+<tr>
+<td class="empty-day">3</td><td class="empty-day">4</td><td class="empty-day">5</td><td class="empty-day">6</td><td class="empty-day">7</td><td class="empty-day">8</td><td class="empty-day">9</td></tr>
+<tr>
+<td class="empty-day">10</td><td class="empty-day">11</td><td class="empty-day">12</td><td class="empty-day">13</td><td class="empty-day">14</td><td class="empty-day">15</td><td class="empty-day">16</td></tr>
+<tr>
+<td class="empty-day">17</td><td class="empty-day">18</td><td class="empty-day">19</td><td class="empty-day">20</td><td class="empty-day">21</td><td class="empty-day">22</td><td class="empty-day">23</td></tr>
+<tr>
+<td class="empty-day">24</td><td class="empty-day">25</td><td class="empty-day">26</td><td class="empty-day">27</td><td class="empty-day">28</td><td class="entry-day"> <a href="https://graydon2.dreamwidth.org/2025/08/29/" title="1 entry">29</a></td><td class="empty-day">30</td></tr>
+<tr>
+<td class="empty-day">31</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+</table>
+</div>
+</div>
+<div class="module-tags_list module"><h2 class="module-header"><a href="https://graydon2.dreamwidth.org/tag/">Most Popular Tags</a></h2>
+<div class="module-content">
+<ul class="module-list" >
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/capitalism">capitalism</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/gender">gender</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/history">history</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/infrastructure">infrastructure</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/justice">justice</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/management">management</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/novelty">novelty</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/politics">politics</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/rust">rust</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/software">software</a> - <span class='detail-tagcount'>1 use</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/tech">tech</a> - <span class='detail-tagcount'>13 uses</span></li>
+
+<li class="visibility-public module-list-item" ><a href="https://graydon2.dreamwidth.org/tag/writing">writing</a> - <span class='detail-tagcount'>1 use</span></li>
+
+</ul>
+</div>
+</div>
+<div class="module-pagesummary module"><h2 class="module-header">Page Summary</h2>
+<div class="module-content">
+<ul class="module-list">
+<li class="module-list-item"><span class="pagesummary-poster"><span lj:user="squirrelitude" style="white-space: nowrap;" class="ljuser"><a href="https://squirrelitude.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://squirrelitude.dreamwidth.org/"><b>squirrelitude</b></a></span></span> - <span class="pagesummary-subject"><a href="#cmt665784" title="3 responses"><em>(no subject)</em></a></span></li>
+</ul>
+</div>
+</div>
+<div class="module-active module"><h2 class="module-header">Active Entries</h2>
+<div class="module-content">
+<ul class="module-list">
+<li class="module-list-item"><span class="active-entry-label active-entry-1">1:</span> <a href="https://graydon2.dreamwidth.org/318686.html">there absolutely are free lunches, among them "all life on earth"</a></li>
+<li class="module-list-item"><span class="active-entry-label active-entry-2">2:</span> <a href="https://graydon2.dreamwidth.org/319755.html">snuffle / salsa / chacha</a></li>
+<li class="module-list-item"><span class="active-entry-label active-entry-3">3:</span> <a href="https://graydon2.dreamwidth.org/319018.html">consensus</a></li>
+<li class="module-list-item"><span class="active-entry-label active-entry-4">4:</span> <a href="https://graydon2.dreamwidth.org/318788.html">losing language features: some stories about disjoint unions</a></li>
+<li class="module-list-item"><span class="active-entry-label active-entry-5">5:</span> <a href="https://graydon2.dreamwidth.org/315410.html">Origins and developments</a></li>
+</ul>
+</div>
+</div>
+<div class="module-credit module"><h2 class="module-header">Style Credit</h2>
+<div class="module-content">
+<ul class="module-list"><li class="module-list-item"><span class="category-title">Base style:</span> <span class="style-name"><a href="https://www.dreamwidth.org/customize/?layoutid=82592">Crossroads</a></span> by <span class="style-author"><span lj:user="branchandroot" style="white-space: nowrap;" class="ljuser"><a href="https://branchandroot.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://branchandroot.dreamwidth.org/"><b>branchandroot</b></a></span></span></li>
+<li class="module-list-item"><span class="category-title">Theme:</span> <span class="theme-name">Green Light</span> by <span class="style-author"><span lj:user="krja" style="white-space: nowrap;" class="ljuser"><a href="https://krja.dreamwidth.org/profile"><img src="https://www.dreamwidth.org/img/silk/identity/user.png" alt="[personal profile] " width="17" height="17" style="vertical-align: text-bottom; border: 0; padding-right: 1px;" /></a><a href="https://krja.dreamwidth.org/"><b>krja</b></a></span></span></li>
+</ul></div>
+</div>
+<div class="module-cuttagcontrols module"><h2 class="module-header">Expand Cut Tags</h2>
+<div class="module-content">
+<span class="cutTagControls"><span style="font-size: smaller;">No cut tags</span></span></div>
+</div>
+</div>
+</div><div class="separator separator-after"><div class="inner"></div></div>
+</div>
+                    </div></div><!--  end secondary and secondary>inner -->
+    
+                    <div id="invisible-separator" style="float: left; width: 1px;"></div> <!-- this is a hack for IE7 + two-columns-right -->
+                    <div id="tertiary"><div class="inner">
+                        <div class="module-wrapper"><div class="separator separator-before"><div class="inner"></div></div>
+<div class="module-section-two">
+<div class="inner"><div class="module-time module"><div class="module-content">
+<span id="load-time">Page generated Oct. 14th, 2025 04:46 am</span></div>
+</div>
+<div class="module-powered module"><div class="module-content">
+<span id="site-branding">Powered by <a href="https://www.dreamwidth.org/">Dreamwidth Studios</a></span></div>
+</div>
+</div>
+</div><div class="separator separator-after"><div class="inner"></div></div>
+</div>
+                    </div></div><!-- end tertiary and tertiary>inner -->
+                    <div id="content-footer"></div>
+                </div><!-- end content>inner -->
+            </div> <!-- end content -->
+        </div> <!-- end canvas>inner --> 
+    
+    <div id="footer">
+        <div class="inner">
+            
+                <div class="page-top"><a href="#">Top of page</a></div>
+        </div>
+    </div>
+    
+    </div> 
+    <script type="text/javascript" src="//www.dreamwidth.org/js/??jquery/jquery-1.8.3.js,foundation/vendor/custom.modernizr.js,foundation/foundation/foundation.js,foundation/foundation/foundation.topbar.js,dw/dw-core.js,jquery/jquery.ui.core.js,jquery/jquery.ui.widget.js,jquery/jquery.ui.tooltip.js,jquery.ajaxtip.js,jquery/jquery.ui.position.js,jquery.hoverIntent.js,jquery.contextualhover.js?v=1738202298"></script>
+<script type="text/javascript" src="//www.dreamwidth.org/js/??jquery.replyforms.js,jquery.poll.js,journals/jquery.tag-nav.js,jquery.mediaplaceholder.js,jquery.imageshrink.js,components/jquery.icon-select.js,jquery.quickreply.js,jquery.threadexpander.js,jquery/jquery.ui.button.js,jquery/jquery.ui.dialog.js,jquery.commentmanage.js,jquery.esn.js?v=1738202294"></script>
+
+<script type='text/javascript'>
+jQuery(function(jQ){
+    if (jQ("#lj_controlstrip").length == 0) {
+        jQ.getJSON("/graydon2/__rpc_controlstrip?user=graydon2&host=graydon2.dreamwidth.org&uri=/218040.html&args=&view=entry", {},
+            function(data) {
+                jQ("<div></div>").html(data.control_strip).prependTo("body");
+            }
+        );
+    }
+})
+</script><script>$(document).foundation();</script><div id='statistics' style='text-align: left; font-size:0; line-height:0; height:0; overflow:hidden;'></div></body></html>

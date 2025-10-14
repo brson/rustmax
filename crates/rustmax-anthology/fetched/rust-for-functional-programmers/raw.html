@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="https://dr-knz.net/theme/css/elegant.prod.9e9d5ce754.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://dr-knz.net/theme/css/custom.css" media="screen">
+
+        <link rel="dns-prefetch" href="//fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+
+        <meta name="author" content="Raphael ‘kena’ Poss" />
+
+        <meta name="description" content="This post follows up on OCaml for Haskellers from Edward Z. Yang (2010) and my own Haskell for OCaml programmers from earlier this year. Note The latest version of this document can be found online at https://dr-knz.net/rust-for-functional-programmers.html. Alternate formats: Source, PDF. Prologue Rust for C programmers …
+" />
+        <meta name="twitter:creator" content="@kena42">
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="rust, haskell, ocaml, functional programming, language comparison, analysis, programming languages, Programming, " />
+
+<meta property="og:title" content="Rust for functional programmers "/>
+<meta property="og:url" content="https://dr-knz.net/rust-for-functional-programmers.html" />
+<meta property="og:description" content="This post follows up on OCaml for Haskellers from Edward Z. Yang (2010) and my own Haskell for OCaml programmers from earlier this year. Note The latest version of this document can be found online at https://dr-knz.net/rust-for-functional-programmers.html. Alternate formats: Source, PDF. Prologue Rust for C programmers …" />
+<meta property="og:site_name" content="Raphael&#39;s workbench" />
+<meta property="og:article:author" content="Raphael ‘kena’ Poss" />
+<meta property="og:article:published_time" content="2014-07-02T00:00:00+02:00" />
+<meta property="og:article:modified_time" content="2020-01-25T00:00:00+01:00" />
+<meta name="twitter:title" content="Rust for functional programmers ">
+<meta name="twitter:description" content="This post follows up on OCaml for Haskellers from Edward Z. Yang (2010) and my own Haskell for OCaml programmers from earlier this year. Note The latest version of this document can be found online at https://dr-knz.net/rust-for-functional-programmers.html. Alternate formats: Source, PDF. Prologue Rust for C programmers …">
+<meta property="og:image" content="https://dr-knz.net/theme/images/apple-touch-icon-152x152.png" />
+<meta name="twitter:image" content="https://dr-knz.net/theme/images/apple-touch-icon-152x152.png" >
+
+        <title>Rust for functional programmers  · Raphael&#39;s workbench
+</title>
+        <link href="https://dr-knz.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Raphael&#39;s workbench - Full Atom Feed" />
+        <link href="https://dr-knz.net/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Raphael&#39;s workbench - Full RSS Feed" />
+
+
+
+		
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://dr-knz.net/#website",
+  "url": "https://dr-knz.net/",
+  "name": "Raphael Poss — Lab Notes",
+  "publisher": { "@id": "https://raphaelposs.com/#raphael" },
+  "author": { "@id": "https://raphaelposs.com/#raphael" },
+  "inLanguage": "en"
+}
+</script>
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://dr-knz.net/"><span class=site-name>Raphael's workbench</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://dr-knz.net
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://dr-knz.net/projects.html">Projects</a></li>
+                                <li ><a href="https://dr-knz.net/categories">Categories</a></li>
+                                <li ><a href="https://dr-knz.net/tags">Tags</a></li>
+                                <li ><a href="https://dr-knz.net/archives">Archives</a></li>
+                                <li><form class="navbar-search" action="https://dr-knz.net/search" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://dr-knz.net/rust-for-functional-programmers.html">
+                Rust for functional&nbsp;programmers
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+    <div class="span2 table-of-content">
+        <nav>
+        <h4>Contents</h4>
+        <div class="toc" id="">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#prologue" id="toc-entry-1">Prologue</a></li>
+<li><a class="reference internal" href="#why-you-should-learn-rust" id="toc-entry-2">Why you should learn Rust</a></li>
+<li><a class="reference internal" href="#straightforward-equivalences" id="toc-entry-3">Straightforward equivalences</a></li>
+<li><a class="reference internal" href="#traits-rust-s-type-classes" id="toc-entry-4">Traits: Rust’s type classes</a></li>
+<li><a class="reference internal" href="#ad-hoc-objects-and-methods" id="toc-entry-5">Ad-hoc objects and methods</a></li>
+<li><a class="reference internal" href="#safe-references" id="toc-entry-6">Safe references</a></li>
+<li><a class="reference internal" href="#lifetime-and-storage-and-managed-objects" id="toc-entry-7">Lifetime and storage, and managed objects</a></li>
+<li><a class="reference internal" href="#shared-objects-rc-and-arc" id="toc-entry-8">Shared objects: Rc and Arc</a></li>
+<li><a class="reference internal" href="#macros-and-meta-programming" id="toc-entry-9">Macros and meta-programming</a></li>
+<li><a class="reference internal" href="#literals" id="toc-entry-10">Literals</a></li>
+<li><a class="reference internal" href="#acknowledgements" id="toc-entry-11">Acknowledgements</a></li>
+<li><a class="reference internal" href="#references" id="toc-entry-12">References</a></li>
+</ul>
+</div>
+        </nav>
+    </div>
+    <div class="span8 article-content">
+            
+            <p>This post follows up on <a class="reference external" href="http://blog.ezyang.com/2010/10/ocaml-for-haskellers/">OCaml for Haskellers</a> from
+Edward Z. Yang (2010) and my own <a class="reference external" href="https://dr-knz.net/haskell-for-ocaml-programmers.html">Haskell for OCaml programmers</a>
+from earlier this year.</p>
+<hr class="docutils"/>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The latest version of this document can be found online at
+<a class="reference external" href="https://dr-knz.net/rust-for-functional-programmers.html">https://dr-knz.net/rust-for-functional-programmers.html</a>.
+Alternate formats:
+<a class="reference external" href="https://dr-knz.net/rust-for-functional-programmers.txt">Source</a>,
+<a class="reference external" href="https://dr-knz.net/rust-for-functional-programmers.pdf"><span class="caps">PDF</span></a>.</p>
+</div>
+<div class="section" id="prologue">
+<h2><a class="toc-backref" href="#toc-entry-1">Prologue</a></h2>
+<p>Rust for C programmers != Rust for functional programmers.</p>
+<p>For experienced C programmers with little experience in anything else,
+Rust presents many new features and strange constructs that look and feel
+relatively arcane.  Even to C++, Java or C# programmers, Rust looks
+foreign: its has objects but not classes, it has “structured enums”, a
+strange “match” statement with no equivalent in the C family, it
+prevents from assigning twice to the same variable, and all manners of
+strange rules that were unheard of in the C family.</p>
+<p>Why is that?</p>
+<p>Although no current Rust manual dares putting it so bluntly, <strong>Rust is
+a functional language</strong>, inspired from recent advances in
+programming language design.</p>
+<p>The problem faced by Rust advocates is that “functional programming,”
+both as a term and as a discipline, has developed many stigmas over
+the last 30 years: functional programs are “unreadable”, they are
+relatively slow compared to C, they require heavyweight machinery
+during execution (at least a garbage collector, often many functional
+wrappers around system I/O), they are difficult to learn, they use a strange syntax, etc.</p>
+<p>Trying to describe Rust as a functional language to C programmers, its
+primary audience, would be a tough sell indeed. This is why the
+official Rust manuals and tutorials duly and properly explain how to
+use Rust for low-level tasks, and care to explain step-by-step the Rust
+equivalents to many C programming patterns, without refering to other more modern languages.</p>
+<p><em>This is all and well, but what if you already know about functional programming?</em></p>
+<p>For experienced users of Haskell, OCaml, etc., yet another
+detailed manual that presents the basics of programming with
+a functional flavor are a bore to read. Tailored to this audience, the
+text below constitutes <strong>a fast-track introduction to Rust</strong>, from the
+functional perspective.</p>
+</div>
+<div class="section" id="why-you-should-learn-rust">
+<h2><a class="toc-backref" href="#toc-entry-2">Why you should learn Rust</a></h2>
+<p>For better or for worse, most hardware processors will continue to be
+based on program counters, registers and addressable memory for the
+foreseeable future. This is where we were in the 1970’s, when C was
+designed, and this is where we are still today, and this is precisely
+why C is still in prevalent use.
+Specifically, the C <em>abstract machine model</em> is the snuggest fit for
+most hardware platforms, and it is therefore a good level of abstraction to
+build low-level system software like interrupt service
+routines, garbage collectors and virtual memory managers.</p>
+<p>However, the “user interface” of the C language, in particular <em>its
+preprocessor and its type system</em>, have aged tremendously.  For anyone
+who learned anything newer, <em>they frankly suck</em>.</p>
+<p>This is where Rust has been designed: <strong>Rust keeps the C abstract
+machine model but innovates on the language interface</strong>.  Rust is
+expressive, its type system makes system code safer, and its powerful
+meta-programming facilities enable new ways to generate code automatically.</p>
+<p>Note however that Rust is not yet fully stable at the time of this writing: it
+is still subject to change with little notice, and the official documentation
+is not fully synchronized with the implementation.</p>
+<hr class="docutils"/>
+</div>
+<div class="section" id="straightforward-equivalences">
+<h2><a class="toc-backref" href="#toc-entry-3">Straightforward equivalences</a></h2>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 23%"/>
+<col style="width: 12%"/>
+<col style="width: 18%"/>
+<col style="width: 47%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Syntax</th>
+<th class="head">Type</th>
+<th class="head">Ocaml</th>
+<th class="head">Haskell</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">()</code></td>
+<td>()</td>
+<td><code class="docutils literal">()</code></td>
+<td><code class="docutils literal">()</code></td>
+</tr>
+<tr><td><code class="docutils literal">true</code></td>
+<td>bool</td>
+<td><code class="docutils literal">true</code></td>
+<td><code class="docutils literal">True</code></td>
+</tr>
+<tr><td><code class="docutils literal">false</code></td>
+<td>bool</td>
+<td><code class="docutils literal">false</code></td>
+<td><code class="docutils literal">False</code></td>
+</tr>
+<tr><td><code class="docutils literal">123</code></td>
+<td>(integer)</td>
+<td> </td>
+<td><code class="docutils literal">123 {- :: Num a =&gt; a }</code></td>
+</tr>
+<tr><td><code class="docutils literal">0x123</code></td>
+<td>(integer)</td>
+<td> </td>
+<td><code class="docutils literal">0x123 {- :: Num a =&gt; a }</code></td>
+</tr>
+<tr><td><code class="docutils literal">12.3</code></td>
+<td>(float)</td>
+<td> </td>
+<td><code class="docutils literal">12.3 {- :: Fractional a =&gt; a }</code></td>
+</tr>
+<tr><td><code class="docutils literal">'a'</code></td>
+<td>char</td>
+<td> </td>
+<td><code class="docutils literal">'a'</code></td>
+</tr>
+<tr><td><code class="docutils literal">"abc"</code></td>
+<td>str</td>
+<td><code class="docutils literal">"abc"</code></td>
+<td><code class="docutils literal">"abc"</code></td>
+</tr>
+<tr><td><code class="docutils literal">b'a'</code></td>
+<td>u8</td>
+<td><code class="docutils literal">'a'</code></td>
+<td><code class="docutils literal"><span class="pre">toEnum$fromEnum$'a'::Word8</span></code></td>
+</tr>
+<tr><td><code class="docutils literal">123i</code></td>
+<td>int</td>
+<td><code class="docutils literal">123</code></td>
+<td><code class="docutils literal">123 :: Int</code></td>
+</tr>
+<tr><td><code class="docutils literal">123i32</code></td>
+<td>i32</td>
+<td><code class="docutils literal">123l</code></td>
+<td><code class="docutils literal">123 :: Int32</code></td>
+</tr>
+<tr><td><code class="docutils literal">123i64</code></td>
+<td>i64</td>
+<td><code class="docutils literal">123L</code></td>
+<td><code class="docutils literal">123 :: Int64</code></td>
+</tr>
+<tr><td><code class="docutils literal">123u</code></td>
+<td>uint</td>
+<td> </td>
+<td><code class="docutils literal">123 :: Word</code></td>
+</tr>
+</tbody>
+</table>
+<p>Like in Haskell, Rust number literals without a suffix do not have a
+predefined type.  Their actual type is inferred from the context. Rust
+character literals can represent any Unicode scalar value, in contrast
+to OCaml’s character which can only encode Latin-1 characters. Rust’s
+other literal forms are presented in <a class="reference internal" href="#literals">Literals</a> below.</p>
+<p>Primitive types:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 12%"/>
+<col style="width: 10%"/>
+<col style="width: 9%"/>
+<col style="width: 70%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Rust</th>
+<th class="head">Haskell</th>
+<th class="head">OCaml</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>()</td>
+<td>()</td>
+<td>unit</td>
+<td>Unit type</td>
+</tr>
+<tr><td>bool</td>
+<td>Bool</td>
+<td>bool</td>
+<td>Boolean type</td>
+</tr>
+<tr><td>int</td>
+<td>Int</td>
+<td>int</td>
+<td>Signed integer, machine-dependent width</td>
+</tr>
+<tr><td>uint</td>
+<td>Word</td>
+<td> </td>
+<td>Unsigned integer, machine-dependent width</td>
+</tr>
+<tr><td>i8</td>
+<td>Int8</td>
+<td> </td>
+<td>8 bit wide signed integer, two’s complement</td>
+</tr>
+<tr><td>i16</td>
+<td>Int16</td>
+<td> </td>
+<td>16 bit wide signed integer, two’s complement</td>
+</tr>
+<tr><td>i32</td>
+<td>Int32</td>
+<td>int32</td>
+<td>32 bit wide signed integer, two’s complement</td>
+</tr>
+<tr><td>i64</td>
+<td>Int64</td>
+<td>int64</td>
+<td>64 bit wide signed integer, two’s complement</td>
+</tr>
+<tr><td>u8</td>
+<td>Word8</td>
+<td>char</td>
+<td>8 bit wide unsigned integer</td>
+</tr>
+<tr><td>u16</td>
+<td>Word16</td>
+<td> </td>
+<td>16 bit wide unsigned integer</td>
+</tr>
+<tr><td>u32</td>
+<td>Word32</td>
+<td> </td>
+<td>32 bit wide unsigned integer</td>
+</tr>
+<tr><td>u64</td>
+<td>Word64</td>
+<td> </td>
+<td>64 bit wide unsigned integer</td>
+</tr>
+<tr><td>f32</td>
+<td>Float</td>
+<td> </td>
+<td>32-bit <span class="caps">IEEE</span> 754 binary floating-point</td>
+</tr>
+<tr><td>f64</td>
+<td>Double</td>
+<td>float</td>
+<td>64-bit <span class="caps">IEEE</span> 754 binary floating-point</td>
+</tr>
+<tr><td>char</td>
+<td>Char</td>
+<td> </td>
+<td>Unicode scalar value (non-surrogate code points)</td>
+</tr>
+<tr><td>str</td>
+<td> </td>
+<td> </td>
+<td><span class="caps">UTF</span>-8 encoded character string.</td>
+</tr>
+</tbody>
+</table>
+<p>The type <code class="docutils literal">str</code> in Rust is special: it is <em>primitive</em>, so that the
+compiler can optimize certain string operations; but it is not <em>first
+class</em>, so it is not possible to define variables of type <code class="docutils literal">str</code> or
+pass <code class="docutils literal">str</code> values directly to functions. To use Rust strings in
+programs, one should use string references, as described
+later below.</p>
+<p>Operators equivalences:</p>
+<pre class="code literal-block">
+==  !=  &lt;  &gt;  &lt;=  &gt;=  &amp;&amp; ||   // Rust
+=   &lt;&gt;  &lt;  &gt;  &lt;=  &gt;=  &amp;&amp; ||   (* OCaml *)
+==  /=  &lt;  &gt;  &lt;=  &gt;=  &amp;&amp; ||   {- Haskell -}
+
++  +  +  +  -  -  *  *  /     /  %     !    // Rust
++  +. @  ^  -  -. *  *. /     /. mod   not  (* OCaml *)
++  +  ++ ++ -  -  *  *  `div` /  `mod` not  {- Haskell -}
+
+&amp;    |   ^    &lt;&lt;     &gt;&gt;     !          // Rust
+land lor lxor [la]sl [la]sr lnot       (* OCaml *)
+.&amp;.  .|. xor  shiftL shiftR complement {- Haskell -}
+</pre>
+<p>Note that Rust uses <code class="docutils literal">!</code> both for boolean negation and for the unary
+bitwise <span class="caps">NOT</span> operator on integers. The unary <code class="docutils literal">~</code> has a different
+meaning in Rust than in C, detailed later below.</p>
+<p>Compound expressions:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 17%"/>
+<col style="width: 20%"/>
+<col style="width: 17%"/>
+<col style="width: 46%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Rust</th>
+<th class="head">OCaml</th>
+<th class="head">Haskell</th>
+<th class="head">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">R{a:10, b:20}</code></td>
+<td><code class="docutils literal">{a=10; b=20}</code></td>
+<td><code class="docutils literal">R{a=10, b=20}</code></td>
+<td>Record expression</td>
+</tr>
+<tr><td><code class="docutils literal">R{a:30, ..z}</code></td>
+<td><code class="docutils literal">{z with a=30}</code></td>
+<td><code class="docutils literal">z{a=30}</code></td>
+<td>Record with functional update</td>
+</tr>
+<tr><td><code class="docutils literal">(x,y,z)</code></td>
+<td><code class="docutils literal">(x,y,z)</code></td>
+<td><code class="docutils literal">(x,y,z)</code></td>
+<td>Tuple expression</td>
+</tr>
+<tr><td><code class="docutils literal">x.f</code></td>
+<td><code class="docutils literal">x.f</code></td>
+<td><code class="docutils literal">f x</code></td>
+<td>Field expression</td>
+</tr>
+<tr><td><code class="docutils literal">[x,y,z]</code></td>
+<td><code class="docutils literal">[|x;y;z|]</code></td>
+<td> </td>
+<td>Array expression, fixed size</td>
+</tr>
+<tr><td><code class="docutils literal">[x, ..10]</code></td>
+<td> </td>
+<td> </td>
+<td>Array expression, fixed repeats of first value</td>
+</tr>
+<tr><td><code class="docutils literal">x[10]</code></td>
+<td><code class="docutils literal"><span class="pre">x.(10)</span></code></td>
+<td><code class="docutils literal">x!10</code></td>
+<td>Index expression (vectors/arrays)</td>
+</tr>
+<tr><td><code class="docutils literal">x[10]</code></td>
+<td><code class="docutils literal"><span class="pre">x.[10]</span></code></td>
+<td><code class="docutils literal"><span class="pre">x!!10</span></code></td>
+<td>Index expression (strings)</td>
+</tr>
+<tr><td><code class="docutils literal">{x;y;z}</code></td>
+<td><code class="docutils literal">begin x;y;z end</code></td>
+<td> </td>
+<td>Block expression</td>
+</tr>
+<tr><td><code class="docutils literal">{x;y;}</code></td>
+<td><code class="docutils literal">begin <span class="pre">x;y;()</span> end</code></td>
+<td> </td>
+<td>Block expression (ends with unit)</td>
+</tr>
+</tbody>
+</table>
+<p>Note that the value of a block expression is
+the value of the last expression in the block, except when the block
+ends with a semicolon, in which case its value is <code class="docutils literal">()</code>.</p>
+<p>Functions types and definitions:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 40%"/>
+<col style="width: 30%"/>
+<col style="width: 30%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="c1">// f : |int,int| -&gt; int</span>
+<span class="k">fn</span> <span class="nf">f</span><span class="w"> </span><span class="p">(</span><span class="n">x</span>:<span class="nc">int</span><span class="p">,</span><span class="w"> </span><span class="n">y</span>:<span class="nc">int</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// fact : |int| -&gt; int</span>
+<span class="k">fn</span> <span class="nf">fact</span><span class="w"> </span><span class="p">(</span><span class="n">n</span>:<span class="nc">int</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">int</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
+<span class="w">   </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="c">(* val f : int * int -&gt; int *)</span>
+<span class="k">let</span> <span class="n">f</span> <span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+
+<span class="c">(* val fact : int -&gt; int *)</span>
+<span class="k">let</span> <span class="k">rec</span> <span class="n">fact</span> <span class="n">n</span> <span class="o">=</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">then</span> <span class="mi">1</span>
+    <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span> <span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="nf">f</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">f</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span>
+
+<span class="nf">fact</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">fact</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">else</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Pattern match and guards:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">match</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="mi">0</span><span class="w">           </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">t</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="mi">2</span><span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">_</span><span class="w">           </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="k">match</span> <span class="n">e</span> <span class="k">with</span>
+ <span class="o">|</span> <span class="mi">0</span>             <span class="o">-&gt;</span> <span class="mi">1</span>
+ <span class="o">|</span> <span class="mi">2</span> <span class="k">as</span> <span class="n">t</span>        <span class="o">-&gt;</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span>
+ <span class="o">|</span> <span class="n">n</span> <span class="k">when</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">-&gt;</span> <span class="mi">3</span>
+ <span class="o">|</span> <span class="o">_</span>             <span class="o">-&gt;</span> <span class="mi">4</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">case</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">  </span><span class="mi">0</span><span class="w">          </span><span class="ow">-&gt;</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="n">t</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="mi">2</span><span class="w">      </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">  </span><span class="kr">_</span><span class="w">          </span><span class="ow">-&gt;</span><span class="w"> </span><span class="mi">4</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Recursion with side effects:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">fn</span> <span class="nf">collatz</span><span class="p">(</span><span class="n">n</span>:<span class="nc">uint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="mi">0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">collatz</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">collatz</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="k">let</span> <span class="k">rec</span> <span class="n">collatz</span> <span class="n">n</span> <span class="o">=</span>
+    <span class="k">let</span> <span class="n">v</span> <span class="o">=</span> <span class="k">match</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">with</span>
+       <span class="o">|</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="n">n</span> <span class="o">/</span> <span class="mi">2</span>
+       <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">in</span>
+    <span class="nn">Printf</span><span class="p">.</span><span class="n">printf</span> <span class="s2">"%d</span><span class="se">\n</span><span class="s2">"</span> <span class="n">v</span><span class="o">;</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;&gt;</span> <span class="mi">1</span> <span class="k">then</span> <span class="n">collatz</span> <span class="n">v</span>
+
+<span class="k">let</span> <span class="o">_</span> <span class="o">=</span> <span class="n">collatz</span> <span class="mi">25</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="nf">collatz</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">            </span><span class="mi">0</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="kr">_</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">    </span><span class="n">putStrLn</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">v</span>
+<span class="w">    </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">collatz</span><span class="w"> </span><span class="n">v</span>
+
+<span class="nf">main</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">collatz</span><span class="w"> </span><span class="mi">25</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Obviously, Rust uses strict (eager) evaluation and functions can
+contain side effecting expressions, just like in OCaml.</p>
+<p>Note that Rust does not (yet) guarantee tail call elimination,
+although the underlying <span class="caps">LLVM</span> code generator is smart enough that it
+should work for the function above. When in doubt, the following is equivalent:</p>
+<div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">25</span><span class="n">u</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">}</span>
+<span class="w">       </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
+<span class="w">   </span><span class="n">println</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>Record types, expressions and field access:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">struct</span> <span class="nc">Point</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span>: <span class="nc">int</span><span class="p">,</span>
+<span class="w">  </span><span class="n">y</span><span class="w"> </span>: <span class="nc">int</span>
+<span class="p">}</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Point</span><span class="w"> </span><span class="p">{</span><span class="n">x</span>:<span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span>:<span class="mi">2</span><span class="p">};</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">y</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="k">type</span> <span class="nc">Point</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">x</span> <span class="o">:</span> <span class="kt">int</span><span class="o">;</span>
+  <span class="n">y</span> <span class="o">:</span> <span class="kt">int</span>
+<span class="o">}</span>
+
+<span class="k">let</span> <span class="n">v</span> <span class="o">=</span> <span class="o">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">};</span>
+<span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">data</span><span class="w"> </span><span class="kt">Point</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Point</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">x</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="p">,</span>
+<span class="w">   </span><span class="n">y</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span>
+<span class="p">}</span>
+
+<span class="nf">v</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Point</span><span class="w"> </span><span class="p">{</span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span>
+<span class="nf">s</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Free type parameters (generic data and function types):</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">type</span> <span class="nc">Pair</span><span class="o">&lt;</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+
+<span class="c1">// id&lt;t&gt; : |t| -&gt; t</span>
+<span class="k">fn</span> <span class="nf">id</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">x</span><span class="w"> </span>: <span class="nc">t</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">t</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="k">type</span> <span class="o">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span> <span class="k">'</span><span class="n">b</span><span class="o">)</span> <span class="n">pair</span> <span class="o">=</span> <span class="k">'</span><span class="n">a</span> <span class="o">*</span> <span class="k">'</span><span class="n">b</span>
+
+<span class="c">(* val id : 't -&gt; 't *)</span>
+<span class="k">let</span> <span class="n">id</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Pair</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+
+<span class="nf">id</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">t</span>
+<span class="nf">id</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Algebraic data types:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">enum</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nb">None</span><span class="p">,</span>
+<span class="w">   </span><span class="nb">Some</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// x : Option&lt;t&gt;</span>
+<span class="k">match</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">None</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="k">type</span> <span class="k">'</span><span class="n">t</span> <span class="n">option</span> <span class="o">=</span>
+    <span class="nc">None</span>
+  <span class="o">|</span> <span class="nc">Some</span> <span class="k">of</span> <span class="k">'</span><span class="n">t</span>
+
+<span class="c">(* x : t option *)</span>
+<span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+  <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+  <span class="o">|</span> <span class="nc">Some</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">true</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">data</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="n">a</span>
+
+<span class="cm">{- x : Maybe t -}</span>
+<span class="kr">case</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">   </span><span class="kt">Nothing</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">False</span>
+<span class="w">   </span><span class="kt">Just</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">True</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Lambda expressions and higher-order functions:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 40%"/>
+<col style="width: 30%"/>
+<col style="width: 30%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="c1">// ||int,int| -&gt; int, int| -&gt; int</span>
+<span class="k">fn</span> <span class="nf">ff</span><span class="p">(</span><span class="n">f</span>:<span class="o">|</span><span class="n">int</span><span class="p">,</span><span class="n">int</span><span class="o">|</span>-&gt;<span class="nc">int</span><span class="p">,</span><span class="w"> </span><span class="n">x</span>:<span class="nc">int</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">int</span>
+<span class="p">{</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// m2 : |int| -&gt; int</span>
+<span class="k">fn</span> <span class="nf">m2</span><span class="p">(</span><span class="n">n</span><span class="w"> </span>: <span class="nc">int</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">int</span>
+<span class="p">{</span><span class="w"> </span><span class="n">ff</span><span class="w"> </span><span class="p">((</span><span class="o">|</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">}),</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="c">(* (int*int-&gt;b)*int -&gt; int *)</span>
+<span class="k">let</span> <span class="n">ff</span> <span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span> <span class="o">=</span>
+    <span class="n">f</span> <span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+
+<span class="c">(* m2 : int -&gt; int *)</span>
+<span class="k">let</span> <span class="n">m2</span> <span class="n">n</span> <span class="o">=</span>
+    <span class="n">ff</span> <span class="o">((</span><span class="k">fun</span><span class="o">(</span><span class="n">x</span><span class="o">,</span><span class="n">y</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">),</span> <span class="n">n</span><span class="o">)</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="nf">ff</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">((</span><span class="n">int</span><span class="p">,</span><span class="n">int</span><span class="p">)</span><span class="ow">-&gt;</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="n">int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">int</span>
+<span class="nf">ff</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">   </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+
+<span class="nf">m2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">m2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">   </span><span class="n">ff</span><span class="w"> </span><span class="p">((</span><span class="nf">\</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="p">),</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="traits-rust-s-type-classes">
+<h2><a class="toc-backref" href="#toc-entry-4">Traits: Rust’s type classes</a></h2>
+<p>Rust’s “traits” are analogous to Haskell’s type classes.</p>
+<p>The main difference with Haskell is that traits only intervene for
+expressions with dot notation, ie. of the form <code class="docutils literal">a.foo(b)</code>.</p>
+<p>For C++/Java/C#/OCaml programmers, however, traits should
+not be confused with traditional object classes. They are
+really type classes: it is possible to add traits to arbitrary
+data types, including the primitive types!</p>
+<p>An example:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">trait</span><span class="w"> </span><span class="n">Testable</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span> <span class="nf">test</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Testable</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span> <span class="nf">test</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span> <span class="p">{</span>
+<span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="o">*</span><span class="bp">self</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<span class="w">       </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">hello</span><span class="p">(</span><span class="n">x</span>:<span class="nc">int</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span> <span class="p">{</span>
+<span class="w">   </span><span class="n">x</span><span class="p">.</span><span class="n">test</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">class</span><span class="w"> </span><span class="kt">Testable</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">test</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+
+
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Testable</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">test</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">       </span><span class="kr">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kt">False</span>
+<span class="w">       </span><span class="kr">else</span><span class="w"> </span><span class="kt">True</span>
+
+
+<span class="nf">hello</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">hello</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">test</span><span class="w"> </span><span class="n">x</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>In a trait method declaration, the identifier “<code class="docutils literal">self</code>” denotes
+the actual object on which the method is applied.</p>
+<p>Like in Haskell, Rust traits can be used for operator overloading. For
+example, if one defines a new sum type for Peano integers:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">enum</span> <span class="nc">Peano</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">Zero</span><span class="p">,</span>
+<span class="w">   </span><span class="n">Succ</span><span class="p">(</span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Peano</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">data</span><span class="w"> </span><span class="kt">Peano</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="kt">Zero</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="kt">Succ</span><span class="w"> </span><span class="kt">Peano</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Then one can overload the comparison operator <code class="docutils literal">==</code> between Peano
+integers by instantiating the <code class="docutils literal">PartialEq</code> class:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">impl</span><span class="w"> </span><span class="nb">PartialEq</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Peano</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span> <span class="nf">eq</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">other</span>:<span class="kp">&amp;</span><span class="nc">Peano</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span> <span class="p">{</span>
+<span class="w">      </span><span class="k">match</span><span class="w"> </span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">(</span><span class="o">&amp;</span><span class="n">Zero</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Zero</span><span class="p">)</span><span class="w">               </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="p">(</span><span class="o">&amp;</span><span class="n">Succ</span><span class="p">(</span><span class="k">ref</span><span class="w"> </span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Succ</span><span class="p">(</span><span class="k">ref</span><span class="w"> </span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">),</span>
+<span class="w">        </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w">                       </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="kt">Peano</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">    </span><span class="p">(</span><span class="o">==</span><span class="p">)</span><span class="w"> </span><span class="n">self</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">        </span><span class="kr">case</span><span class="w"> </span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kt">Zero</span><span class="p">,</span><span class="w"> </span><span class="kt">Zero</span><span class="p">)</span><span class="w">     </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">True</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kt">Succ</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Succ</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="w"> </span><span class="kr">_</span><span class="p">)</span><span class="w">           </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">False</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>Also, like in Haskell, a trait can provide a default implementation
+for a method, to be used when instances omit the specialization:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">trait</span><span class="w"> </span><span class="nb">PartialEq</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">fn</span> <span class="nf">eq</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">other</span>:<span class="kp">&amp;</span><span class="nc">Self</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span><span class="p">;</span>
+<span class="w">   </span><span class="k">fn</span> <span class="nf">ne</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">other</span>:<span class="kp">&amp;</span><span class="nc">Self</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span>
+   <span class="p">{</span><span class="w"> </span><span class="o">!</span><span class="bp">self</span><span class="p">.</span><span class="n">eq</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">class</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">   </span><span class="p">(</span><span class="o">==</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="w">   </span><span class="p">(</span><span class="o">!=</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="w">   </span><span class="p">(</span><span class="o">!=</span><span class="p">)</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>In the method declarations inside a trait declaration, the identifier
+“<code class="docutils literal">Self</code>” refers to the actual type on which the trait applies.</p>
+<p>Each overloadable operator in Rust has a corresponding
+trait in the standard library:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 15%"/>
+<col style="width: 21%"/>
+<col style="width: 54%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Expression</th>
+<th class="head">Expands to</th>
+<th class="head">Trait</th>
+<th class="head">Equivalent Haskell class/method</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">a == b</code></td>
+<td><code class="docutils literal">a.eq(b)</code></td>
+<td>std::cmp::PartialEq</td>
+<td><code class="docutils literal">class PartialEq a where <span class="pre">(==)</span> : a <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> bool</code></td>
+</tr>
+<tr><td><code class="docutils literal">a != b</code></td>
+<td><code class="docutils literal">a.ne(b)</code></td>
+<td>std::cmp::PartialEq</td>
+<td><code class="docutils literal">class PartialEq a where <span class="pre">(/=)</span> : a <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> bool</code></td>
+</tr>
+<tr><td><code class="docutils literal">a &lt;  b</code></td>
+<td><code class="docutils literal">a.lt(b)</code></td>
+<td>std::cmp::PartialOrd</td>
+<td><code class="docutils literal">class PartialOrd a where (&lt;) : a <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> bool</code></td>
+</tr>
+<tr><td><code class="docutils literal">a &gt;  b</code></td>
+<td><code class="docutils literal">a.gt(b)</code></td>
+<td>std::cmp::PartialOrd</td>
+<td><code class="docutils literal">class PartialOrd a where (&gt;) : a <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> bool</code></td>
+</tr>
+<tr><td><code class="docutils literal">a &lt;= b</code></td>
+<td><code class="docutils literal">a.le(b)</code></td>
+<td>std::cmp::PartialOrd</td>
+<td><code class="docutils literal">class PartialOrd a : Eq a where <span class="pre">(&lt;=)</span> : a <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> bool</code></td>
+</tr>
+<tr><td><code class="docutils literal">a &gt;= b</code></td>
+<td><code class="docutils literal">a.ge(b)</code></td>
+<td>std::cmp::PartialOrd</td>
+<td><code class="docutils literal">class PartialOrd a : Eq a where <span class="pre">(&gt;=)</span> : a <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> bool</code></td>
+</tr>
+<tr><td><code class="docutils literal">a + b</code></td>
+<td><code class="docutils literal">a.add(b)</code></td>
+<td>std::ops::Add&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Add a b c where (+) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a - b</code></td>
+<td><code class="docutils literal">a.sub(b)</code></td>
+<td>std::ops::Sub&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Sub a b c where <span class="pre">(-)</span> : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a * b</code></td>
+<td><code class="docutils literal">a.mul(b)</code></td>
+<td>std::ops::Mul&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Mul a b c where (*) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a / b</code></td>
+<td><code class="docutils literal">a.div(b)</code></td>
+<td>std::ops::Div&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Div a b c where (/) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a % b</code></td>
+<td><code class="docutils literal">a.rem(b)</code></td>
+<td>std::ops::Rem&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Rem a b c where (%) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">-a</span></code></td>
+<td><code class="docutils literal">a.neg()</code></td>
+<td>std::ops::Neg&lt;c&gt;</td>
+<td><code class="docutils literal">class Neg a c where <span class="pre">(-)</span> : a <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">!a</code></td>
+<td><code class="docutils literal">a.not()</code></td>
+<td>std::ops::Not&lt;c&gt;</td>
+<td><code class="docutils literal">class Not a c where (!) : a <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">*a</code></td>
+<td><code class="docutils literal">a.deref()</code></td>
+<td>std::ops::Deref&lt;c&gt;</td>
+<td><code class="docutils literal">class Deref a c where (*) : a <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a <span class="amp">&amp;</span> b</code></td>
+<td><code class="docutils literal">a.bitand(b)</code></td>
+<td>std::ops::BitAnd&lt;b,c&gt;</td>
+<td><code class="docutils literal">class BitAnd a b c where (&amp;) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a | b</code></td>
+<td><code class="docutils literal">a.bitor(b)</code></td>
+<td>std::ops::BitOr&lt;b,c&gt;</td>
+<td><code class="docutils literal">class BitOr a b c where (|) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a ^ b</code></td>
+<td><code class="docutils literal">a.bitxor(b)</code></td>
+<td>std::ops::BitXor&lt;b,c&gt;</td>
+<td><code class="docutils literal">class BitXor a b c where (^) : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a &lt;&lt; b</code></td>
+<td><code class="docutils literal">a.shl(b)</code></td>
+<td>std::ops::Shl&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Shl a b c where <span class="pre">(&lt;&lt;)</span> : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+<tr><td><code class="docutils literal">a &gt;&gt; b</code></td>
+<td><code class="docutils literal">a.shr(b)</code></td>
+<td>std::ops::Shr&lt;b,c&gt;</td>
+<td><code class="docutils literal">class Shr a b c where <span class="pre">(&gt;&gt;)</span> : a <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> c</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal">for</code> loop uses the special trait <code class="docutils literal"><span class="pre">std::iter::Iterator</span></code>, as follows:</p>
+<div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+
+<span class="c1">// the following expression:</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">&lt;</span><span class="n">pat</span><span class="o">&gt;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">&lt;</span><span class="n">iterator</span><span class="w"> </span><span class="n">expression</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">body</span><span class="o">..</span><span class="p">.;</span>
+<span class="p">}</span>
+
+<span class="c1">// ... expands to (internally):</span>
+<span class="k">match</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="o">&lt;</span><span class="n">iterator</span><span class="w"> </span><span class="n">expression</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">_v</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="w"> </span><span class="k">loop</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">_v</span><span class="p">.</span><span class="n">next</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nb">None</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">break</span><span class="p">,</span>
+<span class="w">       </span><span class="nb">Some</span><span class="p">(</span><span class="o">&lt;</span><span class="n">pat</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">body</span><span class="o">..</span><span class="p">.</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>The method <code class="docutils literal">next</code> is implemented by <code class="docutils literal">Iterator</code>.  The return type
+of <code class="docutils literal">next</code> is <code class="docutils literal">Option</code>, which can have values <code class="docutils literal">None</code>, to mean
+“nothing left to iterate”, or <code class="docutils literal">Some(x)</code>, to mean the next iteration
+value is <code class="docutils literal">x</code>.</p>
+</div>
+<div class="section" id="ad-hoc-objects-and-methods">
+<h2><a class="toc-backref" href="#toc-entry-5">Ad-hoc objects and methods</a></h2>
+<p>In addition to the mechanism offered by traits, any <code class="docutils literal">struct</code> or
+<code class="docutils literal">enum</code> can be <em>decorated</em> with one or more method interface(s)
+using “<code class="docutils literal">impl</code>”, separately from its definition and/or in different modules:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">struct</span> <span class="nc">R</span><span class="w"> </span><span class="p">{</span><span class="n">x</span>:<span class="nc">int</span><span class="p">};</span>
+
+<span class="c1">// in some module:</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">fn</span> <span class="nf">hello</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="fm">println!</span><span class="p">(</span><span class="s">"hello {}"</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+
+
+
+<span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// possibly somewhere else:</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">fn</span> <span class="nf">world</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="fm">println!</span><span class="p">(</span><span class="s">"world"</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Example use:</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="p">{</span><span class="n">x</span>:<span class="mi">10</span><span class="p">};</span>
+<span class="w">  </span><span class="n">v</span><span class="p">.</span><span class="n">hello</span><span class="p">();</span>
+<span class="w">  </span><span class="n">v</span><span class="p">.</span><span class="n">world</span><span class="p">();</span>
+
+<span class="w">  </span><span class="p">(</span><span class="n">R</span><span class="p">{</span><span class="n">x</span>:<span class="mi">20</span><span class="p">}).</span><span class="n">hello</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">enum</span> <span class="nc">E</span><span class="w"> </span><span class="p">{</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">};</span>
+
+<span class="c1">// in some module:</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">E</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">fn</span> <span class="nf">hello</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">match</span><span class="w"> </span><span class="bp">self</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">A</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">"hello A"</span><span class="p">),</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">B</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">"hello B"</span><span class="p">)</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// possibly somewhere else:</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">E</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">fn</span> <span class="nf">world</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="fm">println!</span><span class="p">(</span><span class="s">"world"</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Example use:</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">;</span>
+<span class="w">  </span><span class="n">v</span><span class="p">.</span><span class="n">hello</span><span class="p">();</span>
+<span class="w">  </span><span class="n">v</span><span class="p">.</span><span class="n">world</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">B</span><span class="p">.</span><span class="n">hello</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="safe-references">
+<h2><a class="toc-backref" href="#toc-entry-6">Safe references</a></h2>
+<p>Like in C, by default function parameters in Rust are passed
+by value. For large data types, copying the data may be
+expensive so one may want to use <em>references</em> instead.</p>
+<p>For any object <code class="docutils literal">v</code> of type <code class="docutils literal">T</code>, it is possible to create a
+<em>reference</em> to that object using the expression “<code class="docutils literal">&amp;v</code>”.
+The reference itself then has type <code class="docutils literal">&amp;T</code>.</p>
+<div class="highlight"><pre><span></span><span class="cp">#[derive(Clone,Copy)]</span>
+<span class="k">struct</span> <span class="nc">Pt</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span>:<span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">y</span>:<span class="kt">f32</span> <span class="p">}</span>
+
+<span class="c1">// This works, but may be expensive:</span>
+<span class="k">fn</span> <span class="nf">dist1</span><span class="p">(</span><span class="n">p1</span><span class="w"> </span>: <span class="nc">Pt</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span>: <span class="nc">Pt</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">f32</span> <span class="p">{</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">xd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p2</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">yd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p2</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="p">(</span><span class="n">xd</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">xd</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">yd</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">yd</span><span class="p">).</span><span class="n">sqrt</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// Same, using references:</span>
+<span class="k">fn</span> <span class="nf">dist2</span><span class="p">(</span><span class="n">p1</span><span class="w"> </span>: <span class="kp">&amp;</span><span class="nc">Pt</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span>: <span class="kp">&amp;</span><span class="nc">Pt</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">f32</span> <span class="p">{</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">xd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p2</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">yd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p2</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="p">(</span><span class="n">xd</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">xd</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">yd</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">yd</span><span class="p">).</span><span class="n">sqrt</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// Usage:</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Pt</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span>:<span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">y</span>:<span class="mf">2.0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Pt</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span>:<span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">y</span>:<span class="mf">3.0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">   </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">dist1</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">));</span>
+<span class="w">   </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">dist2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+<p>As illustrated in this example, Rust provides some syntactic
+sugar for <code class="docutils literal">struct</code> references: it is possible to write <code class="docutils literal">p1.x</code> if
+<code class="docutils literal">p1</code> is of type <code class="docutils literal">&amp;Pt</code> and <code class="docutils literal">Pt</code> has a field named <code class="docutils literal">x</code>. This
+sugar is also available for method calls (<code class="docutils literal">x.foo()</code>).</p>
+<p>However, in many other cases, either the referenced value must be “retrieved”
+using the unary <code class="docutils literal">*</code> operator, or patterns must be matched using <code class="docutils literal">&amp;</code>:</p>
+<div class="highlight"><pre><span></span><span class="k">fn</span> <span class="nf">add3</span><span class="p">(</span><span class="n">x</span><span class="w"> </span>: <span class="kp">&amp;</span><span class="nc">int</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">int</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="fm">println!</span><span class="p">(</span><span class="s">"x : {}"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="w">   </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w"> </span><span class="c1">// invalid! (+ cannot apply to &amp;int)</span>
+<span class="w">   </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">test</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">x</span><span class="w"> </span>: <span class="kp">&amp;</span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">bool</span> <span class="p">{</span>
+<span class="w">   </span><span class="k">match</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nb">None</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">     </span><span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w">  </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span><span class="c1">// Also valid, equivalent:</span>
+<span class="w">   </span><span class="k">match</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="o">&amp;</span><span class="nb">None</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">     </span><span class="o">&amp;</span><span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>Simple references not not allow modifying the underlying object;
+if mutability by reference is desired, use “<code class="docutils literal">&amp;mut</code>” as follows:</p>
+<div class="highlight"><pre><span></span><span class="k">fn</span> <span class="nf">incx</span><span class="p">(</span><span class="n">x</span><span class="w"> </span>: <span class="kp">&amp;</span><span class="nc">int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">   </span><span class="c1">// invalid! (mismatched types in "int&amp; = int")</span>
+<span class="w">   </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// invalid! (*x is immutable)</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">inc</span><span class="p">(</span><span class="n">x</span><span class="w"> </span>: <span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">   </span><span class="c1">// invalid! (x is immutable)</span>
+<span class="w">   </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">inc</span><span class="p">(</span><span class="o">&amp;</span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// invalid! (3 is immutable)</span>
+<span class="w">   </span><span class="n">inc</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK, temp var forgotten after call</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">   </span><span class="n">inc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="c1">// invalid! (v is immutable)</span>
+<span class="w">   </span><span class="n">inc</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK, temp var forgotten after call</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">   </span><span class="n">inc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">w</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+<p>Rust’s type system <em>forbids mutable aliases</em> via references: it is not
+possible to modify the same object using different names via
+references, unlike in C. This is done via the concept of <strong>borrowing</strong>: while
+ownership of an object is borrowed by a reference, the original variable
+cannot be used any more. For example:</p>
+<div class="highlight"><pre><span></span><span class="w"> </span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK, prints 2</span>
+<span class="w">    </span><span class="c1">// {...} introduces a new scope:</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">let</span><span class="w"> </span><span class="n">ra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="w">      </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">   </span><span class="c1">// invalid! (a is borrowed by ra)</span>
+<span class="w">      </span><span class="o">*</span><span class="n">ra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="w">      </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span><span class="w"> </span><span class="c1">// invalid! (a is borrowed)</span>
+<span class="w">      </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">ra</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK, prints 3</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="c1">// end of scope, rb is dropped.</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK, a not borrowed any more (prints 3)</span>
+<span class="p">}</span>
+</pre></div>
+<p>Reference types, together with “all values are immutable by default”
+and the ownership/borrowing rules, are the core features of Rust’s
+type system that make it fundamentally safer than C’s.</p>
+</div>
+<div class="section" id="lifetime-and-storage-and-managed-objects">
+<h2><a class="toc-backref" href="#toc-entry-7">Lifetime and storage, and managed objects</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The concepts and syntax presented in this section are new in Rust
+version 0.11. Rust 0.10 and previous versions used different
+concepts, terminology and syntax.</p>
+<p class="last">Also, at the time of this writing (July 2014) the official Rust
+manual and tutorials are not yet updated to the latest language
+implementation. This section follows the implementation, not the manuals.</p>
+</div>
+<div class="section" id="introduction">
+<h3>Introduction</h3>
+<p>Rust is defined over the same <em>abstract machine model</em> as C.  The
+abstract machine has segments of memory, and the language’s run-time
+machinery can allocate and deallocate segments of memory over time during
+program execution.</p>
+<p>In the abstract machine, the two following concepts are defined in
+Rust just like in C:</p>
+<ul class="simple">
+<li>the <em>storage</em> of an object determines the type of memory where the object is stored;</li>
+<li>the <em>lifetime</em> or <em>storage duration</em> of an object is the segment of
+time from the point an object is allocated to the point where it is deallocated.</li>
+</ul>
+<p>All memory-related problems in C come from the fact that C programs
+can manipulate references to objects <em>outside of their lifetime</em> (ie. before
+they are allocated or after they are deallocated), or <em>outside of their
+storage</em> (ie. at lower or higher addresses in memory).</p>
+<p>Rust goes to great lengths to prevent all these problems altogether,
+by <strong>ensuring that objects cannot be used outside of their lifetime or
+their storage</strong>.</p>
+</div>
+<div class="section" id="storages-in-rust-vs-c">
+<h3>Storages in Rust vs. C</h3>
+<p>There are four kinds of storage in the C/Rust abstract machine:
+static, thread, automatic and allocated.</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 14%"/>
+<col style="width: 40%"/>
+<col style="width: 46%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Storage</th>
+<th class="head">Type of memory used</th>
+<th class="head">Example in C</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>static</td>
+<td>process-wide special segment</td>
+<td><code class="docutils literal">static int i;</code></td>
+</tr>
+<tr><td>automatic</td>
+<td>stack</td>
+<td><code class="docutils literal">int i;</code> (in function scope)</td>
+</tr>
+<tr><td>allocated</td>
+<td>global heap</td>
+<td><code class="docutils literal">int *i = <span class="pre">malloc(sizeof(int));</span></code></td>
+</tr>
+<tr><td>thread</td>
+<td>per-thread heap</td>
+<td><code class="docutils literal">_Thread_local int i;</code></td>
+</tr>
+</tbody>
+</table>
+<p>In C, the lifetime of an object is solely determined by its storage:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 14%"/>
+<col style="width: 86%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Storage</th>
+<th class="head">Lifetime in C</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>static</td>
+<td>From program start to termination</td>
+</tr>
+<tr><td>automatic</td>
+<td>From start of scope to end of scope, one per activation frame</td>
+</tr>
+<tr><td>allocated</td>
+<td>From <code class="docutils literal">malloc</code> to <code class="docutils literal">free</code> (or <code class="docutils literal">mmap</code> to <code class="docutils literal">munmap</code>, etc)</td>
+</tr>
+<tr><td>thread</td>
+<td>From object allocation to thread termination</td>
+</tr>
+</tbody>
+</table>
+<p>In Rust, the lifetime of static and automatic objects
+is the same as in C; however:</p>
+<ul>
+<li><p class="first">Rust introduces a new “box” type with dedicated syntax for heap
+allocated objects, which are called <em>managed objects</em>.</p>
+<p>Rust supports multiple management strategies for boxes, <em>associated
+to different typing rules</em>.</p>
+</li>
+<li><p class="first">The default management strategy for boxes ensures that <strong>boxes are
+uniquely owned</strong>, so that the compiler knows precisely when the
+lifetime of a box ends and where it can be safely deallocated
+without the need for extra machinery like reference counting or
+garbage collection.</p>
+</li>
+<li><p class="first">Another strategy is <span class="caps">GC</span>, that uses deferred garbage collection: the
+storage for <span class="caps">GC</span> boxes is reclaimed and made available for reuse at
+some point when the Rust run-time system can determine that they are
+not needed any more. (This may delay reclamation for an unpredictable
+amount of time.) References to <span class="caps">GC</span> boxes need not be unique, so <span class="caps">GC</span> boxes
+are an appropriate type to build complex data structures with common
+nodes, like arbitrary graphs.</p>
+</li>
+<li><p class="first">Unlike C, <strong>Rust forbids sharing of managed objects across
+threads</strong>: like in Erlang, objects have a single owner for
+allocation, and most objects are entirely private to each
+thread. This eliminates most data races. Also the single thread ownership
+implies that garbage collection for <span class="caps">GC</span> objects does not require
+inter-thread synchronization, so it is easier to implement and can
+run faster.</p>
+</li>
+<li><p class="first">As with references to normal objects, <strong>Rust forbids mutable
+aliases</strong> with references to managed objects.</p>
+</li>
+<li><p class="first"><strong>All vector accesses are bound checked, and references do not support
+pointer arithmetic.</strong></p>
+</li>
+<li><p class="first">Rust strongly discourages all uses of unmanaged pointers, by
+tainting them with the <code class="docutils literal">unsafe</code> attribute which systematically
+elicits compilers warnings.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="creating-and-using-boxes">
+<h3>Creating and using boxes</h3>
+<p>The Rust handling of managed objects is relatively simple: the <code class="docutils literal">box</code>
+keyword in expressions “puts objects into boxes”, where their lifetime
+is managed dynamically. The immutability and ownership of boxes is
+handled like with references described earlier:</p>
+<div class="highlight"><pre><span></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="mi">3</span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">// b has type Box&lt;int&gt;</span>
+<span class="w">  </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">// invalid! can't assign int to box&lt;int&gt;</span>
+<span class="w">  </span><span class="o">*</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">// invalid! b is immutable, so is the box</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="mi">3</span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">// c has type mut Box&lt;int&gt;</span>
+<span class="w">  </span><span class="o">*</span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK</span>
+
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="fm">vec!</span><span class="p">(</span><span class="mi">1</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// r1 has type Box&lt;Vec&lt;int&gt;&gt;</span>
+<span class="w">  </span><span class="o">*</span><span class="n">v</span><span class="p">.</span><span class="n">get_mut</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"> </span><span class="c1">// invalid! v is immutable, so is the box</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="fm">vec!</span><span class="p">(</span><span class="mi">1</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+<span class="w">  </span><span class="o">*</span><span class="n">w</span><span class="p">.</span><span class="n">get_mut</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK, rust 0.11.1+ also permits w[0] = 42</span>
+
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">;</span><span class="w"> </span><span class="c1">// z has type Box&lt;Vec&lt;int&gt;&gt;, captures box</span>
+<span class="w">  </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">);</span><span class="w"> </span><span class="c1">// invalid! box has moved to z</span>
+
+<span class="w">  </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="fm">vec!</span><span class="p">(</span><span class="mi">2</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="w"> </span><span class="c1">// overwrites reference, not box contents</span>
+<span class="w">  </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{} {}"</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK, prints [2,4,5] [42,2,3]</span>
+<span class="p">}</span>
+</pre></div>
+<p>The <code class="docutils literal">box</code> keyword in expressions is actually a shorthand form for <code class="docutils literal">box(<span class="caps">HEAP</span>)</code>.
+The general form “<code class="docutils literal">box(A) E</code>” places the result of the evaluation of <code class="docutils literal">E</code>
+in a memory object allocated by <code class="docutils literal">A</code>, which is a trait. As of Rust 0.11, the only other
+allocator in the standard library is <code class="docutils literal"><span class="caps">GC</span></code>, for garbage collected objects.</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 14%"/>
+<col style="width: 12%"/>
+<col style="width: 73%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Expression</th>
+<th class="head">Type</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">box v</code></td>
+<td>Box&lt;T&gt;</td>
+<td>Unique reference to a copy of <code class="docutils literal">v</code>, shorthand for <code class="docutils literal">box(<span class="caps">HEAP</span>) v</code></td>
+</tr>
+<tr><td><code class="docutils literal">box(<span class="caps">GC</span>) v</code></td>
+<td>Gc&lt;T&gt;</td>
+<td>Garbage-collected smart pointer to a copy of <code class="docutils literal">v</code></td>
+</tr>
+<tr><td><code class="docutils literal">box(A) v</code></td>
+<td>??&lt;T&gt;</td>
+<td>Some kind of smart pointer; <code class="docutils literal">A</code> must implement a special trait.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="recursive-data-structures">
+<h3>Recursive data structures</h3>
+<p>Managed objects are the “missing link” to implement proper recursive
+algebraic data types:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<tbody>
+<tr><td><div class="first last"><div class="highlight"><pre><span></span><span class="c1">// Rust</span>
+<span class="k">enum</span> <span class="nc">Lst</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">Nil</span><span class="p">,</span>
+<span class="w">   </span><span class="n">Cons</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="n">Lst</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;&gt;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">fn</span> <span class="nf">len</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">l</span><span class="w"> </span>: <span class="kp">&amp;</span><span class="nc">Lst</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">uint</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">match</span><span class="w"> </span><span class="o">*</span><span class="n">l</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="n">Nil</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">     </span><span class="n">Cons</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="k">ref</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="kd">let</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="n">Cons</span><span class="p">(</span><span class="sc">'a'</span><span class="p">,</span>
+<span class="w">            </span><span class="k">box</span><span class="w"> </span><span class="n">Cons</span><span class="p">(</span><span class="sc">'b'</span><span class="p">,</span>
+<span class="w">             </span><span class="k">box</span><span class="w"> </span><span class="n">Nil</span><span class="p">));</span>
+<span class="w">   </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">l</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="c">(* OCaml *)</span>
+<span class="k">type</span> <span class="k">'</span><span class="n">t</span> <span class="n">lst</span> <span class="o">=</span>
+    <span class="nc">Nil</span>
+  <span class="o">|</span> <span class="nc">Cons</span> <span class="k">of</span> <span class="k">'</span><span class="n">t</span> <span class="o">*</span> <span class="k">'</span><span class="n">t</span> <span class="n">lst</span>
+
+<span class="k">let</span> <span class="n">len</span> <span class="n">l</span> <span class="o">=</span>
+  <span class="k">match</span> <span class="n">l</span> <span class="k">with</span>
+  <span class="o">|</span> <span class="nc">Nil</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="o">|</span> <span class="nc">Cons</span><span class="o">(_,</span> <span class="n">x</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">len</span> <span class="n">x</span>
+
+
+
+
+<span class="k">let</span> <span class="n">l</span> <span class="o">=</span> <span class="nc">Cons</span><span class="o">(</span><span class="sc">'a'</span><span class="o">,</span>
+          <span class="nc">Cons</span><span class="o">(</span><span class="sc">'b'</span><span class="o">,</span>
+              <span class="nc">Nil</span><span class="o">));</span>
+<span class="n">print_int</span> <span class="o">(</span><span class="n">len</span> <span class="n">l</span><span class="o">)</span>
+</pre></div>
+</div></td>
+<td><div class="first last"><div class="highlight"><pre><span></span><span class="cm">{- Haskell -}</span>
+<span class="kr">data</span><span class="w"> </span><span class="kt">Lst</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="kt">Nil</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="kt">Cons</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="kt">Lst</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+
+<span class="kr">let</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="kr">case</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">    </span><span class="kt">Nil</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="kt">Cons</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="n">x</span>
+
+
+
+<span class="nf">main</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">         </span><span class="kr">let</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Cons</span><span class="w"> </span><span class="sc">'a'</span>
+<span class="w">                      </span><span class="p">(</span><span class="kt">Cons</span><span class="w"> </span><span class="sc">'b'</span>
+<span class="w">                            </span><span class="kt">Nil</span><span class="p">)</span>
+<span class="w">         </span><span class="n">putStrLn</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">l</span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="shared-objects-rc-and-arc">
+<h2><a class="toc-backref" href="#toc-entry-8">Shared objects: Rc and Arc</a></h2>
+<p>In complement to the facilities offered by <code class="docutils literal">box</code>, the Rust standard
+library also implements two implementations of <strong>reference counted
+wrappers to immutable objects</strong> that can be referred to from multiple owners:</p>
+<div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">std</span>::<span class="n">rc</span>::<span class="n">Rc</span><span class="p">;</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rc</span>::<span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="n">i</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">"{} {}"</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+<p>The use of reference counts ensures that an object gets deallocated
+exactly when its last reference is dropped.  The trade-off with boxes
+is that the reference counter must be updated every time a new
+reference is created or a reference is dropped.</p>
+<p>Two implementations are provided: <code class="docutils literal"><span class="pre">std::rc::Rc</span></code> and
+<code class="docutils literal"><span class="pre">std::arc::Arc</span></code>. Both offer the same interface. The reason for this
+duplication is to offer a controllable trade-off over performance to
+programmers: <code class="docutils literal">Rc</code> does not use memory atomics, so it is more
+lightweight and thus faster, however it cannot be shared across
+threads. <code class="docutils literal">Arc</code> does use atomics, is thus slightly less efficient
+than <code class="docutils literal">Rc</code>, but can be used to share data across threads.</p>
+</div>
+<div class="section" id="macros-and-meta-programming">
+<h2><a class="toc-backref" href="#toc-entry-9">Macros and meta-programming</a></h2>
+<p>The basic syntax of a macro definition is as follows:</p>
+<div class="highlight"><pre><span></span><span class="fm">macro_rules!</span><span class="w"> </span><span class="n">MACRONAME</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">(</span><span class="n">PATTERN</span><span class="o">..</span><span class="p">.)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">EXPANSION</span><span class="o">..</span><span class="p">.);</span>
+<span class="w">    </span><span class="p">(</span><span class="n">PATTERN</span><span class="o">..</span><span class="p">.)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">EXPANSION</span><span class="o">..</span><span class="p">.);</span>
+<span class="w">    </span><span class="o">..</span><span class="p">.</span>
+<span class="p">)</span>
+</pre></div>
+<p>For example, the following macro defines a Pascal-like <code class="docutils literal">for</code> loop:</p>
+<div class="highlight"><pre><span></span><span class="fm">macro_rules!</span><span class="w"> </span><span class="n">pfor</span><span class="w"> </span><span class="p">(</span>
+<span class="w">   </span><span class="p">(</span><span class="cp">$x</span>:<span class="nc">ident</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">$s</span>:<span class="nc">expr</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="cp">$e</span>:<span class="nc">expr</span><span class="w"> </span><span class="cp">$body</span>:<span class="nc">expr</span><span class="p">)</span>
+<span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="k">match</span><span class="w"> </span><span class="cp">$e</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="cp">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">$s</span><span class="p">;</span>
+<span class="w">              </span><span class="k">loop</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                   </span><span class="cp">$body</span><span class="p">;</span>
+<span class="w">                   </span><span class="cp">$x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">                   </span><span class="k">if</span><span class="w"> </span><span class="cp">$x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">break</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}});</span>
+<span class="p">);</span>
+
+<span class="c1">// Example use:</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="n">pfor</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="w">     </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+<p>Note how this macro uses the <code class="docutils literal">match</code> statement to assign a local
+name to an expression, so that it does not get evaluated more than once.</p>
+<p>Like in Scheme, macros can be recursive. For example, the following
+macro uses recursion to implement <code class="docutils literal">pfor</code> both with and without <code class="docutils literal">step</code>:</p>
+<div class="highlight"><pre><span></span><span class="fm">macro_rules!</span><span class="w"> </span><span class="n">pfor</span><span class="w"> </span><span class="p">(</span>
+<span class="w">   </span><span class="p">(</span><span class="cp">$x</span>:<span class="nc">ident</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">$s</span>:<span class="nc">expr</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="cp">$e</span>:<span class="nc">expr</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="cp">$st</span>:<span class="nc">expr</span><span class="w"> </span><span class="cp">$body</span>:<span class="nc">expr</span><span class="p">)</span>
+<span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="k">match</span><span class="w"> </span><span class="cp">$e</span><span class="p">,</span><span class="cp">$st</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="cp">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">$s</span><span class="p">;</span>
+<span class="w">              </span><span class="k">loop</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                   </span><span class="cp">$body</span><span class="p">;</span>
+<span class="w">                   </span><span class="cp">$x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">st</span><span class="p">;</span>
+<span class="w">                   </span><span class="k">if</span><span class="w"> </span><span class="cp">$x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">break</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}});</span>
+<span class="w">   </span><span class="p">(</span><span class="cp">$x</span>:<span class="nc">ident</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">$s</span>:<span class="nc">expr</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="cp">$e</span>:<span class="nc">expr</span><span class="w"> </span><span class="cp">$body</span>:<span class="nc">expr</span><span class="p">)</span>
+<span class="w">      </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">pfor</span><span class="o">!</span><span class="p">(</span><span class="cp">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">$s</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="cp">$e</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="cp">$body</span><span class="p">));</span>
+<span class="p">);</span>
+
+<span class="c1">// Example use:</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="n">pfor</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="w">     </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+<p>Macros can also be variadic, in that arbitrary repetitions of a syntax
+form can be captured by one macro argument. For example, the following
+macro invokes <code class="docutils literal">println!</code> on each of its arguments, which can
+be of arbitrary type:</p>
+<div class="highlight"><pre><span></span><span class="fm">macro_rules!</span><span class="w"> </span><span class="n">printall</span><span class="w"> </span><span class="p">(</span>
+<span class="w">     </span><span class="p">(</span><span class="w"> </span><span class="cp">$(</span><span class="w"> </span><span class="cp">$arg</span>:<span class="nc">expr</span><span class="w"> </span><span class="p">),</span><span class="o">*</span><span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">          </span><span class="cp">$(</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span><span class="w"> </span><span class="cp">$arg</span><span class="p">)</span><span class="w"> </span><span class="p">);</span><span class="o">*</span>
+<span class="w">     </span><span class="p">);</span>
+<span class="p">);</span>
+
+<span class="c1">// example use:</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printall</span><span class="o">!</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mf">3.14</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>The syntax works as follows: on the left hand side (pattern) the form
+<code class="docutils literal">$( <span class="caps">PAT</span> )<span class="caps">DELIM</span>*</code> matches zero or more occurrences of <span class="caps">PAT</span> delimited
+by <code class="docutils literal"><span class="caps">DELIM</span></code>; on the right hand side (expansion), the form <code class="docutils literal">$( <span class="caps">TEXT</span>
+)<span class="caps">DELIM</span>*</code> expands to one or more repetitions of <code class="docutils literal"><span class="caps">TEXT</span></code> separated by
+<code class="docutils literal"><span class="caps">DELIM</span></code>. The number of repetitions of the expansion is determined by
+the number of matches of the enclosed macro argument(s). In the
+example, each argument (separated by commas) is substituted by a
+corresponding invocation of <code class="docutils literal">println!</code>, separated by semicolons.</p>
+</div>
+<div class="section" id="literals">
+<h2><a class="toc-backref" href="#toc-entry-10">Literals</a></h2>
+<p>Rust provides various lexical forms for number literals:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 20%"/>
+<col style="width: 14%"/>
+<col style="width: 11%"/>
+<col style="width: 29%"/>
+<col style="width: 25%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Rust syntax</th>
+<th class="head">Same as</th>
+<th class="head">Type</th>
+<th class="head">Haskell equivalent</th>
+<th class="head">OCaml equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">123i</code></td>
+<td> </td>
+<td>int</td>
+<td><code class="docutils literal">123 :: Int</code></td>
+<td><code class="docutils literal">123</code></td>
+</tr>
+<tr><td><code class="docutils literal">123u</code></td>
+<td> </td>
+<td>uint</td>
+<td><code class="docutils literal">123 :: Word</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">123i8</code></td>
+<td> </td>
+<td>i8</td>
+<td><code class="docutils literal">123 :: Int8</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">123u8</code></td>
+<td> </td>
+<td>u8</td>
+<td><code class="docutils literal">123 :: Word8</code></td>
+<td><code class="docutils literal">Char.chr 123</code></td>
+</tr>
+<tr><td><code class="docutils literal">123i16</code></td>
+<td> </td>
+<td>i16</td>
+<td><code class="docutils literal">123 :: Int16</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">123u16</code></td>
+<td> </td>
+<td>u16</td>
+<td><code class="docutils literal">123 :: Word16</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">123i32</code></td>
+<td> </td>
+<td>i32</td>
+<td><code class="docutils literal">123 :: Int32</code></td>
+<td><code class="docutils literal">123l</code></td>
+</tr>
+<tr><td><code class="docutils literal">123u32</code></td>
+<td> </td>
+<td>u32</td>
+<td><code class="docutils literal">123 :: Word32</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">123i64</code></td>
+<td> </td>
+<td>i64</td>
+<td><code class="docutils literal">123 :: Int64</code></td>
+<td><code class="docutils literal">123L</code></td>
+</tr>
+<tr><td><code class="docutils literal">123u64</code></td>
+<td> </td>
+<td>u64</td>
+<td><code class="docutils literal">123 :: Word64</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">1_2_3_4</code></td>
+<td><code class="docutils literal">1234</code></td>
+<td>(integer)</td>
+<td> </td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">1234_i</code></td>
+<td><code class="docutils literal">1234i</code></td>
+<td>int</td>
+<td> </td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">0x1234</code></td>
+<td><code class="docutils literal">4660</code></td>
+<td>(integer)</td>
+<td><code class="docutils literal">0x1234</code></td>
+<td><code class="docutils literal">0x1234</code></td>
+</tr>
+<tr><td><code class="docutils literal">0x1234u16</code></td>
+<td><code class="docutils literal">4660u16</code></td>
+<td>u16</td>
+<td><code class="docutils literal">0x1234 :: Word16</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">0b1010</code></td>
+<td><code class="docutils literal">10</code></td>
+<td>(integer)</td>
+<td> </td>
+<td><code class="docutils literal">0b1010</code></td>
+</tr>
+<tr><td><code class="docutils literal">0o1234</code></td>
+<td><code class="docutils literal">668</code></td>
+<td>(integer)</td>
+<td><code class="docutils literal">0o1234</code></td>
+<td><code class="docutils literal">0o1234</code></td>
+</tr>
+<tr><td><code class="docutils literal">b'a'</code></td>
+<td><code class="docutils literal">97u8</code></td>
+<td>u8</td>
+<td> </td>
+<td><code class="docutils literal">'a'</code></td>
+</tr>
+<tr><td><code class="docutils literal">b"a"</code></td>
+<td><code class="docutils literal">[97u8]</code></td>
+<td>[u8]</td>
+<td> </td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">12.34</code></td>
+<td> </td>
+<td>(float)</td>
+<td><code class="docutils literal">12.34</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">12.34f32</code></td>
+<td> </td>
+<td>f32</td>
+<td><code class="docutils literal">12.34 :: Float</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">12.34f64</code></td>
+<td> </td>
+<td>f64</td>
+<td><code class="docutils literal">12.34 :: Double</code></td>
+<td><code class="docutils literal">12.34</code></td>
+</tr>
+<tr><td><code class="docutils literal">12e34</code></td>
+<td><code class="docutils literal">1.2e35</code></td>
+<td>(float)</td>
+<td><code class="docutils literal">12e34</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">12E34</code></td>
+<td><code class="docutils literal">1.2e35</code></td>
+<td>(float)</td>
+<td><code class="docutils literal">12E34</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">12E+34</code></td>
+<td><code class="docutils literal">1.2e35</code></td>
+<td>(float)</td>
+<td><code class="docutils literal">12E+34</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">12E-34</span></code></td>
+<td><code class="docutils literal"><span class="pre">1.2e-33</span></code></td>
+<td>(float)</td>
+<td><code class="docutils literal"><span class="pre">12E-34</span></code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">1_2e34</code></td>
+<td><code class="docutils literal">12e34</code></td>
+<td>(float)</td>
+<td> </td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">1_2e3_4</code></td>
+<td><code class="docutils literal">12e34</code></td>
+<td>(float)</td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p>Escapes in character, byte and string literals:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 22%"/>
+<col style="width: 15%"/>
+<col style="width: 15%"/>
+<col style="width: 11%"/>
+<col style="width: 22%"/>
+<col style="width: 15%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Syntax</th>
+<th class="head">Same as</th>
+<th class="head">Syntax</th>
+<th class="head">Same as</th>
+<th class="head">Syntax</th>
+<th class="head">Same as</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">'\x61'</code></td>
+<td><code class="docutils literal">'a'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\x61'</span></code></td>
+<td>97u8</td>
+<td><code class="docutils literal">"\x61"</code></td>
+<td><code class="docutils literal">"a"</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">'\\'</span></code></td>
+<td><code class="docutils literal">'\x5c'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\\'</span></code></td>
+<td>92u8</td>
+<td><code class="docutils literal"><span class="pre">"\\"</span></code></td>
+<td><code class="docutils literal">"\x5c"</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">'\''</span></code></td>
+<td><code class="docutils literal">'\x27'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\''</span></code></td>
+<td>39u8</td>
+<td><code class="docutils literal"><span class="pre">"\""</span></code></td>
+<td><code class="docutils literal">"\x22"</code></td>
+</tr>
+<tr><td><code class="docutils literal">'\0'</code></td>
+<td><code class="docutils literal">'\x00'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\0'</span></code></td>
+<td>0u8</td>
+<td><code class="docutils literal">"\0"</code></td>
+<td><code class="docutils literal">"\x00"</code></td>
+</tr>
+<tr><td><code class="docutils literal">'\t'</code></td>
+<td><code class="docutils literal">'\x09'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\t'</span></code></td>
+<td>9u8</td>
+<td><code class="docutils literal">"\t"</code></td>
+<td><code class="docutils literal">"\x09"</code></td>
+</tr>
+<tr><td><code class="docutils literal">'\n'</code></td>
+<td><code class="docutils literal">'\x0a'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\n'</span></code></td>
+<td>10u8</td>
+<td><code class="docutils literal">"\n"</code></td>
+<td><code class="docutils literal">"\x0a"</code></td>
+</tr>
+<tr><td><code class="docutils literal">'\r'</code></td>
+<td><code class="docutils literal">'\x0d'</code></td>
+<td><code class="docutils literal"><span class="pre">b'\r'</span></code></td>
+<td>13u8</td>
+<td><code class="docutils literal">"\r"</code></td>
+<td><code class="docutils literal">"\x0d"</code></td>
+</tr>
+<tr><td><code class="docutils literal">'\u0123'</code></td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td><code class="docutils literal">"\u0123"</code></td>
+<td> </td>
+</tr>
+<tr><td><code class="docutils literal">'\U00012345'</code></td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td><code class="docutils literal">"\U00012345"</code></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p>Note that the other common escapes in the C family (<code class="docutils literal">\a</code>, <code class="docutils literal">\f</code>,
+etc.) are not valid in Rust, nor are octal escapes (eg. <code class="docutils literal">\0123</code>).</p>
+<p>Finally, Rust like Python supports raw strings and multiple string delimiters, to
+avoid quoting occurrences of the delimiters within the string:</p>
+<table class="docutils borderless">
+<colgroup>
+<col style="width: 21%"/>
+<col style="width: 15%"/>
+<col style="width: 24%"/>
+<col style="width: 40%"/>
+</colgroup>
+<thead>
+<tr><th class="head">Syntax</th>
+<th class="head">String value</th>
+<th class="head">Syntax</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code class="docutils literal">"foo"</code></td>
+<td><code class="docutils literal">foo</code></td>
+<td><code class="docutils literal">b"foo"</code></td>
+<td><code class="docutils literal">[102u8,111,111]</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">"fo\"o"</span></code></td>
+<td><code class="docutils literal">fo"o</code></td>
+<td><code class="docutils literal"><span class="pre">b"fo\"o"</span></code></td>
+<td><code class="docutils literal">[102u8,111,34,111]</code></td>
+</tr>
+<tr><td><code class="docutils literal">r"fo\n"</code></td>
+<td><code class="docutils literal">fo\n</code></td>
+<td><code class="docutils literal">rb"fo\n"</code></td>
+<td><code class="docutils literal">[102u8,111,92,110]</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">r#"fo\"o"#</span></code></td>
+<td><code class="docutils literal"><span class="pre">fo\"o</span></code></td>
+<td><code class="docutils literal"><span class="pre">rb#"fo\"o"#</span></code></td>
+<td><code class="docutils literal">[102u8,111,92,34,111]</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">"foo#\"#bar"</span></code></td>
+<td><code class="docutils literal"><span class="pre">foo#"#bar</span></code></td>
+<td><code class="docutils literal"><span class="pre">b"foo#\"#bar"</span></code></td>
+<td><code class="docutils literal">[102u8,111,111,35,34,35,98,97,114]</code></td>
+</tr>
+<tr><td><code class="docutils literal"><span class="pre">r##"foo#"#bar"##</span></code></td>
+<td><code class="docutils literal"><span class="pre">foo#"#bar</span></code></td>
+<td><code class="docutils literal"><span class="pre">rb##"foo#"#bar"##</span></code></td>
+<td><code class="docutils literal">[102u8,111,111,35,34,35,98,97,114]</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="acknowledgements">
+<h2><a class="toc-backref" href="#toc-entry-11">Acknowledgements</a></h2>
+<p>Many thanks to the numerous commenters on Reddit and Hacker news who
+provided high-quality comments and substantively contributed to
+improving upon the first version of this article.</p>
+</div>
+<div class="section" id="references">
+<h2><a class="toc-backref" href="#toc-entry-12">References</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://doc.rust-lang.org/0.10/tutorial.html">The Rust Language Tutorial</a>, version 0.10, April 2014.</li>
+<li><a class="reference external" href="http://doc.rust-lang.org/0.11.0/tutorial.html">The Rust Language Tutorial</a>, version 0.11.0, July 2014.</li>
+<li><a class="reference external" href="http://doc.rust-lang.org/0.11.0/guide.html">The Rust Guide</a>, version 0.11.0, July 2014.</li>
+<li>Aaron Turon, <a class="reference external" href="https://aturon.github.io/">Rust Guidelines</a>, 2014.</li>
+<li>Will Yager. <a class="reference external" href="http://yager.io/programming/go.html">Why Go is not good</a>, 2014. Explains how Go lacks many
+features found in Rust and thereby fails to be a modern functional language.</li>
+<li>Edward Z. Yang, <a class="reference external" href="http://blog.ezyang.com/2010/10/ocaml-for-haskellers/">OCaml for Haskellers</a>, October 2010.</li>
+<li>Raphael ‘kena’ Poss, <a class="reference external" href="https://dr-knz.net/haskell-for-ocaml-programmers.html">Haskell for OCaml programmers</a>, March 2014.</li>
+<li>Xavier Leroy et al., <a class="reference external" href="http://caml.inria.fr/pub/docs/manual-ocaml-4.01/">The OCaml system release 4.01</a>, September 2013.</li>
+</ul>
+</div>
+
+
+
+             
+
+
+<div class="applause_button">
+    <applause-button url=https://dr-knz.net/rust-for-functional-programmers.html> </applause-button>
+</div>
+
+ 
+                <p id="post-share-links">
+    Like this post? Share on:
+      <a href="https://bsky.app/intent/compose?text=Rust%20for%20functional%C2%A0programmers%20https%3A//dr-knz.net/rust-for-functional-programmers.html" target="_blank" rel="nofollow noopener noreferrer" title="Share on BlueSky">BlueSky</a>
+ ❄       <a href="https://twitter.com/intent/tweet?text=Rust%20for%20functional%C2%A0programmers&url=https%3A//dr-knz.net/rust-for-functional-programmers.html&via=kena42&hashtags=rust,haskell,ocaml,functional-programming,language-comparison,analysis,programming-languages" target="_blank" rel="nofollow noopener noreferrer" title="Share on Twitter">Twitter</a>
+ ❄       <a href="https://news.ycombinator.com/submitlink?t=Rust%20for%20functional%C2%A0programmers&u=https%3A//dr-knz.net/rust-for-functional-programmers.html" target="_blank" rel="nofollow noopener noreferrer" title="Share on HN">HN</a>
+ ❄       <a href="https://www.reddit.com/submit?url=https%3A//dr-knz.net/rust-for-functional-programmers.html&title=Rust%20for%20functional%C2%A0programmers" target="_blank" rel="nofollow noopener noreferrer" title="Share on Reddit">Reddit</a>
+ ❄       <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A//dr-knz.net/rust-for-functional-programmers.html&title=Rust%20for%20functional%C2%A0programmers&summary=This%20post%20follows%20up%20on%20OCaml%20for%20Haskellers%20from%0AEdward%20Z.%20Yang%20%282010%29%20and%20my%20own%20Haskell%20for%20OCaml%20programmers%0Afrom%20earlier%20this%C2%A0year.%0A%0A%0ANote%0AThe%20latest%20version%20of%20this%20document%20can%20be%20found%20online%20at%0Ahttps%3A//dr-knz.net/rust-for-functional-programmers.html.%0AAlternate%20formats%3A%0ASource%2C%0APDF.%0A%0A%0APrologue%0ARust%20for%20C%20programmers%20%E2%80%A6&source=https%3A//dr-knz.net/rust-for-functional-programmers.html" target="_blank" rel="nofollow noopener noreferrer" title="Share on LinkedIn">LinkedIn</a>
+ ❄       <a href="mailto:?subject=Rust%20for%20functional%C2%A0programmers&amp;body=https%3A//dr-knz.net/rust-for-functional-programmers.html" target="_blank" rel="nofollow noopener noreferrer" title="Share via Email">Email</a>
+
+            
+            
+
+
+
+
+
+
+
+<section>
+    <h6 style="display:none;">Comments</h6>
+    <p id="comment-message">Interested to discuss? Leave your comments below. </p>
+
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle disqus-comment-count comment-count collapsed"
+                   data-toggle="collapse"
+                   data-parent="#accordion2"
+                   href="https://dr-knz.net/rust-for-functional-programmers.html#comment_thread"
+                   id="comment-accordion-toggle">
+                    Comments
+                </a>
+            </div>
+            <div id="comment_thread" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div class="comments">
+
+                        <script src="https://utteranc.es/client.js"
+        data-repo="knz/drknz"
+        data-issue-term="https://dr-knz.net/rust-for-functional-programmers.html"
+        data-label="💬drknz-comments"
+        data-theme=""
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+            <hr/>
+<section>
+    <h2>Keep Reading</h2>
+<ul class="related-posts-list">
+<li><a href="https://dr-knz.net/finding-the-right-language.html" title="Finding the right tool for the job - FAIL">Finding the right tool for the job - FAIL</a></li>
+<li><a href="https://dr-knz.net/haskell-for-ocaml-programmers.html" title="Haskell for OCaml programmers">Haskell for OCaml programmers</a></li>
+<li><a href="https://dr-knz.net/categories-from-scratch.html" title="Categories from scratch">Categories from scratch</a></li>
+<li><a href="https://dr-knz.net/abstract-machine-models.html" title="Abstract Machine Models - Also: what Rust got particularly right">Abstract Machine Models <small>Also: what Rust got particularly right</small></a></li>
+<li><a href="https://dr-knz.net/unusual-primitives-in-programming-languages.html" title="Unusual primitives in programming languages">Unusual primitives in programming languages</a></li>
+</ul>
+<hr />
+</section>
+            <aside>
+            <nav>
+            <ul class="articles-timeline">
+                <li class="previous-article">« <a href="https://dr-knz.net/categories-from-scratch.html" title="Previous: Categories from scratch">Categories from scratch</a></li>
+                <li class="next-article"><a href="https://dr-knz.net/programming-levels.html" title="Next: How good are you at programming? - A CEFR-like approach to measure programming proficiency">How good are you at programming? <small class="subtitle">A CEFR-like approach to measure programming proficiency</small></a> »</li>
+            </ul>
+            </nav>
+            </aside>
+        </div>
+        <section id="article-sidebar" class="span2">
+    <h4>Reading Time</h4>
+    <p>~19 min read</p>
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2014-07-02T00:00:00+02:00">Jul 2014</time>
+<h4>Last Updated</h4>
+<time datetime="2020-01-25T00:00:00+01:00">Jan 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://dr-knz.net/categories#programming-ref">Programming</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://dr-knz.net/tags#analysis-ref">analysis
+                    <span class="superscript">26</span>
+</a></li>
+                <li><a href="https://dr-knz.net/tags#functional-programming-ref">functional programming
+                    <span class="superscript">4</span>
+</a></li>
+                <li><a href="https://dr-knz.net/tags#haskell-ref">haskell
+                    <span class="superscript">4</span>
+</a></li>
+                <li><a href="https://dr-knz.net/tags#language-comparison-ref">language comparison
+                    <span class="superscript">3</span>
+</a></li>
+                <li><a href="https://dr-knz.net/tags#ocaml-ref">ocaml
+                    <span class="superscript">3</span>
+</a></li>
+                <li><a href="https://dr-knz.net/tags#programming-languages-ref">programming languages
+                    <span class="superscript">16</span>
+</a></li>
+                <li><a href="https://dr-knz.net/tags#rust-ref">rust
+                    <span class="superscript">3</span>
+</a></li>
+            </ul>
+<h4>Stay in Touch</h4>
+<div id="sidebar-social-link">
+    <a href="https://dr-knz.net/feeds/all.rss.xml" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="RSS" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#f80"/><circle cx="145" cy="367" r="35" fill="#fff"/><path fill="none" stroke="#fff" stroke-width="60" d="M109 241c89 0 162 73 162 162M109 127c152 0 276 124 276 276"/></svg>
+    </a>
+    <a href="https://bsky.app/profile/raphaelposs.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="BlueSky" role="img" viewBox="0 0 600 530"><rect width="600" height="530" rx="15%" fill="#1185fe"/><path fill="#fff" d="M135.72 44.03C202.216 93.951 273.74 195.17 300 249.49c26.262-54.316 97.782-155.54 164.28-205.46C512.26 8.009 590-19.862 590 68.825c0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.38-3.69-10.832-3.708-7.896-.017-2.936-1.193.516-3.707 7.896-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.45-163.25-81.433C20.15 217.613 9.997 86.535 9.997 68.825c0-88.687 77.742-60.816 125.72-24.795z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+        </section>
+</div>
+</article>
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+    <div>
+        Lab notes for <a href="https://raphaelposs.com">raphaelposs.com</a>. Licensed as <a rel="license nofollow noopener noreferrer"
+    href="http://creativecommons.org/licenses/by/4.0/" target="_blank">
+    CC-BY 4.0 Intl</a>. &copy; <a href="https://raphaelposs.com">Raphael Poss</a>
+    </div>
+
+    <div>
+        <span class="site-name">Raphael's workbench</span> - Notes on technology & management
+    </div>
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="https://dr-knz.net/theme/js/elegant.prod.9e9d5ce754.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

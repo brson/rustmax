@@ -1,0 +1,55 @@
+[[posts]]
+id = "understanding-over-guesswork"
+title = "Understanding Over Guesswork"
+author = "Hoverbear"
+url = "https://hoverbear.org/2015/09/12/understand-over-guesswork/"
+category = "Introduction"
+
+[[posts]]
+id = "alternative-intro-to-rust"
+title = "An Alternative Introduction to Rust"
+author = "Steve Klabnik"
+url = "http://words.steveklabnik.com/a-new-introduction-to-rust"
+category = "Introduction"
+
+[[posts]]
+id = "rust-and-csv-parsing"
+title = "Rust and CSV Parsing"
+author = "BurntSushi"
+url = "http://blog.burntsushi.net/csv/"
+category = "Tutorial"
+
+[[posts]]
+id = "rust-for-functional-programmers"
+title = "Rust for Functional Programmers"
+author = "Raphael Poss"
+url = "http://science.raphael.poss.name/rust-for-functional-programmers.html"
+category = "Introduction"
+
+[[posts]]
+id = "five-lists-of-six-things"
+title = "Five Lists of Six Things About Rust"
+author = "Graydon Hoare"
+url = "http://graydon2.dreamwidth.org/214016.html"
+category = "Overview"
+
+[[posts]]
+id = "things-rust-shipped-without"
+title = "Things Rust Shipped Without"
+author = "Graydon Hoare"
+url = "http://graydon2.dreamwidth.org/218040.html"
+category = "Design"
+
+[[posts]]
+id = "rewriting-enjarify-in-rust"
+title = "My Experience Rewriting Enjarify in Rust"
+author = "Robert Grosse"
+url = "https://medium.com/@robertgrosse/my-experience-rewriting-enjarify-in-rust-723089b406ad"
+category = "Experience Report"
+
+[[posts]]
+id = "rust-from-scala"
+title = "Rust: A Scala Engineer's Perspective"
+author = "Beachape"
+url = "https://beachape.com/blog/2017/05/24/rust-from-scala/"
+category = "Experience Report"

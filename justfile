@@ -116,6 +116,22 @@ doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/library
     cp -r work/library/* out/library/
 
+anthology-list:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched list
+
+anthology-status:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched status
+
+anthology-process id:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched process {{id}}
+
+anthology-process-all:
+    cargo run -p rustmax-anthology -- --metadata-dir crates/rustmax-anthology/metadata \
+        --fetched-dir crates/rustmax-anthology/fetched process all
+
 publish-dry:
     cargo publish -p rustmax --dry-run
     cargo publish -p rustmax-cli --dry-run
