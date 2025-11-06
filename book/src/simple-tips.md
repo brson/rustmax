@@ -1,3 +1,22 @@
+## The `Ok::<(), WhateverError>(())` block tail
+
+Sometimes you have a block of code that uses `?`
+but otherwise doesn't return a value,
+and it won't typecheck without a hint.
+
+Usually the prettiest solution is to
+write out the full `Ok` constructor,
+using the [turbofish],
+in thi block's tail expression.
+
+```
+block_on(async {
+    let scan_completion = engine.start_scan(config.C(), None).await?;
+    scan_completion.await??;
+    Ok::<(), AnyError>(())
+})?;
+```
+
 ## Assert `Send` / `Sync`
 
 ```
