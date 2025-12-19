@@ -100,6 +100,7 @@ but that are not yet part of Rustmax.
 
 - [`cargo-duplicates`](https://crates.io/crates/cargo-duplicates)
 - [`cargo-hack`](https://crates.io/crates/cargo-hack)
+- [`cargo-llvm-cov`](https://crates.io/crates/cargo-llvm-cov)
 - [`cargo-outdated`](https://crates.io/crates/cargo-outdated)
 - [`flamegraph`](https://crates.io/crates/flamegraph)
   - and [`inferno`](https://crates.io/crates/inferno)
