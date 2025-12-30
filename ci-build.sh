@@ -7,4 +7,5 @@ rustup default $TOOLCHAIN
 
 cargo install mdbook
 cargo install mdbook-yapp
+cargo install just
 RUSTMAX_CI=1 just build
