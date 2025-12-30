@@ -1,3 +1,17 @@
+# Task: task-upgrade-crates
+
+Check for major version bumps of all the rustmax crate's public dependencies
+(i.e. not the underscore-prefixed hacks).
+Remember in Rust pre-1.0 crates, minor version bumps are considered major.
+
+For each, update the version in Cargo.toml
+and run `just test`.
+
+Keep the ones that pass.
+
+Report on the keepers and non-keepers.
+
+
 # Task: task-review-unreplaced-links
 
 Our crate docs in `doc-src` are displayed in both rustdocs
