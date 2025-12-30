@@ -272,8 +272,10 @@ fn render_chapter(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title} - {book_title}</title>
     <link rel="stylesheet" href="{path_to_root}rmxbook.css">
+    <script>{script}</script>
 </head>
 <body>
+    <button class="nav-toggle" aria-label="Toggle navigation"></button>
     <nav class="sidebar">
         <div class="sidebar-title"><a href="{path_to_root}index.html">{book_title}</a></div>
         {nav}
@@ -296,6 +298,7 @@ fn render_chapter(
         content = html_content,
         prev = prev_link,
         next = next_link,
+        script = generate_script(),
     );
 
     // Write HTML file.
@@ -397,6 +400,29 @@ fn generate_index(book: &Book, output: &Path) -> AnyResult<()> {
     Ok(())
 }
 
+fn generate_script() -> &'static str {
+    r#"(function(){
+  var k = 'rmxbook-nav';
+  var mobile = window.matchMedia('(max-width: 768px)');
+  function init() {
+    var stored = localStorage.getItem(k);
+    var collapsed = stored ? stored === 'collapsed' : mobile.matches;
+    document.body.classList.toggle('nav-collapsed', collapsed);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('nav-toggle')) {
+      var c = document.body.classList.toggle('nav-collapsed');
+      localStorage.setItem(k, c ? 'collapsed' : 'expanded');
+    }
+  });
+})();"#
+}
+
 fn generate_css() -> String {
     r#"/* rmxbook minimal style */
 :root {
@@ -407,6 +433,7 @@ fn generate_css() -> String {
     --sidebar-width: 280px;
     --code-bg: #f4f4f4;
     --border: #ddd;
+    --toggle-size: 36px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -453,6 +480,9 @@ a:hover {
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border);
     padding: 1rem;
+    padding-top: calc(var(--toggle-size) + 1rem);
+    z-index: 1000;
+    transition: transform 0.2s ease;
 }
 
 .sidebar-title {
@@ -485,10 +515,52 @@ a:hover {
     font-weight: bold;
 }
 
+/* Nav toggle button */
+.nav-toggle {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1001;
+    width: var(--toggle-size);
+    height: var(--toggle-size);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--sidebar-bg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-toggle::before {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--fg);
+    box-shadow: 0 6px 0 var(--fg), 0 -6px 0 var(--fg);
+}
+
+.nav-toggle:hover {
+    background: var(--code-bg);
+}
+
+/* Collapsed state */
+.nav-collapsed .sidebar {
+    transform: translateX(-100%);
+}
+
+.nav-collapsed main {
+    margin-left: 0;
+}
+
 main {
     margin-left: var(--sidebar-width);
     padding: 2rem 3rem;
+    padding-top: calc(var(--toggle-size) + 1.5rem);
     max-width: 50rem;
+    transition: margin-left 0.2s ease;
 }
 
 article {
@@ -570,16 +642,20 @@ th {
 
 @media (max-width: 768px) {
     .sidebar {
-        position: static;
         width: 100%;
-        height: auto;
         border-right: none;
         border-bottom: 1px solid var(--border);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .nav-collapsed .sidebar {
+        transform: translateX(-100%);
     }
 
     main {
         margin-left: 0;
         padding: 1rem;
+        padding-top: calc(var(--toggle-size) + 1rem);
     }
 }
 "#.to_string()
