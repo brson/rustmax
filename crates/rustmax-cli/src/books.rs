@@ -425,20 +425,39 @@ fn get_repo(book: &Book) -> AnyResult<()> {
     fs::create_dir_all(BOOK_GIT_DIR)?;
 
     let sh = Shell::new()?;
-    if !fs::exists(dir)? {
+    let need_clone = if fs::exists(dir)? {
+        // Check if existing repo has correct remote.
+        let _pd = sh.push_dir(dir);
+        let current_remote = cmd!(sh, "git remote get-url origin").read().unwrap_or_default();
+        if current_remote.trim() != repo {
+            println!("  Remote mismatch for {}, re-cloning", book.slug);
+            println!("    Expected: {}", repo);
+            println!("    Found: {}", current_remote.trim());
+            drop(_pd);
+            fs::remove_dir_all(dir)?;
+            true
+        } else {
+            false
+        }
+    } else {
+        true
+    };
+
+    if need_clone {
         println!("  Cloning {} from {} (blobless)", book.slug, repo);
         cmd!(sh, "git clone --filter=blob:none {repo} {dir}").run()?;
     } else {
-        println!("  Updating {}", book.slug);
+        println!("  Fetching {}", book.slug);
         let _pd = sh.push_dir(dir);
-        cmd!(sh, "git checkout -f").run()?;
-        cmd!(sh, "git pull").run()?;
+        // Use git fetch to get all refs, not git pull which only fetches the current branch.
+        // The locked commit may be on a different branch or not an ancestor of master.
+        cmd!(sh, "git fetch origin").run()?;
     }
 
-    // Checkout the specific commit
+    // Checkout the specific commit.
     println!("  Checking out commit {} for {}", commit, book.slug);
     let _pd = sh.push_dir(dir);
-    cmd!(sh, "git checkout {commit}").run()?;
+    cmd!(sh, "git checkout -f {commit}").run()?;
 
     Ok(())
 }
