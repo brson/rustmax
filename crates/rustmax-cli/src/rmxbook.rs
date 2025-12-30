@@ -408,20 +408,13 @@ fn generate_index(book: &Book, output: &Path) -> AnyResult<()> {
 fn generate_script() -> &'static str {
     r#"(function(){
   var k = 'rmxbook-nav';
+  var stored = localStorage.getItem(k);
   var mobile = window.matchMedia('(max-width: 768px)');
-  function init() {
-    var stored = localStorage.getItem(k);
-    var collapsed = stored ? stored === 'collapsed' : mobile.matches;
-    document.body.classList.toggle('nav-collapsed', collapsed);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  var collapsed = stored ? stored === 'collapsed' : mobile.matches;
+  if (collapsed) document.documentElement.classList.add('nav-collapsed');
   document.addEventListener('click', function(e) {
     if (e.target.classList.contains('nav-toggle')) {
-      var c = document.body.classList.toggle('nav-collapsed');
+      var c = document.documentElement.classList.toggle('nav-collapsed');
       localStorage.setItem(k, c ? 'collapsed' : 'expanded');
     }
   });
