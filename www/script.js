@@ -2,7 +2,9 @@
 document.addEventListener("htmx:afterSettle", function(evt) {
     // Highlight all code blocks in the dynamically loaded content
     document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
+        if (!block.dataset.highlighted) {
+            hljs.highlightElement(block);
+        }
     });
 
     // Set up example buttons for dynamically loaded content
@@ -17,6 +19,12 @@ document.addEventListener("htmx:afterSettle", function(evt) {
 function setupExampleButtons() {
     const exampleButtons = document.querySelectorAll(".example-button");
     for (const button of exampleButtons) {
+        // Skip if already initialized to avoid duplicate listeners
+        if (button.dataset.initialized === 'true') {
+            continue;
+        }
+        button.dataset.initialized = 'true';
+
         const name = button.dataset.name;
         const exampleRow = document.querySelector(`#example-row-${name}`);
 
