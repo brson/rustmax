@@ -1,9 +1,6 @@
 [book]
 authors = ["Brian Anderson"]
 language = "en"
-multilingual = false
 src = "src"
 title = "Rustmax: The Book"
 
-# Used to convert `#user-content-` (for GitHub) references to `#` (for mdbook)
-[preprocessor.yapp]
