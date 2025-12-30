@@ -11,13 +11,18 @@ h1.menu-title
     font-size: 16pt;
 }
 
-#page-wrapper, #sidebar
+code, pre, .hljs
+{
+    font-family: var(--rmx-font-code);
+}
+
+#mdbook-page-wrapper, #mdbook-sidebar
 {
     background-color: unset;
 }
 
 :root,
-#menu-bar
+#mdbook-menu-bar
 {
     background-color: var(--rmx-color-bg);
 }
@@ -60,6 +65,6 @@ p code.hljs,
     background-color: inherit;
 }
 
-#theme-toggle {
+#mdbook-theme-toggle {
     display: none;
 }
