@@ -32,6 +32,8 @@ Keep the ones that pass.
 
 Report on the keepers and non-keepers.
 
+The `just maint-outdated` rule may help.
+
 
 # Task: task-review-unreplaced-links
 
