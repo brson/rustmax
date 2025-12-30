@@ -2,10 +2,6 @@ default:
     just --list
 
 
-install-tools:
-    cargo install mdbook
-    cargo install mdbook-yapp
-
 install-cli:
     cargo install --path crates/rustmax-cli
 
@@ -80,24 +76,13 @@ doc-crates: prebuild
 
 doc-book:
     rm -rf book/book
-    cd book && mdbook build
-    # same as in mod_book_style
-    cp www/mixins/mixin-mdbook-style.css book/book/
-    cp www/mixins/mixin-mdbook-script.js book/book/
-    cp www/rustmax-themes.css book/book/
-
-doc-install-library-deps:
-    cargo run -- install-library-deps
+    cargo run -- rmxbook book book/book
 
 doc-library: prebuild
     @if [ -n "${RUSTMAX_CI:-}" ]; then \
         cargo run -- refresh-library; \
-        cargo run -- install-library-deps; \
     fi
-    cargo run -- build-library --generate-library-page;
-    @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-style.css {} \;
-    @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/mixins/mixin-mdbook-script.js {} \;
-    @find work/library -mindepth 1 -maxdepth 1 -type d -exec cp www/rustmax-themes.css {} \;
+    cargo run -- build-library --generate-library-page
 
 doc-www: prebuild
     mkdir -p out/

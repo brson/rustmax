@@ -46,7 +46,7 @@ It is neither stable nor supported.
 | `hyper = "1.6.0"` | HTTP server | [📖](https://docs.rs/hyper/1.6.0/hyper) |
 | `itertools = "0.14.0"` | Advanced iterator extension methods | [📖](https://docs.rs/itertools/0.14.0/itertools) |
 | `jiff = "0.2.1"` | Dates and time | [📖](https://docs.rs/jiff/0.2.1/jiff) |
-| `json5 = "0.4.1"` | JSON with comments, etc. | [📖](https://docs.rs/json5/0.4.1/json5) |
+| `json5 = "1.3.0"` | JSON with comments, etc. | [📖](https://docs.rs/json5/1.3.0/json5) |
 | `libc = "0.2.169"` | C interop | [📖](https://docs.rs/libc/0.2.169/libc) |
 | `log = "0.4.22"` | Logging facade | [📖](https://docs.rs/log/0.4.22/log) |
 | `mime = "0.3.17"` | Shared MIME definitions | [📖](https://docs.rs/mime/0.3.17/mime) |
@@ -63,8 +63,8 @@ It is neither stable nor supported.
 | `rand_pcg = "0.9.0"` | Fast random numbers | [📖](https://docs.rs/rand_pcg/0.9.0/rand_pcg) |
 | `rayon = "1.10.0"` | Parallel iterators, thread pools, etc. | [📖](https://docs.rs/rayon/1.10.0/rayon) |
 | `regex = "1.11.1"` | Regular expressions | [📖](https://docs.rs/regex/1.11.1/regex) |
-| `reqwest = "0.12.22"` | HTTP requests, both async and blocking | [📖](https://docs.rs/reqwest/0.12.22/reqwest) |
-| `rustyline = "16.0.0"` | Line reading for console apps | [📖](https://docs.rs/rustyline/16.0.0/rustyline) |
+| `reqwest = "0.13.1"` | HTTP requests, both async and blocking | [📖](https://docs.rs/reqwest/0.13.1/reqwest) |
+| `rustyline = "17.0.2"` | Line reading for console apps | [📖](https://docs.rs/rustyline/17.0.2/rustyline) |
 | `semver = "1.0.24"` | Semantic versioning | [📖](https://docs.rs/semver/1.0.24/semver) |
 | `serde = "1.0.216"` | Standard serialization | [📖](https://docs.rs/serde/1.0.216/serde) |
 | `serde_json = "1.0.134"` | JSON | [📖](https://docs.rs/serde_json/1.0.134/serde_json) |

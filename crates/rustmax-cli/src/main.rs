@@ -4,6 +4,7 @@ mod books;
 mod impls;
 mod library_gen;
 mod moldman;
+mod rmxbook;
 mod tools;
 
 use rmx::prelude::*;
@@ -41,7 +42,9 @@ enum CliCmd {
     ListLibrary(CliCmdListLibrary),
     BuildLibrary(CliCmdBuildLibrary),
     RefreshLibrary(CliCmdRefreshLibrary),
-    InstallLibraryDeps(CliCmdInstallLibraryDeps),
+
+    /// Build a book using the rmxbook renderer.
+    Rmxbook(CliCmdRmxbook),
 
     NewProject,
 
@@ -106,11 +109,13 @@ struct CliCmdRefreshLibrary {
     book: Option<String>,
 }
 
+
 #[derive(clap::Args)]
-struct CliCmdInstallLibraryDeps {
-    /// Show what would be installed without actually installing
-    #[arg(long)]
-    dry_run: bool,
+struct CliCmdRmxbook {
+    /// Input directory containing book.toml and src/
+    input: String,
+    /// Output directory for rendered HTML
+    output: String,
 }
 
 #[derive(clap::Args)]
@@ -143,7 +148,8 @@ impl CliOpts {
             CliCmd::ListLibrary(cmd) => cmd.run(),
             CliCmd::BuildLibrary(cmd) => cmd.run(),
             CliCmd::RefreshLibrary(cmd) => cmd.run(),
-            CliCmd::InstallLibraryDeps(cmd) => cmd.run(),
+
+            CliCmd::Rmxbook(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
@@ -269,10 +275,15 @@ impl CliCmdRefreshLibrary {
     }
 }
 
-impl CliCmdInstallLibraryDeps {
+
+impl CliCmdRmxbook {
     fn run(&self) -> AnyResult<()> {
-        let root = &Path::new(".");
-        books::install_missing_plugins(root, self.dry_run)
+        let input = Path::new(&self.input);
+        let output = Path::new(&self.output);
+        println!("Building {} -> {}", input.display(), output.display());
+        rmxbook::build(input, output)?;
+        println!("Done");
+        Ok(())
     }
 }
 
