@@ -105,8 +105,8 @@ doc-www: prebuild
     cp work/crates.html out/
     cp work/build-info.json out/
     cp work/latest-post.html out/ || true
-    cp work/feed.html out/ || true
-    cp work/feed.xml out/ || true
+    cp work/news.html out/ || true
+    cp work/news.xml out/ || true
 
 doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book

@@ -336,13 +336,17 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
     color: var(--rmx-color-bg);
 }
 
+.latest-post-container {
+    margin-bottom: 2rem;
+}
+
 .latest-post-clickable {
     cursor: pointer;
 }
 
 .latest-post-teaser {
     position: relative;
-    max-height: 200px;
+    max-height: 100px;
     overflow: hidden;
 }
 

@@ -43,7 +43,8 @@ impl Category {
 }
 
 pub fn parse_posts(posts_dir: &Path) -> AnyResult<Vec<Post>> {
-    let filename_regex = Regex::new(r"^(\d{4}-\d{2}-\d{2})-(.+)\.md$")?;
+    // Format: YYYYMMDDA-{slug}.md where A is a letter for ordering same-day posts.
+    let filename_regex = Regex::new(r"^(\d{8})([A-Z])-(.+)\.md$")?;
 
     let mut posts = Vec::new();
 
@@ -51,13 +52,16 @@ pub fn parse_posts(posts_dir: &Path) -> AnyResult<Vec<Post>> {
         return Ok(posts);
     }
 
-    for entry in fs::read_dir(posts_dir)? {
-        let entry = entry?;
-        let path = entry.path();
+    let mut entries: Vec<_> = fs::read_dir(posts_dir)?
+        .filter_map(|e| e.ok())
+        .filter(|e| e.path().is_file())
+        .collect();
 
-        if !path.is_file() {
-            continue;
-        }
+    // Sort by filename descending (newest first).
+    entries.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
+
+    for entry in entries {
+        let path = entry.path();
 
         let filename = path
             .file_name()
@@ -69,9 +73,10 @@ pub fn parse_posts(posts_dir: &Path) -> AnyResult<Vec<Post>> {
         };
 
         let date_str = captures.get(1).unwrap().as_str();
-        let slug = captures.get(2).unwrap().as_str().to_string();
+        let slug = captures.get(3).unwrap().as_str().to_string();
 
-        let date = chrono::NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+        // Parse date from YYYYMMDD format.
+        let date = chrono::NaiveDate::parse_from_str(date_str, "%Y%m%d")
             .context("parsing date")?;
 
         let content = fs::read_to_string(&path)?;
@@ -105,9 +110,6 @@ pub fn parse_posts(posts_dir: &Path) -> AnyResult<Vec<Post>> {
             content_html,
         });
     }
-
-    // Sort by date descending (newest first).
-    posts.sort_by(|a, b| b.date.cmp(&a.date));
 
     Ok(posts)
 }
@@ -156,11 +158,11 @@ pub fn generate_feed_page(
     let mut context = tera::Context::new();
     context.insert("posts", posts);
 
-    let rendered = tera.render("feed.template.html", &context)?;
+    let rendered = tera.render("news.template.html", &context)?;
 
-    let feed_path = out_dir.join("feed.html");
-    fs::write(&feed_path, rendered)?;
-    eprintln!("wrote {}", feed_path.display());
+    let news_path = out_dir.join("news.html");
+    fs::write(&news_path, rendered)?;
+    eprintln!("wrote {}", news_path.display());
 
     Ok(())
 }
@@ -201,15 +203,15 @@ pub fn generate_rss(posts: &[Post], out_dir: &Path, base_url: &str) -> AnyResult
     rss.push('\n');
     rss.push_str("  <channel>\n");
     rss.push_str("    <title>Rustmax</title>\n");
-    rss.push_str(&format!("    <link>{}/feed.html</link>\n", base_url));
+    rss.push_str(&format!("    <link>{}/news.html</link>\n", base_url));
     rss.push_str("    <description>Updates from Rustmax - curated Rust crates, tips, and news</description>\n");
-    rss.push_str(&format!("    <atom:link href=\"{}/feed.xml\" rel=\"self\" type=\"application/rss+xml\" />\n", base_url));
+    rss.push_str(&format!("    <atom:link href=\"{}/news.xml\" rel=\"self\" type=\"application/rss+xml\" />\n", base_url));
 
     for post in posts {
         rss.push_str("    <item>\n");
         rss.push_str(&format!("      <title>{}</title>\n", escape_xml(&post.title)));
-        rss.push_str(&format!("      <link>{}/feed.html#{}</link>\n", base_url, post.slug));
-        rss.push_str(&format!("      <guid>{}/feed.html#{}</guid>\n", base_url, post.slug));
+        rss.push_str(&format!("      <link>{}/news.html#{}</link>\n", base_url, post.slug));
+        rss.push_str(&format!("      <guid>{}/news.html#{}</guid>\n", base_url, post.slug));
         let date = chrono::NaiveDate::parse_from_str(&post.date, "%Y-%m-%d").unwrap();
         rss.push_str(&format!("      <pubDate>{}</pubDate>\n", format_rfc822_date(date)));
         rss.push_str(&format!("      <category>{}</category>\n", &post.category));
@@ -220,7 +222,7 @@ pub fn generate_rss(posts: &[Post], out_dir: &Path, base_url: &str) -> AnyResult
     rss.push_str("  </channel>\n");
     rss.push_str("</rss>\n");
 
-    let rss_path = out_dir.join("feed.xml");
+    let rss_path = out_dir.join("news.xml");
     fs::write(&rss_path, rss)?;
     eprintln!("wrote {}", rss_path.display());
 

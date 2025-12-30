@@ -1,17 +1,16 @@
 ---
-title: "Welcome to the Rustmax Feed"
-date: 2025-10-12
+title: "Welcome to Rustmax News"
 category: news
-summary: "Introducing the new Rustmax feed: updates on Rust crates, tips, and news."
+summary: "Introducing Rustmax news: updates on Rust crates, tips, and news."
 ---
 
-Welcome to the Rustmax feed! This is a new feature that lets you stay up to date with:
+Welcome to Rustmax news! Here you can stay up to date with:
 
 - **Crate highlights**: Discover useful Rust crates and libraries
 - **Tips & tricks**: Learn helpful Rust programming techniques
 - **Project news**: Stay informed about Rust and Rustmax updates
 
-You can subscribe via [RSS](https://rustmax.net/feed/rss.xml) or check back here regularly for new content.
+You can subscribe via [RSS](https://rustmax.org/news.xml) or check back here regularly for new content.
 
 ## What is Rustmax?
 
