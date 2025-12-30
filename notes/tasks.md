@@ -1,3 +1,24 @@
+# Task: task-update-library
+
+The library is a collection of mdbooks
+we attempt to build in a consistent way and publish;
+but they all use different mdbook and plugins
+and its a bit of a mess.
+
+Metadata is in src/books.json5.
+
+They are managed with the cli commands `refresh-library`,
+`install-library-deps`, and `build-library`.
+
+We usually build with `just doc-library`.
+
+Go through the book repos and update books.json5 to the latest commits
+of each;
+run `just doc-library`;
+examine the output for errors
+and try to resolve them.
+
+
 # Task: task-upgrade-crates
 
 Check for major version bumps of all the rustmax crate's public dependencies
