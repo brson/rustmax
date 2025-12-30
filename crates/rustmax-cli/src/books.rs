@@ -447,11 +447,10 @@ fn get_repo(book: &Book) -> AnyResult<()> {
         println!("  Cloning {} from {} (blobless)", book.slug, repo);
         cmd!(sh, "git clone --filter=blob:none {repo} {dir}").run()?;
     } else {
-        println!("  Fetching {}", book.slug);
+        println!("  Fetching commit {} for {}", commit, book.slug);
         let _pd = sh.push_dir(dir);
-        // Use git fetch to get all refs, not git pull which only fetches the current branch.
-        // The locked commit may be on a different branch or not an ancestor of master.
-        cmd!(sh, "git fetch origin").run()?;
+        // Fetch only the specific commit we need, not all refs.
+        cmd!(sh, "git fetch origin {commit}").run()?;
     }
 
     // Checkout the specific commit.
