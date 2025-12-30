@@ -2816,7 +2816,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2890,7 +2890,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-anthology"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "clap",
  "html2md",
@@ -2901,7 +2901,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-cli"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "enum-iterator",
  "regex",
@@ -2912,7 +2912,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-prebuild"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "anyhow",
  "chrono",
