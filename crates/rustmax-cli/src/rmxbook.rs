@@ -237,7 +237,12 @@ fn render_chapter(
     let html_content = markdown_to_html(&content);
 
     // Calculate relative path to root for CSS.
-    let depth = rel_path.components().count() - 1;
+    // Filter out CurDir (.) components when counting depth.
+    let depth = rel_path
+        .components()
+        .filter(|c| !matches!(c, std::path::Component::CurDir))
+        .count()
+        .saturating_sub(1);
     let path_to_root = if depth == 0 {
         String::new()
     } else {
