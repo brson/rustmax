@@ -551,8 +551,9 @@ a:hover {
     transform: translateX(-100%);
 }
 
-.nav-collapsed main {
-    margin-left: 0;
+main {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 main {
