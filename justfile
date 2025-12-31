@@ -96,8 +96,8 @@ doc-www: prebuild
 doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book
     cp -r book/book/* out/book/
-    mkdir -p out/api
-    cp -rlf target/doc/* out/api/
+    rm -rf out/api
+    ln -s ../target/doc out/api
     mkdir -p out/library
     cp -r work/library/* out/library/
 
