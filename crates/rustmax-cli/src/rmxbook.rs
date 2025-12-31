@@ -422,7 +422,7 @@ fn generate_script() -> &'static str {
 }
 
 fn generate_css() -> String {
-    r#"/* rmxbook minimal style */
+    r#"/* rmxbook - flexbox layout, no overlays */
 :root {
     --bg: #fff;
     --fg: #333;
@@ -445,9 +445,7 @@ fn generate_css() -> String {
     }
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
     margin: 0;
@@ -459,68 +457,23 @@ html, body {
     color: var(--fg);
 }
 
-a {
-    color: var(--link);
-    text-decoration: none;
+body {
+    display: flex;
+    min-height: 100vh;
 }
 
-a:hover {
-    text-decoration: underline;
-}
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--sidebar-width);
-    height: 100vh;
-    overflow-y: auto;
-    background: var(--sidebar-bg);
-    border-right: 1px solid var(--border);
-    padding: 1rem;
-    padding-top: calc(var(--toggle-size) + 1rem);
-    z-index: 1000;
-    transition: transform 0.2s ease;
-}
-
-.sidebar-title {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.sidebar-title a {
-    color: var(--fg);
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar li {
-    margin: 0.3rem 0;
-}
-
-.sidebar li ul {
-    padding-left: 1rem;
-}
-
-.sidebar .current > a {
-    font-weight: bold;
-}
-
-/* Nav toggle button */
+/* Toggle - sticky, stays visible when scrolling */
 .nav-toggle {
-    position: fixed;
+    position: sticky;
     top: 0.5rem;
-    left: 0.5rem;
-    z-index: 1001;
+    align-self: flex-start;
+    flex-shrink: 0;
     width: var(--toggle-size);
     height: var(--toggle-size);
+    margin: 0.5rem;
     padding: 0;
     border: 1px solid var(--border);
     border-radius: 4px;
@@ -529,42 +482,66 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 10;
 }
 
 .nav-toggle::before {
     content: '';
-    display: block;
     width: 18px;
     height: 2px;
     background: var(--fg);
     box-shadow: 0 6px 0 var(--fg), 0 -6px 0 var(--fg);
 }
 
-.nav-toggle:hover {
-    background: var(--code-bg);
+.nav-toggle:hover { background: var(--code-bg); }
+
+/* Sidebar - in flow, animates width to collapse */
+.sidebar {
+    flex-shrink: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    transition: width 0.2s ease, padding 0.2s ease, border 0.2s ease;
 }
 
-/* Collapsed state */
 .nav-collapsed .sidebar {
-    transform: translateX(-100%);
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right-color: transparent;
 }
 
-main {
-    margin-left: auto;
-    margin-right: auto;
+.sidebar-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
 }
 
+.sidebar-title a { color: var(--fg); }
+.sidebar ul { list-style: none; padding: 0; margin: 0; }
+.sidebar li { margin: 0.3rem 0; white-space: nowrap; }
+.sidebar li ul { padding-left: 1rem; }
+.sidebar .current > a { font-weight: bold; }
+
+/* Main - always centered with max-width */
 main {
-    margin-left: var(--sidebar-width);
-    padding: 2rem 3rem;
-    padding-top: calc(var(--toggle-size) + 1.5rem);
+    flex: 1;
+    min-width: 0;
     max-width: 50rem;
-    transition: margin-left 0.2s ease;
+    margin: 0 auto;
+    padding: 2rem 3rem;
 }
 
-article {
-    line-height: 1.7;
-}
+article { line-height: 1.7; }
 
 h1, h2, h3, h4, h5, h6 {
     margin-top: 1.5em;
@@ -592,10 +569,7 @@ pre {
     border: 1px solid var(--border);
 }
 
-pre code {
-    background: none;
-    padding: 0;
-}
+pre code { background: none; padding: 0; }
 
 blockquote {
     margin: 1rem 0;
@@ -604,21 +578,9 @@ blockquote {
     background: var(--code-bg);
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 1rem 0;
-}
-
-th, td {
-    border: 1px solid var(--border);
-    padding: 0.5rem;
-    text-align: left;
-}
-
-th {
-    background: var(--code-bg);
-}
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.5rem; text-align: left; }
+th { background: var(--code-bg); }
 
 .nav-links {
     display: flex;
@@ -634,28 +596,47 @@ th {
     border-radius: 4px;
 }
 
-.nav-links a:hover {
-    background: var(--code-bg);
-    text-decoration: none;
-}
+.nav-links a:hover { background: var(--code-bg); text-decoration: none; }
 
+/* Mobile: vertical stacking */
 @media (max-width: 768px) {
-    .sidebar {
+    body { flex-direction: column; }
+
+    .nav-toggle {
+        position: relative;
+        top: 0;
+        align-self: stretch;
         width: 100%;
+        height: var(--toggle-size);
+        margin: 0;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        max-height: 60vh;
         border-right: none;
         border-bottom: 1px solid var(--border);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: max-height 0.2s ease, padding 0.2s ease, border 0.2s ease;
     }
 
     .nav-collapsed .sidebar {
-        transform: translateX(-100%);
+        width: 100%;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-bottom-color: transparent;
+        overflow: hidden;
     }
 
-    main {
-        margin-left: 0;
-        padding: 1rem;
-        padding-top: calc(var(--toggle-size) + 1rem);
-    }
+    .sidebar li { white-space: normal; }
+
+    main { padding: 1rem; }
 }
 "#.to_string()
 }
