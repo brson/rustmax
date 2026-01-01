@@ -740,9 +740,7 @@ pub mod walkdir {
 
 #[cfg(feature = "xshell")]
 pub mod xshell {
-    //! A Swiss-army knife for writing shell-style scripts in Rust.
-    //!
-    //! See crate [`::xshell`].
+    #![doc = include_str!("../doc-src/crate-xshell.md")]
 
     pub use ::xshell::*;
 }
