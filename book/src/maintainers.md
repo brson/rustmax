@@ -26,8 +26,6 @@ Core contributor to the Rust compiler and tooling.
 - [`anyhow`](https://docs.rs/anyhow) — Flexible error handling for applications
 - [`proc-macro2`](https://docs.rs/proc-macro2) — Wrapper around proc_macro for better ergonomics
 
-David's crates are characterized by exceptional documentation,
-thoughtful API design, and comprehensive testing.
 
 ---
 
@@ -43,9 +41,6 @@ Creator of ripgrep and author of numerous widely-used libraries.
 - [`jiff`](https://docs.rs/jiff) — Modern date and time library
 - [`csv`](https://docs.rs/csv) — Fast CSV parser
 
-Andrew's libraries are known for their performance,
-correctness, and extensive documentation.
-His blog posts often provide deep insights into Rust performance optimization.
 
 ---
 
@@ -60,8 +55,6 @@ Former Rust core team member and prolific contributor to foundational crates.
 - [`wasm-bindgen`](https://docs.rs/wasm-bindgen) — Facilitating WebAssembly and JavaScript interop
 - Many foundational async and FFI crates in the ecosystem
 
-Alex's contributions span compiler internals, tooling,
-and critical ecosystem infrastructure.
 
 ---
 
@@ -77,8 +70,6 @@ Member of the Tokio team.
 - [`reqwest`](https://docs.rs/reqwest) — High-level HTTP client
 - [`tower`](https://docs.rs/tower) — Service abstractions for building robust clients and servers
 
-Sean's HTTP libraries form the foundation of most HTTP
-and web applications in Rust.
 
 ---
 
@@ -90,6 +81,7 @@ Author and maintainer of itertools and other iterator-focused utility crates.
 
 **Notable crates:**
 - [`itertools`](https://docs.rs/itertools) — Extra iterator adaptors and methods
+
 
 ---
 
@@ -103,6 +95,7 @@ The Servo browser engine project, maintaining web-platform crates.
 - [`url`](https://docs.rs/url) — URL parser
 - Many other web platform implementation crates
 
+
 ---
 
 ## <a id="matklad"></a> Aleksey Kladov
@@ -114,6 +107,7 @@ Creator of rust-analyzer. Former Rust core team member.
 **Notable crates:**
 - [`xshell`](https://docs.rs/xshell) — Ergonomic shell scripting in Rust
 
+
 ---
 
 ## <a id="rust-lang"></a> The Rust Project
@@ -123,6 +117,7 @@ Creator of rust-analyzer. Former Rust core team member.
 The official Rust project organization.
 
 Maintains the Rust compiler, standard library, and core tooling:
+
 - `rustc` — The Rust compiler
 - [`cargo`](https://docs.rs/cargo) — Rust's package manager and build system
 - `rustup` — Rust toolchain installer
@@ -130,7 +125,6 @@ Maintains the Rust compiler, standard library, and core tooling:
 - `clippy` — Linting tool
 - [`futures`](https://docs.rs/futures) — Fundamental async primitives
 
-All official Rust tooling is developed under this organization.
 
 ---
 
@@ -138,7 +132,7 @@ All official Rust tooling is developed under this organization.
 
 **GitHub:** [tokio-rs](https://github.com/tokio-rs)
 
-Organization maintaining the async runtime ecosystem.
+Organization maintaining much of the async runtime ecosystem.
 
 **Notable crates:**
 - [`tokio`](https://docs.rs/tokio) — Async runtime for writing reliable network applications
@@ -146,8 +140,6 @@ Organization maintaining the async runtime ecosystem.
 - [`tower`](https://docs.rs/tower) — Library of modular and reusable components for networking
 - [`bytes`](https://docs.rs/bytes) — Utilities for working with bytes
 
-The Tokio project provides the foundation for async programming
-in Rust, including runtime, I/O, and HTTP abstractions.
 
 ---
 
@@ -162,9 +154,6 @@ algorithms and protocols.
 - [`sha2`](https://docs.rs/sha2) — SHA-2 hash functions
 - Many other cryptographic primitives following uniform APIs
 
-RustCrypto crates are characterized by rigorous security practices,
-constant-time implementations where appropriate,
-and comprehensive cryptographic algorithm coverage.
 
 ---
 
@@ -179,19 +168,3 @@ and related security tooling.
 - [`cargo-audit`](https://docs.rs/cargo-audit) — Audits Cargo.lock for crates with security vulnerabilities
 - Rust Security Advisory Database
 
-RustSec provides essential security infrastructure for the Rust ecosystem.
-
----
-
-## Recognition Criteria
-
-Trusted maintainers are recognized based on:
-
-- **Quality** — Crates are well-designed, performant, and reliable
-- **Documentation** — Comprehensive docs and examples
-- **Maintenance** — Active development and responsive to issues
-- **Community standing** — Positive reputation in the Rust community
-- **Impact** — Widespread use and foundational importance
-
-This is not an exhaustive list.
-Many other excellent maintainers contribute to the Rust ecosystem.
