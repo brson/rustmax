@@ -30,6 +30,22 @@ cargo generate brson/rustmax
 
 ### … guarantee a trait is object-safe?
 
+### … make compile-time assertions?
+
+Use inline const blocks (Rust 1.79+):
+
+```rust
+// Assert a condition at compile time
+const { assert!(BUFFER_SIZE > 0) }
+
+// Assert types have the same size
+const { assert!(std::mem::size_of::<u64>() == std::mem::size_of::<usize>()) }
+
+// Assert a type implements traits
+const fn assert_impls<T: Clone + Send>() {}
+const { assert_impls::<String>() }
+```
+
 
 
 

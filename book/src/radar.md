@@ -44,7 +44,6 @@ but that are not yet part of Rustmax.
   Iterate over variants.
 - [`eyre`](https://docs.rs/eyre).
   Sophisticated error handling.
-- [`flate2`](https://docs.rs/flate2).
 - [`fnv`](https://docs.rs/fnv) or some other non-ahash fast hash
 - [`hashbrown`](https://docs.rs/hashbrown).
   Hash maps with no-std.
@@ -139,6 +138,8 @@ but are now deprecated by others.
 
 - [`lazy_static`](https://docs.rs/lazy_static).
   Use [`std::sync::LazyLock`](https://doc.rust-lang.org/std/sync/struct.LazyLock.html).
+- [`static_assertions`](https://docs.rs/static_assertions).
+  Use [inline const blocks](https://doc.rust-lang.org/reference/expressions/block-expr.html#const-blocks).
 - [`num_cpus`](https://docs.rs/num_cpus).
   Use [`std::thread::available_parallelism`](https://doc.rust-lang.org/std/thread/fn.available_parallelism.html).
 - [`once_cell`](https://docs.rs/once_cell).
