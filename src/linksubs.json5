@@ -415,4 +415,14 @@
     "crate::powerletters::X":
     "https://docs.rs/powerletters/latest/powerletters/trait.X.html",
 
+    // reqwest
+    "crate::reqwest::Client":
+    "https://docs.rs/reqwest/latest/reqwest/struct.Client.html",
+    "crate::reqwest::get":
+    "https://docs.rs/reqwest/latest/reqwest/fn.get.html",
+    "crate::reqwest::blocking":
+    "https://docs.rs/reqwest/latest/reqwest/blocking/index.html",
+    "crate::hyper":
+    "https://docs.rs/hyper",
+
 }

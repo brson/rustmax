@@ -591,9 +591,7 @@ pub mod regex {
 
 #[cfg(feature = "reqwest")]
 pub mod reqwest {
-    //! Simple HTTP requests, synchronous and asynchronous.
-    //!
-    //! See crate [`::reqwest`].
+    #![doc = include_str!("../doc-src/crate-reqwest.md")]
 
     pub use ::reqwest::*;
 }
