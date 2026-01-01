@@ -132,11 +132,6 @@ but that are not yet part of Rustmax.
 - fixed-point, decimal numbers, rust-decimal
 
 
-## Replacements
-
-- num_cpu -> std::thread::available_parallelism
-
-
 ## Graveyard
 
 These projects were once useful or notable,
@@ -144,5 +139,7 @@ but are now deprecated by others.
 
 - [`lazy_static`](https://docs.rs/lazy_static).
   Use [`std::sync::LazyLock`](https://doc.rust-lang.org/std/sync/struct.LazyLock.html).
+- [`num_cpus`](https://docs.rs/num_cpus).
+  Use [`std::thread::available_parallelism`](https://doc.rust-lang.org/std/thread/fn.available_parallelism.html).
 - [`once_cell`](https://docs.rs/once_cell).
   Use [`std::sync::OnceLock`](https://doc.rust-lang.org/std/sync/struct.OnceLock.html).
