@@ -185,11 +185,6 @@
             short_desc: "Big integers",
         },
         {
-            name: "num_cpus",
-            category: "system",
-            short_desc: "Get number of CPUs",
-        },
-        {
             name: "num_enum",
             category: "convenience",
             short_desc: "Number-enum interop",

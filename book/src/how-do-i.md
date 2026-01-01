@@ -197,6 +197,12 @@ todo example
 
 [`rayon::ThreadPool`]: https://docs.rs/rayon/latest/rayon/struct.ThreadPool.html
 
+### … get the number of CPUs?
+
+```rust
+let cpus = std::thread::available_parallelism()?.get();
+```
+
 
 ## Asynchronous I/O
 

@@ -502,15 +502,6 @@ pub mod num_bigint {
     pub use ::num_bigint::*;
 }
 
-#[cfg(feature = "num_cpus")]
-pub mod num_cpus {
-    //! Get the number of CPUS on a machine.
-    //!
-    //! See crate [`::num_cpus`].
-
-    pub use ::num_cpus::*;
-}
-
 #[cfg(feature = "num_enum")]
 pub mod num_enum {
     #![doc = include_str!("../doc-src/crate-num_enum.md")]
