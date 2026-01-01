@@ -70,7 +70,6 @@ It is neither stable nor supported.
 | `serde_json = "1.0.134"` | JSON | [📖](https://docs.rs/serde_json/1.0.134/serde_json) |
 | `sha2 = "0.10.8"` | Cryptographic hashing | [📖](https://docs.rs/sha2/0.10.8/sha2) |
 | `socket2 = "0.6.0"` | Low-level sockets | [📖](https://docs.rs/socket2/0.6.0/socket2) |
-| `static_assertions = "1.1.0"` | Compile-time assertions | [📖](https://docs.rs/static_assertions/1.1.0/static_assertions) |
 | `syn = "2.0.91"` | Parsing for procedural macros | [📖](https://docs.rs/syn/2.0.91/syn) |
 | `tempfile = "3.14.0"` | Temporary files and directories | [📖](https://docs.rs/tempfile/3.14.0/tempfile) |
 | `tera = "1.20.0"` | Text templates, as for websites | [📖](https://docs.rs/tera/1.20.0/tera) |

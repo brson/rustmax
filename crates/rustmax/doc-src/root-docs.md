@@ -41,7 +41,7 @@ as a "batteries included" supercrate.
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`], [`powerletters`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
 | system / OS | [`glob`], [`num_cpus`], [`tempfile`], [`walkdir`], [`xshell`] |
-| testing | [`proptest`], [`static_assertions`] |
+| testing | [`proptest`] |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
 | build scripts | … |
 | deployment and software lifecycle | [`semver`] |
@@ -157,7 +157,6 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`serde`] - The standard Rust serialization framework.
 - [`serde_json`] - JSON serialization / deserialization with [`serde`].
 - [`sha2`] - The SHA2 cryptographic hash functions.
-- [`static_assertions`] - Compile-time assertions about constants, types, etc.
 - [`toml`] - TOML serialization / deserialization with `serde`.
 
 

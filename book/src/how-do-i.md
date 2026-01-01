@@ -30,10 +30,6 @@ cargo generate brson/rustmax
 
 ### … guarantee a trait is object-safe?
 
-```
-static_assertions::assert_obj_safe!(MyTrait);
-```
-
 
 
 

@@ -284,11 +284,6 @@
             maintainer: "rust-lang",
         },
         {
-            name: "static_assertions",
-            category: "testing",
-            short_desc: "Compile-time assertions",
-        },
-        {
             name: "syn",
             category: "proc-macro",
             short_desc: "Parsing for procedural macros",
