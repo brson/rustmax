@@ -72,6 +72,11 @@
             short_desc: "Command-line parsing",
         },
         {
+            name: "comrak",
+            category: "encoding",
+            short_desc: "Markdown parser",
+        },
+        {
             name: "crossbeam",
             category: "parallelism",
             short_desc: "Fast channels, etc.",

@@ -31,6 +31,7 @@ It is neither stable nor supported.
 | `cfg-if = "1.0.0"` | Compile-time control flow | [📖](https://docs.rs/cfg-if/1.0.0/cfg_if) |
 | `chrono = "0.4.39"` | Dates and time (legacy) | [📖](https://docs.rs/chrono/0.4.39/chrono) |
 | `clap = "4.5.23"` | Command-line parsing | [📖](https://docs.rs/clap/4.5.23/clap) |
+| `comrak = "0.35.0"` | Markdown parser | [📖](https://docs.rs/comrak/0.35.0/comrak) |
 | `crossbeam = "0.8.4"` | Fast channels, etc. | [📖](https://docs.rs/crossbeam/0.8.4/crossbeam) |
 | `ctrlc = "3.4.5"` | Handle Ctrl+C | [📖](https://docs.rs/ctrlc/3.4.5/ctrlc) |
 | `cxx = "1.0.135"` | Bridging to/from C++ | [📖](https://docs.rs/cxx/1.0.135/cxx) |

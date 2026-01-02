@@ -585,6 +585,20 @@ dependencies = [
 
 [[package]]
 name = "comrak"
+version = "0.35.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52602e10393cfaaf8accaf707f2da743dc22cbe700a343ff8dbc9e5e04bc6b74"
+dependencies = [
+ "caseless",
+ "entities",
+ "memchr",
+ "slug",
+ "typed-arena",
+ "unicode_categories",
+]
+
+[[package]]
+name = "comrak"
 version = "0.39.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2fefab951771fc3beeed0773ce66a4f7b706273fc6c4c95b08dd1615744abcf5"
@@ -2951,6 +2965,7 @@ dependencies = [
  "cfg-if",
  "chrono",
  "clap",
+ "comrak 0.35.0",
  "crossbeam",
  "ctrlc",
  "cxx",
@@ -3037,7 +3052,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap",
- "comrak",
+ "comrak 0.39.1",
  "json5 0.4.1",
  "regex",
  "serde",

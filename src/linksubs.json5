@@ -245,6 +245,14 @@
     "crate::std::iter::IntoIterator":
     "https://doc.rust-lang.org/stable/std/iter/trait.IntoIterator.html",
 
+    // comrak
+    "crate::comrak::markdown_to_html":
+    "https://docs.rs/comrak/latest/comrak/fn.markdown_to_html.html",
+    "crate::comrak::parse_document":
+    "https://docs.rs/comrak/latest/comrak/fn.parse_document.html",
+    "crate::comrak::Options":
+    "https://docs.rs/comrak/latest/comrak/struct.Options.html",
+
     // clap
     "crate::clap::Parser":
     "https://docs.rs/clap/latest/clap/trait.Parser.html",

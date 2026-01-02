@@ -338,6 +338,12 @@ pub mod clap {
     pub use ::clap::*;
 }
 
+#[cfg(feature = "comrak")]
+pub mod comrak {
+    #![doc = include_str!("../doc-src/crate-comrak.md")]
+
+    pub use ::comrak::*;
+}
 
 #[cfg(feature = "ctrlc")]
 pub mod ctrlc {

@@ -30,7 +30,7 @@ as a "batteries included" supercrate.
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
+| encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
@@ -180,6 +180,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 ### Crates in `rmx-profile-std`
 
 - [`clap`] - Command line parsing.
+- [`comrak`] - CommonMark and GitHub Flavored Markdown parser.
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
 - [`flate2`] - Deflate, gzip, and zlib compression and decompression.
 - [`glob`] - Unix shell style pattern matching for paths.
