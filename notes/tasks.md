@@ -157,6 +157,7 @@ Run `just test` to test in all profiles.
 - Remove non-existent features from `rmx-feature-default` and `rmx-feature-std`
 - Run `cargo check` to verify no feature conflicts
 - Use proper descriptions: "Low-level" vs "High-level", match existing patterns
+- If it's by a "trusted maintainer", make sure we add that metadata as appropriate.
 
 **Common gotchas:**
 - Not all crates have `default` or `std` features
