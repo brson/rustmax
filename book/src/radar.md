@@ -14,8 +14,6 @@ but that are not yet part of Rustmax.
   Fast and stable binary serialization.
 - [`boringtun`](https://docs.rs/boringtun).
   WireGuard.
-- [`comrak`](https://docs.rs/comrak).
-  Markdown parser.
 - [`cpal`](https://docs.rs/cpal).
   Cross-platform audio I/O.
 - [`console`](https://docs.rs/console),
