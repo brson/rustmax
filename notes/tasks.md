@@ -158,6 +158,7 @@ Run `just test` to test in all profiles.
 - Run `cargo check` to verify no feature conflicts
 - Use proper descriptions: "Low-level" vs "High-level", match existing patterns
 - If it's by a "trusted maintainer", make sure we add that metadata as appropriate.
+- Update linksubs.json5 as appropriate
 
 **Common gotchas:**
 - Not all crates have `default` or `std` features
