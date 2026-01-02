@@ -159,6 +159,7 @@ Run `just test` to test in all profiles.
 - Use proper descriptions: "Low-level" vs "High-level", match existing patterns
 - If it's by a "trusted maintainer", make sure we add that metadata as appropriate.
 - Update linksubs.json5 as appropriate
+- If it is listed in radar.md remove it.
 
 **Common gotchas:**
 - Not all crates have `default` or `std` features
