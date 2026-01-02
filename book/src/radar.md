@@ -45,7 +45,7 @@ but that are not yet part of Rustmax.
 - [`eyre`](https://docs.rs/eyre).
   Sophisticated error handling.
 - [`fnv`](https://docs.rs/fnv) or some other non-ahash fast hash
-- [`fxhash`](https://docs.rs/fxhash)
+- [`rustc-hash`](https://docs.rs/rustc-hash)
 - [`hashbrown`](https://docs.rs/hashbrown).
   Hash maps with no-std.
 - [`home`](https://docs.rs/home)
