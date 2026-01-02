@@ -49,6 +49,7 @@ It is neither stable nor supported.
 | `json5 = "1.3.0"` | JSON with comments, etc. | [📖](https://docs.rs/json5/1.3.0/json5) |
 | `libc = "0.2.169"` | C interop | [📖](https://docs.rs/libc/0.2.169/libc) |
 | `log = "0.4.22"` | Logging facade | [📖](https://docs.rs/log/0.4.22/log) |
+| `memchr = "2.7.4"` | Fast byte search | [📖](https://docs.rs/memchr/2.7.4/memchr) |
 | `mime = "0.3.17"` | Shared MIME definitions | [📖](https://docs.rs/mime/0.3.17/mime) |
 | `nom = "8.0.0"` | Parser combinators | [📖](https://docs.rs/nom/8.0.0/nom) |
 | `num-bigint = "0.4.6"` | Big integers | [📖](https://docs.rs/num-bigint/0.4.6/num_bigint) |

@@ -30,7 +30,7 @@ as a "batteries included" supercrate.
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`flate2`], [`hex`], [`json5`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
+| encoding, serialization, parsing | [`base64`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
@@ -147,6 +147,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`jiff`] - Dates and time.
 - [`libc`] - Bindings to the C standard library.
 - [`log`] - A simple logging framework.
+- [`memchr`] - Fast byte search with SIMD acceleration.
 - [`nom`] - An efficient parser combinator.
 - [`num_bigint`] - Arbitrary-sized integers.
 - [`num_enum`] - Conversions between numbers and enums.

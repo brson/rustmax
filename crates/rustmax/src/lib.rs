@@ -481,6 +481,13 @@ pub mod log {
     pub use ::log::*;
 }
 
+#[cfg(feature = "memchr")]
+pub mod memchr {
+    #![doc = include_str!("../doc-src/crate-memchr.md")]
+
+    pub use ::memchr::*;
+}
+
 #[cfg(feature = "mime")]
 pub mod mime {
     #![doc = include_str!("../doc-src/crate-mime.md")]

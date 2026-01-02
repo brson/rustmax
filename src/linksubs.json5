@@ -189,6 +189,18 @@
     "crate::itertools::repeat_n":
     "https://docs.rs/itertools/latest/itertools/fn.repeat_n.html",
 
+    // memchr
+    "crate::memchr::memchr":
+    "https://docs.rs/memchr/latest/memchr/fn.memchr.html",
+    "crate::memchr::memchr2":
+    "https://docs.rs/memchr/latest/memchr/fn.memchr2.html",
+    "crate::memchr::memchr3":
+    "https://docs.rs/memchr/latest/memchr/fn.memchr3.html",
+    "crate::memchr::memmem":
+    "https://docs.rs/memchr/latest/memchr/memmem/index.html",
+    "crate::regex":
+    "https://docs.rs/regex",
+
     // log
     "crate::log::error":
     "https://docs.rs/log/latest/log/macro.error.html",

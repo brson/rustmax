@@ -170,6 +170,12 @@
             maintainer: "rust-lang",
         },
         {
+            name: "memchr",
+            category: "encoding",
+            short_desc: "Fast byte search",
+            maintainer: "burntsushi",
+        },
+        {
             name: "mime",
             category: "web",
             short_desc: "Shared MIME definitions",

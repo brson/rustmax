@@ -2971,6 +2971,7 @@ dependencies = [
  "json5 1.3.0",
  "libc",
  "log",
+ "memchr",
  "mime",
  "nom 8.0.0",
  "num-bigint",
