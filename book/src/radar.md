@@ -55,7 +55,6 @@ but that are not yet part of Rustmax.
 - [`indexmap`](https://docs.rs/indexmap)
 - [`libm`](https://docs.rs/libm).
   Useful for no-std.
-- [`memchr`](https://docs.rs/memchr)
 - [`memmap`](hthtps://docs.rs/memmap)
 - [`ndarray`](https://docs.rs/ndarray)
 - [`nix`](https://docs.rs/nix)
