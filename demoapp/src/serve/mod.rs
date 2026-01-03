@@ -1,0 +1,206 @@
+//! Development server with live reload.
+
+use rustmax::prelude::*;
+use rustmax::axum::{
+    Router,
+    routing::get,
+    response::{Html, IntoResponse, Response},
+    extract::{State, Path as AxumPath},
+    http::StatusCode,
+};
+use tower_http::services::ServeDir;
+use rustmax::tokio::net::TcpListener;
+use rustmax::log::info;
+use std::sync::Arc;
+
+use crate::collection::{Collection, Config, Document};
+use crate::build::{render_markdown, TemplateEngine};
+use crate::{Error, Result};
+
+/// Shared server state.
+struct AppState {
+    collection: Collection,
+    config: Config,
+    engine: TemplateEngine,
+    include_drafts: bool,
+}
+
+/// Start the development server.
+pub fn serve(
+    collection: Collection,
+    config: Config,
+    port: u16,
+    include_drafts: bool,
+) -> Result<()> {
+    let templates_dir = collection.root.join("templates");
+    let engine = TemplateEngine::new(&templates_dir)?;
+    let static_dir = collection.root.join("static");
+
+    let state = Arc::new(AppState {
+        collection,
+        config,
+        engine,
+        include_drafts,
+    });
+
+    let rt = rustmax::tokio::runtime::Runtime::new()?;
+    rt.block_on(async move {
+        let mut app = Router::new()
+            .route("/", get(handle_index))
+            .route("/{slug}/", get(handle_document))
+            .route("/tags/{tag}/", get(handle_tag))
+            .route("/api/documents", get(api_documents))
+            .route("/api/documents/{slug}", get(api_document))
+            .with_state(state);
+
+        // Serve static files if directory exists.
+        if static_dir.exists() {
+            app = app.nest_service("/static", ServeDir::new(&static_dir));
+        }
+
+        let addr = format!("0.0.0.0:{}", port);
+        info!("Listening on http://localhost:{}", port);
+
+        let listener = TcpListener::bind(&addr).await.map_err(|e| {
+            Error::server(format!("failed to bind to {}: {}", addr, e))
+        })?;
+
+        rustmax::axum::serve(listener, app)
+            .await
+            .map_err(|e| Error::server(e.to_string()))?;
+
+        Ok(())
+    })
+}
+
+/// Handle index page.
+async fn handle_index(State(state): State<Arc<AppState>>) -> Response {
+    let documents: Vec<&Document> = if state.include_drafts {
+        state.collection.all_sorted()
+    } else {
+        state.collection.published()
+    };
+
+    let ctx = state.engine.index_context(&documents, &state.config);
+    match state.engine.render("index.html", &ctx) {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
+                .into_response()
+        }
+    }
+}
+
+/// Handle document page.
+async fn handle_document(
+    State(state): State<Arc<AppState>>,
+    AxumPath(slug): AxumPath<String>,
+) -> Response {
+    let doc = state
+        .collection
+        .documents
+        .iter()
+        .find(|d| d.slug() == slug);
+
+    match doc {
+        Some(doc) => {
+            if doc.frontmatter.draft && !state.include_drafts {
+                return StatusCode::NOT_FOUND.into_response();
+            }
+
+            let html_content = render_markdown(&doc.content);
+            let ctx = state
+                .engine
+                .document_context(doc, &state.config, &html_content);
+
+            let template = doc
+                .frontmatter
+                .template
+                .as_deref()
+                .unwrap_or(&state.config.content.default_template);
+
+            match state.engine.render(template, &ctx) {
+                Ok(html) => Html(html).into_response(),
+                Err(e) => {
+                    (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
+                        .into_response()
+                }
+            }
+        }
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
+}
+
+/// Handle tag page.
+async fn handle_tag(
+    State(state): State<Arc<AppState>>,
+    AxumPath(tag): AxumPath<String>,
+) -> Response {
+    let documents: Vec<&Document> = state
+        .collection
+        .by_tag(&tag)
+        .into_iter()
+        .filter(|d| state.include_drafts || !d.frontmatter.draft)
+        .collect();
+
+    if documents.is_empty() {
+        return StatusCode::NOT_FOUND.into_response();
+    }
+
+    let ctx = state.engine.tag_context(&tag, &documents, &state.config);
+    match state.engine.render("tag.html", &ctx) {
+        Ok(html) => Html(html).into_response(),
+        Err(e) => {
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
+                .into_response()
+        }
+    }
+}
+
+/// API: list all documents.
+async fn api_documents(State(state): State<Arc<AppState>>) -> Response {
+    let export = state.collection.to_export();
+    match rustmax::serde_json::to_string_pretty(&export) {
+        Ok(json) => (
+            StatusCode::OK,
+            [("Content-Type", "application/json")],
+            json,
+        )
+            .into_response(),
+        Err(e) => {
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("JSON error: {}", e))
+                .into_response()
+        }
+    }
+}
+
+/// API: get single document.
+async fn api_document(
+    State(state): State<Arc<AppState>>,
+    AxumPath(slug): AxumPath<String>,
+) -> Response {
+    let doc = state
+        .collection
+        .documents
+        .iter()
+        .find(|d| d.slug() == slug);
+
+    match doc {
+        Some(doc) => {
+            let export = doc.to_export();
+            match rustmax::serde_json::to_string_pretty(&export) {
+                Ok(json) => (
+                    StatusCode::OK,
+                    [("Content-Type", "application/json")],
+                    json,
+                )
+                    .into_response(),
+                Err(e) => {
+                    (StatusCode::INTERNAL_SERVER_ERROR, format!("JSON error: {}", e))
+                        .into_response()
+                }
+            }
+        }
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
+}

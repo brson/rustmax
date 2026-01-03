@@ -1,0 +1,18 @@
+[package]
+name = "anthology"
+version = "0.1.0"
+edition = "2024"
+description = "A document publishing platform - rustmax demo app"
+license = "MIT OR Apache-2.0"
+authors = ["Brian Anderson <andersrb@gmail.com>"]
+
+[dependencies]
+rustmax = { path = "../crates/rustmax", features = ["rmx-profile-max"] }
+
+# Direct dependencies needed for derive macros (they emit ::crate_name::...)
+serde = { version = "1", features = ["derive"] }
+clap = { version = "4", features = ["derive"] }
+thiserror = "2"
+
+# Additional dependencies not in rustmax
+tower-http = { version = "0.6", features = ["fs"] }

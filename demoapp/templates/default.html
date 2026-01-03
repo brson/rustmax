@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - {% endif %}{{ site_title }}</title>
+    <style>
+        :root {
+            --bg: #fff;
+            --fg: #333;
+            --fg-muted: #666;
+            --accent: #0066cc;
+            --code-bg: #f5f5f5;
+            --border: #e0e0e0;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1a1a1a;
+                --fg: #e0e0e0;
+                --fg-muted: #999;
+                --accent: #6db3f2;
+                --code-bg: #2d2d2d;
+                --border: #444;
+            }
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: var(--fg);
+            background: var(--bg);
+        }
+        h1, h2, h3 { color: var(--fg); margin-top: 2rem; }
+        h1 { font-size: 2rem; }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            overflow-x: auto;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 2px;
+            font-size: 0.9em;
+        }
+        pre code { background: none; padding: 0; }
+        blockquote {
+            border-left: 3px solid var(--border);
+            margin-left: 0;
+            padding-left: 1rem;
+            color: var(--fg-muted);
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            text-align: left;
+        }
+        th { background: var(--code-bg); }
+        .meta { color: var(--fg-muted); font-size: 0.9rem; }
+        .tags { margin: 0.5rem 0; }
+        .tags a {
+            background: var(--code-bg);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            margin-right: 0.3rem;
+        }
+        .document-list { list-style: none; padding: 0; }
+        .document-list li {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .document-list li:last-child { border-bottom: none; }
+        .document-list h2 { margin: 0 0 0.25rem 0; font-size: 1.3rem; }
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        header nav a { font-weight: bold; font-size: 1.2rem; }
+        footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--fg-muted);
+            font-size: 0.85rem;
+        }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav><a href="/">{{ site_title }}</a></nav>
+    </header>
+    <main>
+        {% if is_index %}
+        <h1>{{ site_title }}</h1>
+        {% if site_description %}<p>{{ site_description }}</p>{% endif %}
+        <ul class="document-list">
+        {% for doc in documents %}
+            <li>
+                <h2><a href="{{ doc.url }}">{{ doc.title }}</a></h2>
+                {% if doc.date %}<p class="meta">{{ doc.date }}</p>{% endif %}
+                {% if doc.tags %}
+                <p class="tags">{% for tag in doc.tags %}<a href="/tags/{{ tag }}/">{{ tag }}</a>{% endfor %}</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        {% elif is_tag_page %}
+        <h1>{{ title }}</h1>
+        <ul class="document-list">
+        {% for doc in documents %}
+            <li>
+                <h2><a href="{{ doc.url }}">{{ doc.title }}</a></h2>
+                {% if doc.date %}<p class="meta">{{ doc.date }}</p>{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <article>
+            <h1>{{ title }}</h1>
+            {% if date %}
+            <p class="meta">
+                {{ date | date_format(format="%B %d, %Y") }}
+                {% if reading_time %} &middot; {{ reading_time }} min read{% endif %}
+            </p>
+            {% endif %}
+            {% if tags %}
+            <p class="tags">{% for tag in tags %}<a href="/tags/{{ tag }}/">{{ tag }}</a>{% endfor %}</p>
+            {% endif %}
+            {{ content | safe }}
+        </article>
+        {% endif %}
+    </main>
+    <footer>
+        <p>Built with <a href="https://github.com/brson/rustmax">Anthology</a></p>
+    </footer>
+</body>
+</html>

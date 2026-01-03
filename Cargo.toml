@@ -19,6 +19,7 @@ default-members = [
 ]
 
 exclude = [
+  "demoapp",
   "work/books/",
   "suite",
 ]
