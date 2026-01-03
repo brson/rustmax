@@ -190,6 +190,7 @@
             name: "mime",
             category: "web",
             short_desc: "Shared MIME definitions",
+            maintainer: "seanmonstar",
         },
         {
             name: "nom",
