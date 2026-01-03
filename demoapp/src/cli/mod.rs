@@ -1,6 +1,7 @@
 //! Command-line interface for Anthology.
 
 mod commands;
+pub mod repl;
 
 pub use commands::Cli;
 

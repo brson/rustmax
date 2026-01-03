@@ -67,14 +67,14 @@ impl Collection {
 
     /// Get all unique tags.
     pub fn tags(&self) -> Vec<String> {
-        let mut tags: Vec<_> = self
-            .documents
+        use rustmax::itertools::Itertools;
+
+        self.documents
             .iter()
             .flat_map(|d| d.frontmatter.tags.iter().cloned())
-            .collect();
-        tags.sort();
-        tags.dedup();
-        tags
+            .sorted()
+            .dedup()
+            .collect()
     }
 
     /// Convert to exportable format.

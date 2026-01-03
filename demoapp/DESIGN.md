@@ -60,12 +60,14 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used
+### Currently Used (24 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
 | CLI | clap | Command-line argument parsing |
 | CLI | termcolor | Colored terminal output |
+| CLI | rustyline | Interactive REPL |
+| CLI | ctrlc | Graceful shutdown handling |
 | Web | axum | Development server |
 | Web | tower-http | Static file serving (external dep) |
 | Async | tokio | Async runtime for server |
@@ -78,8 +80,11 @@ content/*.md --> Scanner --> Documents --> Collection
 | Crypto | blake3 | Content hashing for cache keys |
 | Filesystem | walkdir | Directory traversal |
 | Filesystem | ignore | .gitignore-style filtering |
+| Filesystem | glob | File pattern matching |
+| Filesystem | tempfile | Test fixtures |
 | Time | jiff | Date parsing (civil::Date) |
 | Text | unicode-segmentation | Word counting, search tokenization |
+| Collections | itertools | Iterator utilities |
 | Logging | log + env_logger | Logging infrastructure |
 | Errors | thiserror | Error type definitions |
 | Errors | anyhow | Fallback error handling |
@@ -88,17 +93,12 @@ content/*.md --> Scanner --> Documents --> Collection
 
 | Crate | Planned Usage |
 |-------|---------------|
-| rustyline | REPL mode |
-| ctrlc | Graceful shutdown |
 | reqwest | Remote content fetching |
 | flate2 | Asset compression |
 | base64, hex | Encoding utilities |
 | sha2 | Alternative hashing |
-| glob | Pattern matching |
-| tempfile | Test fixtures |
 | chrono | Alternative date handling |
 | memchr | Fast string searching |
-| itertools | Collection utilities |
 | bitflags | Feature flags |
 | bytes | Binary handling |
 | rand | Random slugs/IDs |

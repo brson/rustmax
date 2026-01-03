@@ -24,18 +24,18 @@ Progress tracking for rustmax crate coverage.
 - [x] jiff - Date handling
 - [x] unicode-segmentation - Text processing
 - [x] termcolor - Colored output
+- [x] rustyline - REPL mode
+- [x] ctrlc - Graceful server shutdown
+- [x] tempfile - Test fixtures
+- [x] glob - File pattern matching
+- [x] itertools - Collection operations
 
 ### Partially Used
-- [ ] itertools - Could use for collection operations
 - [ ] bytes - Could use for binary asset handling
 
 ### Not Yet Used (High Priority)
-- [ ] rustyline - REPL mode
-- [ ] ctrlc - Graceful server shutdown
 - [ ] reqwest - Remote content fetching
 - [ ] flate2 - Asset compression
-- [ ] tempfile - Test fixtures
-- [ ] glob - File pattern matching
 
 ### Not Yet Used (Medium Priority)
 - [ ] regex - URL rewriting, content transforms
@@ -158,8 +158,17 @@ fn test_build_output() {
 - 9 tests passing
 - Build and serve working
 
+### 2026-01-03: Enhanced Features
+- Added 17 integration tests using tempfile
+- Implemented REPL mode with rustyline (commands: list, drafts, show, search, tags, by-tag, files, stats, recent)
+- Added ctrlc handler for graceful server shutdown
+- Added glob-based file filtering (CLI and REPL)
+- Refactored with itertools for cleaner collection operations
+- 26 total tests passing
+- 24 rustmax crates now integrated
+
 ### Next Session Priorities
-1. Add tempfile-based integration tests
-2. Implement rustyline REPL
-3. Add ctrlc handler for server
-4. Improve test coverage
+1. Add reqwest for remote content fetching
+2. Add flate2 for asset compression
+3. Add regex for URL rewriting
+4. Improve search with stemming

@@ -98,6 +98,24 @@ enum Command {
         #[arg(short, long)]
         output: Option<PathBuf>,
     },
+
+    /// Start an interactive REPL for querying the collection.
+    Repl {
+        /// Collection directory (defaults to current directory).
+        #[arg(default_value = ".")]
+        path: PathBuf,
+    },
+
+    /// List files matching a glob pattern.
+    Files {
+        /// Collection directory (defaults to current directory).
+        #[arg(default_value = ".")]
+        path: PathBuf,
+
+        /// Glob pattern to match (e.g., "content/**/*.md").
+        #[arg(short, long, default_value = "content/**/*.md")]
+        pattern: String,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
@@ -123,6 +141,8 @@ impl Cli {
             Command::New { title, path } => cmd_new(title, path),
             Command::Index { path } => cmd_index(path),
             Command::Export { path, format, output } => cmd_export(path, format, output),
+            Command::Repl { path } => cmd_repl(path),
+            Command::Files { path, pattern } => cmd_files(path, pattern),
         }
     }
 }
@@ -331,5 +351,55 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
         }
     }
 
+    Ok(())
+}
+
+fn cmd_repl(path: PathBuf) -> Result<()> {
+    let config = Config::load(&path)?;
+    let collection = crate::collection::Collection::load(&path, &config)?;
+
+    super::repl::run_repl(&collection, &config)
+}
+
+fn cmd_files(path: PathBuf, pattern: String) -> Result<()> {
+    use rustmax::glob::glob;
+    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use std::io::Write;
+
+    let full_pattern = path.join(&pattern);
+    let pattern_str = full_pattern.to_string_lossy();
+
+    let mut stdout = StandardStream::stdout(ColorChoice::Auto);
+    let mut count = 0;
+
+    let entries = glob(&pattern_str).map_err(|e| Error::config(format!("Invalid glob pattern: {}", e)))?;
+
+    for entry in entries {
+        match entry {
+            Ok(path) => {
+                // Get relative path from the collection root.
+                let display_path = path.strip_prefix(&std::env::current_dir()?)
+                    .unwrap_or(&path);
+
+                if path.is_file() {
+                    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
+                    writeln!(stdout, "{}", display_path.display())?;
+                    stdout.reset()?;
+                } else {
+                    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Blue)))?;
+                    writeln!(stdout, "{}/", display_path.display())?;
+                    stdout.reset()?;
+                }
+                count += 1;
+            }
+            Err(e) => {
+                stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
+                writeln!(stdout, "Error: {}", e)?;
+                stdout.reset()?;
+            }
+        }
+    }
+
+    println!("\n{} files matched", count);
     Ok(())
 }

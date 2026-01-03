@@ -111,12 +111,12 @@ impl SearchIndex {
             }
         }
 
-        // Sort by score descending.
-        let mut results: Vec<(usize, usize)> = doc_scores.into_iter().collect();
-        results.sort_by(|a, b| b.1.cmp(&a.1));
+        use rustmax::itertools::Itertools;
 
-        results
+        // Sort by score descending using itertools.
+        doc_scores
             .into_iter()
+            .sorted_by(|a, b| b.1.cmp(&a.1))
             .take(20)
             .filter_map(|(idx, score)| {
                 self.documents.get(idx).map(|entry| SearchResult {

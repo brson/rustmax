@@ -10,6 +10,7 @@ use rustmax::axum::{
 };
 use tower_http::services::ServeDir;
 use rustmax::tokio::net::TcpListener;
+use rustmax::tokio::sync::oneshot;
 use rustmax::log::info;
 use std::sync::Arc;
 
@@ -60,15 +61,37 @@ pub fn serve(
 
         let addr = format!("0.0.0.0:{}", port);
         info!("Listening on http://localhost:{}", port);
+        info!("Press Ctrl+C to stop");
 
         let listener = TcpListener::bind(&addr).await.map_err(|e| {
             Error::server(format!("failed to bind to {}: {}", addr, e))
         })?;
 
+        // Set up graceful shutdown with ctrlc.
+        let shutdown_signal = async {
+            let (tx, rx) = oneshot::channel::<()>();
+
+            // Use Mutex to allow sending only once from the handler.
+            let tx = std::sync::Mutex::new(Some(tx));
+
+            // Set up the ctrlc handler.
+            let _ = rustmax::ctrlc::set_handler(move || {
+                println!(); // Move to new line after ^C
+                info!("Received Ctrl+C, shutting down...");
+                if let Some(tx) = tx.lock().unwrap().take() {
+                    let _ = tx.send(());
+                }
+            });
+
+            rx.await.ok();
+        };
+
         rustmax::axum::serve(listener, app)
+            .with_graceful_shutdown(shutdown_signal)
             .await
             .map_err(|e| Error::server(e.to_string()))?;
 
+        info!("Server stopped");
         Ok(())
     })
 }
