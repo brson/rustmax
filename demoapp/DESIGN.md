@@ -60,7 +60,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used (31 crates)
+### Currently Used (35 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
@@ -85,12 +85,15 @@ content/*.md --> Scanner --> Documents --> Collection
 | Encoding | hex | Hash display formatting |
 | Encoding | bytes | Binary asset handling |
 | Crypto | blake3 | Content hashing for cache keys |
+| Crypto | sha2 | Alternative hashing (SHA-256/512) |
 | Filesystem | walkdir | Directory traversal |
 | Filesystem | ignore | .gitignore-style filtering |
 | Filesystem | glob | File pattern matching |
 | Filesystem | tempfile | Test fixtures |
 | Time | jiff | Date parsing (civil::Date) |
+| Time | chrono | Date compatibility layer |
 | Text | unicode-segmentation | Word counting, search tokenization |
+| Text | memchr | Fast byte/substring searching |
 | Collections | itertools | Iterator utilities |
 | Random | rand | Random ID generation |
 | Logging | log + env_logger | Logging infrastructure |
@@ -101,9 +104,6 @@ content/*.md --> Scanner --> Documents --> Collection
 
 | Crate | Planned Usage |
 |-------|---------------|
-| sha2 | Alternative hashing |
-| chrono | Alternative date handling |
-| memchr | Fast string searching |
 | bitflags | Feature flags |
 | nom | Custom syntax parsing |
 

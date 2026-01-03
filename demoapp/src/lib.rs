@@ -11,6 +11,9 @@ pub mod serve;
 pub mod search;
 pub mod remote;
 pub mod util;
+pub mod crypto;
+pub mod text;
+pub mod time;
 pub mod error;
 
 pub use error::{Error, Result};

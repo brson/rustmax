@@ -37,14 +37,12 @@ Progress tracking for rustmax crate coverage.
 - [x] base64 - Inline image encoding
 - [x] hex - Hash display
 - [x] rand - Random ID generation
+- [x] sha2 - Alternative hashing (SHA-256/512)
+- [x] memchr - Fast byte/substring searching
+- [x] chrono - Date compatibility layer
 
-### Not Yet Used (Medium Priority)
+### Not Yet Used
 - [ ] nom - Custom syntax parsing
-- [ ] chrono - Alternative dates (compatibility)
-- [ ] sha2 - Alternative hashing
-
-### Not Yet Used (Lower Priority)
-- [ ] memchr - Fast searching
 - [ ] bitflags - Feature flags
 - [ ] crossbeam - Advanced concurrency
 
@@ -181,8 +179,15 @@ fn test_build_output() {
 - 52 total tests passing (35 unit + 17 integration)
 - 32 rustmax crates now integrated
 
+### 2026-01-03: Crypto, Text, and Time
+- Added sha2 for SHA-256/512 hashing
+- Added memchr for fast byte/substring searching
+- Added chrono for date compatibility with jiff
+- New modules: crypto/, text/, time/
+- 82 total tests passing (65 unit + 17 integration)
+- 35 rustmax crates now integrated
+
 ### Next Session Priorities
 1. Add nom for custom syntax parsing (shortcodes)
-2. Add sha2 for alternative hashing
+2. Add bitflags for feature configuration
 3. Improve search with stemming
-4. Add chrono for date compatibility
