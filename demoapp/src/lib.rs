@@ -10,6 +10,7 @@ pub mod build;
 pub mod serve;
 pub mod search;
 pub mod remote;
+pub mod util;
 pub mod error;
 
 pub use error::{Error, Result};

@@ -33,21 +33,19 @@ Progress tracking for rustmax crate coverage.
 - [x] flate2 - Asset compression
 - [x] regex - URL rewriting, content transforms
 - [x] futures - Parallel async operations
-
-### Partially Used
-- [ ] bytes - Could use for binary asset handling
+- [x] bytes - Binary asset handling
+- [x] base64 - Inline image encoding
+- [x] hex - Hash display
+- [x] rand - Random ID generation
 
 ### Not Yet Used (Medium Priority)
 - [ ] nom - Custom syntax parsing
 - [ ] chrono - Alternative dates (compatibility)
-- [ ] base64 - Inline image encoding
-- [ ] hex - Hash display
 - [ ] sha2 - Alternative hashing
 
 ### Not Yet Used (Lower Priority)
 - [ ] memchr - Fast searching
 - [ ] bitflags - Feature flags
-- [ ] rand - Random IDs
 - [ ] crossbeam - Advanced concurrency
 
 ## Feature Roadmap
@@ -174,8 +172,17 @@ fn test_build_output() {
 - 38 total tests passing (21 unit + 17 integration)
 - 28 rustmax crates now integrated
 
+### 2026-01-03: Encoding and Utilities
+- Added bytes for binary asset handling (AssetBuffer)
+- Added base64 for inline image encoding (data URLs)
+- Added hex for hash display formatting
+- Added rand for random ID generation
+- New modules: build/encoding.rs, util/
+- 52 total tests passing (35 unit + 17 integration)
+- 32 rustmax crates now integrated
+
 ### Next Session Priorities
 1. Add nom for custom syntax parsing (shortcodes)
-2. Add bytes for binary asset handling
-3. Add base64 for inline image encoding
-4. Improve search with stemming
+2. Add sha2 for alternative hashing
+3. Improve search with stemming
+4. Add chrono for date compatibility

@@ -60,7 +60,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used (27 crates)
+### Currently Used (31 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
@@ -81,6 +81,9 @@ content/*.md --> Scanner --> Documents --> Collection
 | Serialization | serde_json | JSON export, search index |
 | Serialization | toml | Config and frontmatter parsing |
 | Encoding | flate2 | Gzip asset compression |
+| Encoding | base64 | Inline image data URLs |
+| Encoding | hex | Hash display formatting |
+| Encoding | bytes | Binary asset handling |
 | Crypto | blake3 | Content hashing for cache keys |
 | Filesystem | walkdir | Directory traversal |
 | Filesystem | ignore | .gitignore-style filtering |
@@ -89,6 +92,7 @@ content/*.md --> Scanner --> Documents --> Collection
 | Time | jiff | Date parsing (civil::Date) |
 | Text | unicode-segmentation | Word counting, search tokenization |
 | Collections | itertools | Iterator utilities |
+| Random | rand | Random ID generation |
 | Logging | log + env_logger | Logging infrastructure |
 | Errors | thiserror | Error type definitions |
 | Errors | anyhow | Fallback error handling |
@@ -97,13 +101,10 @@ content/*.md --> Scanner --> Documents --> Collection
 
 | Crate | Planned Usage |
 |-------|---------------|
-| base64, hex | Encoding utilities |
 | sha2 | Alternative hashing |
 | chrono | Alternative date handling |
 | memchr | Fast string searching |
 | bitflags | Feature flags |
-| bytes | Binary handling |
-| rand | Random slugs/IDs |
 | nom | Custom syntax parsing |
 
 ## Key Design Decisions

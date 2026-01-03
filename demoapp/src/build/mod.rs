@@ -4,6 +4,7 @@ mod markdown;
 mod template;
 mod compress;
 mod rewrite;
+mod encoding;
 
 pub use markdown::render_markdown;
 pub use template::TemplateEngine;
@@ -11,6 +12,10 @@ pub use compress::{compress_output, compress, decompress, compress_with_level, C
 pub use rewrite::{
     UrlRewriter, make_urls_absolute, rewrite_md_links, extract_urls,
     slugify, is_valid_slug, replace_pattern, find_internal_links, verify_links
+};
+pub use encoding::{
+    to_base64, from_base64, to_hex, from_hex, create_data_url, file_to_data_url,
+    guess_mime_type, AssetBuffer, format_hash_short, format_size
 };
 
 use rustmax::prelude::*;
