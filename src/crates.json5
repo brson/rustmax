@@ -135,6 +135,12 @@
             short_desc: "Hexidecimal encoding",
         },
         {
+            name: "ignore",
+            category: "system",
+            short_desc: "Gitignore-aware directory traversal",
+            maintainer: "burntsushi",
+        },
+        {
             name: "http",
             category: "web",
             short_desc: "Shared HTTP definitions",

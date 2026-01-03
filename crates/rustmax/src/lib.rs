@@ -430,6 +430,13 @@ pub mod hex {
     pub use ::hex::*;
 }
 
+#[cfg(feature = "ignore")]
+pub mod ignore {
+    #![doc = include_str!("../doc-src/crate-ignore.md")]
+
+    pub use ::ignore::*;
+}
+
 #[cfg(feature = "http")]
 pub mod http {
     //! Shared definitions related to the HTTP protocol.

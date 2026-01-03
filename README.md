@@ -45,6 +45,7 @@ It is neither stable nor supported.
 | `hex = "0.4.3"` | Hexidecimal encoding | [📖](https://docs.rs/hex/0.4.3/hex) |
 | `http = "1.2.0"` | Shared HTTP definitions | [📖](https://docs.rs/http/1.2.0/http) |
 | `hyper = "1.6.0"` | HTTP server | [📖](https://docs.rs/hyper/1.6.0/hyper) |
+| `ignore = "0.4.23"` | Gitignore-aware directory traversal | [📖](https://docs.rs/ignore/0.4.23/ignore) |
 | `itertools = "0.14.0"` | Advanced iterator extension methods | [📖](https://docs.rs/itertools/0.14.0/itertools) |
 | `jiff = "0.2.1"` | Dates and time | [📖](https://docs.rs/jiff/0.2.1/jiff) |
 | `json5 = "1.3.0"` | JSON with comments, etc. | [📖](https://docs.rs/json5/1.3.0/json5) |

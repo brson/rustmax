@@ -349,6 +349,14 @@
     "crate::rand_pcg::Pcg64":
     "https://docs.rs/rand_pcg/latest/rand_pcg/type.Pcg64.html",
 
+    // ignore
+    "crate::ignore::WalkBuilder":
+    "https://docs.rs/ignore/latest/ignore/struct.WalkBuilder.html",
+    "crate::ignore::Walk":
+    "https://docs.rs/ignore/latest/ignore/struct.Walk.html",
+    "crate::ignore::WalkParallel":
+    "https://docs.rs/ignore/latest/ignore/struct.WalkParallel.html",
+
     // hex
     "crate::hex::encode":
     "https://docs.rs/hex/latest/hex/fn.encode.html",
