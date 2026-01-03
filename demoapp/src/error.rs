@@ -49,6 +49,9 @@ pub enum Error {
     #[error("Server error: {message}")]
     Server { message: String },
 
+    #[error("Remote fetch error for {url}: {message}")]
+    Remote { url: String, message: String },
+
     #[error("{0}")]
     Other(#[from] rustmax::anyhow::Error),
 }
@@ -82,6 +85,13 @@ impl Error {
 
     pub fn server(message: impl Into<String>) -> Self {
         Self::Server {
+            message: message.into(),
+        }
+    }
+
+    pub fn remote(url: impl Into<String>, message: impl Into<String>) -> Self {
+        Self::Remote {
+            url: url.into(),
             message: message.into(),
         }
     }

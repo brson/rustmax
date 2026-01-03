@@ -43,6 +43,10 @@ enum Command {
         /// Include draft documents.
         #[arg(long)]
         drafts: bool,
+
+        /// Compress output files (create .gz versions).
+        #[arg(long)]
+        compress: bool,
     },
 
     /// Start a development server with live reload.
@@ -116,6 +120,20 @@ enum Command {
         #[arg(short, long, default_value = "content/**/*.md")]
         pattern: String,
     },
+
+    /// Fetch content from a remote URL.
+    Fetch {
+        /// URL to fetch content from.
+        url: String,
+
+        /// Destination path (relative to collection root).
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Collection directory (defaults to current directory).
+        #[arg(short, long, default_value = ".")]
+        path: PathBuf,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
@@ -135,7 +153,7 @@ impl Cli {
 
         match self.command {
             Command::Init { path } => cmd_init(path),
-            Command::Build { path, output, drafts } => cmd_build(path, output, drafts),
+            Command::Build { path, output, drafts, compress } => cmd_build(path, output, drafts, compress),
             Command::Serve { path, port, drafts } => cmd_serve(path, port, drafts),
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
@@ -143,6 +161,7 @@ impl Cli {
             Command::Export { path, format, output } => cmd_export(path, format, output),
             Command::Repl { path } => cmd_repl(path),
             Command::Files { path, pattern } => cmd_files(path, pattern),
+            Command::Fetch { url, output, path } => cmd_fetch(url, output, path),
         }
     }
 }
@@ -199,7 +218,7 @@ This is your first document. Edit or delete it and start writing!
     Ok(())
 }
 
-fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool) -> Result<()> {
+fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: bool) -> Result<()> {
     info!("Building collection at {}", path.display());
 
     let config = Config::load(&path)?;
@@ -209,6 +228,11 @@ fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool) -> Result<()>
     info!("Found {} documents", collection.documents.len());
 
     crate::build::build(&collection, &config, &output_dir, drafts)?;
+
+    if compress {
+        info!("Compressing output files...");
+        crate::build::compress_output(&output_dir)?;
+    }
 
     info!("Build complete: {}", output_dir.display());
     Ok(())
@@ -401,5 +425,41 @@ fn cmd_files(path: PathBuf, pattern: String) -> Result<()> {
     }
 
     println!("\n{} files matched", count);
+    Ok(())
+}
+
+fn cmd_fetch(url: String, output: Option<PathBuf>, path: PathBuf) -> Result<()> {
+    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use std::io::Write;
+
+    info!("Fetching content from {}", url);
+
+    // Determine output path.
+    let dest = if let Some(out) = output {
+        path.join(out)
+    } else {
+        // Extract filename from URL.
+        let filename = url
+            .rsplit('/')
+            .next()
+            .filter(|s| !s.is_empty() && s.contains('.'))
+            .unwrap_or("fetched.md");
+        path.join("content").join(filename)
+    };
+
+    // Run async fetch in tokio runtime.
+    let rt = rustmax::tokio::runtime::Runtime::new()
+        .map_err(|e| Error::Other(e.into()))?;
+
+    rt.block_on(async {
+        crate::remote::fetch_document(&url, &dest).await
+    })?;
+
+    let mut stdout = StandardStream::stdout(ColorChoice::Auto);
+    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
+    write!(stdout, "Fetched")?;
+    stdout.reset()?;
+    writeln!(stdout, " {} -> {}", url, dest.display())?;
+
     Ok(())
 }

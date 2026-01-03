@@ -29,16 +29,15 @@ Progress tracking for rustmax crate coverage.
 - [x] tempfile - Test fixtures
 - [x] glob - File pattern matching
 - [x] itertools - Collection operations
+- [x] reqwest - Remote content fetching
+- [x] flate2 - Asset compression
+- [x] regex - URL rewriting, content transforms
+- [x] futures - Parallel async operations
 
 ### Partially Used
 - [ ] bytes - Could use for binary asset handling
 
-### Not Yet Used (High Priority)
-- [ ] reqwest - Remote content fetching
-- [ ] flate2 - Asset compression
-
 ### Not Yet Used (Medium Priority)
-- [ ] regex - URL rewriting, content transforms
 - [ ] nom - Custom syntax parsing
 - [ ] chrono - Alternative dates (compatibility)
 - [ ] base64 - Inline image encoding
@@ -50,7 +49,6 @@ Progress tracking for rustmax crate coverage.
 - [ ] bitflags - Feature flags
 - [ ] rand - Random IDs
 - [ ] crossbeam - Advanced concurrency
-- [ ] futures - Async utilities
 
 ## Feature Roadmap
 
@@ -167,8 +165,17 @@ fn test_build_output() {
 - 26 total tests passing
 - 24 rustmax crates now integrated
 
+### 2026-01-03: Remote Content and Compression
+- Added reqwest for remote content fetching (fetch command)
+- Added flate2 for gzip asset compression (build --compress)
+- Added regex for URL rewriting and content transforms
+- Added futures for parallel async operations
+- New modules: remote/, build/compress.rs, build/rewrite.rs
+- 38 total tests passing (21 unit + 17 integration)
+- 28 rustmax crates now integrated
+
 ### Next Session Priorities
-1. Add reqwest for remote content fetching
-2. Add flate2 for asset compression
-3. Add regex for URL rewriting
+1. Add nom for custom syntax parsing (shortcodes)
+2. Add bytes for binary asset handling
+3. Add base64 for inline image encoding
 4. Improve search with stemming

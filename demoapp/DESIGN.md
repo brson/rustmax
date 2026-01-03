@@ -60,7 +60,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used (24 crates)
+### Currently Used (27 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
@@ -70,13 +70,17 @@ content/*.md --> Scanner --> Documents --> Collection
 | CLI | ctrlc | Graceful shutdown handling |
 | Web | axum | Development server |
 | Web | tower-http | Static file serving (external dep) |
+| Web | reqwest | Remote content fetching |
 | Async | tokio | Async runtime for server |
+| Async | futures | Parallel async operations |
 | Concurrency | rayon | Parallel document building |
 | Parsing | comrak | Markdown to HTML |
+| Parsing | regex | URL rewriting, content transforms |
 | Templates | tera | HTML template rendering |
 | Serialization | serde | Document/config serialization |
 | Serialization | serde_json | JSON export, search index |
 | Serialization | toml | Config and frontmatter parsing |
+| Encoding | flate2 | Gzip asset compression |
 | Crypto | blake3 | Content hashing for cache keys |
 | Filesystem | walkdir | Directory traversal |
 | Filesystem | ignore | .gitignore-style filtering |
@@ -93,8 +97,6 @@ content/*.md --> Scanner --> Documents --> Collection
 
 | Crate | Planned Usage |
 |-------|---------------|
-| reqwest | Remote content fetching |
-| flate2 | Asset compression |
 | base64, hex | Encoding utilities |
 | sha2 | Alternative hashing |
 | chrono | Alternative date handling |
@@ -102,7 +104,6 @@ content/*.md --> Scanner --> Documents --> Collection
 | bitflags | Feature flags |
 | bytes | Binary handling |
 | rand | Random slugs/IDs |
-| regex | URL rewriting |
 | nom | Custom syntax parsing |
 
 ## Key Design Decisions
@@ -140,11 +141,15 @@ If a specific template (e.g., `post.html`) doesn't exist, falls back to `default
 |---------|-------------|
 | `init [path]` | Create new collection with example content |
 | `build [path]` | Build static site to output/ |
+| `build --compress` | Build with gzip compression |
 | `serve [path]` | Start dev server on port 3000 |
 | `check [path]` | Validate all documents |
 | `new <title>` | Create new document |
 | `index [path]` | Rebuild search index |
 | `export --format` | Export as JSON/RSS/sitemap |
+| `fetch <url>` | Fetch remote content |
+| `files [pattern]` | List files matching glob pattern |
+| `repl` | Interactive REPL for queries |
 
 ## Config Format (anthology.toml)
 
