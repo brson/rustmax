@@ -74,11 +74,11 @@ use tokio::time::{sleep, timeout, Duration};
 
 #[tokio::main]
 async fn main() {
-    // Sleep for 1 second
-    sleep(Duration::from_secs(1)).await;
+    // Sleep briefly
+    sleep(Duration::from_millis(10)).await;
 
     // Timeout an operation
-    let result = timeout(Duration::from_secs(5), slow_operation()).await;
+    let result = timeout(Duration::from_millis(50), slow_operation()).await;
 
     match result {
         Ok(value) => println!("Operation completed: {:?}", value),
@@ -87,7 +87,7 @@ async fn main() {
 }
 
 async fn slow_operation() -> &'static str {
-    sleep(Duration::from_secs(10)).await;
+    sleep(Duration::from_millis(100)).await;
     "done"
 }
 ```
