@@ -289,6 +289,7 @@ rmx-feature-default-wasm = [
   #"ahash?/default",
   "ahash?/compile-time-rng",
   "axum?/default",
+  "axum?/ws",
   "bindgen?/default",
   "chrono?/default",
   "clap?/default",
@@ -318,6 +319,7 @@ rmx-feature-default-wasm = [
 rmx-feature-default = [
   "ahash?/default",
   "axum?/default",
+  "axum?/ws",
   "bindgen?/default",
   "chrono?/default",
   "clap?/default",
