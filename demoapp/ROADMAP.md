@@ -40,10 +40,10 @@ Progress tracking for rustmax crate coverage.
 - [x] sha2 - Alternative hashing (SHA-256/512)
 - [x] memchr - Fast byte/substring searching
 - [x] chrono - Date compatibility layer
+- [x] nom - Shortcode syntax parsing
+- [x] bitflags - Feature flags and options
 
 ### Not Yet Used
-- [ ] nom - Custom syntax parsing
-- [ ] bitflags - Feature flags
 - [ ] crossbeam - Advanced concurrency
 
 ## Feature Roadmap
@@ -187,7 +187,14 @@ fn test_build_output() {
 - 82 total tests passing (65 unit + 17 integration)
 - 35 rustmax crates now integrated
 
+### 2026-01-03: Shortcodes and Feature Flags
+- Added nom for shortcode parsing (inline and block shortcodes)
+- Added bitflags for BuildFeatures, ContentFlags, ServerFlags
+- New modules: shortcode/, features/
+- 97 total tests passing (80 unit + 17 integration)
+- 37 rustmax crates now integrated
+
 ### Next Session Priorities
-1. Add nom for custom syntax parsing (shortcodes)
-2. Add bitflags for feature configuration
-3. Improve search with stemming
+1. Add crossbeam for advanced concurrency
+2. Improve search with stemming
+3. Add live reload via WebSocket

@@ -60,7 +60,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used (35 crates)
+### Currently Used (37 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
@@ -76,6 +76,7 @@ content/*.md --> Scanner --> Documents --> Collection
 | Concurrency | rayon | Parallel document building |
 | Parsing | comrak | Markdown to HTML |
 | Parsing | regex | URL rewriting, content transforms |
+| Parsing | nom | Shortcode syntax parsing |
 | Templates | tera | HTML template rendering |
 | Serialization | serde | Document/config serialization |
 | Serialization | serde_json | JSON export, search index |
@@ -95,6 +96,7 @@ content/*.md --> Scanner --> Documents --> Collection
 | Text | unicode-segmentation | Word counting, search tokenization |
 | Text | memchr | Fast byte/substring searching |
 | Collections | itertools | Iterator utilities |
+| Config | bitflags | Feature flags and options |
 | Random | rand | Random ID generation |
 | Logging | log + env_logger | Logging infrastructure |
 | Errors | thiserror | Error type definitions |
@@ -104,8 +106,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 | Crate | Planned Usage |
 |-------|---------------|
-| bitflags | Feature flags |
-| nom | Custom syntax parsing |
+| crossbeam | Advanced concurrency |
 
 ## Key Design Decisions
 
