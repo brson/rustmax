@@ -200,7 +200,7 @@ Markdown content here.
 
 ## Testing Strategy
 
-Current tests (116 passing):
+Current tests (123 passing):
 - Frontmatter parsing
 - No-frontmatter documents
 - Word counting
@@ -239,8 +239,7 @@ Future tests needed:
 
 1. **tower-http external**: Not in rustmax, added as direct dependency
 2. **No incremental builds**: Always rebuilds everything
-3. **Search is basic**: No stemming, no fuzzy matching
-4. **Templates are limited**: Few built-in templates
+3. **Templates are limited**: Few built-in templates
 
 ## File Locations
 

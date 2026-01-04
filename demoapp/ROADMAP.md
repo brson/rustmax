@@ -210,7 +210,16 @@ fn test_build_output() {
 - JavaScript injected into pages during dev serving
 - 116 total tests passing (99 unit + 17 integration)
 
+### 2026-01-03: Enhanced Search
+- Added Porter stemmer for English word stemming
+- Added stop word filtering (100+ common words)
+- BM25-like scoring with term frequency and document length normalization
+- Title boost for better relevance ranking
+- Prefix matching for partial queries
+- Autocomplete suggestions via `suggest()` method
+- 123 total tests passing (106 unit + 17 integration)
+
 ### Next Session Priorities
-1. Improve search with stemming
-2. Add incremental builds using content_hash
-3. Add syntax highlighting themes
+1. Add incremental builds using content_hash
+2. Add syntax highlighting themes
+3. Add EPUB export
