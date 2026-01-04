@@ -141,6 +141,12 @@
             maintainer: "burntsushi",
         },
         {
+            name: "image",
+            category: "graphics",
+            short_desc: "Image processing and manipulation",
+            maintainer: "image-rs",
+        },
+        {
             name: "http",
             category: "web",
             short_desc: "Shared HTTP definitions",

@@ -41,6 +41,7 @@ as a "batteries included" supercrate.
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`], [`powerletters`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
 | system / OS | [`glob`], [`ignore`], [`tempfile`], [`walkdir`], [`xshell`] |
+| graphics / images | [`image`] |
 | testing | [`proptest`] |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
 | build scripts | … |
@@ -185,6 +186,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 - [`flate2`] - Deflate, gzip, and zlib compression and decompression.
 - [`glob`] - Unix shell style pattern matching for paths.
 - [`ignore`] - Directory traversal respecting gitignore rules.
+- [`image`] - Image processing and manipulation.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rayon`] - Parallel iterators and other parallel processing tools.

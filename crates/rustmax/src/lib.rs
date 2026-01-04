@@ -437,6 +437,13 @@ pub mod ignore {
     pub use ::ignore::*;
 }
 
+#[cfg(feature = "image")]
+pub mod image {
+    #![doc = include_str!("../doc-src/crate-image.md")]
+
+    pub use ::image::*;
+}
+
 #[cfg(feature = "http")]
 pub mod http {
     //! Shared definitions related to the HTTP protocol.

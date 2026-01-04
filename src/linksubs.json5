@@ -357,6 +357,14 @@
     "crate::ignore::WalkParallel":
     "https://docs.rs/ignore/latest/ignore/struct.WalkParallel.html",
 
+    // image
+    "crate::image::DynamicImage":
+    "https://docs.rs/image/latest/image/enum.DynamicImage.html",
+    "crate::image::ImageBuffer":
+    "https://docs.rs/image/latest/image/struct.ImageBuffer.html",
+    "crate::image::open":
+    "https://docs.rs/image/latest/image/fn.open.html",
+
     // hex
     "crate::hex::encode":
     "https://docs.rs/hex/latest/hex/fn.encode.html",

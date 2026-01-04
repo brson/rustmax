@@ -82,6 +82,7 @@ rmx-crates-std = [
   "flate2",
   "glob",
   "ignore",
+  "image",
   "json5",
   "proptest",
   "rayon",
@@ -326,6 +327,7 @@ rmx-feature-default = [
   "derive_more?/default",
   "env_logger?/default",
   "futures?/default",
+  "image?/default",
   "jiff?/default",
   "nom?/default",
   "proc-macro2?/default",
@@ -459,6 +461,7 @@ glob = { version = "0.3.2", optional = true, default-features = false }
 http = { version = "1.2.0", optional = true, default-features = false }
 hex = { version = "0.4.3", optional = true, default-features = false }
 ignore = { version = "0.4.23", optional = true, default-features = false }
+image = { version = "0.25", optional = true, default-features = false }
 hyper = { version = "1.6.0", optional = true, default-features = false }
 itertools = { version = "0.14.0", optional = true, default-features = false }
 jiff = { version = "0.2.1", optional = true, default-features = false }
