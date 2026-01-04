@@ -47,6 +47,10 @@ enum Command {
         /// Compress output files (create .gz versions).
         #[arg(long)]
         compress: bool,
+
+        /// Use incremental build (skip unchanged documents).
+        #[arg(short, long)]
+        incremental: bool,
     },
 
     /// Start a development server with live reload.
@@ -153,7 +157,7 @@ impl Cli {
 
         match self.command {
             Command::Init { path } => cmd_init(path),
-            Command::Build { path, output, drafts, compress } => cmd_build(path, output, drafts, compress),
+            Command::Build { path, output, drafts, compress, incremental } => cmd_build(path, output, drafts, compress, incremental),
             Command::Serve { path, port, drafts } => cmd_serve(path, port, drafts),
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
@@ -218,7 +222,7 @@ This is your first document. Edit or delete it and start writing!
     Ok(())
 }
 
-fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: bool) -> Result<()> {
+fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: bool, incremental: bool) -> Result<()> {
     info!("Building collection at {}", path.display());
 
     let config = Config::load(&path)?;
@@ -227,7 +231,11 @@ fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: boo
     let collection = crate::collection::Collection::load(&path, &config)?;
     info!("Found {} documents", collection.documents.len());
 
-    crate::build::build(&collection, &config, &output_dir, drafts)?;
+    if incremental {
+        crate::build::build_incremental(&collection, &config, &output_dir, drafts)?;
+    } else {
+        crate::build::build(&collection, &config, &output_dir, drafts)?;
+    }
 
     if compress {
         info!("Compressing output files...");

@@ -200,7 +200,7 @@ Markdown content here.
 
 ## Testing Strategy
 
-Current tests (123 passing):
+Current tests (130 passing):
 - Frontmatter parsing
 - No-frontmatter documents
 - Word counting
@@ -226,7 +226,7 @@ Future tests needed:
 ### Phase 2: Enhanced Features (COMPLETE)
 - [x] Live reload via WebSocket (file watcher + hot CSS)
 - [x] REPL mode (rustyline)
-- [ ] Incremental builds using content_hash
+- [x] Incremental builds using content_hash
 - [x] Asset compression (flate2)
 
 ### Phase 3: Advanced (PLANNED)
@@ -238,8 +238,7 @@ Future tests needed:
 ## Known Issues / Technical Debt
 
 1. **tower-http external**: Not in rustmax, added as direct dependency
-2. **No incremental builds**: Always rebuilds everything
-3. **Templates are limited**: Few built-in templates
+2. **Templates are limited**: Few built-in templates
 
 ## File Locations
 

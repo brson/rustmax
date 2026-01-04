@@ -5,6 +5,7 @@ mod template;
 mod compress;
 mod rewrite;
 mod encoding;
+mod cache;
 
 pub use markdown::render_markdown;
 pub use template::TemplateEngine;
@@ -17,12 +18,14 @@ pub use encoding::{
     to_base64, from_base64, to_hex, from_hex, create_data_url, file_to_data_url,
     guess_mime_type, AssetBuffer, format_hash_short, format_size
 };
+pub use cache::{BuildCache, CacheStatus, IncrementalBuildResult, hash_templates};
 
 use rustmax::prelude::*;
 use rustmax::rayon::prelude::*;
 use rustmax::log::{info, debug};
 use rustmax::jiff::Zoned;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 use std::fs;
 
 use crate::collection::{Collection, Config, Document};
@@ -78,6 +81,107 @@ pub fn build(
     }
 
     Ok(())
+}
+
+/// Build the collection with incremental support.
+pub fn build_incremental(
+    collection: &Collection,
+    config: &Config,
+    output_dir: &Path,
+    include_drafts: bool,
+) -> Result<IncrementalBuildResult> {
+    // Load existing cache.
+    let mut cache = BuildCache::load(&collection.root);
+
+    // Check if templates have changed.
+    let templates_dir = collection.root.join("templates");
+    let template_hash = hash_templates(&templates_dir)?;
+    let templates_changed = cache.templates_changed(&template_hash);
+
+    if templates_changed {
+        info!("Templates changed, forcing full rebuild");
+        cache.clear();
+    }
+
+    // Ensure output directory exists.
+    fs::create_dir_all(output_dir)?;
+
+    // Initialize template engine.
+    let engine = TemplateEngine::new(&templates_dir)?;
+
+    // Filter documents.
+    let documents: Vec<&Document> = if include_drafts {
+        collection.all_sorted()
+    } else {
+        collection.published()
+    };
+
+    // Track build results.
+    let result = Mutex::new(IncrementalBuildResult::new());
+    result.lock().unwrap().total = documents.len();
+
+    // Build documents in parallel, checking cache.
+    let build_results: Vec<Result<Option<(PathBuf, String, String)>>> = documents
+        .par_iter()
+        .map(|doc| {
+            let output_path = output_dir.join(doc.slug()).join("index.html");
+
+            // Check cache.
+            let status = cache.check(
+                &doc.source_path,
+                &doc.content_hash,
+                &output_path,
+            );
+
+            if status == CacheStatus::Fresh {
+                debug!("Skipping (cached): {}", doc.source_path.display());
+                result.lock().unwrap().skipped += 1;
+                return Ok(None);
+            }
+
+            // Build the document.
+            build_document(doc, config, &engine, output_dir)?;
+            result.lock().unwrap().rebuilt += 1;
+
+            Ok(Some((
+                doc.source_path.clone(),
+                doc.content_hash.clone(),
+                output_path.to_string_lossy().to_string(),
+            )))
+        })
+        .collect();
+
+    // Check for errors and update cache.
+    for res in build_results {
+        if let Some((source_path, content_hash, output_path)) = res? {
+            cache.update(source_path, content_hash, output_path.into());
+        }
+    }
+
+    // Build index page (always, since document list may have changed).
+    build_index(&documents, config, &engine, output_dir)?;
+
+    // Build tag pages.
+    build_tag_pages(collection, config, &engine, output_dir, include_drafts)?;
+
+    // Copy static assets.
+    let static_dir = collection.root.join("static");
+    if static_dir.exists() {
+        copy_static(&static_dir, output_dir)?;
+    }
+
+    // Prune deleted documents from cache.
+    let source_paths: Vec<_> = documents.iter().map(|d| d.source_path.clone()).collect();
+    cache.prune(&source_paths);
+
+    // Update template hash and save cache.
+    cache.set_template_hash(template_hash);
+    cache.save(&collection.root)?;
+
+    let final_result = result.into_inner().unwrap();
+    final_result.log();
+
+    Ok(final_result)
 }
 
 /// Build a single document.

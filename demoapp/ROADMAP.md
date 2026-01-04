@@ -219,7 +219,14 @@ fn test_build_output() {
 - Autocomplete suggestions via `suggest()` method
 - 123 total tests passing (106 unit + 17 integration)
 
+### 2026-01-03: Incremental Builds
+- Added build cache for tracking document content hashes
+- Detects template changes and forces full rebuild when needed
+- Prunes cache entries for deleted documents
+- CLI: `anthology build --incremental` or `anthology build -i`
+- 130 total tests passing (113 unit + 17 integration)
+
 ### Next Session Priorities
-1. Add incremental builds using content_hash
-2. Add syntax highlighting themes
-3. Add EPUB export
+1. Add syntax highlighting themes
+2. Add EPUB export
+3. Add plugin system
