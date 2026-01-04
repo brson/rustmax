@@ -16,9 +16,8 @@ but that are not yet part of Rustmax.
   WireGuard.
 - [`cpal`](https://docs.rs/cpal).
   Cross-platform audio I/O.
-- [`console`](https://docs.rs/console),
-  [`dialoguer`](https://docs.rs/dialoguer), and
-  [`indicatif`](https://docs.rs/indicatif).
+- [`console`](https://docs.rs/console) and
+  [`dialoguer`](https://docs.rs/dialoguer).
   Pretty terminals.
 - [`criterion`](https://docs.rs/criterion).
   Advanced benchmarking.
@@ -46,6 +45,11 @@ but that are not yet part of Rustmax.
 - [`rustc-hash`](https://docs.rs/rustc-hash)
 - [`hashbrown`](https://docs.rs/hashbrown).
   Hash maps with no-std.
+- [`html5ever`](https://docs.rs/html5ever),
+  [`scraper`](https://docs.rs/scraper), and
+  [`selectors`](https://docs.rs/selectors).
+  HTML parsing and CSS selectors. html5ever is low-level;
+  scraper provides a convenient DOM + selector API.
 - [`home`](https://docs.rs/home)
 - [`include_dir`](https://docs.rs/include_dir).
 - [`indexmap`](https://docs.rs/indexmap)
@@ -54,8 +58,6 @@ but that are not yet part of Rustmax.
 - [`memmap`](hthtps://docs.rs/memmap)
 - [`ndarray`](https://docs.rs/ndarray)
 - [`nix`](https://docs.rs/nix)
-- [`notify`](https://docs.rs/notify).
-  File system notification.
 - [`num`](https://docs.rs/num).
 - [`num-traits`](https://docs.rs/num-traits)
 - [`ordered-float`](https://docs.rs/ordered-float)

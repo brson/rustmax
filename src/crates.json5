@@ -147,6 +147,12 @@
             maintainer: "image-rs",
         },
         {
+            name: "indicatif",
+            category: "cli",
+            short_desc: "Progress bars and spinners",
+            maintainer: "console-rs",
+        },
+        {
             name: "http",
             category: "web",
             short_desc: "Shared HTTP definitions",
@@ -202,6 +208,12 @@
             name: "nom",
             category: "encoding",
             short_desc: "Parser combinators",
+        },
+        {
+            name: "notify",
+            category: "system",
+            short_desc: "Cross-platform filesystem notifications",
+            maintainer: "notify-rs",
         },
         {
             name: "num-bigint",

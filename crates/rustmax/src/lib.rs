@@ -444,6 +444,13 @@ pub mod image {
     pub use ::image::*;
 }
 
+#[cfg(feature = "indicatif")]
+pub mod indicatif {
+    #![doc = include_str!("../doc-src/crate-indicatif.md")]
+
+    pub use ::indicatif::*;
+}
+
 #[cfg(feature = "http")]
 pub mod http {
     //! Shared definitions related to the HTTP protocol.
@@ -520,6 +527,13 @@ pub mod nom {
     #![doc = include_str!("../doc-src/crate-nom.md")]
 
     pub use ::nom::*;
+}
+
+#[cfg(feature = "notify")]
+pub mod notify {
+    #![doc = include_str!("../doc-src/crate-notify.md")]
+
+    pub use ::notify::*;
 }
 
 #[cfg(feature = "num-bigint")]

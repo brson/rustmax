@@ -365,6 +365,22 @@
     "crate::image::open":
     "https://docs.rs/image/latest/image/fn.open.html",
 
+    // indicatif
+    "crate::indicatif::ProgressBar":
+    "https://docs.rs/indicatif/latest/indicatif/struct.ProgressBar.html",
+    "crate::indicatif::MultiProgress":
+    "https://docs.rs/indicatif/latest/indicatif/struct.MultiProgress.html",
+    "crate::indicatif::ProgressStyle":
+    "https://docs.rs/indicatif/latest/indicatif/struct.ProgressStyle.html",
+
+    // notify
+    "crate::notify::recommended_watcher":
+    "https://docs.rs/notify/latest/notify/fn.recommended_watcher.html",
+    "crate::notify::Watcher":
+    "https://docs.rs/notify/latest/notify/trait.Watcher.html",
+    "crate::notify::RecursiveMode":
+    "https://docs.rs/notify/latest/notify/enum.RecursiveMode.html",
+
     // hex
     "crate::hex::encode":
     "https://docs.rs/hex/latest/hex/fn.encode.html",

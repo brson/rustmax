@@ -39,8 +39,8 @@ as a "batteries included" supercrate.
 | networking and web | [`axum`], [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tera`], [`tower`], [`url`] |
 | text / unicode | [`unicode_segmentation`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`], [`powerletters`] |
-| terminal / CLI | [`clap`], [`ctrlc`], [`termcolor`], [`rustyline`] |
-| system / OS | [`glob`], [`ignore`], [`tempfile`], [`walkdir`], [`xshell`] |
+| terminal / CLI | [`clap`], [`ctrlc`], [`indicatif`], [`termcolor`], [`rustyline`] |
+| system / OS | [`glob`], [`ignore`], [`notify`], [`tempfile`], [`walkdir`], [`xshell`] |
 | graphics / images | [`image`] |
 | testing | [`proptest`] |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
@@ -187,7 +187,9 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 - [`glob`] - Unix shell style pattern matching for paths.
 - [`ignore`] - Directory traversal respecting gitignore rules.
 - [`image`] - Image processing and manipulation.
+- [`indicatif`] - Progress bars and spinners for CLI.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
+- [`notify`] - Cross-platform filesystem notifications.
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.

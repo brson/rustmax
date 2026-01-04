@@ -47,6 +47,7 @@ It is neither stable nor supported.
 | `hyper = "1.6.0"` | HTTP server | [📖](https://docs.rs/hyper/1.6.0/hyper) |
 | `ignore = "0.4.23"` | Gitignore-aware directory traversal | [📖](https://docs.rs/ignore/0.4.23/ignore) |
 | `image = "0.25"` | Image processing and manipulation | [📖](https://docs.rs/image/0.25/image) |
+| `indicatif = "0.18"` | Progress bars and spinners | [📖](https://docs.rs/indicatif/0.18/indicatif) |
 | `itertools = "0.14.0"` | Advanced iterator extension methods | [📖](https://docs.rs/itertools/0.14.0/itertools) |
 | `jiff = "0.2.1"` | Dates and time | [📖](https://docs.rs/jiff/0.2.1/jiff) |
 | `json5 = "1.3.0"` | JSON with comments, etc. | [📖](https://docs.rs/json5/1.3.0/json5) |
@@ -55,6 +56,7 @@ It is neither stable nor supported.
 | `memchr = "2.7.4"` | Fast byte search | [📖](https://docs.rs/memchr/2.7.4/memchr) |
 | `mime = "0.3.17"` | Shared MIME definitions | [📖](https://docs.rs/mime/0.3.17/mime) |
 | `nom = "8.0.0"` | Parser combinators | [📖](https://docs.rs/nom/8.0.0/nom) |
+| `notify = "8.0"` | Cross-platform filesystem notifications | [📖](https://docs.rs/notify/8.0/notify) |
 | `num-bigint = "0.4.6"` | Big integers | [📖](https://docs.rs/num-bigint/0.4.6/num_bigint) |
 | `num_enum = "0.7.3"` | Number-enum interop | [📖](https://docs.rs/num_enum/0.7.3/num_enum) |
 | `powerletters = "0.3.0"` | Concise single-letter methods for common operations | [📖](https://docs.rs/powerletters/0.3.0/powerletters) |
