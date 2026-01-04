@@ -27,31 +27,48 @@ struct CliOpts {
 
 #[derive(clap::Subcommand)]
 enum CliCmd {
+    /// List all available tools.
     ListTools(CliCmdListTools),
 
+    /// Install all tools.
     InstallTools(CliCmdInstallTools),
+    /// Update all tools.
     UpdateTools(CliCmdUpdateTools),
+    /// Uninstall all tools.
     UninstallTools(CliCmdUninstallTools),
+    /// Show status of all tools.
     ToolsStatus(CliCmdToolsStatus),
 
+    /// Install a specific tool.
     InstallTool(CliCmdInstallTool),
+    /// Update a specific tool.
     UpdateTool(CliCmdUpdateTool),
+    /// Uninstall a specific tool.
     UninstallTool(CliCmdUninstallTool),
+    /// Show status of a specific tool.
     ToolStatus(CliCmdToolStatus),
 
+    /// List books in the library.
     ListLibrary(CliCmdListLibrary),
+    /// Build the library or a specific book.
     BuildLibrary(CliCmdBuildLibrary),
+    /// Refresh the library or a specific book.
     RefreshLibrary(CliCmdRefreshLibrary),
 
     /// Build a book using the rmxbook renderer.
     Rmxbook(CliCmdRmxbook),
 
+    /// Create a new project from template.
     NewProject,
 
+    /// Write rustfmt.toml configuration file.
     WriteFmtConfig(CliCmdWriteFmtConfig),
+    /// Write deny.toml configuration file.
     WriteCargoDenyConfig(CliCmdWriteCargoDenyConfig),
+    /// Write clippy-control.toml configuration file.
     WriteClippyControlConfig(CliCmdWriteClippyControlConfig),
 
+    /// Run all code quality checks.
     RunAllChecks(CliCmdRunAllChecks),
 }
 
