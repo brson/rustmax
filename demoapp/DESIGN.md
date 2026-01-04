@@ -60,7 +60,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used (37 crates)
+### Currently Used (38 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
@@ -98,15 +98,14 @@ content/*.md --> Scanner --> Documents --> Collection
 | Collections | itertools | Iterator utilities |
 | Config | bitflags | Feature flags and options |
 | Random | rand | Random ID generation |
+| Concurrency | crossbeam | Work-stealing, channels, scoped threads |
 | Logging | log + env_logger | Logging infrastructure |
 | Errors | thiserror | Error type definitions |
 | Errors | anyhow | Fallback error handling |
 
-### Planned Coverage (Not Yet Used)
+### All Targeted Crates Integrated!
 
-| Crate | Planned Usage |
-|-------|---------------|
-| crossbeam | Advanced concurrency |
+38 rustmax crates now in use, covering CLI, web, async, concurrency, parsing, templates, serialization, encoding, crypto, filesystem, time, text, and more.
 
 ## Key Design Decisions
 
@@ -201,7 +200,7 @@ Markdown content here.
 
 ## Testing Strategy
 
-Current tests (9 passing):
+Current tests (115 passing):
 - Frontmatter parsing
 - No-frontmatter documents
 - Word counting
@@ -224,11 +223,11 @@ Future tests needed:
 - Dev server
 - Search indexing
 
-### Phase 2: Enhanced Features (PLANNED)
-- [ ] Live reload via WebSocket
-- [ ] REPL mode (rustyline)
+### Phase 2: Enhanced Features (COMPLETE)
+- [x] Live reload via polling (file watcher + hot CSS)
+- [x] REPL mode (rustyline)
 - [ ] Incremental builds using content_hash
-- [ ] Asset compression (flate2)
+- [x] Asset compression (flate2)
 
 ### Phase 3: Advanced (PLANNED)
 - [ ] Remote content fetching (reqwest)
@@ -239,10 +238,9 @@ Future tests needed:
 ## Known Issues / Technical Debt
 
 1. **tower-http external**: Not in rustmax, added as direct dependency
-2. **No live reload**: Server doesn't auto-refresh on changes
-3. **No incremental builds**: Always rebuilds everything
-4. **Search is basic**: No stemming, no fuzzy matching
-5. **Templates are limited**: Few built-in templates
+2. **No incremental builds**: Always rebuilds everything
+3. **Search is basic**: No stemming, no fuzzy matching
+4. **Templates are limited**: Few built-in templates
 
 ## File Locations
 

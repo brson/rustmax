@@ -1,5 +1,9 @@
 //! Development server with live reload.
 
+mod livereload;
+
+pub use livereload::{LiveReloadState, ChangeType, FileWatcher, live_reload_script, inject_script};
+
 use rustmax::prelude::*;
 use rustmax::axum::{
     Router,
@@ -24,6 +28,7 @@ struct AppState {
     config: Config,
     engine: TemplateEngine,
     include_drafts: bool,
+    port: u16,
 }
 
 /// Start the development server.
@@ -36,23 +41,45 @@ pub fn serve(
     let templates_dir = collection.root.join("templates");
     let engine = TemplateEngine::new(&templates_dir)?;
     let static_dir = collection.root.join("static");
+    let content_dir = collection.root.join("content");
+
+    // Set up live reload.
+    let live_reload = Arc::new(LiveReloadState::new());
+    let live_reload_for_watcher = Arc::clone(&live_reload);
+    let live_reload_for_ws = Arc::clone(&live_reload);
 
     let state = Arc::new(AppState {
         collection,
         config,
         engine,
         include_drafts,
+        port,
     });
+    drop(live_reload); // Ownership transferred to routes.
 
     let rt = rustmax::tokio::runtime::Runtime::new()?;
     rt.block_on(async move {
+        // Start file watcher in background.
+        let watch_paths = vec![content_dir, templates_dir, static_dir.clone()];
+        rustmax::tokio::spawn(async move {
+            let watcher = FileWatcher::new(watch_paths);
+            watcher.watch(live_reload_for_watcher).await;
+        });
+
+        // Build the live reload routes with their own state.
+        let reload_routes = Router::new()
+            .route("/livereload/poll", get(livereload::poll_handler))
+            .route("/livereload/version", get(livereload::version_handler))
+            .with_state(live_reload_for_ws);
+
         let mut app = Router::new()
             .route("/", get(handle_index))
             .route("/{slug}/", get(handle_document))
             .route("/tags/{tag}/", get(handle_tag))
             .route("/api/documents", get(api_documents))
             .route("/api/documents/{slug}", get(api_document))
-            .with_state(state);
+            .with_state(state)
+            .merge(reload_routes);
 
         // Serve static files if directory exists.
         if static_dir.exists() {
@@ -61,6 +88,7 @@ pub fn serve(
 
         let addr = format!("0.0.0.0:{}", port);
         info!("Listening on http://localhost:{}", port);
+        info!("Live reload enabled at /livereload/poll");
         info!("Press Ctrl+C to stop");
 
         let listener = TcpListener::bind(&addr).await.map_err(|e| {
@@ -106,7 +134,10 @@ async fn handle_index(State(state): State<Arc<AppState>>) -> Response {
 
     let ctx = state.engine.index_context(&documents, &state.config);
     match state.engine.render("index.html", &ctx) {
-        Ok(html) => Html(html).into_response(),
+        Ok(html) => {
+            let html = inject_script(&html, state.port);
+            Html(html).into_response()
+        }
         Err(e) => {
             (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
                 .into_response()
@@ -143,7 +174,10 @@ async fn handle_document(
                 .unwrap_or(&state.config.content.default_template);
 
             match state.engine.render(template, &ctx) {
-                Ok(html) => Html(html).into_response(),
+                Ok(html) => {
+                    let html = inject_script(&html, state.port);
+                    Html(html).into_response()
+                }
                 Err(e) => {
                     (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
                         .into_response()
@@ -172,7 +206,10 @@ async fn handle_tag(
 
     let ctx = state.engine.tag_context(&tag, &documents, &state.config);
     match state.engine.render("tag.html", &ctx) {
-        Ok(html) => Html(html).into_response(),
+        Ok(html) => {
+            let html = inject_script(&html, state.port);
+            Html(html).into_response()
+        }
         Err(e) => {
             (StatusCode::INTERNAL_SERVER_ERROR, format!("Template error: {}", e))
                 .into_response()

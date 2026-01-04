@@ -42,9 +42,10 @@ Progress tracking for rustmax crate coverage.
 - [x] chrono - Date compatibility layer
 - [x] nom - Shortcode syntax parsing
 - [x] bitflags - Feature flags and options
+- [x] crossbeam - Work-stealing, channels, scoped threads
 
 ### Not Yet Used
-- [ ] crossbeam - Advanced concurrency
+(All targeted crates now integrated!)
 
 ## Feature Roadmap
 
@@ -194,7 +195,22 @@ fn test_build_output() {
 - 97 total tests passing (80 unit + 17 integration)
 - 37 rustmax crates now integrated
 
+### 2026-01-03: Advanced Concurrency
+- Added crossbeam for work-stealing, scoped threads, channels
+- New module: concurrency/ with TaskPool, Pipeline, parallel_map, parallel_for
+- Progress reporting system with ProgressReporter
+- Fan-out pattern for distributing work
+- 106 total tests passing (89 unit + 17 integration)
+- 38 rustmax crates now integrated (all targeted crates complete!)
+
+### 2026-01-03: Live Reload
+- Added polling-based live reload for development server
+- File watcher detects content, template, and CSS changes
+- Hot CSS reload without full page refresh
+- JavaScript injected into pages during dev serving
+- 115 total tests passing (98 unit + 17 integration)
+
 ### Next Session Priorities
-1. Add crossbeam for advanced concurrency
-2. Improve search with stemming
-3. Add live reload via WebSocket
+1. Improve search with stemming
+2. Add incremental builds using content_hash
+3. Add syntax highlighting themes

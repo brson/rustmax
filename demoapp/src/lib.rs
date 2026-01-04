@@ -16,6 +16,7 @@ pub mod text;
 pub mod time;
 pub mod shortcode;
 pub mod features;
+pub mod concurrency;
 pub mod error;
 
 pub use error::{Error, Result};
