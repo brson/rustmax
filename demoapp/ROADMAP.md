@@ -65,20 +65,20 @@ Progress tracking for rustmax crate coverage.
 - [x] Remote content fetching (reqwest)
 - [x] Custom shortcodes (nom)
 - [ ] Image optimization
-- [ ] Table of contents generation
+- [x] Table of contents generation
 - [x] Syntax highlighting themes
 
 ### v0.5 - Search Enhancement (COMPLETE)
 - [x] Stemming for better matches
+- [x] Search API endpoint
+- [x] Client-side search JS
 - [ ] Fuzzy search
-- [ ] Search API endpoint
-- [ ] Client-side search JS
 
-### v0.6 - Export Formats
+### v0.6 - Export Formats (COMPLETE)
+- [x] Atom feed
+- [x] JSON Feed
 - [ ] EPUB export
 - [ ] PDF generation
-- [ ] Atom feed
-- [ ] JSON Feed
 
 ## Implementation Notes
 
@@ -236,7 +236,28 @@ fn test_build_output() {
 - New config section: `[highlight]` with theme, line_numbers, copy_button options
 - 166 total tests passing (149 unit + 17 integration)
 
+### 2026-01-03: Table of Contents
+- Added TOC generation from markdown headings
+- Hierarchical structure with proper nesting (h1 > h2 > h3, etc.)
+- Custom heading IDs via `{#custom-id}` syntax
+- Automatic unique ID generation from heading text
+- `{{< toc >}}` shortcode for inline TOC insertion
+- Shortcode options: min/max level, title visibility
+- Template variables: `toc`, `toc_list`, `has_toc`
+- Generates toc.css with styling
+- 190 total tests passing (173 unit + 17 integration)
+
+### 2026-01-03: Search API and Feed Generation
+- Added search API endpoint to dev server (`/api/search?q=query`, `/api/search/suggest?q=prefix`)
+- Created client-side search.js for static sites (BM25 scoring, stemming, prefix matching)
+- Auto-generates search-index.json during build
+- Added Atom 1.0 feed generation (`anthology export --format atom`)
+- Added JSON Feed 1.1 generation (`anthology export --format json-feed`)
+- New module: `feeds/` with Atom and JSON Feed support
+- New module: `build/search_js.rs` for client-side search assets
+- 200 total tests passing (183 unit + 17 integration)
+
 ### Next Session Priorities
-1. Add table of contents generation
+1. Add image optimization
 2. Add EPUB export
 3. Add plugin system

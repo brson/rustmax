@@ -7,6 +7,7 @@ use std::path::Path;
 use std::collections::HashMap;
 
 use crate::collection::{Config, Document};
+use crate::build::{extract_headings_html, TableOfContents, TocOptions};
 use crate::Result;
 
 /// Template engine wrapping Tera.
@@ -86,6 +87,15 @@ impl TemplateEngine {
         for (key, value) in &doc.frontmatter.extra {
             ctx.insert(key, &toml_to_tera_value(value));
         }
+
+        // Generate table of contents.
+        let toc_options = TocOptions::default();
+        let headings = extract_headings_html(html_content);
+        let filtered = toc_options.filter_headings(&headings);
+        let toc = TableOfContents::from_headings(&filtered);
+        ctx.insert("toc", &toc.to_html());
+        ctx.insert("toc_list", &toc.to_html_list());
+        ctx.insert("has_toc", &!toc.is_empty());
 
         // Build metadata.
         let now = Zoned::now();

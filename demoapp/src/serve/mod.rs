@@ -9,17 +9,19 @@ use rustmax::axum::{
     Router,
     routing::get,
     response::{Html, IntoResponse, Response},
-    extract::{State, Path as AxumPath},
+    extract::{State, Path as AxumPath, Query},
     http::StatusCode,
 };
 use tower_http::services::ServeDir;
 use rustmax::tokio::net::TcpListener;
 use rustmax::tokio::sync::oneshot;
 use rustmax::log::info;
+use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::collection::{Collection, Config, Document};
 use crate::build::{render_markdown, TemplateEngine};
+use crate::search::SearchIndex;
 use crate::{Error, Result};
 
 /// Shared server state.
@@ -27,8 +29,21 @@ struct AppState {
     collection: Collection,
     config: Config,
     engine: TemplateEngine,
+    search_index: SearchIndex,
     include_drafts: bool,
     port: u16,
+}
+
+/// Query parameters for search endpoint.
+#[derive(Deserialize)]
+struct SearchQuery {
+    q: String,
+}
+
+/// Query parameters for suggest endpoint.
+#[derive(Deserialize)]
+struct SuggestQuery {
+    q: String,
 }
 
 /// Start the development server.
@@ -43,6 +58,10 @@ pub fn serve(
     let static_dir = collection.root.join("static");
     let content_dir = collection.root.join("content");
 
+    // Build search index.
+    let search_index = SearchIndex::build(&collection);
+    info!("Search index built with {} documents", search_index.documents.len());
+
     // Set up live reload.
     let live_reload = Arc::new(LiveReloadState::new());
     let live_reload_for_watcher = Arc::clone(&live_reload);
@@ -52,6 +71,7 @@ pub fn serve(
         collection,
         config,
         engine,
+        search_index,
         include_drafts,
         port,
     });
@@ -77,6 +97,8 @@ pub fn serve(
             .route("/tags/{tag}/", get(handle_tag))
             .route("/api/documents", get(api_documents))
             .route("/api/documents/{slug}", get(api_document))
+            .route("/api/search", get(api_search))
+            .route("/api/search/suggest", get(api_suggest))
             .with_state(state)
             .merge(reload_routes);
 
@@ -261,5 +283,45 @@ async fn api_document(
             }
         }
         None => StatusCode::NOT_FOUND.into_response(),
+    }
+}
+
+/// API: search documents.
+async fn api_search(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<SearchQuery>,
+) -> Response {
+    let results = state.search_index.search(&query.q);
+    match rustmax::serde_json::to_string(&results) {
+        Ok(json) => (
+            StatusCode::OK,
+            [("Content-Type", "application/json")],
+            json,
+        )
+            .into_response(),
+        Err(e) => {
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("JSON error: {}", e))
+                .into_response()
+        }
+    }
+}
+
+/// API: autocomplete suggestions.
+async fn api_suggest(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<SuggestQuery>,
+) -> Response {
+    let suggestions = state.search_index.suggest(&query.q);
+    match rustmax::serde_json::to_string(&suggestions) {
+        Ok(json) => (
+            StatusCode::OK,
+            [("Content-Type", "application/json")],
+            json,
+        )
+            .into_response(),
+        Err(e) => {
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("JSON error: {}", e))
+                .into_response()
+        }
     }
 }

@@ -144,6 +144,8 @@ enum Command {
 enum ExportFormat {
     Json,
     Rss,
+    Atom,
+    JsonFeed,
     Sitemap,
 }
 
@@ -367,6 +369,12 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
         }
         ExportFormat::Rss => {
             crate::build::generate_rss(&collection, &config)?
+        }
+        ExportFormat::Atom => {
+            crate::feeds::generate_atom(&collection, &config)?
+        }
+        ExportFormat::JsonFeed => {
+            crate::feeds::generate_json_feed(&collection, &config)?
         }
         ExportFormat::Sitemap => {
             crate::build::generate_sitemap(&collection, &config)?

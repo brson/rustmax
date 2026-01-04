@@ -267,6 +267,71 @@ pub fn render_builtin(shortcode: &Shortcode) -> Option<String> {
     }
 }
 
+/// Built-in shortcode renderer with document context.
+///
+/// Some shortcodes (like `toc`) need access to the full document content.
+pub fn render_builtin_with_context(shortcode: &Shortcode, markdown: &str) -> Option<String> {
+    use crate::build::{extract_headings, TableOfContents, TocOptions};
+
+    match shortcode.name.as_str() {
+        "toc" => {
+            // Parse options from shortcode args.
+            let min_level = shortcode.get("min")
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(1);
+            let max_level = shortcode.get("max")
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(6);
+
+            let options = TocOptions {
+                min_level,
+                max_level,
+                include_title: shortcode.get("title").map(|s| s != "false").unwrap_or(true),
+                title: shortcode.get("heading").unwrap_or("Table of Contents").to_string(),
+            };
+
+            // Extract headings from the markdown.
+            let headings = extract_headings(markdown);
+            let filtered = options.filter_headings(&headings);
+            let toc = TableOfContents::from_headings(&filtered);
+
+            if options.include_title {
+                Some(toc.to_html())
+            } else {
+                Some(toc.to_html_list())
+            }
+        }
+        // Fall back to basic renderer for other shortcodes.
+        _ => render_builtin(shortcode),
+    }
+}
+
+/// Process content with context-aware shortcode rendering.
+pub fn process_shortcodes_with_context(content: &str) -> String {
+    let shortcodes = extract_shortcodes(content);
+
+    if shortcodes.is_empty() {
+        return content.to_string();
+    }
+
+    let mut result = String::with_capacity(content.len());
+    let mut last_end = 0;
+
+    for (start, shortcode, end) in shortcodes {
+        result.push_str(&content[last_end..start]);
+
+        // Try context-aware rendering first, then fall back to basic.
+        let rendered = render_builtin_with_context(&shortcode, content)
+            .unwrap_or_else(|| format!("<!-- unknown shortcode: {} -->", shortcode.name));
+
+        result.push_str(&rendered);
+        last_end = end;
+    }
+
+    result.push_str(&content[last_end..]);
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -341,5 +406,67 @@ mod tests {
         let html = render_builtin(&sc).unwrap();
         assert!(html.contains("admonition note"));
         assert!(html.contains("Important!"));
+    }
+
+    #[test]
+    fn test_toc_shortcode() {
+        let md = r#"# Title
+
+{{< toc >}}
+
+## Section 1
+
+Some content.
+
+## Section 2
+
+More content.
+"#;
+        let result = process_shortcodes_with_context(md);
+
+        assert!(result.contains("<nav class=\"toc\">"));
+        assert!(result.contains("Table of Contents"));
+        assert!(result.contains("#title"));
+        assert!(result.contains("#section-1"));
+        assert!(result.contains("#section-2"));
+    }
+
+    #[test]
+    fn test_toc_shortcode_with_options() {
+        let md = r#"# Title
+
+{{< toc min="2" max="3" >}}
+
+## Section 1
+
+### Subsection
+
+## Section 2
+
+#### Deep
+"#;
+        let result = process_shortcodes_with_context(md);
+
+        // Should include h2 and h3, not h1 or h4.
+        assert!(result.contains("#section-1"));
+        assert!(result.contains("#subsection"));
+        assert!(result.contains("#section-2"));
+        assert!(!result.contains("#title\">Title"));
+        assert!(!result.contains("#deep"));
+    }
+
+    #[test]
+    fn test_toc_shortcode_no_title() {
+        let md = r#"# Title
+
+{{< toc title="false" >}}
+
+## Section 1
+"#;
+        let result = process_shortcodes_with_context(md);
+
+        // Should not have the toc-title header.
+        assert!(!result.contains("<h2 class=\"toc-title\">"));
+        assert!(result.contains("#section-1"));
     }
 }

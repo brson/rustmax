@@ -29,14 +29,18 @@ anthology/
 │   │   ├── markdown.rs  # MD->HTML (comrak)
 │   │   ├── template.rs  # Template rendering (tera)
 │   │   ├── highlight.rs # Syntax highlighting (regex)
+│   │   ├── toc.rs       # Table of contents generation
 │   │   ├── cache.rs     # Incremental build cache
 │   │   ├── compress.rs  # Asset compression (flate2)
 │   │   ├── encoding.rs  # Base64/hex encoding
-│   │   └── rewrite.rs   # URL rewriting
+│   │   ├── rewrite.rs   # URL rewriting
+│   │   └── search_js.rs # Client-side search JS
 │   ├── serve/
-│   │   └── mod.rs       # Dev server (axum, tokio)
-│   └── search/
-│       └── mod.rs       # Full-text indexing
+│   │   └── mod.rs       # Dev server with search API (axum, tokio)
+│   ├── search/
+│   │   └── mod.rs       # Full-text indexing with BM25
+│   └── feeds/
+│       └── mod.rs       # Atom and JSON Feed generation
 └── templates/
     └── default.html     # Built-in default template
 ```
@@ -211,16 +215,19 @@ Markdown content here.
 
 ## Testing Strategy
 
-Current tests (166 passing):
+Current tests (200 passing):
 - Frontmatter parsing
 - No-frontmatter documents
 - Word counting
-- Search indexing
+- Search indexing (with stemming, BM25)
 - Collection queries
 - Syntax highlighting (36 tests)
+- Table of contents (24 tests)
 - Build cache
 - Compression
 - Encoding
+- Atom and JSON Feed generation (9 tests)
+- Client-side search JS (2 tests)
 
 Future tests needed:
 - CLI integration tests

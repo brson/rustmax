@@ -7,6 +7,8 @@ mod rewrite;
 mod encoding;
 mod cache;
 mod highlight;
+mod toc;
+mod search_js;
 
 pub use markdown::{render_markdown, render_markdown_highlighted, apply_syntax_highlighting, generate_highlight_css};
 pub use template::TemplateEngine;
@@ -25,6 +27,12 @@ pub use highlight::{
     HighlightOptions, tokenize,
     themes, languages,
 };
+pub use toc::{
+    TableOfContents, TocEntry, TocOptions, Heading,
+    extract_headings, extract_headings_html, generate_toc, generate_toc_html,
+    add_heading_ids, generate_id, generate_toc_css,
+};
+pub use search_js::{generate_search_js, generate_search_page};
 
 use rustmax::prelude::*;
 use rustmax::rayon::prelude::*;
@@ -91,6 +99,17 @@ pub fn build(
         let css = generate_highlight_css(&config.highlight.to_options());
         fs::write(output_dir.join("highlight.css"), css)?;
     }
+
+    // Generate TOC CSS.
+    fs::write(output_dir.join("toc.css"), generate_toc_css())?;
+
+    // Generate client-side search assets.
+    fs::write(output_dir.join("search.js"), generate_search_js())?;
+
+    // Build and write search index.
+    let search_index = crate::search::SearchIndex::build(collection);
+    let search_json = rustmax::serde_json::to_string(&search_index)?;
+    fs::write(output_dir.join("search-index.json"), search_json)?;
 
     Ok(())
 }
@@ -187,6 +206,17 @@ pub fn build_incremental(
         let css = generate_highlight_css(&config.highlight.to_options());
         fs::write(output_dir.join("highlight.css"), css)?;
     }
+
+    // Generate TOC CSS.
+    fs::write(output_dir.join("toc.css"), generate_toc_css())?;
+
+    // Generate client-side search assets.
+    fs::write(output_dir.join("search.js"), generate_search_js())?;
+
+    // Build and write search index.
+    let search_index = crate::search::SearchIndex::build(collection);
+    let search_json = rustmax::serde_json::to_string(&search_index)?;
+    fs::write(output_dir.join("search-index.json"), search_json)?;
 
     // Prune deleted documents from cache.
     let source_paths: Vec<_> = documents.iter().map(|d| d.source_path.clone()).collect();
