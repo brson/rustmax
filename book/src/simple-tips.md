@@ -1,3 +1,20 @@
+## Run `cargo clean-all` to free up large amounts of disk space
+
+Everyone finds out eventually: the Rust compiler stores
+a large amount of data in your `target/` directories,
+and doesn't clean up after itself.
+
+The `cargo clean-all` plugin finds these directories
+and helps you delete them, interactively by default.
+
+```
+cargo install cargo-clean-all
+cargo clean-all
+```
+
+
+
+
 ## The `Ok::<(), WhateverError>(())` block tail
 
 Sometimes you have a block of code that uses `?`
@@ -17,6 +34,9 @@ block_on(async {
 })?;
 ```
 
+
+
+
 ## Assert `Send` / `Sync`
 
 ```
@@ -27,6 +47,8 @@ const fn assert_send_sync<T: Send + Sync>() { }
 ```
 
 Also in `rustmax::extras::assert_send_sync`.
+
+
 
 
 ## Copy a directory recursively
@@ -66,6 +88,8 @@ different OSes will throw at you via the filesystem …
 well that's probably why `std` doesn't try.
 
 
+
+
 ## There's an `Either` hiding in the `futures` crate!
 
 The `Either` type, most known from Haskell, is a useful
@@ -93,6 +117,8 @@ Although `Either` is a `Future` and provided for awaiting pairs of futures,
 its definition is exactly as above.
 
 [`futures::future::Either`]: https://docs.rs/futures/latest/futures/future/enum.Either.html
+
+
 
 
 ## Import traits with `as _`
@@ -130,10 +156,14 @@ The Rustmax CLI tool can do it instead:
 [`mold`]: https://github.com/rui314/mold
 
 
+
+
 ## Use `rustfmt::skip`
 
 Sometimes exact formatting is important to make code beautiful.
 Don't be afraid annotate with `#[rustfmt::skip]`.
+
+
 
 
 ## Use `Option` with `?`
@@ -154,12 +184,18 @@ An alternative to `match` or `if let` statements, `?` lets you chain
 operations that might fail, automatically propagating `None` up the call stack.
 
 
+
+
 ## Put common development commands in a `justfile`
 
 Almost every project has a handful of commands the developer(s)
 uses frequently. Put these in a `justfile` so the menu of
 commands for this project is always obvious, which
 can be extra helpful after years away from a project.
+
+```
+cargo install just
+```
 
 `just` runs commands listed in a file named `justfile`.
 The `justfile` lives your project's root directory,
@@ -212,6 +248,8 @@ Available recipes:
     test
     test-min-version-build
 ```
+
+
 
 
 ## Merge message streams with `futures::stream::select`
