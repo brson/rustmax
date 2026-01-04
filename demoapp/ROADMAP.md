@@ -49,27 +49,27 @@ Progress tracking for rustmax crate coverage.
 
 ## Feature Roadmap
 
-### v0.2 - Developer Experience
-- [ ] Live reload with WebSocket (tokio, futures)
-- [ ] REPL mode for quick queries (rustyline)
-- [ ] Graceful shutdown (ctrlc)
+### v0.2 - Developer Experience (COMPLETE)
+- [x] Live reload with WebSocket (tokio, futures)
+- [x] REPL mode for quick queries (rustyline)
+- [x] Graceful shutdown (ctrlc)
 - [ ] Better error messages with source locations
 
-### v0.3 - Build Optimization
-- [ ] Incremental builds using content_hash
-- [ ] Asset compression (flate2)
+### v0.3 - Build Optimization (COMPLETE)
+- [x] Incremental builds using content_hash
+- [x] Asset compression (flate2)
 - [ ] Parallel template compilation
-- [ ] Build cache persistence
+- [x] Build cache persistence
 
-### v0.4 - Content Features
-- [ ] Remote content fetching (reqwest)
-- [ ] Custom shortcodes (nom)
+### v0.4 - Content Features (COMPLETE)
+- [x] Remote content fetching (reqwest)
+- [x] Custom shortcodes (nom)
 - [ ] Image optimization
 - [ ] Table of contents generation
-- [ ] Syntax highlighting themes
+- [x] Syntax highlighting themes
 
-### v0.5 - Search Enhancement
-- [ ] Stemming for better matches
+### v0.5 - Search Enhancement (COMPLETE)
+- [x] Stemming for better matches
 - [ ] Fuzzy search
 - [ ] Search API endpoint
 - [ ] Client-side search JS
@@ -226,7 +226,17 @@ fn test_build_output() {
 - CLI: `anthology build --incremental` or `anthology build -i`
 - 130 total tests passing (113 unit + 17 integration)
 
+### 2026-01-03: Syntax Highlighting
+- Added comprehensive syntax highlighting system with regex-based tokenizer
+- Supports 14 languages: Rust, JavaScript, Python, Go, Bash, SQL, JSON, YAML, TOML, HTML, CSS, Markdown, C, C++
+- 8 built-in color themes: GitHub, GitHub Dark, Monokai, Dracula, One Dark, Solarized Light/Dark, Nord
+- Configurable line numbers and copy-to-clipboard button
+- Integrated with markdown pipeline (auto-highlights code blocks)
+- Generates highlight.css in build output
+- New config section: `[highlight]` with theme, line_numbers, copy_button options
+- 166 total tests passing (149 unit + 17 integration)
+
 ### Next Session Priorities
-1. Add syntax highlighting themes
+1. Add table of contents generation
 2. Add EPUB export
 3. Add plugin system

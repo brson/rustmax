@@ -27,7 +27,12 @@ anthology/
 │   ├── build/
 │   │   ├── mod.rs       # Build orchestration (rayon)
 │   │   ├── markdown.rs  # MD->HTML (comrak)
-│   │   └── template.rs  # Template rendering (tera)
+│   │   ├── template.rs  # Template rendering (tera)
+│   │   ├── highlight.rs # Syntax highlighting (regex)
+│   │   ├── cache.rs     # Incremental build cache
+│   │   ├── compress.rs  # Asset compression (flate2)
+│   │   ├── encoding.rs  # Base64/hex encoding
+│   │   └── rewrite.rs   # URL rewriting
 │   ├── serve/
 │   │   └── mod.rs       # Dev server (axum, tokio)
 │   └── search/
@@ -171,6 +176,12 @@ excerpt_separator = "<!--more-->"
 
 [server]
 port = 3000
+
+[highlight]
+enabled = true
+theme = "github-dark"  # github, monokai, dracula, one-dark, solarized-light, solarized-dark, nord
+line_numbers = true
+copy_button = true
 ```
 
 ## Document Format
@@ -200,12 +211,16 @@ Markdown content here.
 
 ## Testing Strategy
 
-Current tests (130 passing):
+Current tests (166 passing):
 - Frontmatter parsing
 - No-frontmatter documents
 - Word counting
 - Search indexing
 - Collection queries
+- Syntax highlighting (36 tests)
+- Build cache
+- Compression
+- Encoding
 
 Future tests needed:
 - CLI integration tests

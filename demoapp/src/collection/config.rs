@@ -17,6 +17,8 @@ pub struct Config {
     pub content: ContentConfig,
     #[serde(default)]
     pub server: ServerConfig,
+    #[serde(default)]
+    pub highlight: HighlightConfig,
 }
 
 impl Default for Config {
@@ -26,6 +28,7 @@ impl Default for Config {
             build: BuildConfig::default(),
             content: ContentConfig::default(),
             server: ServerConfig::default(),
+            highlight: HighlightConfig::default(),
         }
     }
 }
@@ -186,4 +189,59 @@ impl Default for ServerConfig {
 
 fn default_port() -> u16 {
     3000
+}
+
+/// Syntax highlighting configuration.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HighlightConfig {
+    /// Enable syntax highlighting for code blocks.
+    #[serde(default = "default_highlight_enabled")]
+    pub enabled: bool,
+    /// Color theme name (github, github-dark, monokai, dracula, one-dark, solarized-light, solarized-dark, nord).
+    #[serde(default = "default_highlight_theme")]
+    pub theme: String,
+    /// Show line numbers in code blocks.
+    #[serde(default = "default_line_numbers")]
+    pub line_numbers: bool,
+    /// Show copy button on code blocks.
+    #[serde(default = "default_copy_button")]
+    pub copy_button: bool,
+}
+
+impl Default for HighlightConfig {
+    fn default() -> Self {
+        Self {
+            enabled: default_highlight_enabled(),
+            theme: default_highlight_theme(),
+            line_numbers: default_line_numbers(),
+            copy_button: default_copy_button(),
+        }
+    }
+}
+
+fn default_highlight_enabled() -> bool {
+    true
+}
+
+fn default_highlight_theme() -> String {
+    "github-dark".to_string()
+}
+
+fn default_line_numbers() -> bool {
+    true
+}
+
+fn default_copy_button() -> bool {
+    true
+}
+
+impl HighlightConfig {
+    /// Convert to HighlightOptions for the highlighter.
+    pub fn to_options(&self) -> crate::build::HighlightOptions {
+        crate::build::HighlightOptions {
+            theme: self.theme.clone(),
+            line_numbers: self.line_numbers,
+            copy_button: self.copy_button,
+        }
+    }
 }

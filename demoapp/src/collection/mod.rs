@@ -4,7 +4,7 @@ mod config;
 mod document;
 mod scanner;
 
-pub use config::Config;
+pub use config::{Config, HighlightConfig};
 pub use document::{Document, Frontmatter};
 pub use scanner::Scanner;
 

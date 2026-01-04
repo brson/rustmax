@@ -6,8 +6,9 @@ mod compress;
 mod rewrite;
 mod encoding;
 mod cache;
+mod highlight;
 
-pub use markdown::render_markdown;
+pub use markdown::{render_markdown, render_markdown_highlighted, apply_syntax_highlighting, generate_highlight_css};
 pub use template::TemplateEngine;
 pub use compress::{compress_output, compress, decompress, compress_with_level, CompressStats};
 pub use rewrite::{
@@ -19,6 +20,11 @@ pub use encoding::{
     guess_mime_type, AssetBuffer, format_hash_short, format_size
 };
 pub use cache::{BuildCache, CacheStatus, IncrementalBuildResult, hash_templates};
+pub use highlight::{
+    Highlighter, Theme, ThemeColors, Token, TokenType,
+    HighlightOptions, tokenize,
+    themes, languages,
+};
 
 use rustmax::prelude::*;
 use rustmax::rayon::prelude::*;
@@ -78,6 +84,12 @@ pub fn build(
     let static_dir = collection.root.join("static");
     if static_dir.exists() {
         copy_static(&static_dir, output_dir)?;
+    }
+
+    // Generate syntax highlighting CSS if enabled.
+    if config.highlight.enabled {
+        let css = generate_highlight_css(&config.highlight.to_options());
+        fs::write(output_dir.join("highlight.css"), css)?;
     }
 
     Ok(())
@@ -170,6 +182,12 @@ pub fn build_incremental(
         copy_static(&static_dir, output_dir)?;
     }
 
+    // Generate syntax highlighting CSS if enabled.
+    if config.highlight.enabled {
+        let css = generate_highlight_css(&config.highlight.to_options());
+        fs::write(output_dir.join("highlight.css"), css)?;
+    }
+
     // Prune deleted documents from cache.
     let source_paths: Vec<_> = documents.iter().map(|d| d.source_path.clone()).collect();
     cache.prune(&source_paths);
@@ -193,7 +211,12 @@ fn build_document(
 ) -> Result<()> {
     debug!("Building: {}", doc.source_path.display());
 
-    let html_content = render_markdown(&doc.content);
+    // Render markdown with optional syntax highlighting.
+    let html_content = if config.highlight.enabled {
+        render_markdown_highlighted(&doc.content, &config.highlight.to_options())
+    } else {
+        render_markdown(&doc.content)
+    };
 
     let template_name = doc
         .frontmatter
