@@ -51,6 +51,10 @@ enum Command {
         /// Use incremental build (skip unchanged documents).
         #[arg(short, long)]
         incremental: bool,
+
+        /// Show progress bars during build.
+        #[arg(short, long)]
+        progress: bool,
     },
 
     /// Start a development server with live reload.
@@ -147,6 +151,7 @@ enum ExportFormat {
     Atom,
     JsonFeed,
     Sitemap,
+    Epub,
 }
 
 impl Cli {
@@ -159,7 +164,7 @@ impl Cli {
 
         match self.command {
             Command::Init { path } => cmd_init(path),
-            Command::Build { path, output, drafts, compress, incremental } => cmd_build(path, output, drafts, compress, incremental),
+            Command::Build { path, output, drafts, compress, incremental, progress } => cmd_build(path, output, drafts, compress, incremental, progress),
             Command::Serve { path, port, drafts } => cmd_serve(path, port, drafts),
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
@@ -224,27 +229,49 @@ This is your first document. Edit or delete it and start writing!
     Ok(())
 }
 
-fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: bool, incremental: bool) -> Result<()> {
-    info!("Building collection at {}", path.display());
+fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: bool, incremental: bool, progress: bool) -> Result<()> {
+    if !progress {
+        info!("Building collection at {}", path.display());
+    }
 
     let config = Config::load(&path)?;
     let output_dir = output.unwrap_or_else(|| path.join(&config.build.output_dir));
 
     let collection = crate::collection::Collection::load(&path, &config)?;
-    info!("Found {} documents", collection.documents.len());
+    if !progress {
+        info!("Found {} documents", collection.documents.len());
+    }
 
     if incremental {
-        crate::build::build_incremental(&collection, &config, &output_dir, drafts)?;
+        if progress {
+            crate::build::build_incremental_with_progress(&collection, &config, &output_dir, drafts)?;
+        } else {
+            crate::build::build_incremental(&collection, &config, &output_dir, drafts)?;
+        }
     } else {
-        crate::build::build(&collection, &config, &output_dir, drafts)?;
+        if progress {
+            crate::build::build_with_progress(&collection, &config, &output_dir, drafts)?;
+        } else {
+            crate::build::build(&collection, &config, &output_dir, drafts)?;
+        }
     }
 
     if compress {
-        info!("Compressing output files...");
-        crate::build::compress_output(&output_dir)?;
+        if progress {
+            let compress_pb = crate::build::compress_spinner();
+            crate::build::compress_output(&output_dir)?;
+            crate::build::finish_with_check(&compress_pb, "Output compressed");
+        } else {
+            info!("Compressing output files...");
+            crate::build::compress_output(&output_dir)?;
+        }
     }
 
-    info!("Build complete: {}", output_dir.display());
+    if !progress {
+        info!("Build complete: {}", output_dir.display());
+    } else {
+        println!("Build complete: {}", output_dir.display());
+    }
     Ok(())
 }
 
@@ -363,6 +390,15 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
     let config = Config::load(&path)?;
     let collection = crate::collection::Collection::load(&path, &config)?;
 
+    // Handle EPUB separately since it's binary.
+    if format == ExportFormat::Epub {
+        let epub_path = output.unwrap_or_else(|| path.join("output.epub"));
+        let epub_config = crate::export::EpubConfig::default();
+        crate::export::generate_epub(&collection, &config, &epub_path, &epub_config)?;
+        info!("Exported EPUB to {}", epub_path.display());
+        return Ok(());
+    }
+
     let content = match format {
         ExportFormat::Json => {
             rustmax::serde_json::to_string_pretty(&collection.to_export())?
@@ -379,6 +415,7 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
         ExportFormat::Sitemap => {
             crate::build::generate_sitemap(&collection, &config)?
         }
+        ExportFormat::Epub => unreachable!(),
     };
 
     match output {

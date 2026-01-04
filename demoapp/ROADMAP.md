@@ -260,14 +260,24 @@ fn test_build_output() {
 - New module: `build/search_js.rs` for client-side search assets
 - 200 total tests passing (183 unit + 17 integration)
 
-### v0.7 - New Crate Integration (PLANNED)
-- [ ] Image optimization with `image` crate (resize, format conversion, WebP)
-- [ ] EPUB export with `zip` crate (package HTML into EPUB3)
-- [ ] Native file watching with `notify` crate (replace polling)
-- [ ] Progress bars with `indicatif` crate (build progress, asset processing)
+### 2026-01-04: New Crate Integration (v0.7)
+- Added native file watching with `notify` crate (replaces polling in dev server)
+- Added progress bars with `indicatif` crate (`anthology build --progress`)
+- Added image optimization with `image` crate (resize, thumbnails, WebP conversion)
+- Added EPUB export with `zip` crate (`anthology export --format epub`)
+- New modules: `build/progress.rs`, `build/images.rs`, `export/epub.rs`
+- Updated serve/livereload.rs to use notify for instant file change detection
+- 222 total tests passing (205 unit + 17 integration)
+- 42 rustmax crates now integrated (all targeted crates complete!)
 
-### Next Session Priorities
-1. Integrate `notify` for proper file watching in dev server
-2. Add `indicatif` progress bars to build command
-3. Implement image optimization pipeline with `image`
-4. Create EPUB export using `zip`
+### v0.7 - New Crate Integration (COMPLETE)
+- [x] Native file watching with `notify` crate (replaced polling)
+- [x] Progress bars with `indicatif` crate (build progress, spinners)
+- [x] Image optimization with `image` crate (resize, format conversion, WebP)
+- [x] EPUB export with `zip` crate (package HTML into EPUB3)
+
+### Future Considerations
+- Plugin system for custom build steps
+- PDF export
+- Fuzzy search
+- Better error messages with source locations

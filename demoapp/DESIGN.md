@@ -111,11 +111,6 @@ content/*.md --> Scanner --> Documents --> Collection
 | Logging | log + env_logger | Logging infrastructure |
 | Errors | thiserror | Error type definitions |
 | Errors | anyhow | Fallback error handling |
-
-### Newly Available (Not Yet Integrated)
-
-| Category | Crate | Planned Usage |
-|----------|-------|---------------|
 | Graphics | image | Image optimization, resizing, WebP conversion |
 | Encoding | zip | EPUB export (ZIP-based format) |
 | Filesystem | notify | Native file watching for live reload |
@@ -123,7 +118,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ### Status
 
-38 rustmax crates currently in use, with 4 new crates available for integration.
+42 rustmax crates currently in use. All targeted crates have been integrated.
 
 ## Key Design Decisions
 

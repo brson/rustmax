@@ -1,6 +1,7 @@
 //! Live reload functionality via WebSocket.
 //!
 //! Watches for file changes and broadcasts reload messages to connected clients.
+//! Uses the notify crate for native filesystem event notifications.
 
 use rustmax::prelude::*;
 use rustmax::axum::{
@@ -11,13 +12,10 @@ use rustmax::axum::{
     response::Response,
 };
 use rustmax::tokio::sync::broadcast;
-use rustmax::tokio::time::{interval, Duration};
-use rustmax::walkdir::WalkDir;
-use rustmax::log::{debug, info};
-use std::collections::HashMap;
+use rustmax::notify::{self, Watcher, RecursiveMode, EventKind, event::{CreateKind, ModifyKind, RemoveKind}};
+use rustmax::log::{debug, info, warn};
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::SystemTime;
 
 /// Type of change detected.
 #[derive(Debug, Clone, Copy)]
@@ -129,110 +127,95 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<LiveReloadState>) {
     debug!("Live reload client disconnected");
 }
 
-/// File watcher that polls for changes.
+/// File watcher using native filesystem events via notify crate.
 pub struct FileWatcher {
     paths: Vec<PathBuf>,
-    mtimes: HashMap<PathBuf, SystemTime>,
-    poll_interval: Duration,
 }
 
 impl FileWatcher {
     /// Create a new file watcher.
     pub fn new(paths: Vec<PathBuf>) -> Self {
-        Self {
-            paths,
-            mtimes: HashMap::new(),
-            poll_interval: Duration::from_millis(500),
-        }
+        Self { paths }
     }
 
-    /// Set the poll interval.
-    pub fn with_interval(mut self, poll_interval: Duration) -> Self {
-        self.poll_interval = poll_interval;
-        self
-    }
+    /// Determine change type from a file path.
+    fn classify_path(path: &PathBuf) -> ChangeType {
+        let ext = path
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("");
 
-    /// Scan all watched paths and record modification times.
-    fn scan(&mut self) -> Vec<PathBuf> {
-        let mut changed = Vec::new();
-
-        for base_path in &self.paths {
-            if !base_path.exists() {
-                continue;
-            }
-
-            for entry in WalkDir::new(base_path).into_iter().filter_map(|e| e.ok()) {
-                let path = entry.path().to_path_buf();
-
-                if path.is_file() {
-                    if let Ok(metadata) = path.metadata() {
-                        if let Ok(mtime) = metadata.modified() {
-                            match self.mtimes.get(&path) {
-                                Some(&prev_mtime) if mtime > prev_mtime => {
-                                    changed.push(path.clone());
-                                    self.mtimes.insert(path, mtime);
-                                }
-                                None => {
-                                    self.mtimes.insert(path, mtime);
-                                }
-                                _ => {}
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        changed
-    }
-
-    /// Determine change type from file paths.
-    fn classify_changes(changed: &[PathBuf]) -> ChangeType {
-        let all_css = changed.iter().all(|p| {
-            p.extension()
-                .and_then(|e| e.to_str())
-                .map(|e| e == "css")
-                .unwrap_or(false)
-        });
-
-        if all_css {
-            ChangeType::Css
-        } else {
-            let has_content = changed.iter().any(|p| {
-                p.extension()
-                    .and_then(|e| e.to_str())
-                    .map(|e| e == "md" || e == "html")
-                    .unwrap_or(false)
-            });
-
-            if has_content {
-                ChangeType::Content
-            } else {
-                ChangeType::Asset
-            }
+        match ext {
+            "css" => ChangeType::Css,
+            "md" | "html" => ChangeType::Content,
+            _ => ChangeType::Asset,
         }
     }
 
     /// Start watching for changes and send events.
-    pub async fn watch(mut self, state: Arc<LiveReloadState>) {
-        info!("File watcher started");
+    ///
+    /// Uses the notify crate for native filesystem event notifications
+    /// instead of polling.
+    pub async fn watch(self, state: Arc<LiveReloadState>) {
+        info!("File watcher started (native events via notify)");
 
-        // Initial scan.
-        self.scan();
+        // Create a channel to receive file events.
+        let (tx, mut rx) = rustmax::tokio::sync::mpsc::channel(100);
 
-        let mut ticker = interval(self.poll_interval);
+        // Create the watcher in a separate thread since notify uses std sync.
+        let paths = self.paths.clone();
+        std::thread::spawn(move || {
+            // Create the watcher with a callback that sends to our channel.
+            let tx_clone = tx.clone();
+            let mut watcher = match notify::recommended_watcher(
+                move |result: Result<notify::Event, notify::Error>| {
+                    if let Ok(event) = result {
+                        // Filter to only relevant events.
+                        let is_relevant = matches!(
+                            event.kind,
+                            EventKind::Create(CreateKind::File)
+                                | EventKind::Modify(ModifyKind::Data(_))
+                                | EventKind::Modify(ModifyKind::Name(_))
+                                | EventKind::Remove(RemoveKind::File)
+                        );
 
-        loop {
-            ticker.tick().await;
+                        if is_relevant && !event.paths.is_empty() {
+                            // Send the first affected path.
+                            let _ = tx_clone.blocking_send(event.paths[0].clone());
+                        }
+                    }
+                },
+            ) {
+                Ok(w) => w,
+                Err(e) => {
+                    warn!("Failed to create file watcher: {}", e);
+                    return;
+                }
+            };
 
-            let changed = self.scan();
-
-            if !changed.is_empty() {
-                let change_type = Self::classify_changes(&changed);
-                debug!("Files changed ({:?}): {:?}", change_type, changed);
-                info!("Detected {:?} change, triggering reload", change_type);
-                state.trigger(change_type);
+            // Watch all paths recursively.
+            for path in &paths {
+                if path.exists() {
+                    if let Err(e) = watcher.watch(path, RecursiveMode::Recursive) {
+                        warn!("Failed to watch {}: {}", path.display(), e);
+                    } else {
+                        debug!("Watching: {}", path.display());
+                    }
+                }
             }
+
+            // Keep the watcher alive.
+            loop {
+                std::thread::park();
+            }
+        });
+
+        // Process events from the channel.
+        while let Some(path) = rx.recv().await {
+            let change_type = Self::classify_path(&path);
+            debug!("File changed ({:?}): {}", change_type, path.display());
+            info!("Detected {:?} change, triggering reload", change_type);
+            state.trigger(change_type);
         }
     }
 }
@@ -344,32 +327,31 @@ mod tests {
     #[test]
     fn test_file_watcher_new() {
         let watcher = FileWatcher::new(vec![PathBuf::from("/tmp")]);
-        assert_eq!(watcher.poll_interval, Duration::from_millis(500));
+        assert_eq!(watcher.paths.len(), 1);
     }
 
     #[test]
-    fn test_file_watcher_interval() {
-        let watcher = FileWatcher::new(vec![PathBuf::from("/tmp")])
-            .with_interval(Duration::from_secs(1));
-        assert_eq!(watcher.poll_interval, Duration::from_secs(1));
+    fn test_classify_path_css() {
+        let path = PathBuf::from("style.css");
+        assert!(matches!(FileWatcher::classify_path(&path), ChangeType::Css));
     }
 
     #[test]
-    fn test_classify_changes_css() {
-        let paths = vec![PathBuf::from("style.css"), PathBuf::from("theme.css")];
-        assert!(matches!(FileWatcher::classify_changes(&paths), ChangeType::Css));
+    fn test_classify_path_content_md() {
+        let path = PathBuf::from("post.md");
+        assert!(matches!(FileWatcher::classify_path(&path), ChangeType::Content));
     }
 
     #[test]
-    fn test_classify_changes_content() {
-        let paths = vec![PathBuf::from("post.md"), PathBuf::from("style.css")];
-        assert!(matches!(FileWatcher::classify_changes(&paths), ChangeType::Content));
+    fn test_classify_path_content_html() {
+        let path = PathBuf::from("template.html");
+        assert!(matches!(FileWatcher::classify_path(&path), ChangeType::Content));
     }
 
     #[test]
-    fn test_classify_changes_asset() {
-        let paths = vec![PathBuf::from("image.png"), PathBuf::from("script.js")];
-        assert!(matches!(FileWatcher::classify_changes(&paths), ChangeType::Asset));
+    fn test_classify_path_asset() {
+        let path = PathBuf::from("image.png");
+        assert!(matches!(FileWatcher::classify_path(&path), ChangeType::Asset));
     }
 
     #[test]
