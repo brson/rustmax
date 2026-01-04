@@ -583,3 +583,96 @@ mod tests {
         assert!(results[0].title.contains("Rust"));
     }
 }
+
+#[cfg(test)]
+mod proptest_tests {
+    use super::*;
+    use rustmax::proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn stemmer_produces_nonempty_output(word in "[a-z]{3,20}") {
+            let stemmed = PorterStemmer::stem(&word);
+            prop_assert!(!stemmed.is_empty());
+        }
+
+        #[test]
+        fn stemmer_output_is_shorter_or_equal(word in "[a-z]{3,15}") {
+            // Stemmed word should not be longer than original.
+            let stemmed = PorterStemmer::stem(&word);
+            prop_assert!(stemmed.len() <= word.len());
+        }
+
+        #[test]
+        fn stemmer_is_lowercase(word in "[a-zA-Z]{3,20}") {
+            let stemmed = PorterStemmer::stem(&word);
+            prop_assert!(stemmed.chars().all(|c| c.is_ascii_lowercase()));
+        }
+
+        #[test]
+        fn search_returns_sorted_by_score(
+            title1 in "[a-zA-Z ]{5,20}",
+            title2 in "[a-zA-Z ]{5,20}",
+            content1 in "[a-zA-Z ]{20,100}",
+            content2 in "[a-zA-Z ]{20,100}"
+        ) {
+            use crate::collection::Document;
+
+            let make_doc = |title: &str, content: &str| -> Document {
+                let raw = format!("---\ntitle = \"{}\"\n---\n{}", title, content);
+                Document::parse(std::path::PathBuf::from("test.md"), &raw).unwrap()
+            };
+
+            let docs = vec![
+                make_doc(&title1, &content1),
+                make_doc(&title2, &content2),
+            ];
+
+            let collection = Collection {
+                root: std::path::PathBuf::from("."),
+                documents: docs,
+            };
+
+            let index = SearchIndex::build(&collection);
+
+            // Search for a word that might be in the content.
+            if let Some(word) = content1.split_whitespace().next() {
+                let results = index.search(word);
+                // Results should be sorted by score descending.
+                for window in results.windows(2) {
+                    prop_assert!(window[0].score >= window[1].score);
+                }
+            }
+        }
+
+        #[test]
+        fn suggest_returns_matching_prefixes(word in "[a-z]{4,10}") {
+            use crate::collection::Document;
+
+            let make_doc = |title: &str, content: &str| -> Document {
+                let raw = format!("---\ntitle = \"{}\"\n---\n{}", title, content);
+                Document::parse(std::path::PathBuf::from("test.md"), &raw).unwrap()
+            };
+
+            let docs = vec![
+                make_doc("Test Document", &format!("This contains the word {}.", word)),
+            ];
+
+            let collection = Collection {
+                root: std::path::PathBuf::from("."),
+                documents: docs,
+            };
+
+            let index = SearchIndex::build(&collection);
+
+            // Suggest with first 2 chars should include the stemmed word.
+            let prefix = &word[..2.min(word.len())];
+            let suggestions = index.suggest(prefix);
+            // All suggestions should start with the stemmed prefix.
+            let stemmed_prefix = PorterStemmer::stem(prefix);
+            for suggestion in &suggestions {
+                prop_assert!(suggestion.starts_with(&stemmed_prefix));
+            }
+        }
+    }
+}

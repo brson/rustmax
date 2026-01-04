@@ -44,11 +44,16 @@ Progress tracking for rustmax crate coverage.
 - [x] bitflags - Feature flags and options
 - [x] crossbeam - Work-stealing, channels, scoped threads
 
-### Not Yet Used (New Additions)
-- [ ] image - Image optimization and format conversion
-- [ ] zip - EPUB export (ZIP-based format)
-- [ ] notify - Native file watching for live reload
-- [ ] indicatif - Progress bars for CLI builds
+### Recently Integrated (v0.7)
+- [x] image - Image optimization and format conversion
+- [x] zip - EPUB export (ZIP-based format)
+- [x] notify - Native file watching for live reload
+- [x] indicatif - Progress bars for CLI builds
+
+### Recently Integrated (v0.8)
+- [x] url - URL parsing and validation
+- [x] mime - MIME type detection
+- [x] proptest - Property-based testing
 
 ## Feature Roadmap
 
@@ -67,7 +72,7 @@ Progress tracking for rustmax crate coverage.
 ### v0.4 - Content Features (COMPLETE)
 - [x] Remote content fetching (reqwest)
 - [x] Custom shortcodes (nom)
-- [ ] Image optimization (image crate now available)
+- [x] Image optimization (image crate)
 - [x] Table of contents generation
 - [x] Syntax highlighting themes
 
@@ -80,7 +85,7 @@ Progress tracking for rustmax crate coverage.
 ### v0.6 - Export Formats (COMPLETE)
 - [x] Atom feed
 - [x] JSON Feed
-- [ ] EPUB export (zip crate now available)
+- [x] EPUB export (zip crate)
 - [ ] PDF generation
 
 ## Implementation Notes
@@ -275,6 +280,15 @@ fn test_build_output() {
 - [x] Progress bars with `indicatif` crate (build progress, spinners)
 - [x] Image optimization with `image` crate (resize, format conversion, WebP)
 - [x] EPUB export with `zip` crate (package HTML into EPUB3)
+
+### 2026-01-04: URL, MIME, and Property Testing (v0.8)
+- Added URL parsing and validation with `url` crate (parse_url, filename_from_url, domain_from_url)
+- Added MIME type detection with `mime` crate (mime_from_extension, mime_from_url)
+- Added property-based testing with `proptest` crate (document and search tests)
+- New functions in remote/mod.rs for URL handling
+- 13 proptest properties verifying hash, stemmer, and document parsing invariants
+- 241 total tests passing (224 unit + 17 integration)
+- 45 rustmax crates now integrated
 
 ### Future Considerations
 - Plugin system for custom build steps

@@ -69,7 +69,7 @@ content/*.md --> Scanner --> Documents --> Collection
 
 ## Rustmax Crate Coverage
 
-### Currently Used (38 crates)
+### Currently Used (45 crates)
 
 | Category | Crate | Usage |
 |----------|-------|-------|
@@ -115,10 +115,13 @@ content/*.md --> Scanner --> Documents --> Collection
 | Encoding | zip | EPUB export (ZIP-based format) |
 | Filesystem | notify | Native file watching for live reload |
 | CLI | indicatif | Progress bars for builds and asset processing |
+| URL | url | URL parsing and validation |
+| Web | mime | MIME type detection |
+| Testing | proptest | Property-based testing |
 
 ### Status
 
-42 rustmax crates currently in use. All targeted crates have been integrated.
+45 rustmax crates currently in use. All targeted crates have been integrated.
 
 ## Key Design Decisions
 

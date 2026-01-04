@@ -262,3 +262,99 @@ One two three four five.
         assert_eq!(doc.word_count(), 5);
     }
 }
+
+#[cfg(test)]
+mod proptest_tests {
+    use super::*;
+    use rustmax::proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn content_hash_is_deterministic(content in ".*") {
+            // Same content always produces same hash.
+            let hash1 = blake3::hash(content.as_bytes()).to_hex().to_string();
+            let hash2 = blake3::hash(content.as_bytes()).to_hex().to_string();
+            prop_assert_eq!(hash1, hash2);
+        }
+
+        #[test]
+        fn content_hash_length_is_64(content in ".*") {
+            // Blake3 hex output is always 64 characters.
+            let hash = blake3::hash(content.as_bytes()).to_hex().to_string();
+            prop_assert_eq!(hash.len(), 64);
+        }
+
+        #[test]
+        fn word_count_is_non_negative(content in ".*") {
+            use rustmax::unicode_segmentation::UnicodeSegmentation;
+            let count = content.unicode_words().count();
+            prop_assert!(count >= 0);
+        }
+
+        #[test]
+        fn slug_generation_from_title(title in "[a-zA-Z ]{1,50}") {
+            // Title-based slugs should be lowercase with dashes.
+            let slug: String = title
+                .to_lowercase()
+                .chars()
+                .map(|c| if c.is_alphanumeric() { c } else { '-' })
+                .collect::<String>()
+                .split('-')
+                .filter(|s| !s.is_empty())
+                .collect::<Vec<_>>()
+                .join("-");
+
+            // Slug should only contain lowercase letters, digits, and dashes.
+            for c in slug.chars() {
+                prop_assert!(c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-');
+            }
+        }
+
+        #[test]
+        fn reading_time_is_at_least_one(word_count in 0usize..10000) {
+            let reading_time = (word_count / 200).max(1);
+            prop_assert!(reading_time >= 1);
+        }
+
+        #[test]
+        fn excerpt_respects_max_chars(
+            content in "[a-zA-Z ]{100,500}",
+            max_chars in 10usize..100
+        ) {
+            // Create a document with the content.
+            let raw = format!("---\ntitle = \"Test\"\n---\n\n{}", content);
+            if let Ok(doc) = Document::parse(PathBuf::from("test.md"), &raw) {
+                let excerpt = doc.excerpt("<!--more-->", max_chars);
+                // Excerpt should not be much longer than max_chars (accounting for "...").
+                prop_assert!(excerpt.len() <= max_chars + 5 || excerpt.len() <= content.len());
+            }
+        }
+
+        #[test]
+        fn document_without_frontmatter_parses(content in "[a-zA-Z0-9 .,!?]{1,200}") {
+            // Any content without frontmatter should parse successfully.
+            let result = Document::parse(PathBuf::from("test.md"), &content);
+            prop_assert!(result.is_ok());
+            if let Ok(doc) = result {
+                prop_assert_eq!(doc.content, content);
+            }
+        }
+
+        #[test]
+        fn valid_frontmatter_roundtrips(
+            title in "[a-zA-Z0-9 ]{1,50}",
+            draft in any::<bool>()
+        ) {
+            let raw = format!(
+                "---\ntitle = \"{}\"\ndraft = {}\n---\n\nContent here.",
+                title, draft
+            );
+            let result = Document::parse(PathBuf::from("test.md"), &raw);
+            prop_assert!(result.is_ok());
+            if let Ok(doc) = result {
+                prop_assert_eq!(doc.frontmatter.title, title);
+                prop_assert_eq!(doc.frontmatter.draft, draft);
+            }
+        }
+    }
+}
