@@ -753,3 +753,10 @@ pub mod xshell {
 
     pub use ::xshell::*;
 }
+
+#[cfg(feature = "zip")]
+pub mod zip {
+    #![doc = include_str!("../doc-src/crate-zip.md")]
+
+    pub use ::zip::*;
+}

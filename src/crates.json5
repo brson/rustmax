@@ -369,5 +369,11 @@
             short_desc: "Easy shell-like command execution",
             maintainer: "matklad",
         },
+        {
+            name: "zip",
+            category: "encoding",
+            short_desc: "Read and write ZIP archives",
+            maintainer: "zip-rs",
+        },
     ]
 }

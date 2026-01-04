@@ -85,6 +85,7 @@ It is neither stable nor supported.
 | `url = "2.5.4"` | URL parsing | [📖](https://docs.rs/url/2.5.4/url) |
 | `walkdir = "2.5.0"` | Directory traversal | [📖](https://docs.rs/walkdir/2.5.0/walkdir) |
 | `xshell = "0.2.7"` | Easy shell-like command execution | [📖](https://docs.rs/xshell/0.2.7/xshell) |
+| `zip = "7.0"` | Read and write ZIP archives | [📖](https://docs.rs/zip/7.0/zip) |
 
 
 ---

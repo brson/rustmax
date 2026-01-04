@@ -461,4 +461,12 @@
     "crate::hyper":
     "https://docs.rs/hyper",
 
+    // zip
+    "crate::zip::ZipArchive":
+    "https://docs.rs/zip/latest/zip/read/struct.ZipArchive.html",
+    "crate::zip::ZipWriter":
+    "https://docs.rs/zip/latest/zip/write/struct.ZipWriter.html",
+    "crate::zip::ZipArchive::new":
+    "https://docs.rs/zip/latest/zip/read/struct.ZipArchive.html#method.new",
+
 }

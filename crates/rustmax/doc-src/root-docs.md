@@ -30,7 +30,7 @@ as a "batteries included" supercrate.
 | error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`] |
+| encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`], [`zip`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
@@ -197,6 +197,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 - [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.
 - [`walkdir`] - Efficient directory traversal.
 - [`xshell`] - A Swiss-army knife for writing shell-style scripts in Rust.
+- [`zip`] - Read and write ZIP archives.
 
 
 
