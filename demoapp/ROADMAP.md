@@ -44,8 +44,11 @@ Progress tracking for rustmax crate coverage.
 - [x] bitflags - Feature flags and options
 - [x] crossbeam - Work-stealing, channels, scoped threads
 
-### Not Yet Used
-(All targeted crates now integrated!)
+### Not Yet Used (New Additions)
+- [ ] image - Image optimization and format conversion
+- [ ] zip - EPUB export (ZIP-based format)
+- [ ] notify - Native file watching for live reload
+- [ ] indicatif - Progress bars for CLI builds
 
 ## Feature Roadmap
 
@@ -64,7 +67,7 @@ Progress tracking for rustmax crate coverage.
 ### v0.4 - Content Features (COMPLETE)
 - [x] Remote content fetching (reqwest)
 - [x] Custom shortcodes (nom)
-- [ ] Image optimization
+- [ ] Image optimization (image crate now available)
 - [x] Table of contents generation
 - [x] Syntax highlighting themes
 
@@ -77,7 +80,7 @@ Progress tracking for rustmax crate coverage.
 ### v0.6 - Export Formats (COMPLETE)
 - [x] Atom feed
 - [x] JSON Feed
-- [ ] EPUB export
+- [ ] EPUB export (zip crate now available)
 - [ ] PDF generation
 
 ## Implementation Notes
@@ -257,7 +260,14 @@ fn test_build_output() {
 - New module: `build/search_js.rs` for client-side search assets
 - 200 total tests passing (183 unit + 17 integration)
 
+### v0.7 - New Crate Integration (PLANNED)
+- [ ] Image optimization with `image` crate (resize, format conversion, WebP)
+- [ ] EPUB export with `zip` crate (package HTML into EPUB3)
+- [ ] Native file watching with `notify` crate (replace polling)
+- [ ] Progress bars with `indicatif` crate (build progress, asset processing)
+
 ### Next Session Priorities
-1. Add image optimization
-2. Add EPUB export
-3. Add plugin system
+1. Integrate `notify` for proper file watching in dev server
+2. Add `indicatif` progress bars to build command
+3. Implement image optimization pipeline with `image`
+4. Create EPUB export using `zip`

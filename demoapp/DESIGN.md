@@ -112,9 +112,18 @@ content/*.md --> Scanner --> Documents --> Collection
 | Errors | thiserror | Error type definitions |
 | Errors | anyhow | Fallback error handling |
 
-### All Targeted Crates Integrated!
+### Newly Available (Not Yet Integrated)
 
-38 rustmax crates now in use, covering CLI, web, async, concurrency, parsing, templates, serialization, encoding, crypto, filesystem, time, text, and more.
+| Category | Crate | Planned Usage |
+|----------|-------|---------------|
+| Graphics | image | Image optimization, resizing, WebP conversion |
+| Encoding | zip | EPUB export (ZIP-based format) |
+| Filesystem | notify | Native file watching for live reload |
+| CLI | indicatif | Progress bars for builds and asset processing |
+
+### Status
+
+38 rustmax crates currently in use, with 4 new crates available for integration.
 
 ## Key Design Decisions
 
@@ -251,10 +260,13 @@ Future tests needed:
 - [x] Incremental builds using content_hash
 - [x] Asset compression (flate2)
 
-### Phase 3: Advanced (PLANNED)
-- [ ] Remote content fetching (reqwest)
-- [ ] Custom syntax extensions (nom)
-- [ ] Image optimization
+### Phase 3: Advanced (IN PROGRESS)
+- [x] Remote content fetching (reqwest)
+- [x] Custom syntax extensions (nom)
+- [ ] Image optimization (image crate)
+- [ ] EPUB export (zip crate)
+- [ ] Native file watching (notify crate)
+- [ ] Build progress bars (indicatif crate)
 - [ ] Plugin system
 
 ## Known Issues / Technical Debt
