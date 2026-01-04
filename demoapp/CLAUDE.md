@@ -9,3 +9,6 @@ and should write and commit your own development documentation
 to keep track of your roadmap and progress.
 You have complete freedom to make all decisions;
 I will only check in to ensure you are meeting my requirements.
+
+If you find you want a rust crate dependency that's
+not in rustmax, tell me about it so we can think about including it.
