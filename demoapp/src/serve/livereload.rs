@@ -1,35 +1,26 @@
-//! Live reload functionality via polling.
+//! Live reload functionality via WebSocket.
 //!
-//! Watches for file changes and provides a polling endpoint for reload detection.
+//! Watches for file changes and broadcasts reload messages to connected clients.
 
 use rustmax::prelude::*;
 use rustmax::axum::{
-    extract::State,
-    response::{IntoResponse, Response},
-    http::StatusCode,
-    Json,
+    extract::{
+        ws::{Message, WebSocket, WebSocketUpgrade},
+        State,
+    },
+    response::Response,
 };
-use rustmax::tokio::sync::RwLock;
+use rustmax::tokio::sync::broadcast;
 use rustmax::tokio::time::{interval, Duration};
 use rustmax::walkdir::WalkDir;
 use rustmax::log::{debug, info};
-use rustmax::serde_json::json;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::SystemTime;
 
-/// State for live reload.
-pub struct LiveReloadState {
-    /// Monotonically increasing version number.
-    version: AtomicU64,
-    /// Last detected change type.
-    last_change: RwLock<Option<ChangeType>>,
-}
-
 /// Type of change detected.
-#[derive(Debug, Clone, Copy, serde::Serialize)]
+#[derive(Debug, Clone, Copy)]
 pub enum ChangeType {
     /// Content or template changed.
     Content,
@@ -39,29 +30,38 @@ pub enum ChangeType {
     Asset,
 }
 
+impl ChangeType {
+    /// Get the message string for this change type.
+    fn as_str(&self) -> &'static str {
+        match self {
+            ChangeType::Content => "reload",
+            ChangeType::Css => "css-reload",
+            ChangeType::Asset => "reload",
+        }
+    }
+}
+
+/// State for live reload.
+pub struct LiveReloadState {
+    sender: broadcast::Sender<ChangeType>,
+}
+
 impl LiveReloadState {
     /// Create a new live reload state.
     pub fn new() -> Self {
-        Self {
-            version: AtomicU64::new(0),
-            last_change: RwLock::new(None),
-        }
+        let (sender, _) = broadcast::channel(16);
+        Self { sender }
     }
 
-    /// Get the current version.
-    pub fn version(&self) -> u64 {
-        self.version.load(Ordering::SeqCst)
+    /// Get a receiver for reload events.
+    pub fn subscribe(&self) -> broadcast::Receiver<ChangeType> {
+        self.sender.subscribe()
     }
 
-    /// Trigger a reload with a change type.
-    pub async fn trigger(&self, change_type: ChangeType) {
-        self.version.fetch_add(1, Ordering::SeqCst);
-        *self.last_change.write().await = Some(change_type);
-    }
-
-    /// Get and clear the last change type.
-    pub async fn take_change(&self) -> Option<ChangeType> {
-        self.last_change.write().await.take()
+    /// Trigger a reload event.
+    pub fn trigger(&self, change_type: ChangeType) {
+        // Ignore send errors (no receivers).
+        let _ = self.sender.send(change_type);
     }
 }
 
@@ -71,24 +71,62 @@ impl Default for LiveReloadState {
     }
 }
 
-/// HTTP handler for polling reload status.
-pub async fn poll_handler(State(state): State<Arc<LiveReloadState>>) -> Response {
-    let version = state.version();
-    let change = state.take_change().await;
-
-    let response = json!({
-        "version": version,
-        "reload": change.is_some(),
-        "type": change,
-    });
-
-    Json(response).into_response()
+/// WebSocket handler for live reload connections.
+pub async fn ws_handler(
+    ws: WebSocketUpgrade,
+    State(state): State<Arc<LiveReloadState>>,
+) -> Response {
+    ws.on_upgrade(|socket| handle_socket(socket, state))
 }
 
-/// HTTP handler to get current version only.
-pub async fn version_handler(State(state): State<Arc<LiveReloadState>>) -> Response {
-    let version = state.version();
-    (StatusCode::OK, version.to_string()).into_response()
+/// Handle a single WebSocket connection.
+async fn handle_socket(mut socket: WebSocket, state: Arc<LiveReloadState>) {
+    debug!("Live reload client connected");
+
+    let mut receiver = state.subscribe();
+
+    // Send connected message.
+    if socket.send(Message::Text("connected".into())).await.is_err() {
+        return;
+    }
+
+    loop {
+        rustmax::tokio::select! {
+            // Forward reload events to client.
+            result = receiver.recv() => {
+                match result {
+                    Ok(change_type) => {
+                        let msg = change_type.as_str();
+                        if socket.send(Message::Text(msg.into())).await.is_err() {
+                            break;
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Lagged(_)) => {
+                        // Missed some messages, send generic reload.
+                        if socket.send(Message::Text("reload".into())).await.is_err() {
+                            break;
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                }
+            }
+            // Handle incoming messages (ping/pong, close).
+            msg = socket.recv() => {
+                match msg {
+                    Some(Ok(Message::Close(_))) | None => break,
+                    Some(Ok(Message::Ping(data))) => {
+                        if socket.send(Message::Pong(data)).await.is_err() {
+                            break;
+                        }
+                    }
+                    Some(Err(_)) => break,
+                    _ => {}
+                }
+            }
+        }
+    }
+
+    debug!("Live reload client disconnected");
 }
 
 /// File watcher that polls for changes.
@@ -109,8 +147,8 @@ impl FileWatcher {
     }
 
     /// Set the poll interval.
-    pub fn with_interval(mut self, interval: Duration) -> Self {
-        self.poll_interval = interval;
+    pub fn with_interval(mut self, poll_interval: Duration) -> Self {
+        self.poll_interval = poll_interval;
         self
     }
 
@@ -193,50 +231,55 @@ impl FileWatcher {
                 let change_type = Self::classify_changes(&changed);
                 debug!("Files changed ({:?}): {:?}", change_type, changed);
                 info!("Detected {:?} change, triggering reload", change_type);
-                state.trigger(change_type).await;
+                state.trigger(change_type);
             }
         }
     }
 }
 
-/// JavaScript snippet to inject into pages for live reload polling.
+/// JavaScript snippet to inject into pages for live reload via WebSocket.
 pub fn live_reload_script(_port: u16) -> String {
-    // Port is unused since we use relative URLs.
     r#"<script>
 (function() {
-    var lastVersion = 0;
-    var pollInterval = 1000;
+    var reconnectDelay = 1000;
 
-    function poll() {
-        fetch('/livereload/poll')
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (lastVersion === 0) {
-                    lastVersion = data.version;
-                    console.log('[live-reload] Connected, version:', lastVersion);
-                } else if (data.version > lastVersion) {
-                    console.log('[live-reload] Change detected:', data.type);
-                    if (data.type === 'Css') {
-                        var links = document.querySelectorAll('link[rel="stylesheet"]');
-                        links.forEach(function(link) {
-                            var href = link.href.split('?')[0];
-                            link.href = href + '?v=' + Date.now();
-                        });
-                        lastVersion = data.version;
-                    } else {
-                        location.reload();
-                    }
-                }
-            })
-            .catch(function() {
-                console.log('[live-reload] Poll failed, retrying...');
-            })
-            .finally(function() {
-                setTimeout(poll, pollInterval);
-            });
+    function connect() {
+        var protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        var ws = new WebSocket(protocol + '//' + location.host + '/livereload');
+
+        ws.onopen = function() {
+            console.log('[live-reload] Connected');
+            reconnectDelay = 1000;
+        };
+
+        ws.onmessage = function(event) {
+            if (event.data === 'reload') {
+                console.log('[live-reload] Reloading page...');
+                location.reload();
+            } else if (event.data === 'css-reload') {
+                console.log('[live-reload] Reloading CSS...');
+                var links = document.querySelectorAll('link[rel="stylesheet"]');
+                links.forEach(function(link) {
+                    var href = link.href.split('?')[0];
+                    link.href = href + '?v=' + Date.now();
+                });
+            } else if (event.data === 'connected') {
+                console.log('[live-reload] Ready');
+            }
+        };
+
+        ws.onclose = function() {
+            console.log('[live-reload] Disconnected, reconnecting in', reconnectDelay, 'ms');
+            setTimeout(connect, reconnectDelay);
+            reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+        };
+
+        ws.onerror = function() {
+            ws.close();
+        };
     }
 
-    poll();
+    connect();
 })();
 </script>"#.to_string()
 }
@@ -264,26 +307,21 @@ mod tests {
 
     #[test]
     fn test_live_reload_state() {
-        let rt = rustmax::tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(async {
-            let state = LiveReloadState::new();
-            assert_eq!(state.version(), 0);
+        let state = LiveReloadState::new();
+        let mut rx = state.subscribe();
 
-            state.trigger(ChangeType::Content).await;
-            assert_eq!(state.version(), 1);
+        state.trigger(ChangeType::Content);
 
-            let change = state.take_change().await;
-            assert!(matches!(change, Some(ChangeType::Content)));
-
-            let change = state.take_change().await;
-            assert!(change.is_none());
-        });
+        match rx.try_recv() {
+            Ok(ChangeType::Content) => {}
+            other => panic!("expected Content, got {:?}", other),
+        }
     }
 
     #[test]
     fn test_live_reload_script() {
         let script = live_reload_script(3000);
-        assert!(script.contains("/livereload/poll"));
+        assert!(script.contains("WebSocket"));
         assert!(script.contains("location.reload()"));
     }
 
@@ -332,5 +370,12 @@ mod tests {
     fn test_classify_changes_asset() {
         let paths = vec![PathBuf::from("image.png"), PathBuf::from("script.js")];
         assert!(matches!(FileWatcher::classify_changes(&paths), ChangeType::Asset));
+    }
+
+    #[test]
+    fn test_change_type_as_str() {
+        assert_eq!(ChangeType::Content.as_str(), "reload");
+        assert_eq!(ChangeType::Css.as_str(), "css-reload");
+        assert_eq!(ChangeType::Asset.as_str(), "reload");
     }
 }

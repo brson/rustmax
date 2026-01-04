@@ -204,11 +204,11 @@ fn test_build_output() {
 - 38 rustmax crates now integrated (all targeted crates complete!)
 
 ### 2026-01-03: Live Reload
-- Added polling-based live reload for development server
+- Added WebSocket-based live reload for development server
 - File watcher detects content, template, and CSS changes
 - Hot CSS reload without full page refresh
 - JavaScript injected into pages during dev serving
-- 115 total tests passing (98 unit + 17 integration)
+- 116 total tests passing (99 unit + 17 integration)
 
 ### Next Session Priorities
 1. Improve search with stemming

@@ -200,7 +200,7 @@ Markdown content here.
 
 ## Testing Strategy
 
-Current tests (115 passing):
+Current tests (116 passing):
 - Frontmatter parsing
 - No-frontmatter documents
 - Word counting
@@ -224,7 +224,7 @@ Future tests needed:
 - Search indexing
 
 ### Phase 2: Enhanced Features (COMPLETE)
-- [x] Live reload via polling (file watcher + hot CSS)
+- [x] Live reload via WebSocket (file watcher + hot CSS)
 - [x] REPL mode (rustyline)
 - [ ] Incremental builds using content_hash
 - [x] Asset compression (flate2)

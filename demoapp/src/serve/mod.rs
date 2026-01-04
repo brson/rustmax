@@ -66,10 +66,9 @@ pub fn serve(
             watcher.watch(live_reload_for_watcher).await;
         });
 
-        // Build the live reload routes with their own state.
+        // Build the live reload WebSocket route.
         let reload_routes = Router::new()
-            .route("/livereload/poll", get(livereload::poll_handler))
-            .route("/livereload/version", get(livereload::version_handler))
+            .route("/livereload", get(livereload::ws_handler))
             .with_state(live_reload_for_ws);
 
         let mut app = Router::new()
@@ -88,7 +87,7 @@ pub fn serve(
 
         let addr = format!("0.0.0.0:{}", port);
         info!("Listening on http://localhost:{}", port);
-        info!("Live reload enabled at /livereload/poll");
+        info!("Live reload enabled at ws://localhost:{}/livereload", port);
         info!("Press Ctrl+C to stop");
 
         let listener = TcpListener::bind(&addr).await.map_err(|e| {
