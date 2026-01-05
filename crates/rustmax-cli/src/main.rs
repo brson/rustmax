@@ -7,11 +7,14 @@ mod moldman;
 mod rmxbook;
 mod tools;
 
+use include_dir::{include_dir, Dir};
 use rmx::prelude::*;
 use rmx::{clap, serde};
 use std::path::Path;
 
 use tools::Tool;
+
+static TEMPLATE_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/../../template");
 
 fn main() -> AnyResult<()> {
     let opts = <CliOpts as clap::Parser>::parse();
@@ -62,7 +65,7 @@ enum CliCmd {
     Doctest(CliCmdDoctest),
 
     /// Create a new project from template.
-    NewProject,
+    NewProject(CliCmdNewProject),
 
     /// Write rustfmt.toml configuration file.
     WriteFmtConfig(CliCmdWriteFmtConfig),
@@ -161,6 +164,12 @@ struct CliCmdDoctest {
 }
 
 #[derive(clap::Args)]
+struct CliCmdNewProject {
+    /// Project name (will prompt if not provided).
+    name: Option<String>,
+}
+
+#[derive(clap::Args)]
 struct CliCmdWriteFmtConfig {}
 
 #[derive(clap::Args)]
@@ -194,6 +203,8 @@ impl CliOpts {
             CliCmd::Rmxbook(cmd) => cmd.run(),
 
             CliCmd::Doctest(cmd) => cmd.run(),
+
+            CliCmd::NewProject(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
@@ -352,6 +363,44 @@ impl CliCmdDoctest {
 
         rustmax_doctest::run_doctests(doc_dir, work_dir, &test_args, self.rebuild)
     }
+}
+
+impl CliCmdNewProject {
+    fn run(&self) -> AnyResult<()> {
+        let temp_dir = rmx::tempfile::tempdir()?;
+
+        extract_dir(&TEMPLATE_DIR, temp_dir.path())?;
+
+        let mut cmd = std::process::Command::new("cargo");
+        cmd.arg("generate")
+            .arg("--path")
+            .arg(temp_dir.path());
+
+        if let Some(name) = &self.name {
+            cmd.arg("--name").arg(name);
+        }
+
+        let status = cmd.status()?;
+        if !status.success() {
+            rmx::anyhow::bail!("cargo generate failed");
+        }
+
+        Ok(())
+    }
+}
+
+fn extract_dir(dir: &Dir, dest: &Path) -> AnyResult<()> {
+    for file in dir.files() {
+        let path = dest.join(file.path());
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        std::fs::write(&path, file.contents())?;
+    }
+    for subdir in dir.dirs() {
+        extract_dir(subdir, dest)?;
+    }
+    Ok(())
 }
 
 impl CliCmdWriteFmtConfig {
