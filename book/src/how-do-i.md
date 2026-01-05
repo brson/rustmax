@@ -69,10 +69,9 @@ let bt = Backtrace::capture();
 println!("{bt}");
 ```
 
-Set `RUST_BACKTRACE=1` to enable capture (backtraces are disabled by default for performance).
+Set `RUST_BACKTRACE=1` to enable capture.
 
 For error types, `anyhow` automatically captures backtraces when the `backtrace` feature is enabled.
-The `backtrace` crate is no longer needed for most use cases.
 
 [`std::backtrace::Backtrace`]: https://doc.rust-lang.org/std/backtrace/struct.Backtrace.html
 
