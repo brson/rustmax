@@ -18,12 +18,15 @@ check:
     cargo check -p rustmax --features=rmx-profile-wasm --target=wasm32-unknown-unknown
 
 test:
-    cargo test -p rustmax
-    #cargo test -p rmx --features rmx-profile-no-std
-    cargo test -p rustmax --features rmx-profile-std
-    cargo test -p rustmax --features rmx-profile-full
-    cargo test -p rustmax --features rmx-profile-max
+    cargo test -p rustmax --lib --tests --bins
+    cargo test -p rustmax --features rmx-profile-std --lib --tests --bins
+    cargo test -p rustmax --features rmx-profile-full --lib --tests --bins
+    cargo test -p rustmax --features rmx-profile-max --lib --tests --bins
     cargo check -p rustmax --features=rmx-profile-wasm --target=wasm32-unknown-unknown
+    cargo run -p rustmax-cli -- doctest
+
+test-rustdoc:
+    cargo test -p rustmax --features rmx-profile-max --doc
 
 test-min-version-build: maint-lock-minimum-versions
     cargo test -p rustmax --features rmx-profile-std
