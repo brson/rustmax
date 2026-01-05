@@ -58,6 +58,9 @@ enum CliCmd {
     /// Build a book using the rmxbook renderer.
     Rmxbook(CliCmdRmxbook),
 
+    /// Run doctests from crate examples.
+    Doctest(CliCmdDoctest),
+
     /// Create a new project from template.
     NewProject,
 
@@ -136,6 +139,28 @@ struct CliCmdRmxbook {
 }
 
 #[derive(clap::Args)]
+struct CliCmdDoctest {
+    /// Test name filter (substring match).
+    filter: Option<String>,
+
+    /// Number of test threads.
+    #[arg(long)]
+    test_threads: Option<usize>,
+
+    /// Don't capture test output.
+    #[arg(long)]
+    nocapture: bool,
+
+    /// Force rebuild of test crate.
+    #[arg(long)]
+    rebuild: bool,
+
+    /// Run ignored tests.
+    #[arg(long)]
+    ignored: bool,
+}
+
+#[derive(clap::Args)]
 struct CliCmdWriteFmtConfig {}
 
 #[derive(clap::Args)]
@@ -167,6 +192,8 @@ impl CliOpts {
             CliCmd::RefreshLibrary(cmd) => cmd.run(),
 
             CliCmd::Rmxbook(cmd) => cmd.run(),
+
+            CliCmd::Doctest(cmd) => cmd.run(),
 
             CliCmd::WriteFmtConfig(cmd) => cmd.run(),
             CliCmd::WriteCargoDenyConfig(cmd) => cmd.run(),
@@ -301,6 +328,29 @@ impl CliCmdRmxbook {
         rmxbook::build(input, output)?;
         println!("Done");
         Ok(())
+    }
+}
+
+impl CliCmdDoctest {
+    fn run(&self) -> AnyResult<()> {
+        let doc_dir = Path::new("crates/rustmax/doc-src");
+        let work_dir = Path::new("work/doctest");
+
+        let mut test_args = vec![];
+        if let Some(filter) = &self.filter {
+            test_args.push(filter.clone());
+        }
+        if let Some(threads) = self.test_threads {
+            test_args.push(format!("--test-threads={}", threads));
+        }
+        if self.nocapture {
+            test_args.push("--nocapture".to_string());
+        }
+        if self.ignored {
+            test_args.push("--ignored".to_string());
+        }
+
+        rustmax_doctest::run_doctests(doc_dir, work_dir, &test_args, self.rebuild)
     }
 }
 

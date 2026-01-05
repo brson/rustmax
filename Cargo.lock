@@ -3684,8 +3684,17 @@ dependencies = [
  "pulldown-cmark",
  "regex",
  "rustmax",
+ "rustmax-doctest",
  "serde",
  "toml 0.8.23",
+]
+
+[[package]]
+name = "rustmax-doctest"
+version = "0.0.6"
+dependencies = [
+ "pulldown-cmark",
+ "rustmax",
 ]
 
 [[package]]

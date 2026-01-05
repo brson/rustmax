@@ -20,6 +20,7 @@ rmx.features = [
   "rmx-profile-net",
   "rmx-feature-derive",
 ]
+rustmax-doctest.path = "../rustmax-doctest"
 serde.version = "1"
 enum-iterator.version = "2.1.0"
 regex.version = "1"
