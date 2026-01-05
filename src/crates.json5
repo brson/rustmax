@@ -18,12 +18,6 @@
             maintainer: "tokio-rs",
         },
         {
-            name: "backtrace",
-            category: "errors",
-            short_desc: "Stack traces",
-            maintainer: "rust-lang",
-        },
-        {
             name: "base64",
             category: "encoding",
             short_desc: "Base-64 encoding and decoding",

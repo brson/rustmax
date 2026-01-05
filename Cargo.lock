@@ -290,7 +290,6 @@ dependencies = [
  "miniz_oxide",
  "object",
  "rustc-demangle",
- "serde",
  "windows-targets 0.52.6",
 ]
 
@@ -3612,7 +3611,6 @@ dependencies = [
  "ahash",
  "anyhow",
  "axum",
- "backtrace",
  "base64 0.22.1",
  "bindgen",
  "bitflags 2.9.1",

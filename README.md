@@ -21,7 +21,6 @@ It is neither stable nor supported.
 | `ahash = "0.8.11"` | Fast hash maps | [📖](https://docs.rs/ahash/0.8.11/ahash) |
 | `anyhow = "1.0.94"` | Easy error handling | [📖](https://docs.rs/anyhow/1.0.94/anyhow) |
 | `axum = "0.8.4"` | Web framework | [📖](https://docs.rs/axum/0.8.4/axum) |
-| `backtrace = "0.3.74"` | Stack traces | [📖](https://docs.rs/backtrace/0.3.74/backtrace) |
 | `base64 = "0.22.1"` | Base-64 encoding and decoding | [📖](https://docs.rs/base64/0.22.1/base64) |
 | `bindgen = "0.72.0"` | C/C++ interop | [📖](https://docs.rs/bindgen/0.72.0/bindgen) |
 | `bitflags = "2"` | Bitfields | [📖](https://docs.rs/bitflags/2/bitflags) |

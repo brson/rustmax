@@ -25,7 +25,6 @@ default = []
 rmx-crates-no-std = [
   "ahash",
   "anyhow",
-  "backtrace",
   "base64",
   "bitflags",
   "blake3",
@@ -219,7 +218,6 @@ rmx-feature-std-wasm = [
   "rmx-feature-no-std",
   "ahash?/std",
   "anyhow?/std",
-  "backtrace?/std",
   "base64?/std",
   "bitflags?/std",
   "blake3?/std",
@@ -256,7 +254,6 @@ rmx-feature-std = [
   "rmx-feature-no-std",
   "ahash?/std",
   "anyhow?/std",
-  "backtrace?/std",
   "base64?/std",
   "bitflags?/std",
   "blake3?/std",
@@ -382,7 +379,6 @@ rmx-feature-derive = [
 ]
 
 rmx-feature-serde = [
-  "backtrace?/serde",
   "bitflags?/serde",
   "bytes?/serde",
   "hex?/serde",
@@ -397,7 +393,6 @@ rmx-feature-serde = [
 ]
 
 rmx-feature-backtrace = [
-  "rmx-feature-std",
   "anyhow?/backtrace",
 ]
 
@@ -443,7 +438,6 @@ rmx-rustlib-proc_macro = []
 ahash = { version = "0.8.11", optional = true, default-features = false }
 anyhow = { version = "1.0.94", optional = true, default-features = false }
 axum = { version = "0.8.4", optional = true, default-features = false }
-backtrace = {version = "0.3.74", optional = true, default-features = false }
 base64 = { version = "0.22.1", optional = true, default-features = false }
 bindgen = { version = "0.72.0", optional = true, default-features = false }
 bitflags = { version = "2", optional = true, default-features = false }

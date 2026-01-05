@@ -260,15 +260,6 @@ pub mod axum {
     pub use ::axum::*;
 }
 
-#[cfg(feature = "backtrace")]
-pub mod backtrace {
-    //! Callstack backtraces on demand.
-    //!
-    //! See crate [`::backtrace`].
-
-    pub use ::backtrace::*;
-}
-
 #[cfg(feature = "base64")]
 pub mod base64 {
     #![doc = include_str!("../doc-src/crate-base64.md")]
