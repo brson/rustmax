@@ -15,7 +15,7 @@ to any iterator, enabling powerful functional programming patterns.
 It includes methods for grouping, batching, sorting, deduplication,
 and complex iteration patterns that would otherwise require verbose loops.
 
-Key features include [`group_by`] for grouping consecutive elements,
+Key features include [`chunk_by`] for grouping consecutive elements,
 [`chunk`] for batching elements into fixed-size groups,
 [`sorted`] for sorting without collecting first,
 [`dedup`] for removing duplicates,
@@ -36,7 +36,7 @@ use itertools::Itertools;
 let data = vec![1, 1, 2, 2, 2, 3, 1, 1];
 let groups: Vec<_> = data
     .into_iter()
-    .group_by(|&x| x)
+    .chunk_by(|&x| x)
     .into_iter()
     .map(|(key, group)| (key, group.count()))
     .collect();
@@ -70,7 +70,7 @@ assert_eq!(coords[8], (2, 2));
 ```
 
 [`Itertools`]: crate::itertools::Itertools
-[`group_by`]: crate::itertools::Itertools::group_by
+[`chunk_by`]: crate::itertools::Itertools::chunk_by
 [`chunk`]: crate::itertools::Itertools::chunks
 [`sorted`]: crate::itertools::Itertools::sorted
 [`dedup`]: crate::itertools::Itertools::dedup

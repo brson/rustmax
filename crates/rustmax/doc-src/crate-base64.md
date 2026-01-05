@@ -16,23 +16,21 @@ such as email attachments, URLs, and data URIs.
 
 The crate supports multiple Base64 alphabets and configurations,
 including standard Base64, URL-safe Base64, and custom alphabets.
-The main functions are [`encode`] and [`decode`] for simple operations,
-and the [`Engine`] trait for more advanced usage with custom configurations.
+The [`Engine`] trait provides encoding and decoding with configurable alphabets.
 
 ## Examples
 
 Basic encoding and decoding:
 
-```
-use base64::{encode, decode};
+```rust
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 
-let original = "Hello, world!";
-let encoded = encode(original);
+let original = b"Hello, world!";
+let encoded = STANDARD.encode(original);
 println!("Encoded: {}", encoded); // "SGVsbG8sIHdvcmxkIQ=="
 
-let decoded = decode(&encoded).unwrap();
-let decoded_str = String::from_utf8(decoded).unwrap();
-println!("Decoded: {}", decoded_str); // "Hello, world!"
+let decoded = STANDARD.decode(&encoded).unwrap();
+assert_eq!(decoded, original);
 ```
 
 Using URL-safe encoding for use in URLs:
@@ -48,6 +46,4 @@ let decoded = general_purpose::URL_SAFE_NO_PAD.decode(&encoded).unwrap();
 assert_eq!(decoded, data);
 ```
 
-[`encode`]: crate::base64::encode
-[`decode`]: crate::base64::decode
 [`Engine`]: crate::base64::Engine
