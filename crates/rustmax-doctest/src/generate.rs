@@ -35,6 +35,11 @@ thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 derive_more = { version = "2", features = ["full"] }
 num_enum = "0.7"
+
+# Direct dependencies for crates that use `use crate_name;` pattern
+crossbeam = "0.8"
+blake3 = "1"
+proptest = "1"
 "#;
 
     fs::write(work_dir.join("Cargo.toml"), cargo_toml)?;
@@ -111,14 +116,12 @@ fn generate_test_function(example: &DocTest) -> AnyResult<String> {
     output.push_str("#[test]\n");
 
     // Check if the example uses patterns that don't work when wrapped in a function.
-    // Note: serde, thiserror, clap, derive_more, num_enum derives work because
-    // those crates are direct dependencies of the generated test crate.
+    // Note: serde, thiserror, clap, derive_more, num_enum, crossbeam, blake3, proptest
+    // are direct dependencies of the generated test crate.
     let has_problematic_patterns = example.code.contains("proptest!")
         || example.code.contains("crossbeam::select!")
         || example.code.contains("tokio::join!")
         || example.code.contains("#[tokio::main]")  // Tokio async examples are complex
-        || example.code.contains("use crossbeam;")  // Simple crossbeam import
-        || example.code.contains("use blake3;")     // Simple blake3 import
         || example.code.contains("use nom::");      // nom::bytes conflicts with bytes crate
 
     // Add ignore attribute if needed.
