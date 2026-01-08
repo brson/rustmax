@@ -10,7 +10,7 @@
 
 
 
-## Project organization
+## Project organization and maintenance
 
 ### … init a Rustmax project from template?
 
@@ -20,6 +20,76 @@ cargo generate brson/rustmax
 
 
 ### … organize a Rust workspace?
+
+todo
+
+- sharing dependencies in the workspace etc
+
+
+
+
+### … fix bugs in a published crates.io dependency?
+
+Use `[patch.crates-io]` in your `Cargo.toml` to override any crates.io dependency with your fixed version.
+
+**Workflow:**
+
+1. Fork/clone the dependency.
+2. Check out the commit the corresponds to the revision in your lockfile.
+   Sometimes projects will have obvious git tags for each version.
+   Otherwise published packages contain a `.cargo_vcs_info.json` with that info.
+   It can be [viewed directly on docs.rs](https://docs.rs/crate/rustmax/latest/source/.cargo_vcs_info.json).
+2. Make your fix.
+3. Patch your workspace's `Cargo.toml` to use the fixed version:
+
+   **Option A: Patch with a local path** (for development)
+
+   ```toml
+   [patch.crates-io]
+   some-crate = { path = "../some-crate" }
+   ```
+
+   **Option B: Patch with a git repo** (for sharing/CI)
+
+   ```toml
+   [patch.crates-io]
+   some-crate = { git = "https://github.com/you/some-crate", branch = "my-fix" }
+   ```
+4. Publish the dependency with a new version number
+   (or get the owner of the dependency to publish if it's a third-party crate).
+5. Update your workspace's dependency to use use the new version number
+   and remove the patch.
+
+The `patch.crates-io` section requires a patch's source package has
+the same declared version as the published source.
+This should be the case by default if you have checked out the commit the corresponds
+exactly to the published package.
+
+
+#### Alternate: just use `path` dependencies temporarily.
+
+The main benefit of using `patch` is that it applies the dependency
+change to all instances of that crate in the workspace.
+
+Well-organized workspaces declare shared dependencies in the root `Cargo.toml`:
+
+```toml
+# Root Cargo.toml
+[workspace.dependencies]
+some-crate = "1.0"
+# or temporarily:
+some-crate = { path = "../some-crate" }
+```
+
+```toml
+# Crate Cargo.toml
+[dependencies]
+some-crate.workspace = true
+```
+
+With this setup, switching to a path dependency in one place updates all crates.
+No `[patch]` needed, and no version-matching constraints.
+This tends to be an easier workflow for simple local fixes.
 
 
 
@@ -210,6 +280,9 @@ let x: u32 = rng.gen();
 
 ## Cryptography
 
+
+
+
 ### … calculate a cryptographic content hash?
 
 
@@ -253,6 +326,9 @@ let cpus = std::thread::available_parallelism()?.get();
 
 
 ## Networking and web
+
+
+
 
 ### … make a synchronous HTTP request?
 
