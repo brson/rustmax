@@ -14,7 +14,7 @@ use std::path::Path;
 
 use tools::Tool;
 
-static TEMPLATE_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/../../template");
+static TEMPLATE_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/assets/template");
 
 fn main() -> AnyResult<()> {
     let opts = <CliOpts as clap::Parser>::parse();

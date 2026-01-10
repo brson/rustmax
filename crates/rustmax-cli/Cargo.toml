@@ -6,6 +6,7 @@ license.workspace = true
 authors.workspace = true
 repository.workspace = true
 description.workspace = true
+include = ["src/**/*", "assets/**/*", "Cargo.toml", "build.rs"]
 
 [[bin]]
 name = "rustmax"
