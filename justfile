@@ -112,7 +112,7 @@ publish-dry:
 publish:
     cargo publish -p rustmax
     cargo publish -p rustmax-doctest
-    cargo publish -p rustmax-cli
+    cargo publish -p rustmax-cli --allow-dirty
 
 replace-version old new:
     sd "^version = \"{{old}}\"" "version = \"{{new}}\"" Cargo.toml
