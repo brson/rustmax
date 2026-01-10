@@ -106,10 +106,12 @@ doc-build: doc-www doc-crates doc-book doc-library
 
 publish-dry:
     cargo publish -p rustmax --dry-run
+    cargo publish -p rustmax-doctest --dry-run
     cargo publish -p rustmax-cli --dry-run
 
 publish:
     cargo publish -p rustmax
+    cargo publish -p rustmax-doctest
     cargo publish -p rustmax-cli
 
 replace-version old new:
