@@ -333,7 +333,6 @@ dependencies = [
  "miniz_oxide",
  "object",
  "rustc-demangle",
- "serde",
  "windows-link",
 ]
 
@@ -3229,12 +3228,11 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.6"
+version = "0.0.7"
 dependencies = [
  "ahash",
  "anyhow",
  "axum",
- "backtrace",
  "base64",
  "bindgen",
  "bitflags 2.10.0",
