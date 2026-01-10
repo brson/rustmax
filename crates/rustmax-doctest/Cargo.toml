@@ -9,7 +9,7 @@ description = "Doctest runner for rustmax crate examples"
 
 [dependencies]
 rmx.path = "../rustmax"
-rmx.version.workspace = true
+rmx.version = "0.0.7"
 rmx.package = "rustmax"
 rmx.features = ["rmx-profile-max"]
 pulldown-cmark.version = "0.12"
