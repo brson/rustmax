@@ -13,7 +13,7 @@ path = "src/main.rs"
 
 [dependencies]
 rmx.path = "../rustmax"
-rmx.version = "0.0.7"
+rmx.version.workspace = true
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
@@ -21,6 +21,7 @@ rmx.features = [
   "rmx-feature-derive",
 ]
 rustmax-doctest.path = "../rustmax-doctest"
+rustmax-doctest.version.workspace = true
 serde.version = "1"
 enum-iterator.version = "2.1.0"
 regex.version = "1"
