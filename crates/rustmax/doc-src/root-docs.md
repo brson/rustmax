@@ -27,7 +27,7 @@ as a "batteries included" supercrate.
 
 | Category | Crates |
 | --- | --- |
-| error handling and debugging | [`anyhow`], [`backtrace`], [`env_logger`], [`log`], [`thiserror`] |
+| error handling and debugging | [`anyhow`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`num_bigint`] |
 | encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`], [`zip`] |
@@ -82,10 +82,10 @@ as a "batteries included" supercrate.
   - [⛲ Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
 - [Rust standard libraries](#rust-standard-libraries).
   `rustmax` re-exports the standard Rust libraries for convenience.
-  - [📙 Rustlib: `rmx-rustlibs-no-std`][`rmx-rustlibs-no-std`]
-  - [📙 Rustlib: `rmx-rustlibs-alloc`][`rmx-rustlibs-alloc`]
-  - [📙 Rustlib: `rmx-rustlibs-std`][`rmx-rustlibs-std`]
-  - [📙 Rustlib: `rmx-rustlibs-proc-macro`][`rmx-rustlibs-proc-macro`]
+  - [📙 Rustlib: `rmx-rustlib-core`][`rmx-rustlib-core`]
+  - [📙 Rustlib: `rmx-rustlib-alloc`][`rmx-rustlib-alloc`]
+  - [📙 Rustlib: `rmx-rustlib-std`][`rmx-rustlib-std`]
+  - [📙 Rustlib: `rmx-rustlib-proc_macro`][`rmx-rustlib-proc_macro`]
 - [Using `rustmax` as a library](#using-rustmax-as-a-library)
   - [`rustmax` and cargo features](#rustmax-and-cargo-features)
   - [Crate reexports](#crate-reexports)
@@ -125,14 +125,13 @@ and enables allocator-related features of its crates.
 All crates in this profile are also in [`rmx-profile-std`].
 
 💡 This profile also enables [`rmx-feature-no-std`].\
-💡 This profile also enables [`rmx-rustlibs-no-std`].
+💡 This profile also enables [`rmx-rustlib-core`] and [`rmx-rustlib-alloc`].
 
 
 ### Crates in `rmx-profile-no-std`
 
 - [`ahash`] - A fast and DOS-resistent hash function, for use in `HashMap`s.
 - [`anyhow`] - Flexible error handling.
-- [`backtrace`] - Callstack backtraces on demand.
 - [`base64`] - Base-64 encoding and decoding.
 - [`bitflags`] - Types in which the bits are individually addressable.
 - [`blake3`] - The BLAKE3 cryptographic hash function.
@@ -152,6 +151,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 - [`nom`] - An efficient parser combinator.
 - [`num_bigint`] - Arbitrary-sized integers.
 - [`num_enum`] - Conversions between numbers and enums.
+- [`powerletters`] - Superscript and subscript Unicode text conversion.
 - [`rand`] - Random number generators.
 - [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
 - [`rand_pcg`] - The PCG non-cryptographically-secure random number generators.
@@ -175,7 +175,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 💡 This profile also enables [`rmx-feature-more`].\
 💡 This profile also enables [`rmx-feature-derive`].\
 💡 This profile also enables [`rmx-feature-serde`].\
-💡 This profile also enables [`rmx-rustlibs-std`].
+💡 This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].
 
 
 ### Crates in `rmx-profile-std`
@@ -215,7 +215,7 @@ that exclude features incompatible with WASM environments,
 such as OS-specific threading APIs and file system operations
 that require native OS support.
 
-💡 This profile also enables [`rmx-rustlibs-std`].\
+💡 This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].\
 💡 This profile also enables [`rmx-feature-std-wasm`].\
 💡 This profile also enables [`rmx-feature-default-wasm`].\
 💡 This profile also enables [`rmx-feature-more-wasm`].\
@@ -228,6 +228,7 @@ that require native OS support.
 All crates from [`rmx-profile-no-std`], plus:
 
 - [`clap`] - Command line parsing.
+- [`comrak`] - CommonMark and GitHub Flavored Markdown parser.
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
 - [`flate2`] - Deflate, gzip, and zlib compression and decompression.
 - [`glob`] - Unix shell style pattern matching for paths.
@@ -237,10 +238,12 @@ All crates from [`rmx-profile-no-std`], plus:
 - [`tempfile`] - Temporary files and directories.
 - [`thiserror`] - Tools for defining custom error types.
 - [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.
+- [`walkdir`] - Efficient directory traversal.
+- [`zip`] - Read and write ZIP archives.
 
 Note: Some crates from [`rmx-profile-std`] are not included
 because they require native OS features unavailable in WASM environments:
-[`proptest`], [`tera`], [`walkdir`], [`xshell`].
+[`proptest`], [`tera`], [`xshell`].
 
 
 
@@ -311,7 +314,7 @@ Crates for writing [Rust build scripts](todo).
 Crates for writing [Rust procedural macros](todo).
 
 💡 This profile also enables [`rmx-profile-std`].\
-💡 This profile also enables [`rmx-rustlibs-proc-macro`].
+💡 This profile also enables [`rmx-rustlib-proc_macro`].
 
 
 ### Crates in `rmx-profile-proc-macro`
@@ -468,18 +471,32 @@ typically with a feature named "nightly".
 # Rust standard libraries
 
 `rustmax` re-exports the standard Rust libraries for convenience.
+These features enable reexports of the corresponding standard library crates
+as modules within `rustmax`.
 
 
-## 📙 Rustlib: `rmx-rustlibs-no-std`
+## 📙 Rustlib: `rmx-rustlib-core`
+
+Reexports the [`core`] library.
+Enabled by [`rmx-profile-no-std`] and all profiles that include it.
 
 
-## 📙 Rustlib: `rmx-rustlibs-alloc`
+## 📙 Rustlib: `rmx-rustlib-alloc`
+
+Reexports the [`alloc`] library.
+Enabled by [`rmx-profile-no-std`] and all profiles that include it.
 
 
-## 📙 Rustlib: `rmx-rustlibs-std`
+## 📙 Rustlib: `rmx-rustlib-std`
+
+Reexports the [`std`] library.
+Enabled by [`rmx-profile-std`] and all profiles that include it.
 
 
-## 📙 Rustlib: `rmx-rustlibs-proc-macro`
+## 📙 Rustlib: `rmx-rustlib-proc_macro`
+
+Reexports the [`proc_macro`] library.
+Enabled by [`rmx-profile-proc-macro`].
 
 
 
@@ -606,9 +623,9 @@ through cargo features like `rmx-profile-std`.
 [`rmx-feature-backtrace`]: #-feature-rmx-feature-backtrace
 [`rmx-feature-tokio`]: #-feature-rmx-feature-tokio
 [`rmx-feature-nightly`]: #-feature-rmx-feature-nightly
-[`rmx-rustlibs-no-std`]: #-rustlibs-rmx-rustlibs-no-std
-[`rmx-rustlibs-alloc`]: #-rustlibs-rmx-rustlibs-alloc
-[`rmx-rustlibs-std`]: #-rustlibs-rmx-rustlibs-std
-[`rmx-rustlibs-proc-macro`]: #-rustlibs-rmx-rustlibs-proc-macro
+[`rmx-rustlib-core`]: #-rustlib-rmx-rustlib-core
+[`rmx-rustlib-alloc`]: #-rustlib-rmx-rustlib-alloc
+[`rmx-rustlib-std`]: #-rustlib-rmx-rustlib-std
+[`rmx-rustlib-proc_macro`]: #-rustlib-rmx-rustlib-proc_macro
 
 [Cargo features]: todo
