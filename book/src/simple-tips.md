@@ -1,3 +1,25 @@
+## Generate random numbers without the `rand` crate
+
+You should use the [`rand`] crate for random numbers generally.
+But if for some reason you need random numbers,
+can't use `rand`, but _can_ use `std`,
+then you can pull cryptographically-secure random `u64`s
+from the standard [`Hasher`]:
+
+```rust
+fn random_u64() -> u64 {
+    std::hash::Hasher::finish(&std::hash::BuildHasher::build_hasher(
+        &std::collections::hash_map::RandomState::new(),
+    ))
+}
+```
+
+[`rand`]: https://docs.rs/rand
+[`Hasher`]: https://doc.rust-lang.org/std/hash/trait.Hasher.html
+
+
+
+
 ## Run `cargo clean-all` to free up large amounts of disk space
 
 Everyone finds out eventually: the Rust compiler stores
