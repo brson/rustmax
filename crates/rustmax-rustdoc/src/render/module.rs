@@ -18,7 +18,20 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     let path = tree.module_item.as_ref()
         .map(|m| m.path.clone())
         .unwrap_or_default();
-    tera_ctx.insert("module_path", &path);
+
+    // Build breadcrumbs with URLs.
+    let breadcrumbs: Vec<Breadcrumb> = path.iter().enumerate().map(|(i, name)| {
+        let url = if i == path.len() - 1 {
+            // Current page, no link.
+            None
+        } else {
+            // Link to ancestor module: go up (path.len() - 1 - i) levels.
+            let ups = path.len() - 1 - i;
+            Some(format!("{}index.html", "../".repeat(ups)))
+        };
+        Breadcrumb { name: name.clone(), url }
+    }).collect();
+    tera_ctx.insert("breadcrumbs", &breadcrumbs);
 
     // Path to root for CSS and links.
     // For modules, the file is at <path>/index.html, so depth equals path length.
@@ -100,6 +113,12 @@ struct ItemSummary {
     name: String,
     path: String,
     short_doc: String,
+}
+
+#[derive(serde::Serialize)]
+struct Breadcrumb {
+    name: String,
+    url: Option<String>,
 }
 
 /// Extract the first sentence from documentation.
