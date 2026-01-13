@@ -47,16 +47,19 @@ pub fn render_markdown_with_links(
 /// Pre-process markdown to convert rustdoc-style intra-doc links to standard links.
 ///
 /// Converts `[`path::to::Item`]` to `[`path::to::Item`](path::to::Item)`.
+/// Also handles `[`::crate`]` syntax for crate-root paths.
 fn preprocess_intra_doc_links(md: &str) -> String {
-    // Match [`path::to::Item`] and capture what follows.
+    // Match [`path::to::Item`] or [`::crate`] and capture what follows.
     // We can't use lookahead in Rust regex, so capture trailing context.
+    // The (::)? optionally matches the leading :: for crate-root paths.
     let re = Regex::new(
-        r#"\[`([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\](\(|\[)?"#
+        r#"\[`((::)?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\](\(|\[)?"#
     ).unwrap();
 
     re.replace_all(md, |caps: &rmx::regex::Captures| {
         let path = &caps[1];
-        let following = caps.get(2).map(|m| m.as_str());
+        // Capture group 3 is the trailing ( or [ if present (group 2 is the optional ::).
+        let following = caps.get(3).map(|m| m.as_str());
 
         match following {
             // Already has a link target or reference, leave it alone.
@@ -71,7 +74,7 @@ fn preprocess_intra_doc_links(md: &str) -> String {
 
 /// Resolve intra-doc links in HTML output.
 ///
-/// Looks for `<a href="path::to::Item">` patterns and resolves them to actual URLs.
+/// Looks for `<a href="path::to::Item">` or `<a href="::crate">` patterns and resolves them to URLs.
 fn resolve_intra_doc_links(
     html: &str,
     global_index: &GlobalItemIndex,
@@ -79,7 +82,8 @@ fn resolve_intra_doc_links(
     current_depth: usize,
 ) -> String {
     // Match href attributes that look like Rust paths (not URLs, not .html files).
-    let re = Regex::new(r#"href="([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)""#).unwrap();
+    // Also match paths starting with :: for crate-root references.
+    let re = Regex::new(r#"href="((::)?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)""#).unwrap();
 
     re.replace_all(html, |caps: &rmx::regex::Captures| {
         let path = &caps[1];
@@ -101,6 +105,9 @@ fn resolve_path(
     current_crate: &str,
     current_depth: usize,
 ) -> Option<String> {
+    // Strip leading :: for crate-root paths (e.g., ::axum -> axum).
+    let path = path.strip_prefix("::").unwrap_or(path);
+
     // Skip common non-item words.
     if matches!(path, "todo" | "http" | "https" | "mailto" | "ftp" | "file") {
         return None;
@@ -308,6 +315,20 @@ mod tests {
         let md = "See [`crate::module::Type`] for info.";
         let result = preprocess_intra_doc_links(md);
         assert_eq!(result, "See [`crate::module::Type`](crate::module::Type) for info.");
+    }
+
+    #[test]
+    fn test_preprocess_crate_root_path() {
+        let md = "See crate [`::axum`].";
+        let result = preprocess_intra_doc_links(md);
+        assert_eq!(result, "See crate [`::axum`](::axum).");
+    }
+
+    #[test]
+    fn test_preprocess_crate_root_qualified() {
+        let md = "Use [`::tokio::sync::Mutex`] for async.";
+        let result = preprocess_intra_doc_links(md);
+        assert_eq!(result, "Use [`::tokio::sync::Mutex`](::tokio::sync::Mutex) for async.");
     }
 
     #[test]
