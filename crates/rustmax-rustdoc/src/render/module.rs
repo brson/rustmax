@@ -81,7 +81,8 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     tera_ctx.insert("macros", &macros);
 
     // Path to root for CSS and links.
-    let depth = path.len().saturating_sub(1);
+    // For modules, the file is at <path>/index.html, so depth equals path length.
+    let depth = path.len();
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
