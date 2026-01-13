@@ -122,6 +122,8 @@ struct Breadcrumb {
 }
 
 /// Extract the first paragraph from documentation.
+///
+/// Strips reference-style link definitions that might appear in the text.
 fn first_paragraph(docs: &str) -> String {
     let trimmed = docs.trim();
 
@@ -132,9 +134,24 @@ fn first_paragraph(docs: &str) -> String {
         trimmed
     };
 
-    // Collapse any internal newlines to spaces.
-    first_para.lines()
+    // Filter out lines that look like reference definitions: [label]: url
+    // These start with [ and contain ]: somewhere.
+    let filtered: Vec<&str> = first_para.lines()
         .map(|l| l.trim())
-        .collect::<Vec<_>>()
-        .join(" ")
+        .filter(|l| {
+            // Skip reference definitions.
+            if l.starts_with('[') {
+                if let Some(bracket_end) = l.find("]:") {
+                    // Check the part before ]: is a valid label (no nested brackets).
+                    let label = &l[1..bracket_end];
+                    if !label.contains('[') && !label.contains(']') {
+                        return false;
+                    }
+                }
+            }
+            true
+        })
+        .collect();
+
+    filtered.join(" ")
 }
