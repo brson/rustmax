@@ -364,3 +364,64 @@ pub fn render_struct_sig(s: &Struct, name: &str, generics: &Generics) -> String 
 
     result
 }
+
+/// Render enum definition.
+pub fn render_enum_sig(_e: &Enum, name: &str, generics: &Generics) -> String {
+    let mut result = String::from("enum ");
+    result.push_str(name);
+
+    if !generics.params.is_empty() {
+        result.push('<');
+        let params: Vec<_> = generics.params.iter().map(render_generic_param_def).collect();
+        result.push_str(&params.join(", "));
+        result.push('>');
+    }
+
+    if !generics.where_predicates.is_empty() {
+        result.push_str("\nwhere\n    ");
+        let predicates: Vec<_> = generics.where_predicates.iter()
+            .map(render_where_predicate)
+            .collect();
+        result.push_str(&predicates.join(",\n    "));
+    }
+
+    result
+}
+
+/// Render trait definition.
+pub fn render_trait_sig(t: &Trait, name: &str, generics: &Generics) -> String {
+    let mut result = String::new();
+
+    if t.is_unsafe {
+        result.push_str("unsafe ");
+    }
+    if t.is_auto {
+        result.push_str("auto ");
+    }
+
+    result.push_str("trait ");
+    result.push_str(name);
+
+    if !generics.params.is_empty() {
+        result.push('<');
+        let params: Vec<_> = generics.params.iter().map(render_generic_param_def).collect();
+        result.push_str(&params.join(", "));
+        result.push('>');
+    }
+
+    if !t.bounds.is_empty() {
+        result.push_str(": ");
+        let bounds: Vec<_> = t.bounds.iter().map(render_generic_bound).collect();
+        result.push_str(&bounds.join(" + "));
+    }
+
+    if !generics.where_predicates.is_empty() {
+        result.push_str("\nwhere\n    ");
+        let predicates: Vec<_> = generics.where_predicates.iter()
+            .map(render_where_predicate)
+            .collect();
+        result.push_str(&predicates.join(",\n    "));
+    }
+
+    result
+}

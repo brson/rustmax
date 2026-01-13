@@ -43,8 +43,12 @@ fn write_module_tree(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<()> {
     for item in &tree.items {
         let html = match &item.item.inner {
             ItemEnum::Struct(_) => render::item::render_struct(ctx, item)?,
+            ItemEnum::Enum(_) => render::item::render_enum(ctx, item)?,
+            ItemEnum::Trait(_) => render::item::render_trait(ctx, item)?,
             ItemEnum::Function(_) => render::item::render_function(ctx, item)?,
-            // TODO: Add more item types.
+            ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, item)?,
+            ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, item)?,
+            ItemEnum::Macro(_) => render::item::render_macro(ctx, item)?,
             _ => continue,
         };
 

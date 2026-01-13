@@ -77,7 +77,12 @@ fn load_templates() -> AnyResult<Tera> {
     tera.add_raw_template("base.html", include_str!("../templates/base.html"))?;
     tera.add_raw_template("module.html", include_str!("../templates/module.html"))?;
     tera.add_raw_template("struct.html", include_str!("../templates/struct.html"))?;
+    tera.add_raw_template("enum.html", include_str!("../templates/enum.html"))?;
+    tera.add_raw_template("trait.html", include_str!("../templates/trait.html"))?;
     tera.add_raw_template("function.html", include_str!("../templates/function.html"))?;
+    tera.add_raw_template("type_alias.html", include_str!("../templates/type_alias.html"))?;
+    tera.add_raw_template("constant.html", include_str!("../templates/constant.html"))?;
+    tera.add_raw_template("macro.html", include_str!("../templates/macro.html"))?;
     tera.add_raw_template("sidebar.html", include_str!("../templates/sidebar.html"))?;
 
     Ok(tera)

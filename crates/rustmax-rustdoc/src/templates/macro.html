@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ item_name }} - {{ crate_name }}</title>
+    <link rel="stylesheet" href="{{ path_to_root }}rustdoc.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-title">
+            <a href="{{ path_to_root }}index.html">{{ crate_name }}</a>
+        </div>
+        {{ sidebar | safe }}
+    </nav>
+    <main>
+        <header>
+            <nav class="breadcrumbs">
+                {% for part in item_path %}
+                    {% if loop.last %}
+                        <span>{{ part }}</span>
+                    {% else %}
+                        <a href="#">{{ part }}</a> ::
+                    {% endif %}
+                {% endfor %}
+            </nav>
+            <h1>Macro <code>{{ item_name }}</code></h1>
+        </header>
+
+        <section class="signature">
+            <pre><code>{{ signature }}</code></pre>
+        </section>
+
+        {% if docs %}
+        <section class="docs">
+            {{ docs | safe }}
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

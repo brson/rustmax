@@ -80,14 +80,14 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     tera_ctx.insert("constants", &constants);
     tera_ctx.insert("macros", &macros);
 
-    // Sidebar HTML.
-    let sidebar_html = super::sidebar::render_sidebar(ctx, &path)?;
-    tera_ctx.insert("sidebar", &sidebar_html);
-
-    // Path to root for CSS.
+    // Path to root for CSS and links.
     let depth = path.len().saturating_sub(1);
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
+
+    // Sidebar HTML.
+    let sidebar_html = super::sidebar::render_sidebar(ctx, &path, &path_to_root)?;
+    tera_ctx.insert("sidebar", &sidebar_html);
 
     ctx.tera.render("module.html", &tera_ctx)
         .context("Failed to render module template")
