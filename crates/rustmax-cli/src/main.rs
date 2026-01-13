@@ -192,9 +192,12 @@ struct CliCmdRustdoc {
 
 #[derive(clap::Subcommand)]
 enum RustdocAction {
-    /// Build docs from rustdoc JSON file.
+    /// Build docs from rustdoc JSON file or directory.
     Build {
-        /// Path to rustdoc JSON file.
+        /// Path to rustdoc JSON file or directory containing JSON files.
+        ///
+        /// If a file, builds docs for a single crate.
+        /// If a directory, builds docs for all crates with cross-crate linking.
         json_path: std::path::PathBuf,
         /// Output directory.
         #[arg(short, long, default_value = "target/rmxdoc")]
@@ -471,16 +474,32 @@ impl CliCmdRustdoc {
                 output,
                 document_private_items,
             } => {
-                println!("Loading rustdoc JSON from {}...", json_path.display());
+                if json_path.is_dir() {
+                    // Directory mode: load all JSON files and render with cross-crate linking.
+                    println!("Loading rustdoc JSON files from {}...", json_path.display());
 
-                let doc = rustmax_rustdoc::RustDoc::from_json(json_path)?
-                    .output_dir(output.clone())
-                    .include_private(*document_private_items);
+                    let doc_set = rustmax_rustdoc::RustDocSet::from_json_dir(json_path)?
+                        .output_dir(output.clone())
+                        .include_private(*document_private_items);
 
-                println!("Rendering to {}...", output.display());
-                doc.render()?;
+                    println!("Found {} crates.", doc_set.crates.len());
+                    println!("Rendering to {}...", output.display());
+                    doc_set.render()?;
 
-                println!("Done. Open {}/index.html to view.", output.display());
+                    println!("Done. Open {}/index.html to view.", output.display());
+                } else {
+                    // Single file mode: load one JSON file.
+                    println!("Loading rustdoc JSON from {}...", json_path.display());
+
+                    let doc = rustmax_rustdoc::RustDoc::from_json(json_path)?
+                        .output_dir(output.clone())
+                        .include_private(*document_private_items);
+
+                    println!("Rendering to {}...", output.display());
+                    doc.render()?;
+
+                    println!("Done. Open {}/index.html to view.", output.display());
+                }
                 Ok(())
             }
         }

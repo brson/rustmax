@@ -9,11 +9,11 @@ pub mod sidebar;
 
 use rmx::prelude::*;
 use rmx::tera::Tera;
-use rustdoc_types::{Crate, Id};
+use rustdoc_types::{Crate, Id, ItemKind};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use crate::{RenderConfig, ModuleTree};
+use crate::{RenderConfig, ModuleTree, GlobalItemIndex};
 use crate::types::{build_module_tree, build_impl_index, ImplIndex};
 
 /// Context for rendering documentation.
@@ -32,11 +32,22 @@ pub struct RenderContext<'a> {
     pub highlighter: highlight::Highlighter,
     /// Index of impl blocks.
     pub impl_index: ImplIndex<'a>,
+    /// Global item index for cross-crate linking (optional).
+    pub global_index: Option<&'a GlobalItemIndex>,
 }
 
 impl<'a> RenderContext<'a> {
     /// Create a new render context.
     pub fn new(krate: &'a Crate, config: &'a RenderConfig) -> AnyResult<Self> {
+        Self::new_with_index(krate, config, None)
+    }
+
+    /// Create a new render context with a global item index for cross-crate linking.
+    pub fn new_with_index(
+        krate: &'a Crate,
+        config: &'a RenderConfig,
+        global_index: impl Into<Option<&'a GlobalItemIndex>>,
+    ) -> AnyResult<Self> {
         let tera = load_templates()?;
         let id_to_path = build_id_to_path(krate);
         let module_tree = build_module_tree(krate, config.include_private)?;
@@ -51,6 +62,7 @@ impl<'a> RenderContext<'a> {
             module_tree,
             highlighter,
             impl_index,
+            global_index: global_index.into(),
         })
     }
 
@@ -76,25 +88,40 @@ impl<'a> RenderContext<'a> {
         // Look up the path and kind from krate.paths.
         let summary = self.krate.paths.get(id)?;
 
-        // Only link to items in this crate.
-        if summary.crate_id != 0 {
-            return None;
+        // Check if this is a local item or a cross-crate item.
+        if summary.crate_id == 0 {
+            // Local item - use the path directly.
+            self.build_item_url(&summary.path, summary.kind, current_depth)
+        } else {
+            // Cross-crate item - look up in global index.
+            self.resolve_cross_crate_url(&summary.path, current_depth)
         }
+    }
 
-        let kind_prefix = match summary.kind {
-            rustdoc_types::ItemKind::Struct => "struct.",
-            rustdoc_types::ItemKind::Enum => "enum.",
-            rustdoc_types::ItemKind::Trait => "trait.",
-            rustdoc_types::ItemKind::Function => "fn.",
-            rustdoc_types::ItemKind::TypeAlias => "type.",
-            rustdoc_types::ItemKind::Constant => "constant.",
-            rustdoc_types::ItemKind::Static => "static.",
-            rustdoc_types::ItemKind::Macro => "macro.",
-            rustdoc_types::ItemKind::Module => "",
+    /// Resolve a cross-crate item path to a URL using the global index.
+    fn resolve_cross_crate_url(&self, path: &[String], current_depth: usize) -> Option<String> {
+        let global_index = self.global_index?;
+        let path_str = path.join("::");
+        let location = global_index.items.get(&path_str)?;
+
+        self.build_item_url(&location.path, location.kind, current_depth)
+    }
+
+    /// Build a URL for an item given its path and kind.
+    fn build_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
+        let kind_prefix = match kind {
+            ItemKind::Struct => "struct.",
+            ItemKind::Enum => "enum.",
+            ItemKind::Trait => "trait.",
+            ItemKind::Function => "fn.",
+            ItemKind::TypeAlias => "type.",
+            ItemKind::Constant => "constant.",
+            ItemKind::Static => "static.",
+            ItemKind::Macro => "macro.",
+            ItemKind::Module => "",
             _ => return None, // Don't link to other kinds.
         };
 
-        let path = &summary.path;
         if path.is_empty() {
             return None;
         }
@@ -114,7 +141,7 @@ impl<'a> RenderContext<'a> {
             url.push('/');
         }
 
-        if summary.kind == rustdoc_types::ItemKind::Module {
+        if kind == ItemKind::Module {
             url.push_str(&name[0]);
             url.push_str("/index.html");
         } else {
