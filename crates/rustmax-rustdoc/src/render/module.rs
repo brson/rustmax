@@ -27,7 +27,13 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
+    // Path to root for CSS and links.
+    // For modules, the file is at <path>/index.html, so depth equals path length.
+    let depth = path.len();
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
     // Categorize items.
+    // Item paths are absolute from output root, so prepend path_to_root to make relative.
     let mut modules = Vec::new();
     let mut structs = Vec::new();
     let mut enums = Vec::new();
@@ -41,7 +47,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         modules.push(ItemSummary {
             name: submodule.name.clone(),
             path: submodule.module_item.as_ref()
-                .map(|m| m.html_path.display().to_string())
+                .map(|m| format!("{}{}", path_to_root, m.html_path.display()))
                 .unwrap_or_default(),
             short_doc: submodule.module_item.as_ref()
                 .and_then(|m| m.item.docs.as_ref())
@@ -53,7 +59,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     for item in &tree.items {
         let summary = ItemSummary {
             name: item.item.name.clone().unwrap_or_default(),
-            path: item.html_path.display().to_string(),
+            path: format!("{}{}", path_to_root, item.html_path.display()),
             short_doc: item.item.docs.as_ref()
                 .map(|d| first_sentence(d))
                 .unwrap_or_default(),
@@ -79,11 +85,6 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     tera_ctx.insert("types", &types);
     tera_ctx.insert("constants", &constants);
     tera_ctx.insert("macros", &macros);
-
-    // Path to root for CSS and links.
-    // For modules, the file is at <path>/index.html, so depth equals path length.
-    let depth = path.len();
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
