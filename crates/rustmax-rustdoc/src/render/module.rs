@@ -64,7 +64,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                 .unwrap_or_default(),
             short_doc: submodule.module_item.as_ref()
                 .and_then(|m| m.item.docs.as_ref())
-                .map(|d| first_sentence(d))
+                .map(|d| first_paragraph(d))
                 .unwrap_or_default(),
         });
     }
@@ -74,7 +74,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
             name: item.item.name.clone().unwrap_or_default(),
             path: format!("{}{}", path_to_root, item.html_path.display()),
             short_doc: item.item.docs.as_ref()
-                .map(|d| first_sentence(d))
+                .map(|d| first_paragraph(d))
                 .unwrap_or_default(),
         };
 
@@ -121,16 +121,20 @@ struct Breadcrumb {
     url: Option<String>,
 }
 
-/// Extract the first sentence from documentation.
-fn first_sentence(docs: &str) -> String {
+/// Extract the first paragraph from documentation.
+fn first_paragraph(docs: &str) -> String {
     let trimmed = docs.trim();
-    if let Some(pos) = trimmed.find(". ") {
-        trimmed[..pos + 1].to_string()
-    } else if let Some(pos) = trimmed.find(".\n") {
-        trimmed[..pos + 1].to_string()
-    } else if trimmed.ends_with('.') {
-        trimmed.lines().next().unwrap_or(trimmed).to_string()
+
+    // Find the first blank line (paragraph break).
+    let first_para = if let Some(pos) = trimmed.find("\n\n") {
+        &trimmed[..pos]
     } else {
-        trimmed.lines().next().unwrap_or(trimmed).to_string()
-    }
+        trimmed
+    };
+
+    // Collapse any internal newlines to spaces.
+    first_para.lines()
+        .map(|l| l.trim())
+        .collect::<Vec<_>>()
+        .join(" ")
 }
