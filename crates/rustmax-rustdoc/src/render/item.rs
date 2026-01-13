@@ -21,6 +21,10 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
     // Get generics from the item.
     let generics = &s.generics;
     let signature = html_escape_sig(&render_struct_sig(s, name, generics));
@@ -28,13 +32,9 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
-
-    // Path to root (needed for linked rendering).
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
 
     // Use linked renderer for field types with links.
     let linked = LinkedRenderer::new(ctx, depth);
@@ -49,7 +49,7 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
                         name: field_item.name.clone().unwrap_or_default(),
                         type_: linked.render_type(ty),
                         docs: field_item.docs.as_ref()
-                            .map(|d| ctx.render_markdown(d))
+                            .map(|d| ctx.render_markdown_with_links(d, depth))
                             .unwrap_or_default(),
                     });
                 }
@@ -95,7 +95,7 @@ pub fn render_function(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -122,12 +122,16 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
     let signature = html_escape_sig(&render_enum_sig(e, name, &e.generics));
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -172,17 +176,13 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
                     name: variant_item.name.clone().unwrap_or_default(),
                     fields: fields_str,
                     docs: variant_item.docs.as_ref()
-                        .map(|d| ctx.render_markdown(d))
+                        .map(|d| ctx.render_markdown_with_links(d, depth))
                         .unwrap_or_default(),
                 });
             }
         }
     }
     tera_ctx.insert("variants", &variants);
-
-    // Path to root (needed for linked rendering).
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
 
     // Collect impl blocks for this type.
     let impls = collect_impls(ctx, item.id, depth);
@@ -223,7 +223,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -245,7 +245,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
                         name: trait_item.name.clone().unwrap_or_default(),
                         bounds: bounds_str,
                         docs: trait_item.docs.as_ref()
-                            .map(|d| ctx.render_markdown(d))
+                            .map(|d| ctx.render_markdown_with_links(d, depth))
                             .unwrap_or_default(),
                     });
                 }
@@ -255,7 +255,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
                     let info = MethodInfo {
                         signature: sig,
                         docs: trait_item.docs.as_ref()
-                            .map(|d| ctx.render_markdown(d))
+                            .map(|d| ctx.render_markdown_with_links(d, depth))
                             .unwrap_or_default(),
                     };
                     if f.has_body {
@@ -318,7 +318,7 @@ pub fn render_type_alias(ctx: &RenderContext, item: &RenderableItem) -> AnyResul
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -364,7 +364,7 @@ pub fn render_constant(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -392,6 +392,10 @@ pub fn render_macro(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
+    // Path to root.
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
     let signature = html_escape_sig(
         macro_def.unwrap_or(&format!("macro_rules! {} {{ ... }}", name))
     );
@@ -399,13 +403,9 @@ pub fn render_macro(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
 
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown(d))
+        .map(|d| ctx.render_markdown_with_links(d, depth))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
-
-    // Path to root.
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -475,7 +475,7 @@ fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id, depth: usize)
                         methods.push(MethodInfo {
                             signature: sig,
                             docs: method_item.docs.as_ref()
-                                .map(|d| ctx.render_markdown(d))
+                                .map(|d| ctx.render_markdown_with_links(d, depth))
                                 .unwrap_or_default(),
                         });
                     }

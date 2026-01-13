@@ -94,8 +94,32 @@ impl RustDoc {
 
     /// Render the documentation to HTML.
     pub fn render(&self) -> AnyResult<()> {
-        let ctx = render::RenderContext::new(&self.krate, &self.config)?;
+        // Build a local index for intra-doc link resolution.
+        let global_index = self.build_local_index();
+        let ctx = render::RenderContext::new_with_index(&self.krate, &self.config, &global_index)?;
         output::write_docs(&ctx)
+    }
+
+    /// Build a local item index from this crate's paths.
+    fn build_local_index(&self) -> GlobalItemIndex {
+        let mut index = GlobalItemIndex::default();
+        let crate_name = self.krate.index.get(&self.krate.root)
+            .and_then(|item| item.name.clone())
+            .unwrap_or_default();
+
+        for (_id, summary) in &self.krate.paths {
+            // Only index items from this crate (crate_id 0 means local).
+            if summary.crate_id == 0 {
+                let path = summary.path.join("::");
+                index.items.insert(path.clone(), ItemLocation {
+                    crate_name: crate_name.clone(),
+                    path: summary.path.clone(),
+                    kind: summary.kind,
+                });
+            }
+        }
+
+        index
     }
 }
 

@@ -20,17 +20,17 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         .unwrap_or_default();
     tera_ctx.insert("module_path", &path);
 
-    // Module documentation.
-    let docs = tree.module_item.as_ref()
-        .and_then(|m| m.item.docs.as_ref())
-        .map(|d| ctx.render_markdown(d))
-        .unwrap_or_default();
-    tera_ctx.insert("docs", &docs);
-
     // Path to root for CSS and links.
     // For modules, the file is at <path>/index.html, so depth equals path length.
     let depth = path.len();
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Module documentation.
+    let docs = tree.module_item.as_ref()
+        .and_then(|m| m.item.docs.as_ref())
+        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .unwrap_or_default();
+    tera_ctx.insert("docs", &docs);
 
     // Categorize items.
     // Item paths are absolute from output root, so prepend path_to_root to make relative.

@@ -157,6 +157,17 @@ impl<'a> RenderContext<'a> {
     pub fn render_markdown(&self, md: &str) -> String {
         markdown::render_markdown(md, &self.highlighter)
     }
+
+    /// Render markdown to HTML with intra-doc link resolution.
+    pub fn render_markdown_with_links(&self, md: &str, current_depth: usize) -> String {
+        markdown::render_markdown_with_links(
+            md,
+            &self.highlighter,
+            self.global_index,
+            self.crate_name(),
+            current_depth,
+        )
+    }
 }
 
 fn load_templates() -> AnyResult<Tera> {
