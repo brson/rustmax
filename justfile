@@ -100,7 +100,11 @@ doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book
     cp -r book/book/* out/book/
     rm -rf out/api
-    ln -s ../target/doc out/api
+    if [ -n "${RUSTMAX_CI:-}" ]; then \
+        mv target/doc out/api; \
+    else \
+        ln -s ../target/doc out/api; \
+    fi
     mkdir -p out/library
     cp -r work/library/* out/library/
 
