@@ -68,6 +68,64 @@ impl<'a> RenderContext<'a> {
         None
     }
 
+    /// Resolve an item ID to a relative URL from a given depth.
+    ///
+    /// Returns the URL path to the item's documentation page, relative to the current page.
+    /// The `current_depth` is how many path segments deep the current page is.
+    pub fn resolve_item_url(&self, id: &Id, current_depth: usize) -> Option<String> {
+        // Look up the path and kind from krate.paths.
+        let summary = self.krate.paths.get(id)?;
+
+        // Only link to items in this crate.
+        if summary.crate_id != 0 {
+            return None;
+        }
+
+        let kind_prefix = match summary.kind {
+            rustdoc_types::ItemKind::Struct => "struct.",
+            rustdoc_types::ItemKind::Enum => "enum.",
+            rustdoc_types::ItemKind::Trait => "trait.",
+            rustdoc_types::ItemKind::Function => "fn.",
+            rustdoc_types::ItemKind::TypeAlias => "type.",
+            rustdoc_types::ItemKind::Constant => "constant.",
+            rustdoc_types::ItemKind::Static => "static.",
+            rustdoc_types::ItemKind::Macro => "macro.",
+            rustdoc_types::ItemKind::Module => "",
+            _ => return None, // Don't link to other kinds.
+        };
+
+        let path = &summary.path;
+        if path.is_empty() {
+            return None;
+        }
+
+        // Build the path to root from current depth.
+        let path_to_root = if current_depth == 0 {
+            String::new()
+        } else {
+            "../".repeat(current_depth)
+        };
+
+        // Build the URL.
+        let (dir_parts, name) = path.split_at(path.len() - 1);
+        let mut url = path_to_root;
+        for part in dir_parts {
+            url.push_str(part);
+            url.push('/');
+        }
+
+        if summary.kind == rustdoc_types::ItemKind::Module {
+            url.push_str(&name[0]);
+            url.push_str("/index.html");
+        } else {
+            url.push_str(kind_prefix);
+            url.push_str(&name[0]);
+            url.push_str(".html");
+        }
+
+        Some(url)
+    }
+
     /// Render markdown to HTML.
     pub fn render_markdown(&self, md: &str) -> String {
         markdown::render_markdown(md, &self.highlighter)

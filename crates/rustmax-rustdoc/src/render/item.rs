@@ -5,7 +5,7 @@ use rmx::tera::Context;
 use rustdoc_types::{ItemEnum, VariantKind};
 
 use super::RenderContext;
-use super::signature::{render_function_sig, render_struct_sig, render_enum_sig, render_trait_sig, render_type};
+use super::signature::{render_struct_sig, render_enum_sig, render_trait_sig, render_type, LinkedRenderer};
 use crate::types::RenderableItem;
 
 /// Render a struct page to HTML.
@@ -23,7 +23,7 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
 
     // Get generics from the item.
     let generics = &s.generics;
-    let signature = render_struct_sig(s, name, generics);
+    let signature = html_escape_sig(&render_struct_sig(s, name, generics));
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
@@ -31,6 +31,13 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
         .map(|d| ctx.render_markdown(d))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
+
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Use linked renderer for field types with links.
+    let linked = LinkedRenderer::new(ctx, depth);
 
     // Fields (for plain structs).
     let mut fields = Vec::new();
@@ -40,7 +47,7 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
                 if let ItemEnum::StructField(ty) = &field_item.inner {
                     fields.push(FieldInfo {
                         name: field_item.name.clone().unwrap_or_default(),
-                        type_: render_type(ty),
+                        type_: linked.render_type(ty),
                         docs: field_item.docs.as_ref()
                             .map(|d| ctx.render_markdown(d))
                             .unwrap_or_default(),
@@ -52,12 +59,8 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
     tera_ctx.insert("fields", &fields);
 
     // Collect impl blocks for this type.
-    let impls = collect_impls(ctx, item.id);
+    let impls = collect_impls(ctx, item.id, depth);
     tera_ctx.insert("impls", &impls);
-
-    // Path to root.
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -81,7 +84,13 @@ pub fn render_function(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
-    let signature = render_function_sig(func, name);
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Use linked renderer for signature with clickable type names.
+    let linked = LinkedRenderer::new(ctx, depth);
+    let signature = linked.render_function_sig(func, name);
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
@@ -90,9 +99,6 @@ pub fn render_function(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
-    // Path to root.
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -116,7 +122,7 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
-    let signature = render_enum_sig(e, name, &e.generics);
+    let signature = html_escape_sig(&render_enum_sig(e, name, &e.generics));
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
@@ -174,13 +180,13 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
     }
     tera_ctx.insert("variants", &variants);
 
-    // Collect impl blocks for this type.
-    let impls = collect_impls(ctx, item.id);
-    tera_ctx.insert("impls", &impls);
-
-    // Path to root.
+    // Path to root (needed for linked rendering).
     let depth = item.path.len().saturating_sub(1);
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Collect impl blocks for this type.
+    let impls = collect_impls(ctx, item.id, depth);
+    tera_ctx.insert("impls", &impls);
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -204,7 +210,15 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
-    let signature = render_trait_sig(t, name, &t.generics);
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Use linked renderer for HTML-safe signatures with links.
+    let linked = LinkedRenderer::new(ctx, depth);
+
+    // Trait signature (HTML-escaped, no types to link in the signature itself).
+    let signature = html_escape_sig(&render_trait_sig(t, name, &t.generics));
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
@@ -237,7 +251,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
                 }
                 ItemEnum::Function(f) => {
                     let method_name = trait_item.name.as_deref().unwrap_or("?");
-                    let sig = render_function_sig(f, method_name);
+                    let sig = linked.render_function_sig(f, method_name);
                     let info = MethodInfo {
                         signature: sig,
                         docs: trait_item.docs.as_ref()
@@ -263,16 +277,13 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     let mut implementors = Vec::new();
     if let Some(impls) = ctx.impl_index.trait_impls.get(item.id) {
         for impl_info in impls {
-            let for_type = render_type(impl_info.for_type);
-            let impl_header = render_impl_header(impl_info.impl_, &for_type, Some(name));
+            let for_type = linked.render_type(impl_info.for_type);
+            let impl_header = render_impl_header_linked(impl_info.impl_, &for_type, Some(name));
             implementors.push(ImplementorInfo { impl_header });
         }
     }
     tera_ctx.insert("implementors", &implementors);
 
-    // Path to root.
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -296,7 +307,13 @@ pub fn render_type_alias(ctx: &RenderContext, item: &RenderableItem) -> AnyResul
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
-    let signature = format!("type {} = {}", name, render_type(&ta.type_));
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Use linked renderer for type with links.
+    let linked = LinkedRenderer::new(ctx, depth);
+    let signature = format!("type {} = {}", html_escape_sig(name), linked.render_type(&ta.type_));
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
@@ -305,9 +322,6 @@ pub fn render_type_alias(ctx: &RenderContext, item: &RenderableItem) -> AnyResul
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
-    // Path to root.
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -334,11 +348,17 @@ pub fn render_constant(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
     tera_ctx.insert("item_path", &item.path);
     tera_ctx.insert("item_kind", if is_static { "Static" } else { "Constant" });
 
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Use linked renderer for type with links.
+    let linked = LinkedRenderer::new(ctx, depth);
     let keyword = if is_static { "static" } else { "const" };
     let signature = if let Some(val) = value {
-        format!("{} {}: {} = {}", keyword, name, render_type(type_), val)
+        format!("{} {}: {} = {}", keyword, html_escape_sig(name), linked.render_type(type_), html_escape_sig(val))
     } else {
-        format!("{} {}: {}", keyword, name, render_type(type_))
+        format!("{} {}: {}", keyword, html_escape_sig(name), linked.render_type(type_))
     };
     tera_ctx.insert("signature", &signature);
 
@@ -348,9 +368,6 @@ pub fn render_constant(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
-    // Path to root.
-    let depth = item.path.len().saturating_sub(1);
-    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
@@ -375,7 +392,9 @@ pub fn render_macro(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     tera_ctx.insert("item_name", name);
     tera_ctx.insert("item_path", &item.path);
 
-    let signature = macro_def.unwrap_or(&format!("macro_rules! {} {{ ... }}", name)).to_string();
+    let signature = html_escape_sig(
+        macro_def.unwrap_or(&format!("macro_rules! {} {{ ... }}", name))
+    );
     tera_ctx.insert("signature", &signature);
 
     // Documentation.
@@ -436,14 +455,15 @@ struct ImplBlockInfo {
 }
 
 /// Collect impl blocks for a type (struct or enum).
-fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id) -> Vec<ImplBlockInfo> {
+fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id, depth: usize) -> Vec<ImplBlockInfo> {
+    let linked = LinkedRenderer::new(ctx, depth);
     let mut result = Vec::new();
 
     if let Some(impls) = ctx.impl_index.type_impls.get(type_id) {
         for impl_info in impls {
-            let for_type = render_type(impl_info.for_type);
+            let for_type = linked.render_type(impl_info.for_type);
             let trait_name = impl_info.trait_path.as_deref();
-            let header = render_impl_header(impl_info.impl_, &for_type, trait_name);
+            let header = render_impl_header_linked(impl_info.impl_, &for_type, trait_name);
 
             // Collect methods from this impl.
             let mut methods = Vec::new();
@@ -451,7 +471,7 @@ fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id) -> Vec<ImplBl
                 if let Some(method_item) = ctx.krate.index.get(method_id) {
                     if let ItemEnum::Function(f) = &method_item.inner {
                         let method_name = method_item.name.as_deref().unwrap_or("?");
-                        let sig = render_function_sig(f, method_name);
+                        let sig = linked.render_function_sig(f, method_name);
                         methods.push(MethodInfo {
                             signature: sig,
                             docs: method_item.docs.as_ref()
@@ -507,4 +527,42 @@ fn render_impl_header(impl_: &rustdoc_types::Impl, for_type: &str, trait_name: O
     result.push_str(for_type);
 
     result
+}
+
+/// Render an impl block header with HTML-escaped content.
+/// The for_type should already be HTML (with links).
+fn render_impl_header_linked(impl_: &rustdoc_types::Impl, for_type: &str, trait_name: Option<&str>) -> String {
+    use super::signature::render_generic_param_def;
+
+    let mut result = String::from("impl");
+
+    // Generics.
+    if !impl_.generics.params.is_empty() {
+        result.push_str("&lt;");
+        let params: Vec<_> = impl_.generics.params.iter()
+            .map(|p| html_escape_sig(&render_generic_param_def(p)))
+            .collect();
+        result.push_str(&params.join(", "));
+        result.push_str("&gt;");
+    }
+
+    result.push(' ');
+
+    // Trait name if this is a trait impl.
+    if let Some(name) = trait_name {
+        result.push_str(&html_escape_sig(name));
+        result.push_str(" for ");
+    }
+
+    result.push_str(for_type);
+
+    result
+}
+
+/// HTML-escape a signature string for safe insertion into HTML.
+fn html_escape_sig(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }

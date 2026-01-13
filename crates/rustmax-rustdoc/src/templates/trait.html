@@ -28,7 +28,7 @@
         </header>
 
         <section class="signature">
-            <pre><code>{{ signature }}</code></pre>
+            <pre><code>{{ signature | safe }}</code></pre>
         </section>
 
         {% if docs %}
@@ -56,7 +56,7 @@
             <h2>Required Methods</h2>
             <dl>
                 {% for method in required_methods %}
-                <dt><pre><code>{{ method.signature }}</code></pre></dt>
+                <dt><pre><code>{{ method.signature | safe }}</code></pre></dt>
                 {% if method.docs %}
                 <dd>{{ method.docs | safe }}</dd>
                 {% endif %}
@@ -70,7 +70,7 @@
             <h2>Provided Methods</h2>
             <dl>
                 {% for method in provided_methods %}
-                <dt><pre><code>{{ method.signature }}</code></pre></dt>
+                <dt><pre><code>{{ method.signature | safe }}</code></pre></dt>
                 {% if method.docs %}
                 <dd>{{ method.docs | safe }}</dd>
                 {% endif %}
@@ -84,7 +84,7 @@
             <h2>Implementors</h2>
             <ul>
                 {% for impl in implementors %}
-                <li><code>{{ impl.impl_header }}</code></li>
+                <li><code>{{ impl.impl_header | safe }}</code></li>
                 {% endfor %}
             </ul>
         </section>
