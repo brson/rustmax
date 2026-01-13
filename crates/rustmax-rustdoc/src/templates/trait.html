@@ -78,6 +78,17 @@
             </dl>
         </section>
         {% endif %}
+
+        {% if implementors | length > 0 %}
+        <section class="implementors">
+            <h2>Implementors</h2>
+            <ul>
+                {% for impl in implementors %}
+                <li><code>{{ impl.impl_header }}</code></li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
     </main>
 </body>
 </html>

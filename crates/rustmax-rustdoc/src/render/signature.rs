@@ -156,7 +156,7 @@ fn render_generic_bound(bound: &GenericBound) -> String {
     }
 }
 
-fn render_generic_param_def(param: &GenericParamDef) -> String {
+pub fn render_generic_param_def(param: &GenericParamDef) -> String {
     let mut result = param.name.clone();
     match &param.kind {
         GenericParamDefKind::Lifetime { outlives } => {

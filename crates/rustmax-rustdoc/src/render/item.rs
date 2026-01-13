@@ -51,6 +51,10 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
     }
     tera_ctx.insert("fields", &fields);
 
+    // Collect impl blocks for this type.
+    let impls = collect_impls(ctx, item.id);
+    tera_ctx.insert("impls", &impls);
+
     // Path to root.
     let depth = item.path.len().saturating_sub(1);
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
@@ -170,6 +174,10 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
     }
     tera_ctx.insert("variants", &variants);
 
+    // Collect impl blocks for this type.
+    let impls = collect_impls(ctx, item.id);
+    tera_ctx.insert("impls", &impls);
+
     // Path to root.
     let depth = item.path.len().saturating_sub(1);
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
@@ -250,6 +258,17 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     tera_ctx.insert("associated_types", &associated_types);
     tera_ctx.insert("required_methods", &required_methods);
     tera_ctx.insert("provided_methods", &provided_methods);
+
+    // Collect implementors from the impl index.
+    let mut implementors = Vec::new();
+    if let Some(impls) = ctx.impl_index.trait_impls.get(item.id) {
+        for impl_info in impls {
+            let for_type = render_type(impl_info.for_type);
+            let impl_header = render_impl_header(impl_info.impl_, &for_type, Some(name));
+            implementors.push(ImplementorInfo { impl_header });
+        }
+    }
+    tera_ctx.insert("implementors", &implementors);
 
     // Path to root.
     let depth = item.path.len().saturating_sub(1);
@@ -403,4 +422,89 @@ struct AssocTypeInfo {
 struct MethodInfo {
     signature: String,
     docs: String,
+}
+
+#[derive(serde::Serialize)]
+struct ImplementorInfo {
+    impl_header: String,
+}
+
+#[derive(serde::Serialize)]
+struct ImplBlockInfo {
+    header: String,
+    methods: Vec<MethodInfo>,
+}
+
+/// Collect impl blocks for a type (struct or enum).
+fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id) -> Vec<ImplBlockInfo> {
+    let mut result = Vec::new();
+
+    if let Some(impls) = ctx.impl_index.type_impls.get(type_id) {
+        for impl_info in impls {
+            let for_type = render_type(impl_info.for_type);
+            let trait_name = impl_info.trait_path.as_deref();
+            let header = render_impl_header(impl_info.impl_, &for_type, trait_name);
+
+            // Collect methods from this impl.
+            let mut methods = Vec::new();
+            for method_id in &impl_info.impl_.items {
+                if let Some(method_item) = ctx.krate.index.get(method_id) {
+                    if let ItemEnum::Function(f) = &method_item.inner {
+                        let method_name = method_item.name.as_deref().unwrap_or("?");
+                        let sig = render_function_sig(f, method_name);
+                        methods.push(MethodInfo {
+                            signature: sig,
+                            docs: method_item.docs.as_ref()
+                                .map(|d| ctx.render_markdown(d))
+                                .unwrap_or_default(),
+                        });
+                    }
+                }
+            }
+
+            result.push(ImplBlockInfo { header, methods });
+        }
+    }
+
+    // Sort: inherent impls first, then trait impls alphabetically.
+    result.sort_by(|a, b| {
+        let a_is_trait = a.header.contains(" for ");
+        let b_is_trait = b.header.contains(" for ");
+        match (a_is_trait, b_is_trait) {
+            (false, true) => std::cmp::Ordering::Less,
+            (true, false) => std::cmp::Ordering::Greater,
+            _ => a.header.cmp(&b.header),
+        }
+    });
+
+    result
+}
+
+/// Render an impl block header like "impl Trait for Type".
+fn render_impl_header(impl_: &rustdoc_types::Impl, for_type: &str, trait_name: Option<&str>) -> String {
+    use super::signature::render_generic_param_def;
+
+    let mut result = String::from("impl");
+
+    // Generics.
+    if !impl_.generics.params.is_empty() {
+        result.push('<');
+        let params: Vec<_> = impl_.generics.params.iter()
+            .map(render_generic_param_def)
+            .collect();
+        result.push_str(&params.join(", "));
+        result.push('>');
+    }
+
+    result.push(' ');
+
+    // Trait name if this is a trait impl.
+    if let Some(name) = trait_name {
+        result.push_str(name);
+        result.push_str(" for ");
+    }
+
+    result.push_str(for_type);
+
+    result
 }

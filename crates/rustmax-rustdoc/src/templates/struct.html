@@ -50,6 +50,27 @@
             </dl>
         </section>
         {% endif %}
+
+        {% if impls | length > 0 %}
+        <section class="implementations">
+            <h2>Implementations</h2>
+            {% for impl_block in impls %}
+            <section class="impl-block">
+                <h3><code>{{ impl_block.header }}</code></h3>
+                {% if impl_block.methods | length > 0 %}
+                <dl>
+                    {% for method in impl_block.methods %}
+                    <dt><pre><code>{{ method.signature }}</code></pre></dt>
+                    {% if method.docs %}
+                    <dd>{{ method.docs | safe }}</dd>
+                    {% endif %}
+                    {% endfor %}
+                </dl>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </section>
+        {% endif %}
     </main>
 </body>
 </html>

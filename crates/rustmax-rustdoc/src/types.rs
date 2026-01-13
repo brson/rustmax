@@ -1,7 +1,7 @@
 //! Types for organizing and rendering documentation.
 
 use rmx::prelude::*;
-use rustdoc_types::{Crate, Id, Item, ItemEnum, ItemKind};
+use rustdoc_types::{Crate, Id, Impl, Item, ItemEnum, ItemKind, Type};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -217,4 +217,80 @@ pub fn flatten_items<'a>(tree: &'a ModuleTree<'a>) -> Vec<&'a RenderableItem<'a>
     }
 
     result
+}
+
+/// Information about an impl block.
+#[derive(Debug, Clone)]
+pub struct ImplInfo<'a> {
+    /// The impl item ID.
+    pub id: &'a Id,
+    /// The impl data.
+    pub impl_: &'a Impl,
+    /// The type this impl is for.
+    pub for_type: &'a Type,
+    /// Trait being implemented (None for inherent impls).
+    pub trait_path: Option<String>,
+    /// Trait ID if this is a trait impl.
+    pub trait_id: Option<&'a Id>,
+}
+
+/// Indices mapping types and traits to their implementations.
+#[derive(Debug, Default)]
+pub struct ImplIndex<'a> {
+    /// Map from trait ID to implementations of that trait.
+    pub trait_impls: HashMap<&'a Id, Vec<ImplInfo<'a>>>,
+    /// Map from type ID to implementations for that type (both inherent and trait).
+    pub type_impls: HashMap<&'a Id, Vec<ImplInfo<'a>>>,
+}
+
+/// Build an index of all impl blocks in the crate.
+pub fn build_impl_index<'a>(krate: &'a Crate) -> ImplIndex<'a> {
+    let mut index = ImplIndex::default();
+
+    for (id, item) in &krate.index {
+        let ItemEnum::Impl(impl_) = &item.inner else {
+            continue;
+        };
+
+        // Get trait info if this is a trait impl.
+        let (trait_path, trait_id) = if let Some(ref trait_) = impl_.trait_ {
+            (Some(trait_.path.clone()), Some(&trait_.id))
+        } else {
+            (None, None)
+        };
+
+        let info = ImplInfo {
+            id,
+            impl_,
+            for_type: &impl_.for_,
+            trait_path,
+            trait_id,
+        };
+
+        // Add to trait_impls if this is a trait impl.
+        if let Some(trait_id) = trait_id {
+            index.trait_impls
+                .entry(trait_id)
+                .or_default()
+                .push(info.clone());
+        }
+
+        // Add to type_impls if we can identify the type's ID.
+        if let Some(type_id) = get_type_id(&impl_.for_) {
+            index.type_impls
+                .entry(type_id)
+                .or_default()
+                .push(info);
+        }
+    }
+
+    index
+}
+
+/// Try to extract the ID from a Type (works for resolved paths).
+fn get_type_id(ty: &Type) -> Option<&Id> {
+    match ty {
+        Type::ResolvedPath(path) => Some(&path.id),
+        _ => None,
+    }
 }

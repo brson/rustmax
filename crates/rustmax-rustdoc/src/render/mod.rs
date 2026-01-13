@@ -14,7 +14,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use crate::{RenderConfig, ModuleTree};
-use crate::types::build_module_tree;
+use crate::types::{build_module_tree, build_impl_index, ImplIndex};
 
 /// Context for rendering documentation.
 pub struct RenderContext<'a> {
@@ -30,6 +30,8 @@ pub struct RenderContext<'a> {
     pub module_tree: ModuleTree<'a>,
     /// Syntax highlighter.
     pub highlighter: highlight::Highlighter,
+    /// Index of impl blocks.
+    pub impl_index: ImplIndex<'a>,
 }
 
 impl<'a> RenderContext<'a> {
@@ -39,6 +41,7 @@ impl<'a> RenderContext<'a> {
         let id_to_path = build_id_to_path(krate);
         let module_tree = build_module_tree(krate, config.include_private)?;
         let highlighter = highlight::Highlighter::new();
+        let impl_index = build_impl_index(krate);
 
         Ok(Self {
             krate,
@@ -47,6 +50,7 @@ impl<'a> RenderContext<'a> {
             id_to_path,
             module_tree,
             highlighter,
+            impl_index,
         })
     }
 
