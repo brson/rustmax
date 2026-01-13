@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ module_name }} - {{ crate_name }}</title>
     <link rel="stylesheet" href="{{ path_to_root }}rustdoc.css">
+    <script>
+    (function() {
+        var k = 'rustdoc-nav';
+        var stored = localStorage.getItem(k);
+        var mobile = window.matchMedia('(max-width: 768px)');
+        var collapsed = stored ? stored === 'collapsed' : mobile.matches;
+        if (collapsed) document.documentElement.classList.add('nav-collapsed');
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('nav-toggle')) {
+                var c = document.documentElement.classList.toggle('nav-collapsed');
+                localStorage.setItem(k, c ? 'collapsed' : 'expanded');
+            }
+        });
+    })();
+    </script>
 </head>
 <body>
+    <button class="nav-toggle" aria-label="Toggle navigation"></button>
     <nav class="sidebar">
         <div class="sidebar-title">
             <a href="{{ path_to_root }}index.html">{{ crate_name }}</a>

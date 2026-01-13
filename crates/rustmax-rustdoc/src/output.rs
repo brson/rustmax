@@ -84,7 +84,7 @@ fn generate_css() -> &'static str {
     --fg: #333;
     --link: #0066cc;
     --sidebar-bg: #f5f5f5;
-    --sidebar-width: 260px;
+    --sidebar-width: 280px;
     --code-bg: #f4f4f4;
     --border: #ddd;
 }
@@ -120,6 +120,36 @@ body {
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
+/* Nav toggle button */
+.nav-toggle {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 36px;
+    height: 36px;
+    margin: 0.5rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.nav-toggle::before {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 2px;
+    margin: 7px auto;
+    background: var(--fg);
+    box-shadow: 0 5px 0 var(--fg), 0 10px 0 var(--fg);
+}
+
+.nav-toggle:hover {
+    background: var(--sidebar-bg);
+}
+
 /* Sidebar */
 .sidebar {
     flex-shrink: 0;
@@ -128,9 +158,17 @@ a:hover { text-decoration: underline; }
     position: sticky;
     top: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border);
     padding: 1rem;
+    transition: width 0.2s ease, padding 0.2s ease;
+}
+
+.nav-collapsed .sidebar {
+    width: 0;
+    padding: 0;
+    border-right: none;
 }
 
 .sidebar-title {
@@ -139,6 +177,7 @@ a:hover { text-decoration: underline; }
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border);
+    white-space: nowrap;
 }
 
 .sidebar-title a { color: var(--fg); }
@@ -155,14 +194,18 @@ a:hover { text-decoration: underline; }
     margin: 0;
 }
 
-.module-tree li { margin: 0.2rem 0; }
+.module-tree li {
+    margin: 0.2rem 0;
+    white-space: nowrap;
+}
+
 .module-tree .current > a { font-weight: bold; }
 
 /* Main content */
 main {
     flex: 1;
     min-width: 0;
-    max-width: 60rem;
+    max-width: 50rem;
     margin: 0 auto;
     padding: 2rem 3rem;
 }
@@ -290,13 +333,35 @@ blockquote {
 @media (max-width: 768px) {
     body { flex-direction: column; }
 
+    .nav-toggle {
+        position: relative;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+
     .sidebar {
         position: relative;
         width: 100%;
         height: auto;
-        max-height: 50vh;
+        max-height: 60vh;
         border-right: none;
         border-bottom: 1px solid var(--border);
+        transition: max-height 0.2s ease, padding 0.2s ease;
+    }
+
+    .nav-collapsed .sidebar {
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        border-bottom: none;
+    }
+
+    .module-tree li {
+        white-space: normal;
     }
 
     main { padding: 1rem; }
