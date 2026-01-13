@@ -710,12 +710,17 @@ version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "52602e10393cfaaf8accaf707f2da743dc22cbe700a343ff8dbc9e5e04bc6b74"
 dependencies = [
+ "bon",
  "caseless",
+ "clap",
  "entities",
  "memchr",
+ "shell-words",
  "slug",
+ "syntect",
  "typed-arena",
  "unicode_categories",
+ "xdg",
 ]
 
 [[package]]
@@ -3504,6 +3509,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c7fb8039b3032c191086b10f11f319a6e99e1e82889c5cc6046f515c9db1d497"
 
 [[package]]
+name = "rustdoc-types"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "27bf787c529efe523ed9eb6dcdbaa5954d34329f08d5c243fce928441826ca90"
+dependencies = [
+ "rustc-hash",
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
 name = "rustix"
 version = "0.38.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3703,6 +3719,7 @@ dependencies = [
  "regex",
  "rustmax",
  "rustmax-doctest",
+ "rustmax-rustdoc",
  "serde",
  "toml 0.8.23",
 ]
@@ -3729,6 +3746,18 @@ dependencies = [
  "serde_json",
  "tera",
  "toml 0.9.0",
+]
+
+[[package]]
+name = "rustmax-rustdoc"
+version = "0.0.7"
+dependencies = [
+ "comrak 0.35.0",
+ "include_dir",
+ "rustdoc-types",
+ "rustmax",
+ "serde",
+ "syntect",
 ]
 
 [[package]]

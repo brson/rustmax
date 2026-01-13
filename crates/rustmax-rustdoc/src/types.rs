@@ -1,0 +1,220 @@
+//! Types for organizing and rendering documentation.
+
+use rmx::prelude::*;
+use rustdoc_types::{Crate, Id, Item, ItemEnum, ItemKind};
+use std::collections::HashMap;
+use std::path::PathBuf;
+
+/// A renderable documentation item with computed paths.
+#[derive(Debug, Clone)]
+pub struct RenderableItem<'a> {
+    /// The item's unique ID.
+    pub id: &'a Id,
+    /// The item data.
+    pub item: &'a Item,
+    /// Full module path (e.g., ["crate", "foo", "bar"]).
+    pub path: Vec<String>,
+    /// Output HTML file path relative to output root.
+    pub html_path: PathBuf,
+}
+
+/// A node in the module tree hierarchy.
+#[derive(Debug)]
+pub struct ModuleTree<'a> {
+    /// Module name.
+    pub name: String,
+    /// Module's own documentation item (None for the crate root pseudo-module).
+    pub module_item: Option<RenderableItem<'a>>,
+    /// Items directly contained in this module (functions, structs, etc.).
+    pub items: Vec<RenderableItem<'a>>,
+    /// Submodules.
+    pub submodules: Vec<ModuleTree<'a>>,
+}
+
+/// Builds a module tree from the rustdoc crate data.
+pub fn build_module_tree<'a>(
+    krate: &'a Crate,
+    include_private: bool,
+) -> AnyResult<ModuleTree<'a>> {
+    let mut id_to_path: HashMap<&Id, Vec<String>> = HashMap::new();
+
+    // Build path map from krate.paths.
+    for (id, summary) in &krate.paths {
+        id_to_path.insert(id, summary.path.clone());
+    }
+
+    // Get the root module.
+    let root_item = krate.index.get(&krate.root)
+        .ok_or_else(|| anyhow!("Root item not found in index"))?;
+
+    let crate_name = root_item.name.clone().unwrap_or_else(|| "crate".to_string());
+
+    // Build tree starting from root.
+    build_tree_recursive(
+        krate,
+        &krate.root,
+        vec![crate_name.clone()],
+        include_private,
+        &id_to_path,
+    )
+}
+
+fn build_tree_recursive<'a>(
+    krate: &'a Crate,
+    module_id: &'a Id,
+    current_path: Vec<String>,
+    include_private: bool,
+    id_to_path: &HashMap<&Id, Vec<String>>,
+) -> AnyResult<ModuleTree<'a>> {
+    let module_item = krate.index.get(module_id)
+        .ok_or_else(|| anyhow!("Module {} not found in index", module_id.0))?;
+
+    let module_name = module_item.name.clone()
+        .unwrap_or_else(|| current_path.last().cloned().unwrap_or_default());
+
+    let ItemEnum::Module(module) = &module_item.inner else {
+        bail!("Expected module, got {:?}", module_item.inner);
+    };
+
+    let mut items = Vec::new();
+    let mut submodules = Vec::new();
+
+    for child_id in &module.items {
+        let Some(child_item) = krate.index.get(child_id) else {
+            continue;
+        };
+
+        // Skip private items unless requested.
+        if !include_private && is_private(child_item) {
+            continue;
+        }
+
+        let child_name = child_item.name.clone().unwrap_or_default();
+        let mut child_path = current_path.clone();
+        child_path.push(child_name.clone());
+
+        match &child_item.inner {
+            ItemEnum::Module(_) => {
+                // Recurse into submodule.
+                let subtree = build_tree_recursive(
+                    krate,
+                    child_id,
+                    child_path,
+                    include_private,
+                    id_to_path,
+                )?;
+                submodules.push(subtree);
+            }
+            _ => {
+                // Regular item.
+                let html_path = path_to_html(&child_path, item_kind(&child_item.inner));
+                items.push(RenderableItem {
+                    id: child_id,
+                    item: child_item,
+                    path: child_path,
+                    html_path,
+                });
+            }
+        }
+    }
+
+    // Sort items by name for consistent ordering.
+    items.sort_by(|a, b| {
+        a.item.name.as_deref().unwrap_or("")
+            .cmp(b.item.name.as_deref().unwrap_or(""))
+    });
+    submodules.sort_by(|a, b| a.name.cmp(&b.name));
+
+    let module_html_path = path_to_html(&current_path, Some(ItemKind::Module));
+    let module_renderable = RenderableItem {
+        id: module_id,
+        item: module_item,
+        path: current_path,
+        html_path: module_html_path,
+    };
+
+    Ok(ModuleTree {
+        name: module_name,
+        module_item: Some(module_renderable),
+        items,
+        submodules,
+    })
+}
+
+/// Convert a module path to an HTML file path.
+fn path_to_html(path: &[String], kind: Option<ItemKind>) -> PathBuf {
+    if path.is_empty() {
+        return PathBuf::from("index.html");
+    }
+
+    let prefix = match kind {
+        Some(ItemKind::Module) => "",
+        Some(ItemKind::Struct) => "struct.",
+        Some(ItemKind::Enum) => "enum.",
+        Some(ItemKind::Trait) => "trait.",
+        Some(ItemKind::Function) => "fn.",
+        Some(ItemKind::TypeAlias) => "type.",
+        Some(ItemKind::Constant) => "constant.",
+        Some(ItemKind::Static) => "static.",
+        Some(ItemKind::Macro) => "macro.",
+        Some(ItemKind::Union) => "union.",
+        _ => "",
+    };
+
+    let (dir_parts, name) = path.split_at(path.len() - 1);
+    let mut result = PathBuf::new();
+
+    for part in dir_parts {
+        result.push(part);
+    }
+
+    if kind == Some(ItemKind::Module) {
+        result.push(&name[0]);
+        result.push("index.html");
+    } else {
+        let filename = format!("{}{}.html", prefix, name[0]);
+        result.push(filename);
+    }
+
+    result
+}
+
+fn item_kind(inner: &ItemEnum) -> Option<ItemKind> {
+    match inner {
+        ItemEnum::Module(_) => Some(ItemKind::Module),
+        ItemEnum::Struct(_) => Some(ItemKind::Struct),
+        ItemEnum::Enum(_) => Some(ItemKind::Enum),
+        ItemEnum::Trait(_) => Some(ItemKind::Trait),
+        ItemEnum::Function(_) => Some(ItemKind::Function),
+        ItemEnum::TypeAlias(_) => Some(ItemKind::TypeAlias),
+        ItemEnum::Constant { .. } => Some(ItemKind::Constant),
+        ItemEnum::Static(_) => Some(ItemKind::Static),
+        ItemEnum::Macro(_) => Some(ItemKind::Macro),
+        ItemEnum::Union(_) => Some(ItemKind::Union),
+        _ => None,
+    }
+}
+
+fn is_private(item: &Item) -> bool {
+    use rustdoc_types::Visibility;
+    matches!(item.visibility, Visibility::Default)
+}
+
+/// Collect all renderable items in the tree as a flat list.
+pub fn flatten_items<'a>(tree: &'a ModuleTree<'a>) -> Vec<&'a RenderableItem<'a>> {
+    let mut result = Vec::new();
+
+    if let Some(ref module_item) = tree.module_item {
+        result.push(module_item);
+    }
+
+    for item in &tree.items {
+        result.push(item);
+    }
+
+    for submodule in &tree.submodules {
+        result.extend(flatten_items(submodule));
+    }
+
+    result
+}

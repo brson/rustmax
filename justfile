@@ -95,6 +95,11 @@ doc-www: prebuild
     cp work/news.html out/ || true
     cp work/news.xml out/ || true
 
+doc-api2:
+    cargo +nightly rustdoc -p rustmax --features rmx-profile-max -- -Z unstable-options --output-format json
+    mkdir -p out/api2
+    cargo run -p rustmax-cli -- rustdoc build target/doc/rustmax.json -o out/api2
+
 doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book
     cp -r book/book/* out/book/

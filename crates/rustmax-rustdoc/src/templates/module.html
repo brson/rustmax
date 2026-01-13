@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ module_name }} - {{ crate_name }}</title>
+    <link rel="stylesheet" href="{{ path_to_root }}rustdoc.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-title">
+            <a href="{{ path_to_root }}index.html">{{ crate_name }}</a>
+        </div>
+        {{ sidebar | safe }}
+    </nav>
+    <main>
+        <header>
+            <nav class="breadcrumbs">
+                {% for part in module_path %}
+                    {% if loop.last %}
+                        <span>{{ part }}</span>
+                    {% else %}
+                        <a href="#">{{ part }}</a> ::
+                    {% endif %}
+                {% endfor %}
+            </nav>
+            <h1>Module <code>{{ module_name }}</code></h1>
+        </header>
+
+        {% if docs %}
+        <section class="docs">
+            {{ docs | safe }}
+        </section>
+        {% endif %}
+
+        {% if modules | length > 0 %}
+        <section class="item-list">
+            <h2>Modules</h2>
+            <ul>
+                {% for item in modules %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if structs | length > 0 %}
+        <section class="item-list">
+            <h2>Structs</h2>
+            <ul>
+                {% for item in structs %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if enums | length > 0 %}
+        <section class="item-list">
+            <h2>Enums</h2>
+            <ul>
+                {% for item in enums %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if traits | length > 0 %}
+        <section class="item-list">
+            <h2>Traits</h2>
+            <ul>
+                {% for item in traits %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if functions | length > 0 %}
+        <section class="item-list">
+            <h2>Functions</h2>
+            <ul>
+                {% for item in functions %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if types | length > 0 %}
+        <section class="item-list">
+            <h2>Type Aliases</h2>
+            <ul>
+                {% for item in types %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if constants | length > 0 %}
+        <section class="item-list">
+            <h2>Constants</h2>
+            <ul>
+                {% for item in constants %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if macros | length > 0 %}
+        <section class="item-list">
+            <h2>Macros</h2>
+            <ul>
+                {% for item in macros %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

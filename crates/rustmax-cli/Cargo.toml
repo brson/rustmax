@@ -23,6 +23,8 @@ rmx.features = [
 ]
 rustmax-doctest.path = "../rustmax-doctest"
 rustmax-doctest.version = "0.0.7"
+rustmax-rustdoc.path = "../rustmax-rustdoc"
+rustmax-rustdoc.version = "0.0.7"
 serde.version = "1"
 enum-iterator.version = "2.1.0"
 regex.version = "1"

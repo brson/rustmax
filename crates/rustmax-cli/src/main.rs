@@ -76,6 +76,9 @@ enum CliCmd {
 
     /// Run all code quality checks.
     RunAllChecks(CliCmdRunAllChecks),
+
+    /// Generate documentation from rustdoc JSON.
+    Rustdoc(CliCmdRustdoc),
 }
 
 #[derive(clap::Args)]
@@ -181,6 +184,27 @@ struct CliCmdWriteClippyControlConfig {}
 #[derive(clap::Args)]
 struct CliCmdRunAllChecks {}
 
+#[derive(clap::Args)]
+struct CliCmdRustdoc {
+    #[command(subcommand)]
+    action: RustdocAction,
+}
+
+#[derive(clap::Subcommand)]
+enum RustdocAction {
+    /// Build docs from rustdoc JSON file.
+    Build {
+        /// Path to rustdoc JSON file.
+        json_path: std::path::PathBuf,
+        /// Output directory.
+        #[arg(short, long, default_value = "target/rmxdoc")]
+        output: std::path::PathBuf,
+        /// Include private items.
+        #[arg(long)]
+        document_private_items: bool,
+    },
+}
+
 impl CliOpts {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
@@ -211,8 +235,7 @@ impl CliOpts {
             CliCmd::WriteClippyControlConfig(cmd) => cmd.run(),
 
             CliCmd::RunAllChecks(cmd) => cmd.run(),
-
-            _ => todo!(),
+            CliCmd::Rustdoc(cmd) => cmd.run(),
         }
     }
 }
@@ -437,5 +460,29 @@ impl CliCmdRunAllChecks {
         // cargo-deny
         // cargo-audit
         todo!()
+    }
+}
+
+impl CliCmdRustdoc {
+    fn run(&self) -> AnyResult<()> {
+        match &self.action {
+            RustdocAction::Build {
+                json_path,
+                output,
+                document_private_items,
+            } => {
+                println!("Loading rustdoc JSON from {}...", json_path.display());
+
+                let doc = rustmax_rustdoc::RustDoc::from_json(json_path)?
+                    .output_dir(output.clone())
+                    .include_private(*document_private_items);
+
+                println!("Rendering to {}...", output.display());
+                doc.render()?;
+
+                println!("Done. Open {}/index.html to view.", output.display());
+                Ok(())
+            }
+        }
     }
 }

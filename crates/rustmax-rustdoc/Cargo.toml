@@ -1,0 +1,29 @@
+[package]
+name = "rustmax-rustdoc"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Custom rustdoc HTML renderer for rustmax documentation"
+
+[dependencies]
+rmx.path = "../rustmax"
+rmx.version = "0.0.7"
+rmx.package = "rustmax"
+rmx.default-features = false
+rmx.features = [
+  "rmx-profile-std",
+  "rmx-feature-derive",
+  "rmx-feature-serde",
+]
+
+rustdoc-types.version = "0.56"
+rustdoc-types.features = ["rustc-hash"]
+
+serde.version = "1"
+serde.features = ["derive"]
+
+comrak.version = "0.35"
+syntect.version = "5"
+include_dir.version = "0.7"
