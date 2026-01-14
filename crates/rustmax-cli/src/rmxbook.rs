@@ -276,6 +276,9 @@ fn render_chapter(
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title} - {book_title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{path_to_root}rmxbook.css">
     <script>{script}</script>
 </head>
@@ -450,7 +453,7 @@ fn generate_css() -> String {
 html, body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+    font-family: "Source Serif 4", serif;
     font-size: 16px;
     line-height: 1.6;
     background: var(--bg);
@@ -554,7 +557,7 @@ h2 { font-size: 1.5rem; }
 h3 { font-size: 1.25rem; }
 
 code {
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-family: "Source Code Pro", monospace;
     font-size: 0.9em;
     background: var(--code-bg);
     padding: 0.15em 0.3em;

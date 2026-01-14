@@ -1,7 +1,7 @@
 :root {
-    --rmx-font-text: normal normal 16pt "Computer Modern Concrete";
-    --rmx-font-code: normal normal 16pt "Computer Modern Typewriter", monospace;
-    --rmx-font-em: normal bold 16pt "Computer Modern Concrete";
+    --rmx-font-text: normal normal 16pt "Source Serif 4", serif;
+    --rmx-font-code: normal normal 16pt "Source Code Pro", monospace;
+    --rmx-font-em: normal bold 16pt "Source Serif 4", serif;
 }
 
 :root[data-theme="light"],
