@@ -29,6 +29,17 @@ pub struct ModuleTree<'a> {
     pub items: Vec<RenderableItem<'a>>,
     /// Submodules.
     pub submodules: Vec<ModuleTree<'a>>,
+    /// Glob re-exports from external crates (crate name -> target ID).
+    pub glob_reexports: Vec<GlobReexport>,
+}
+
+/// A glob re-export from an external crate.
+#[derive(Debug, Clone)]
+pub struct GlobReexport {
+    /// The source path of the glob import (e.g., "::tokio").
+    pub source: String,
+    /// The target crate name (e.g., "tokio").
+    pub target_crate: String,
 }
 
 /// Builds a module tree from the rustdoc crate data.
@@ -78,6 +89,7 @@ fn build_tree_recursive<'a>(
 
     let mut items = Vec::new();
     let mut submodules = Vec::new();
+    let mut glob_reexports = Vec::new();
 
     for child_id in &module.items {
         let Some(child_item) = krate.index.get(child_id) else {
@@ -87,6 +99,27 @@ fn build_tree_recursive<'a>(
         // Skip private items unless requested.
         if !include_private && is_private(child_item) {
             continue;
+        }
+
+        // Handle glob re-exports specially.
+        if let ItemEnum::Use(use_item) = &child_item.inner {
+            if use_item.is_glob {
+                // Extract crate name from source (e.g., "::tokio" -> "tokio").
+                let target_crate = use_item.source
+                    .trim_start_matches("::")
+                    .split("::")
+                    .next()
+                    .unwrap_or("")
+                    .to_string();
+
+                if !target_crate.is_empty() {
+                    glob_reexports.push(GlobReexport {
+                        source: use_item.source.clone(),
+                        target_crate,
+                    });
+                }
+                continue;
+            }
         }
 
         // Get child name - Use items store name in inner.use.name, not item.name.
@@ -143,6 +176,7 @@ fn build_tree_recursive<'a>(
         module_item: Some(module_renderable),
         items,
         submodules,
+        glob_reexports,
     })
 }
 

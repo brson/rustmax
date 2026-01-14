@@ -173,10 +173,11 @@ impl RustDocSet {
         // Render each crate.
         for (crate_name, krate) in &self.crates {
             eprintln!("Rendering {}...", crate_name);
-            let ctx = render::RenderContext::new_with_index(
+            let ctx = render::RenderContext::new_full(
                 krate,
                 &self.config,
                 &global_index,
+                &self.crates,
             )?;
             output::write_docs(&ctx)?;
         }

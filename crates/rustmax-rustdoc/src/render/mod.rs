@@ -34,12 +34,14 @@ pub struct RenderContext<'a> {
     pub impl_index: ImplIndex<'a>,
     /// Global item index for cross-crate linking (optional).
     pub global_index: Option<&'a GlobalItemIndex>,
+    /// All crates for resolving glob re-exports (optional, for multi-crate mode).
+    pub all_crates: Option<&'a HashMap<String, Crate>>,
 }
 
 impl<'a> RenderContext<'a> {
     /// Create a new render context.
     pub fn new(krate: &'a Crate, config: &'a RenderConfig) -> AnyResult<Self> {
-        Self::new_with_index(krate, config, None)
+        Self::new_full(krate, config, None, None)
     }
 
     /// Create a new render context with a global item index for cross-crate linking.
@@ -47,6 +49,16 @@ impl<'a> RenderContext<'a> {
         krate: &'a Crate,
         config: &'a RenderConfig,
         global_index: impl Into<Option<&'a GlobalItemIndex>>,
+    ) -> AnyResult<Self> {
+        Self::new_full(krate, config, global_index, None)
+    }
+
+    /// Create a new render context with full options.
+    pub fn new_full(
+        krate: &'a Crate,
+        config: &'a RenderConfig,
+        global_index: impl Into<Option<&'a GlobalItemIndex>>,
+        all_crates: impl Into<Option<&'a HashMap<String, Crate>>>,
     ) -> AnyResult<Self> {
         let tera = load_templates()?;
         let id_to_path = build_id_to_path(krate);
@@ -63,6 +75,7 @@ impl<'a> RenderContext<'a> {
             highlighter,
             impl_index,
             global_index: global_index.into(),
+            all_crates: all_crates.into(),
         })
     }
 

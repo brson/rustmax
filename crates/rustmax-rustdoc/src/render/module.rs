@@ -90,6 +90,69 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         }
     }
 
+    // Add items from glob re-exports.
+    if let Some(all_crates) = ctx.all_crates {
+        for glob in &tree.glob_reexports {
+            if let Some(target_krate) = all_crates.get(&glob.target_crate) {
+                // Get the target crate's root module items.
+                if let Some(root_item) = target_krate.index.get(&target_krate.root) {
+                    if let ItemEnum::Module(module) = &root_item.inner {
+                        for child_id in &module.items {
+                            if let Some(child_item) = target_krate.index.get(child_id) {
+                                // Skip private and unnamed items.
+                                if child_item.visibility != rustdoc_types::Visibility::Public {
+                                    continue;
+                                }
+
+                                let item_name = child_item.name.clone().unwrap_or_default();
+                                if item_name.is_empty() {
+                                    continue;
+                                }
+
+                                // Build the path for the re-exported item.
+                                let item_path = format!(
+                                    "{}{}",
+                                    path_to_root,
+                                    build_reexport_html_path(&path, &item_name, &child_item.inner)
+                                );
+
+                                let summary = ItemSummary {
+                                    name: item_name,
+                                    path: item_path,
+                                    short_doc: child_item.docs.as_ref()
+                                        .map(|d| first_paragraph(d))
+                                        .unwrap_or_default(),
+                                };
+
+                                match &child_item.inner {
+                                    ItemEnum::Module(_) => modules.push(summary),
+                                    ItemEnum::Struct(_) => structs.push(summary),
+                                    ItemEnum::Enum(_) => enums.push(summary),
+                                    ItemEnum::Trait(_) => traits.push(summary),
+                                    ItemEnum::Function(_) => functions.push(summary),
+                                    ItemEnum::TypeAlias(_) => types.push(summary),
+                                    ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
+                                    ItemEnum::Macro(_) => macros.push(summary),
+                                    _ => {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Sort all item lists alphabetically.
+    modules.sort_by(|a, b| a.name.cmp(&b.name));
+    structs.sort_by(|a, b| a.name.cmp(&b.name));
+    enums.sort_by(|a, b| a.name.cmp(&b.name));
+    traits.sort_by(|a, b| a.name.cmp(&b.name));
+    functions.sort_by(|a, b| a.name.cmp(&b.name));
+    types.sort_by(|a, b| a.name.cmp(&b.name));
+    constants.sort_by(|a, b| a.name.cmp(&b.name));
+    macros.sort_by(|a, b| a.name.cmp(&b.name));
+
     tera_ctx.insert("modules", &modules);
     tera_ctx.insert("structs", &structs);
     tera_ctx.insert("enums", &enums);
@@ -119,6 +182,41 @@ struct ItemSummary {
 struct Breadcrumb {
     name: String,
     url: Option<String>,
+}
+
+/// Build HTML path for a glob re-exported item.
+fn build_reexport_html_path(module_path: &[String], item_name: &str, inner: &ItemEnum) -> String {
+    let prefix = match inner {
+        ItemEnum::Module(_) => "",
+        ItemEnum::Struct(_) => "struct.",
+        ItemEnum::Enum(_) => "enum.",
+        ItemEnum::Trait(_) => "trait.",
+        ItemEnum::Function(_) => "fn.",
+        ItemEnum::TypeAlias(_) => "type.",
+        ItemEnum::Constant { .. } => "constant.",
+        ItemEnum::Static(_) => "static.",
+        ItemEnum::Macro(_) => "macro.",
+        ItemEnum::Union(_) => "union.",
+        _ => "",
+    };
+
+    // Build path: crate/module/.../prefix.name.html
+    let mut result = String::new();
+    for part in module_path {
+        result.push_str(part);
+        result.push('/');
+    }
+
+    if matches!(inner, ItemEnum::Module(_)) {
+        result.push_str(item_name);
+        result.push_str("/index.html");
+    } else {
+        result.push_str(prefix);
+        result.push_str(item_name);
+        result.push_str(".html");
+    }
+
+    result
 }
 
 /// Extract the first paragraph from documentation.
