@@ -108,7 +108,7 @@ fn preprocess_shortcut_links(md: &str) -> String {
 
     // Match [`path::to::Item`] or [`::crate::Item`] - we'll check for trailing ( or [ manually.
     let re = Regex::new(
-        r#"\[`(::?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\]"#
+        r#"\[`((?:::)?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\]"#
     ).unwrap();
 
     let mut result = String::with_capacity(md.len());
