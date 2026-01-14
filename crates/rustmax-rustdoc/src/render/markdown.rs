@@ -240,22 +240,36 @@ fn resolve_rust_path(
         clean_path.to_string()
     };
 
-    // Try exact match first.
+    // For paths without ::, try current crate prefix FIRST.
+    // This ensures `anyhow` in rustmax docs resolves to `rustmax::anyhow` (module)
+    // rather than `anyhow` (external crate).
+    if !lookup_path.contains("::") {
+        let crate_prefixed = format!("{}::{}", current_crate, lookup_path);
+        if let Some(location) = index.items.get(&crate_prefixed) {
+            if matches_kind_filter(location, kind_filter) {
+                return Some(build_url(location, current_depth));
+            }
+        }
+    }
+
+    // Try exact match.
     if let Some(location) = index.items.get(&lookup_path) {
         if matches_kind_filter(location, kind_filter) {
             return Some(build_url(location, current_depth));
         }
     }
 
-    // Try with current crate prefix.
-    let crate_prefixed = format!("{}::{}", current_crate, lookup_path);
-    if let Some(location) = index.items.get(&crate_prefixed) {
-        if matches_kind_filter(location, kind_filter) {
-            return Some(build_url(location, current_depth));
+    // Try with current crate prefix for qualified paths.
+    if lookup_path.contains("::") {
+        let crate_prefixed = format!("{}::{}", current_crate, lookup_path);
+        if let Some(location) = index.items.get(&crate_prefixed) {
+            if matches_kind_filter(location, kind_filter) {
+                return Some(build_url(location, current_depth));
+            }
         }
     }
 
-    // Handle re-exported crate items: rustmax::ahash::AHasher → ahash::AHasher.
+    // Handle re-exported crate items: rustmax::ahash::AHasher -> ahash::AHasher.
     // When a crate does `pub use some_crate::*;`, the path current_crate::some_crate::Item
     // should resolve to some_crate::Item.
     if let Some(rest) = lookup_path.strip_prefix(&format!("{}::", current_crate)) {
@@ -276,7 +290,7 @@ fn resolve_rust_path(
         }
     }
 
-    // For single-segment paths, search all items.
+    // For single-segment paths, search all items as last resort.
     if !lookup_path.contains("::") {
         for (full_path, location) in &index.items {
             let name = full_path.rsplit("::").next().unwrap_or(full_path);
