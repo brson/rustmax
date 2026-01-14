@@ -126,7 +126,7 @@
         {
             name: "hex",
             category: "encoding",
-            short_desc: "Hexidecimal encoding",
+            short_desc: "Hexadecimal encoding",
         },
         {
             name: "ignore",
