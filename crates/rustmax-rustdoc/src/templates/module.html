@@ -40,7 +40,7 @@
                     {% endif %}
                 {% endfor %}
             </nav>
-            <h1>Module <code>{{ module_name }}</code></h1>
+            <h1>{% if is_crate_root %}Crate{% else %}Module{% endif %} <code>{{ module_name }}</code></h1>
         </header>
 
         {% if docs %}

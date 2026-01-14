@@ -33,6 +33,10 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     }).collect();
     tera_ctx.insert("breadcrumbs", &breadcrumbs);
 
+    // Determine if this is the crate root (path has just the crate name).
+    let is_crate_root = path.len() == 1;
+    tera_ctx.insert("is_crate_root", &is_crate_root);
+
     // Path to root for CSS and links.
     // For modules, the file is at <path>/index.html, so depth equals path length.
     let depth = path.len();
