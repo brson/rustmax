@@ -102,7 +102,7 @@ doc-api2:
     cp "$$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
     # Build docs from directory with cross-crate linking.
     mkdir -p out/api2
-    cargo run -p rustmax-cli -- rustdoc build target/doc/ -o out/api2
+    cargo run -p rustmax-cli --release -- rustdoc build target/doc/ -o out/api2
 
 doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book
