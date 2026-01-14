@@ -24,7 +24,7 @@ or by software that needs to understand the human concepts of
 "words" and "sentences".
 
 For modern background on Unicode units see [Let's Stop Ascribing Meaning to Code Points]
-my Manish Goregaokar.
+by Manish Goregaokar.
 
 ## Examples
 

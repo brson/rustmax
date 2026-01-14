@@ -11,14 +11,14 @@ Flexible error handling.
 a trait object based error type for use cases
 where you want error handling to be easy.
 
-It is oftain said that Rust
+It is often said that Rust
 libraries should define specific error types that implement [`std::error::Error`],
 so their callers can respond to errors precisely;
 but applications can often just propagate errors up the call stack
 without caring about specific error types.
 
 For these more casual error handling use cases,
-it is sometimes ideomatic in low-dependency Rust code
+it is sometimes idiomatic in low-dependency Rust code
 to return [`Box<dyn std::error::Error>`] as a generic
 error type. `anyhow` provides a similar generic
 error but with more features:
