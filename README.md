@@ -3,7 +3,7 @@
 A collection of crates, tools, and documentation for the Rust programming language.
 
 
-## 🚧 Do not contribute, do not use 🚧
+## ☠ Do not contribute; do not use ☠
 
 This project is not open to contribution.
 Issues and pull requests will be closed without consideration.
@@ -90,26 +90,6 @@ It is neither stable nor supported.
 
 
 ---
-
-## The crates
-
-The [`rustmax` crate](https://docs.rs/rustmax)
-documents and reexports other Rust crates.
-
-
-## The tools
-
-- [A collection of Rust tools](book/src/tools.md).
-- [An opinionated workspace template](template),
-  for [cargo-generate](https://github.com/cargo-generate/cargo-generate).
-- [An opinionated config file](rustfmt.toml)
-  for [rustfmt](https://github.com/rust-lang/rustfmt).
-- [An opinionated config file](deny.toml)
-  for [cargo-deny](https://github.com/EmbarkStudios/cargo-deny).
-- [An opinionated config file](clippy-control.toml)
-  for [clippy-control](https://github.com/brson/clippy-control).
-- [The `rustmax` CLI for managing the above.](https://docs.rs/rustmax-cli).
-
 
 ## License
 
