@@ -153,6 +153,10 @@ fn is_rust_path(s: &str) -> bool {
     if s.is_empty() || s.chars().all(|c| c.is_whitespace()) {
         return false;
     }
+    // Skip bare keywords and literals that can't be resolved.
+    if matches!(s, "self" | "true" | "false" | "None" | "Some") {
+        return false;
+    }
     // Must start with identifier char or disambiguator.
     let path = strip_disambiguator(s).1;
     if path.is_empty() {
@@ -248,6 +252,27 @@ fn resolve_rust_path(
     if let Some(location) = index.items.get(&crate_prefixed) {
         if matches_kind_filter(location, kind_filter) {
             return Some(build_url(location, current_depth));
+        }
+    }
+
+    // Handle re-exported crate items: rustmax::ahash::AHasher → ahash::AHasher.
+    // When a crate does `pub use some_crate::*;`, the path current_crate::some_crate::Item
+    // should resolve to some_crate::Item.
+    if let Some(rest) = lookup_path.strip_prefix(&format!("{}::", current_crate)) {
+        if let Some(location) = index.items.get(rest) {
+            if matches_kind_filter(location, kind_filter) {
+                return Some(build_url(location, current_depth));
+            }
+        }
+    }
+
+    // std re-exports most of core, so try core:: when std:: fails.
+    if let Some(core_path) = lookup_path.strip_prefix("std::") {
+        let core_lookup = format!("core::{}", core_path);
+        if let Some(location) = index.items.get(&core_lookup) {
+            if matches_kind_filter(location, kind_filter) {
+                return Some(build_url(location, current_depth));
+            }
         }
     }
 

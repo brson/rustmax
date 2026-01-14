@@ -96,9 +96,13 @@ doc-www: prebuild
     cp work/news.xml out/ || true
 
 doc-api2:
-    cargo +nightly rustdoc -p rustmax --features rmx-profile-max -- -Z unstable-options --output-format json
+    # Generate JSON for rustmax and all dependencies.
+    RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +nightly doc -p rustmax --features rmx-profile-max
+    # Copy std library JSON files from nightly toolchain (requires rust-docs-json component).
+    cp "$$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
+    # Build docs from directory with cross-crate linking.
     mkdir -p out/api2
-    cargo run -p rustmax-cli -- rustdoc build target/doc/rustmax.json -o out/api2
+    cargo run -p rustmax-cli -- rustdoc build target/doc/ -o out/api2
 
 doc-build: doc-www doc-crates doc-book doc-library
     mkdir -p out/book

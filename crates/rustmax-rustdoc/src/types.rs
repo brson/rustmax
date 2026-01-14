@@ -89,7 +89,12 @@ fn build_tree_recursive<'a>(
             continue;
         }
 
-        let child_name = child_item.name.clone().unwrap_or_default();
+        // Get child name - Use items store name in inner.use.name, not item.name.
+        let child_name = if let ItemEnum::Use(use_item) = &child_item.inner {
+            use_item.name.clone()
+        } else {
+            child_item.name.clone().unwrap_or_default()
+        };
         let mut child_path = current_path.clone();
         child_path.push(child_name.clone());
 

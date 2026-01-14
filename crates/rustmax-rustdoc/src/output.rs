@@ -41,18 +41,39 @@ fn write_module_tree(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<()> {
 
     // Write item pages.
     for item in &tree.items {
-        let html = match &item.item.inner {
-            ItemEnum::Struct(_) => render::item::render_struct(ctx, item)?,
-            ItemEnum::Enum(_) => render::item::render_enum(ctx, item)?,
-            ItemEnum::Trait(_) => render::item::render_trait(ctx, item)?,
-            ItemEnum::Function(_) => render::item::render_function(ctx, item)?,
-            ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, item)?,
-            ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, item)?,
-            ItemEnum::Macro(_) => render::item::render_macro(ctx, item)?,
+        // For re-exports, look up the target item and render it.
+        let (render_item, html_path) = if let ItemEnum::Use(use_item) = &item.item.inner {
+            if use_item.is_glob || use_item.id.is_none() {
+                continue;
+            }
+            let target_id = use_item.id.as_ref().unwrap();
+            let Some(target_item) = ctx.krate.index.get(target_id) else {
+                continue;
+            };
+            // Create a renderable item for the target at the re-export path.
+            let target_renderable = crate::types::RenderableItem {
+                id: target_id,
+                item: target_item,
+                path: item.path.clone(),
+                html_path: reexport_html_path(&item.path, &target_item.inner),
+            };
+            (target_renderable, reexport_html_path(&item.path, &target_item.inner))
+        } else {
+            (item.clone(), item.html_path.clone())
+        };
+
+        let html = match &render_item.item.inner {
+            ItemEnum::Struct(_) => render::item::render_struct(ctx, &render_item)?,
+            ItemEnum::Enum(_) => render::item::render_enum(ctx, &render_item)?,
+            ItemEnum::Trait(_) => render::item::render_trait(ctx, &render_item)?,
+            ItemEnum::Function(_) => render::item::render_function(ctx, &render_item)?,
+            ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, &render_item)?,
+            ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, &render_item)?,
+            ItemEnum::Macro(_) => render::item::render_macro(ctx, &render_item)?,
             _ => continue,
         };
 
-        let out_path = ctx.config.output_dir.join(&item.html_path);
+        let out_path = ctx.config.output_dir.join(&html_path);
 
         if let Some(parent) = out_path.parent() {
             fs::create_dir_all(parent)?;
@@ -68,6 +89,54 @@ fn write_module_tree(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<()> {
     }
 
     Ok(())
+}
+
+/// Build HTML path for a re-exported item.
+fn reexport_html_path(path: &[String], inner: &ItemEnum) -> std::path::PathBuf {
+    use rustdoc_types::ItemKind;
+    use std::path::PathBuf;
+
+    let kind = match inner {
+        ItemEnum::Struct(_) => Some(ItemKind::Struct),
+        ItemEnum::Enum(_) => Some(ItemKind::Enum),
+        ItemEnum::Trait(_) => Some(ItemKind::Trait),
+        ItemEnum::Function(_) => Some(ItemKind::Function),
+        ItemEnum::TypeAlias(_) => Some(ItemKind::TypeAlias),
+        ItemEnum::Constant { .. } => Some(ItemKind::Constant),
+        ItemEnum::Static(_) => Some(ItemKind::Static),
+        ItemEnum::Macro(_) => Some(ItemKind::Macro),
+        ItemEnum::Union(_) => Some(ItemKind::Union),
+        _ => None,
+    };
+
+    let prefix = match kind {
+        Some(ItemKind::Struct) => "struct.",
+        Some(ItemKind::Enum) => "enum.",
+        Some(ItemKind::Trait) => "trait.",
+        Some(ItemKind::Function) => "fn.",
+        Some(ItemKind::TypeAlias) => "type.",
+        Some(ItemKind::Constant) => "constant.",
+        Some(ItemKind::Static) => "static.",
+        Some(ItemKind::Macro) => "macro.",
+        Some(ItemKind::Union) => "union.",
+        _ => "",
+    };
+
+    if path.is_empty() {
+        return PathBuf::from("index.html");
+    }
+
+    let (dir_parts, name) = path.split_at(path.len() - 1);
+    let mut result = PathBuf::new();
+
+    for part in dir_parts {
+        result.push(part);
+    }
+
+    let filename = format!("{}{}.html", prefix, name[0]);
+    result.push(filename);
+
+    result
 }
 
 fn write_css(output_dir: &Path) -> AnyResult<()> {

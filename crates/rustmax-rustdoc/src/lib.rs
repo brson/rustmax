@@ -189,8 +189,8 @@ impl RustDocSet {
         let mut index = GlobalItemIndex::default();
 
         for (crate_name, krate) in &self.crates {
-            for (id, summary) in &krate.paths {
-                // Only index items from this crate (crate_id 0 means local).
+            // First pass: index canonical paths from krate.paths.
+            for (_id, summary) in &krate.paths {
                 if summary.crate_id == 0 {
                     let path = summary.path.join("::");
                     index.items.insert(path.clone(), ItemLocation {
@@ -200,9 +200,110 @@ impl RustDocSet {
                     });
                 }
             }
+
+            // Second pass: find re-exports and index them.
+            self.index_reexports(krate, crate_name, &mut index);
         }
 
         index
+    }
+
+    /// Index re-exports by walking the module tree and finding `use` items.
+    fn index_reexports(
+        &self,
+        krate: &rustdoc_types::Crate,
+        crate_name: &str,
+        index: &mut GlobalItemIndex,
+    ) {
+        use rustdoc_types::ItemEnum;
+
+        // Build a map from item ID to its parent module path.
+        let mut item_to_parent_path: HashMap<&rustdoc_types::Id, Vec<String>> = HashMap::new();
+
+        // Start from the root module.
+        if krate.index.contains_key(&krate.root) {
+            let root_path = vec![crate_name.to_string()];
+            self.collect_module_paths(krate, &krate.root, &root_path, &mut item_to_parent_path);
+        }
+
+        // Now walk all items and find Use items.
+        for (id, item) in &krate.index {
+            if let ItemEnum::Use(use_item) = &item.inner {
+                // Skip glob imports and primitive re-exports.
+                if use_item.is_glob || use_item.id.is_none() {
+                    continue;
+                }
+
+                // Skip non-public items.
+                if item.visibility != rustdoc_types::Visibility::Public {
+                    continue;
+                }
+
+                let target_id = use_item.id.as_ref().unwrap();
+
+                // Get the kind and canonical path from paths if available.
+                let Some(path_info) = krate.paths.get(target_id) else {
+                    continue;
+                };
+                let kind = path_info.kind;
+
+                // Skip if we can't determine a useful kind.
+                if kind == rustdoc_types::ItemKind::Use {
+                    continue;
+                }
+
+                // Build the re-export lookup path.
+                if let Some(parent_path) = item_to_parent_path.get(id) {
+                    let mut reexport_path = parent_path.clone();
+                    reexport_path.push(use_item.name.clone());
+
+                    let path_str = reexport_path.join("::");
+
+                    // Use the re-export path for URL building since pages are generated there.
+                    // Only insert if not already present (prefer canonical paths).
+                    index.items.entry(path_str).or_insert_with(|| ItemLocation {
+                        crate_name: crate_name.to_string(),
+                        path: reexport_path,
+                        kind,
+                    });
+                }
+            }
+        }
+    }
+
+    /// Recursively collect module paths for all items.
+    fn collect_module_paths<'a>(
+        &self,
+        krate: &'a rustdoc_types::Crate,
+        module_id: &'a rustdoc_types::Id,
+        module_path: &[String],
+        item_to_parent_path: &mut HashMap<&'a rustdoc_types::Id, Vec<String>>,
+    ) {
+        use rustdoc_types::ItemEnum;
+
+        let Some(module_item) = krate.index.get(module_id) else {
+            return;
+        };
+
+        let ItemEnum::Module(module) = &module_item.inner else {
+            return;
+        };
+
+        // Record the parent path for all items in this module.
+        for child_id in &module.items {
+            item_to_parent_path.insert(child_id, module_path.to_vec());
+
+            // Recurse into submodules.
+            if let Some(child_item) = krate.index.get(child_id) {
+                if let ItemEnum::Module(_) = &child_item.inner {
+                    if let Some(name) = &child_item.name {
+                        let mut child_path = module_path.to_vec();
+                        child_path.push(name.clone());
+                        self.collect_module_paths(krate, child_id, &child_path, item_to_parent_path);
+                    }
+                }
+            }
+        }
     }
 }
 
