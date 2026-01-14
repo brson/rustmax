@@ -9,8 +9,6 @@ Hexadecimal encoding and decoding.
 
 `hex` provides encoding and decoding of binary data
 to and from hexadecimal strings.
-Hexadecimal encoding represents each byte as two hexadecimal digits,
-making binary data readable and safe for text-based protocols and storage.
 
 ## Examples
 
@@ -35,24 +33,6 @@ use hex::encode_upper;
 let data = b"ABC";
 let hex_upper = encode_upper(data);
 println!("Upper: {}", hex_upper); // "414243"
-```
-
-Decoding with error handling:
-
-```
-use hex::decode;
-
-// Valid hex string
-let valid = decode("48656c6c6f").unwrap();
-assert_eq!(valid, b"Hello");
-
-// Invalid hex string (odd length)
-let invalid = decode("48656c6c6");
-assert!(invalid.is_err());
-
-// Invalid hex characters
-let invalid = decode("xyz123");
-assert!(invalid.is_err());
 ```
 
 [`encode`]: crate::hex::encode
