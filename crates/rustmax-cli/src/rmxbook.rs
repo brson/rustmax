@@ -398,10 +398,10 @@ fn generate_index(book: &Book, output: &Path) -> AnyResult<()> {
     <meta charset="utf-8">
     <meta http-equiv="refresh" content="0; url={target}">
     <title>{title}</title>
+    <link rel="stylesheet" href="rustmax-themes.css">
     <link rel="stylesheet" href="rmxbook.css">
 </head>
 <body>
-    <p>Redirecting to <a href="{target}">{target}</a>...</p>
 </body>
 </html>"#,
         title = html_escape(&book.title),
