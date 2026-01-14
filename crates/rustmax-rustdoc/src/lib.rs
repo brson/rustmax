@@ -203,9 +203,53 @@ impl RustDocSet {
 
             // Second pass: find re-exports and index them.
             self.index_reexports(krate, crate_name, &mut index);
+
+            // Third pass: index items from doc links.
+            // This catches items re-exported via glob imports (like thiserror::Error).
+            self.index_doc_links(krate, crate_name, &mut index);
         }
 
         index
+    }
+
+    /// Index items referenced in doc links.
+    ///
+    /// When docs contain links like `crate::thiserror::Error`, rustdoc resolves them
+    /// and stores the mapping in the item's `links` field. We use this to index
+    /// items that are re-exported via glob imports.
+    fn index_doc_links(
+        &self,
+        krate: &rustdoc_types::Crate,
+        crate_name: &str,
+        index: &mut GlobalItemIndex,
+    ) {
+        for (_id, item) in &krate.index {
+            for (link_text, target_id) in &item.links {
+                // Only process crate:: links.
+                let Some(relative_path) = link_text.strip_prefix("crate::") else {
+                    continue;
+                };
+
+                // Look up the target in paths.
+                let Some(path_info) = krate.paths.get(target_id) else {
+                    continue;
+                };
+
+                // Build the full path as it would appear in this crate.
+                let full_path = format!("{}::{}", crate_name, relative_path);
+
+                // Only insert if not already present (prefer earlier passes).
+                index.items.entry(full_path).or_insert_with(|| ItemLocation {
+                    crate_name: crate_name.to_string(),
+                    path: {
+                        let mut path = vec![crate_name.to_string()];
+                        path.extend(relative_path.split("::").map(String::from));
+                        path
+                    },
+                    kind: path_info.kind,
+                });
+            }
+        }
     }
 
     /// Index re-exports by walking the module tree and finding `use` items.

@@ -326,6 +326,8 @@ fn build_url(location: &ItemLocation, current_depth: usize) -> String {
         ItemKind::Module => "",
         ItemKind::Macro => "macro.",
         ItemKind::Union => "union.",
+        ItemKind::ProcDerive => "derive.",
+        ItemKind::ProcAttribute => "attr.",
         _ => "",
     };
 
