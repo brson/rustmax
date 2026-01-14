@@ -1,21 +1,21 @@
-function setTheme() {
-    const darkTheme = document.getElementById('hljs-dark-theme');
-    const lightTheme = document.getElementById('hljs-light-theme');
-
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector(':root').setAttribute("data-theme", "dark");
-        if (darkTheme) darkTheme.disabled = false;
-        if (lightTheme) lightTheme.disabled = true;
-    } else {
-        document.querySelector(':root').setAttribute("data-theme", "light");
-        if (darkTheme) darkTheme.disabled = true;
-        if (lightTheme) lightTheme.disabled = false;
+// Toggle highlight.js theme based on system preference.
+// Color scheme is handled by CSS via prefers-color-scheme.
+(function() {
+    function setHljsTheme() {
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var darkTheme = document.getElementById('hljs-dark-theme');
+        var lightTheme = document.getElementById('hljs-light-theme');
+        if (darkTheme) darkTheme.disabled = !dark;
+        if (lightTheme) lightTheme.disabled = dark;
     }
-}
 
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-    setTheme();
-});
+    // Run immediately if DOM is ready, otherwise wait.
+    if (document.getElementById('hljs-dark-theme')) {
+        setHljsTheme();
+    } else {
+        document.addEventListener('DOMContentLoaded', setHljsTheme);
+    }
 
-window.addEventListener("load", setTheme);
-
+    // Listen for system theme changes.
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setHljsTheme);
+})();

@@ -415,14 +415,6 @@ fn generate_index(book: &Book, output: &Path) -> AnyResult<()> {
 
 fn generate_script() -> &'static str {
     r#"(function(){
-  // Set theme based on system preference.
-  var dark = window.matchMedia('(prefers-color-scheme: dark)');
-  function setTheme() {
-    document.documentElement.setAttribute('data-theme', dark.matches ? 'dark' : 'light');
-  }
-  setTheme();
-  dark.addEventListener('change', setTheme);
-
   // Nav toggle.
   var k = 'rmxbook-nav';
   var stored = localStorage.getItem(k);

@@ -2,10 +2,8 @@
     --rmx-font-text: normal normal 16pt "Source Serif 4", serif;
     --rmx-font-code: normal normal 16pt "Source Code Pro", monospace;
     --rmx-font-em: normal bold 16pt "Source Serif 4", serif;
-}
 
-:root[data-theme="light"],
-:root:not([data-theme]) {
+    /* Light theme - default */
     /* Fallback colors for older browsers */
     --rmx-color-fg: #3d3d3d;
     --rmx-color-bg: #fefefe;
@@ -25,23 +23,25 @@
     --rmx-color-bg-even: var(--rmx-color-bg);
 }
 
-:root[data-theme="dark"] {
-    /* Fallback colors for older browsers */
-    --rmx-color-fg: #d9d9d9;
-    --rmx-color-bg: #1e1e2e;
-    --rmx-color-bg-alt: #2a2a3e;
-    --rmx-color-links: #6cb6ff;
-    --rmx-color-accents: #ff6b6b;
-    --rmx-color-border: #5a5a6e;
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Fallback colors for older browsers */
+        --rmx-color-fg: #d9d9d9;
+        --rmx-color-bg: #1e1e2e;
+        --rmx-color-bg-alt: #2a2a3e;
+        --rmx-color-links: #6cb6ff;
+        --rmx-color-accents: #ff6b6b;
+        --rmx-color-border: #5a5a6e;
 
-    --rmx-color-fg: oklch(100% 0.0 90);      /* warm off-white */
-    --rmx-color-bg: oklch(15% 0.02 280);     /* deep blue-gray */
-    --rmx-color-bg-alt: oklch(17% 0.02 280); /* slightly lighter blue-gray */
-    --rmx-color-links: oklch(70% 0.12 230);  /* accessible light blue */
-    --rmx-color-accents: oklch(65% 0.15 35); /* warm coral */
-    --rmx-color-border: oklch(45% 0.02 270); /* mid-tone gray */
+        --rmx-color-fg: oklch(100% 0.0 90);      /* warm off-white */
+        --rmx-color-bg: oklch(15% 0.02 280);     /* deep blue-gray */
+        --rmx-color-bg-alt: oklch(17% 0.02 280); /* slightly lighter blue-gray */
+        --rmx-color-links: oklch(70% 0.12 230);  /* accessible light blue */
+        --rmx-color-accents: oklch(65% 0.15 35); /* warm coral */
+        --rmx-color-border: oklch(45% 0.02 270); /* mid-tone gray */
 
-    --rmx-color-bg-odd: var(--rmx-color-bg-alt);
-    --rmx-color-bg-even: var(--rmx-color-bg);
+        --rmx-color-bg-odd: var(--rmx-color-bg-alt);
+        --rmx-color-bg-even: var(--rmx-color-bg);
+    }
 }
-
