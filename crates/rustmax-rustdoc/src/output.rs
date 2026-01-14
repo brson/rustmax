@@ -6,7 +6,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use crate::render::{self, RenderContext};
-use crate::types::{ModuleTree, RenderableItem};
+use crate::types::ModuleTree;
 
 /// Write all documentation to the output directory.
 pub fn write_docs(ctx: &RenderContext) -> AnyResult<()> {
@@ -88,96 +88,10 @@ fn write_module_tree(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<()> {
         write_module_tree(ctx, submodule)?;
     }
 
-    // Write pages for glob-reexported items.
-    if let Some(all_crates) = ctx.all_crates {
-        let module_path = tree.module_item.as_ref()
-            .map(|m| m.path.clone())
-            .unwrap_or_default();
-
-        for glob in &tree.glob_reexports {
-            if let Some(target_krate) = all_crates.get(&glob.target_crate) {
-                write_glob_reexport_items(ctx, target_krate, &module_path)?;
-            }
-        }
-    }
-
     Ok(())
 }
 
-/// Write pages for items from a glob re-export.
-fn write_glob_reexport_items(
-    ctx: &RenderContext,
-    target_krate: &rustdoc_types::Crate,
-    module_path: &[String],
-) -> AnyResult<()> {
-    // Get the target crate's root module items.
-    let Some(root_item) = target_krate.index.get(&target_krate.root) else {
-        return Ok(());
-    };
-
-    let ItemEnum::Module(module) = &root_item.inner else {
-        return Ok(());
-    };
-
-    for child_id in &module.items {
-        let Some(child_item) = target_krate.index.get(child_id) else {
-            continue;
-        };
-
-        // Skip private and unnamed items.
-        if child_item.visibility != rustdoc_types::Visibility::Public {
-            continue;
-        }
-
-        let item_name = child_item.name.clone().unwrap_or_default();
-        if item_name.is_empty() {
-            continue;
-        }
-
-        // Skip modules - they need special handling.
-        if matches!(child_item.inner, ItemEnum::Module(_)) {
-            continue;
-        }
-
-        // Build the path for the re-exported item.
-        let mut item_path = module_path.to_vec();
-        item_path.push(item_name);
-
-        let html_path = build_reexport_html_path(&item_path, &child_item.inner);
-
-        // Create a renderable item.
-        let renderable = RenderableItem {
-            id: child_id,
-            item: child_item,
-            path: item_path,
-            html_path: html_path.clone(),
-        };
-
-        let html = match &child_item.inner {
-            ItemEnum::Struct(_) => render::item::render_struct(ctx, &renderable)?,
-            ItemEnum::Enum(_) => render::item::render_enum(ctx, &renderable)?,
-            ItemEnum::Trait(_) => render::item::render_trait(ctx, &renderable)?,
-            ItemEnum::Function(_) => render::item::render_function(ctx, &renderable)?,
-            ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, &renderable)?,
-            ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, &renderable)?,
-            ItemEnum::Macro(_) => render::item::render_macro(ctx, &renderable)?,
-            _ => continue,
-        };
-
-        let out_path = ctx.config.output_dir.join(&html_path);
-
-        if let Some(parent) = out_path.parent() {
-            fs::create_dir_all(parent)?;
-        }
-
-        fs::write(&out_path, &html)
-            .with_context(|| format!("Failed to write {}", out_path.display()))?;
-    }
-
-    Ok(())
-}
-
-/// Build HTML path for a glob re-exported item.
+/// Build HTML path for a re-exported item.
 fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
     let kind = match inner {
         ItemEnum::Struct(_) => Some(ItemKind::Struct),
@@ -189,12 +103,10 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
         ItemEnum::Static(_) => Some(ItemKind::Static),
         ItemEnum::Macro(_) => Some(ItemKind::Macro),
         ItemEnum::Union(_) => Some(ItemKind::Union),
-        ItemEnum::Module(_) => Some(ItemKind::Module),
         _ => None,
     };
 
     let prefix = match kind {
-        Some(ItemKind::Module) => "",
         Some(ItemKind::Struct) => "struct.",
         Some(ItemKind::Enum) => "enum.",
         Some(ItemKind::Trait) => "trait.",
@@ -218,13 +130,8 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
         result.push(part);
     }
 
-    if kind == Some(ItemKind::Module) {
-        result.push(&name[0]);
-        result.push("index.html");
-    } else {
-        let filename = format!("{}{}.html", prefix, name[0]);
-        result.push(filename);
-    }
+    let filename = format!("{}{}.html", prefix, name[0]);
+    result.push(filename);
 
     result
 }

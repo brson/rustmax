@@ -90,7 +90,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         }
     }
 
-    // Add items from glob re-exports.
+    // Add items from glob re-exports, linking to original crate location.
     if let Some(all_crates) = ctx.all_crates {
         for glob in &tree.glob_reexports {
             if let Some(target_krate) = all_crates.get(&glob.target_crate) {
@@ -109,11 +109,11 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                                     continue;
                                 }
 
-                                // Build the path for the re-exported item.
+                                // Link to the original crate's item page.
                                 let item_path = format!(
                                     "{}{}",
                                     path_to_root,
-                                    build_reexport_html_path(&path, &item_name, &child_item.inner)
+                                    build_original_crate_path(&glob.target_crate, &item_name, &child_item.inner)
                                 );
 
                                 let summary = ItemSummary {
@@ -184,8 +184,8 @@ struct Breadcrumb {
     url: Option<String>,
 }
 
-/// Build HTML path for a glob re-exported item.
-fn build_reexport_html_path(module_path: &[String], item_name: &str, inner: &ItemEnum) -> String {
+/// Build HTML path to an item in its original crate.
+fn build_original_crate_path(crate_name: &str, item_name: &str, inner: &ItemEnum) -> String {
     let prefix = match inner {
         ItemEnum::Module(_) => "",
         ItemEnum::Struct(_) => "struct.",
@@ -200,23 +200,12 @@ fn build_reexport_html_path(module_path: &[String], item_name: &str, inner: &Ite
         _ => "",
     };
 
-    // Build path: crate/module/.../prefix.name.html
-    let mut result = String::new();
-    for part in module_path {
-        result.push_str(part);
-        result.push('/');
-    }
-
+    // Build path: crate_name/prefix.name.html
     if matches!(inner, ItemEnum::Module(_)) {
-        result.push_str(item_name);
-        result.push_str("/index.html");
+        format!("{}/{}/index.html", crate_name, item_name)
     } else {
-        result.push_str(prefix);
-        result.push_str(item_name);
-        result.push_str(".html");
+        format!("{}/{}{}.html", crate_name, prefix, item_name)
     }
-
-    result
 }
 
 /// Extract the first paragraph from documentation.
