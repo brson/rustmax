@@ -45,7 +45,11 @@ pub fn build(input: &Path, output: &Path) -> AnyResult<()> {
     // Create output directory.
     fs::create_dir_all(output)?;
 
-    // Generate CSS.
+    // Copy shared theme CSS from www/.
+    let themes_css = include_str!("../../../www/rustmax-themes.css");
+    fs::write(output.join("rustmax-themes.css"), themes_css)?;
+
+    // Generate book-specific CSS.
     let css = generate_css();
     fs::write(output.join("rmxbook.css"), &css)?;
 
@@ -279,6 +283,7 @@ fn render_chapter(
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{path_to_root}rustmax-themes.css">
     <link rel="stylesheet" href="{path_to_root}rmxbook.css">
     <script>{script}</script>
 </head>
@@ -410,6 +415,15 @@ fn generate_index(book: &Book, output: &Path) -> AnyResult<()> {
 
 fn generate_script() -> &'static str {
     r#"(function(){
+  // Set theme based on system preference.
+  var dark = window.matchMedia('(prefers-color-scheme: dark)');
+  function setTheme() {
+    document.documentElement.setAttribute('data-theme', dark.matches ? 'dark' : 'light');
+  }
+  setTheme();
+  dark.addEventListener('change', setTheme);
+
+  // Nav toggle.
   var k = 'rmxbook-nav';
   var stored = localStorage.getItem(k);
   var mobile = window.matchMedia('(max-width: 768px)');
@@ -425,27 +439,10 @@ fn generate_script() -> &'static str {
 }
 
 fn generate_css() -> String {
-    r#"/* rmxbook - flexbox layout, no overlays */
+    r#"/* rmxbook - uses shared rustmax-themes.css variables */
 :root {
-    --bg: #fff;
-    --fg: #333;
-    --link: #0066cc;
-    --sidebar-bg: #f5f5f5;
-    --sidebar-width: 280px;
-    --code-bg: #f4f4f4;
-    --border: #ddd;
-    --toggle-size: 36px;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #1a1a1a;
-        --fg: #ddd;
-        --link: #6db3f2;
-        --sidebar-bg: #252525;
-        --code-bg: #2a2a2a;
-        --border: #444;
-    }
+    --rmx-sidebar-width: 280px;
+    --rmx-toggle-size: 36px;
 }
 
 * { box-sizing: border-box; }
@@ -453,11 +450,10 @@ fn generate_css() -> String {
 html, body {
     margin: 0;
     padding: 0;
-    font-family: "Source Serif 4", serif;
-    font-size: 16px;
+    font: var(--rmx-font-text);
     line-height: 1.6;
-    background: var(--bg);
-    color: var(--fg);
+    background: var(--rmx-color-bg);
+    color: var(--rmx-color-fg);
 }
 
 body {
@@ -465,8 +461,8 @@ body {
     min-height: 100vh;
 }
 
-a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--rmx-color-links); text-decoration: none; }
+a:hover { color: var(--rmx-color-accents); }
 
 /* Toggle - sticky, stays visible when scrolling */
 .nav-toggle {
@@ -474,13 +470,12 @@ a:hover { text-decoration: underline; }
     top: 0.5rem;
     align-self: flex-start;
     flex-shrink: 0;
-    width: var(--toggle-size);
-    height: var(--toggle-size);
+    width: var(--rmx-toggle-size);
+    height: var(--rmx-toggle-size);
     margin: 0.5rem;
     padding: 0;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--sidebar-bg);
+    border: 1px dashed var(--rmx-color-border);
+    background: var(--rmx-color-bg-alt);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -492,23 +487,23 @@ a:hover { text-decoration: underline; }
     content: '';
     width: 18px;
     height: 2px;
-    background: var(--fg);
-    box-shadow: 0 6px 0 var(--fg), 0 -6px 0 var(--fg);
+    background: var(--rmx-color-fg);
+    box-shadow: 0 6px 0 var(--rmx-color-fg), 0 -6px 0 var(--rmx-color-fg);
 }
 
-.nav-toggle:hover { background: var(--code-bg); }
+.nav-toggle:hover { background: var(--rmx-color-bg); }
 
 /* Sidebar - in flow, animates width to collapse */
 .sidebar {
     flex-shrink: 0;
-    width: var(--sidebar-width);
+    width: var(--rmx-sidebar-width);
     height: 100vh;
     position: sticky;
     top: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    background: var(--sidebar-bg);
-    border-right: 1px solid var(--border);
+    background: var(--rmx-color-bg-alt);
+    border-right: 1px dashed var(--rmx-color-border);
     padding: 1rem;
     transition: width 0.2s ease, padding 0.2s ease, border 0.2s ease;
 }
@@ -521,15 +516,16 @@ a:hover { text-decoration: underline; }
 }
 
 .sidebar-title {
-    font-weight: bold;
+    font: var(--rmx-font-em);
     font-size: 1.2rem;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px dashed var(--rmx-color-border);
     white-space: nowrap;
 }
 
-.sidebar-title a { color: var(--fg); }
+.sidebar-title a { color: var(--rmx-color-fg); }
+.sidebar-title a:hover { color: var(--rmx-color-accents); }
 .sidebar ul { list-style: none; padding: 0; margin: 0; }
 .sidebar li { margin: 0.3rem 0; white-space: nowrap; }
 .sidebar li ul { padding-left: 1rem; }
@@ -547,6 +543,7 @@ main {
 article { line-height: 1.7; }
 
 h1, h2, h3, h4, h5, h6 {
+    font: var(--rmx-font-em);
     margin-top: 1.5em;
     margin-bottom: 0.5em;
     line-height: 1.3;
@@ -557,19 +554,16 @@ h2 { font-size: 1.5rem; }
 h3 { font-size: 1.25rem; }
 
 code {
-    font-family: "Source Code Pro", monospace;
+    font: var(--rmx-font-code);
     font-size: 0.9em;
-    background: var(--code-bg);
+    background: var(--rmx-color-bg-alt);
     padding: 0.15em 0.3em;
-    border-radius: 3px;
 }
 
 pre {
-    background: var(--code-bg);
+    background: var(--rmx-color-bg-alt);
     padding: 1rem;
     overflow-x: auto;
-    border-radius: 4px;
-    border: 1px solid var(--border);
 }
 
 pre code { background: none; padding: 0; }
@@ -577,29 +571,28 @@ pre code { background: none; padding: 0; }
 blockquote {
     margin: 1rem 0;
     padding: 0.5rem 1rem;
-    border-left: 4px solid var(--border);
-    background: var(--code-bg);
+    border-left: 4px dashed var(--rmx-color-border);
+    background: var(--rmx-color-bg-alt);
 }
 
 table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-th, td { border: 1px solid var(--border); padding: 0.5rem; text-align: left; }
-th { background: var(--code-bg); }
+th, td { border: 1px dashed var(--rmx-color-border); padding: 0.5rem; text-align: left; }
+th { background: var(--rmx-color-bg-alt); }
 
 .nav-links {
     display: flex;
     justify-content: space-between;
     margin-top: 3rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px dashed var(--rmx-color-border);
 }
 
 .nav-links a {
     padding: 0.5rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    border: 1px dashed var(--rmx-color-border);
 }
 
-.nav-links a:hover { background: var(--code-bg); text-decoration: none; }
+.nav-links a:hover { background: var(--rmx-color-bg-alt); }
 
 /* Mobile: vertical stacking */
 @media (max-width: 768px) {
@@ -610,9 +603,8 @@ th { background: var(--code-bg); }
         top: 0;
         align-self: stretch;
         width: 100%;
-        height: var(--toggle-size);
+        height: var(--rmx-toggle-size);
         margin: 0;
-        border-radius: 0;
         border-left: none;
         border-right: none;
         border-top: none;
@@ -624,7 +616,7 @@ th { background: var(--code-bg); }
         height: auto;
         max-height: 60vh;
         border-right: none;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px dashed var(--rmx-color-border);
         transition: max-height 0.2s ease, padding 0.2s ease, border 0.2s ease;
     }
 

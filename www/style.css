@@ -57,6 +57,7 @@ main > * {
 h1 {
     letter-spacing: 0.5em;
     font: var(--rmx-font-em);
+    font-size: 150%;
 }
 
 h2 {
