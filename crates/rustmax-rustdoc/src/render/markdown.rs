@@ -106,9 +106,9 @@ fn preprocess_shortcut_links(md: &str) -> String {
         defined_refs.insert(cap.get(1).unwrap().as_str().to_string());
     }
 
-    // Match [`path::to::Item`] - we'll check for trailing ( or [ manually.
+    // Match [`path::to::Item`] or [`::crate::Item`] - we'll check for trailing ( or [ manually.
     let re = Regex::new(
-        r#"\[`([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\]"#
+        r#"\[`(::?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\]"#
     ).unwrap();
 
     let mut result = String::with_capacity(md.len());
@@ -230,12 +230,15 @@ fn resolve_rust_path(
 ) -> Option<String> {
     let (kind_filter, clean_path) = strip_disambiguator(path);
 
-    // Handle crate:: prefix.
+    // Track if path explicitly refers to external crate (starts with ::).
+    let is_external_crate_ref = clean_path.starts_with("::");
+
+    // Handle crate:: prefix and :: prefix for external crates.
     let lookup_path = if let Some(rest) = clean_path.strip_prefix("crate::") {
         format!("{}::{}", current_crate, rest)
-    } else if clean_path.starts_with("::") {
-        // Absolute path from crate root.
-        format!("{}::{}", current_crate, clean_path.trim_start_matches(':'))
+    } else if let Some(rest) = clean_path.strip_prefix("::") {
+        // `::crate_name::path` refers to an external crate, not current crate.
+        rest.to_string()
     } else {
         clean_path.to_string()
     };
@@ -243,7 +246,8 @@ fn resolve_rust_path(
     // For paths without ::, try current crate prefix FIRST.
     // This ensures `anyhow` in rustmax docs resolves to `rustmax::anyhow` (module)
     // rather than `anyhow` (external crate).
-    if !lookup_path.contains("::") {
+    // BUT skip this if the path explicitly started with :: (external crate reference).
+    if !is_external_crate_ref && !lookup_path.contains("::") {
         let crate_prefixed = format!("{}::{}", current_crate, lookup_path);
         if let Some(location) = index.items.get(&crate_prefixed) {
             if matches_kind_filter(location, kind_filter) {
