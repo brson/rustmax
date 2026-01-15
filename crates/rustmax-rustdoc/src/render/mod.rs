@@ -181,6 +181,17 @@ impl<'a> RenderContext<'a> {
             current_depth,
         )
     }
+
+    /// Render a short documentation string (first paragraph only) as inline HTML.
+    pub fn render_short_doc(&self, full_docs: &str, current_depth: usize) -> String {
+        markdown::render_short_doc(
+            full_docs,
+            &self.highlighter,
+            self.global_index,
+            self.crate_name(),
+            current_depth,
+        )
+    }
 }
 
 fn load_templates() -> AnyResult<Tera> {

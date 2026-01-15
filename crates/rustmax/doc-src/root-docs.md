@@ -1,10 +1,9 @@
 A collection of Rust crates.
 
-**🚧
-WARNING:
+**☠
 Do not use this project.
 It is neither stable nor supported.
-🚧**
+☠**
 
 
 This crate documents and reexports selected high-quality Rust crates

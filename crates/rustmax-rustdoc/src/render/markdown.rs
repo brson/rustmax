@@ -416,6 +416,69 @@ fn html_escape(s: &str) -> String {
         .replace('"', "&quot;")
 }
 
+/// Extract reference-style link definitions from markdown.
+fn extract_reference_definitions(md: &str) -> String {
+    let mut defs = Vec::new();
+    for line in md.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') && trimmed.contains("]:") {
+            defs.push(trimmed);
+        }
+    }
+    defs.join("\n")
+}
+
+/// Extract first paragraph from markdown.
+fn extract_first_paragraph(md: &str) -> String {
+    let trimmed = md.trim();
+    if let Some(pos) = trimmed.find("\n\n") {
+        trimmed[..pos].to_string()
+    } else {
+        trimmed.to_string()
+    }
+}
+
+/// Strip wrapping `<p>...</p>` tags from HTML for inline display.
+fn strip_paragraph_wrapper(html: &str) -> String {
+    let trimmed = html.trim();
+    if trimmed.starts_with("<p>") && trimmed.ends_with("</p>") {
+        trimmed[3..trimmed.len()-4].to_string()
+    } else {
+        trimmed.to_string()
+    }
+}
+
+/// Render the first paragraph of documentation as inline HTML.
+///
+/// Handles reference-style links by extracting definitions from the full doc,
+/// then rendering only the first paragraph with those definitions available.
+pub fn render_short_doc(
+    full_docs: &str,
+    highlighter: &Highlighter,
+    global_index: Option<&GlobalItemIndex>,
+    current_crate: &str,
+    current_depth: usize,
+) -> String {
+    let ref_defs = extract_reference_definitions(full_docs);
+    let first_para = extract_first_paragraph(full_docs);
+
+    let combined = if ref_defs.is_empty() {
+        first_para
+    } else {
+        format!("{}\n\n{}", first_para, ref_defs)
+    };
+
+    let html = render_markdown_with_links(
+        &combined,
+        highlighter,
+        global_index,
+        current_crate,
+        current_depth,
+    );
+
+    strip_paragraph_wrapper(&html)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

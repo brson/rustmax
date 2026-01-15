@@ -68,7 +68,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                 .unwrap_or_default(),
             short_doc: submodule.module_item.as_ref()
                 .and_then(|m| m.item.docs.as_ref())
-                .map(|d| first_paragraph(d))
+                .map(|d| ctx.render_short_doc(d, depth))
                 .unwrap_or_default(),
         });
     }
@@ -78,7 +78,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
             name: item.item.name.clone().unwrap_or_default(),
             path: format!("{}{}", path_to_root, item.html_path.display()),
             short_doc: item.item.docs.as_ref()
-                .map(|d| first_paragraph(d))
+                .map(|d| ctx.render_short_doc(d, depth))
                 .unwrap_or_default(),
         };
 
@@ -124,7 +124,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                                     name: item_name,
                                     path: item_path,
                                     short_doc: child_item.docs.as_ref()
-                                        .map(|d| first_paragraph(d))
+                                        .map(|d| ctx.render_short_doc(d, depth))
                                         .unwrap_or_default(),
                                 };
 
@@ -210,39 +210,4 @@ fn build_original_crate_path(crate_name: &str, item_name: &str, inner: &ItemEnum
     } else {
         format!("{}/{}{}.html", crate_name, prefix, item_name)
     }
-}
-
-/// Extract the first paragraph from documentation.
-///
-/// Strips reference-style link definitions that might appear in the text.
-fn first_paragraph(docs: &str) -> String {
-    let trimmed = docs.trim();
-
-    // Find the first blank line (paragraph break).
-    let first_para = if let Some(pos) = trimmed.find("\n\n") {
-        &trimmed[..pos]
-    } else {
-        trimmed
-    };
-
-    // Filter out lines that look like reference definitions: [label]: url
-    // These start with [ and contain ]: somewhere.
-    let filtered: Vec<&str> = first_para.lines()
-        .map(|l| l.trim())
-        .filter(|l| {
-            // Skip reference definitions.
-            if l.starts_with('[') {
-                if let Some(bracket_end) = l.find("]:") {
-                    // Check the part before ]: is a valid label (no nested brackets).
-                    let label = &l[1..bracket_end];
-                    if !label.contains('[') && !label.contains(']') {
-                        return false;
-                    }
-                }
-            }
-            true
-        })
-        .collect();
-
-    filtered.join(" ")
 }

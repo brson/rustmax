@@ -61,7 +61,7 @@
                 {% for item in modules %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -75,7 +75,7 @@
                 {% for item in structs %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -89,7 +89,7 @@
                 {% for item in enums %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -103,7 +103,7 @@
                 {% for item in traits %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -117,7 +117,7 @@
                 {% for item in functions %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -131,7 +131,7 @@
                 {% for item in types %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -145,7 +145,7 @@
                 {% for item in constants %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -159,7 +159,7 @@
                 {% for item in macros %}
                 <li>
                     <a href="{{ item.path }}">{{ item.name }}</a>
-                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc }}</span>{% endif %}
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
