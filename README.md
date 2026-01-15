@@ -41,7 +41,7 @@ It is neither stable nor supported.
 | `flate2 = "1.0.36"` | Deflate, gzip, and zlib compression | [📖](https://docs.rs/flate2/1.0.36/flate2) |
 | `futures = "0.3.31"` | Basic async definitions and helpers | [📖](https://docs.rs/futures/0.3.31/futures) |
 | `glob = "0.3.2"` | Unix shell style pattern matching | [📖](https://docs.rs/glob/0.3.2/glob) |
-| `hex = "0.4.3"` | Hexidecimal encoding | [📖](https://docs.rs/hex/0.4.3/hex) |
+| `hex = "0.4.3"` | Hexadecimal encoding | [📖](https://docs.rs/hex/0.4.3/hex) |
 | `http = "1.2.0"` | Shared HTTP definitions | [📖](https://docs.rs/http/1.2.0/http) |
 | `hyper = "1.6.0"` | HTTP server | [📖](https://docs.rs/hyper/1.6.0/hyper) |
 | `ignore = "0.4.23"` | Gitignore-aware directory traversal | [📖](https://docs.rs/ignore/0.4.23/ignore) |
