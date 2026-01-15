@@ -69,7 +69,7 @@ doc-api: prebuild
     # Generate JSON for rustmax and all dependencies.
     RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +nightly doc -p rustmax --features rmx-profile-max
     # Copy std library JSON files from nightly toolchain (requires rust-docs-json component).
-    cp "$$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
+    cp "$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
     # Build HTML docs with rustmax-rustdoc.
     rm -rf out/api
     mkdir -p out/api

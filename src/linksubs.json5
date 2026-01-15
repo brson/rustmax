@@ -1,11 +1,11 @@
 {
     // ahash
     "crate::std::collections::HashMap":
-    "https://doc.rust-lang.org/stable/std/collections/struct.HashMap.html",
+    "api/std/collections/struct.HashMap.html",
     "crate::std::collections::HashSet":
-    "https://doc.rust-lang.org/stable/std/collections/struct.HashSet.html",
+    "api/std/collections/struct.HashSet.html",
     "crate::std::hash::Hasher":
-    "https://doc.rust-lang.org/stable/std/hash/trait.Hasher.html",
+    "api/std/hash/trait.Hasher.html",
     "crate::ahash::AHasher":
     "api/rustmax/ahash/struct.AHasher.html",
     "crate::ahash::AHashMap":
@@ -27,7 +27,7 @@
     "crate::anyhow::Context::context":
     "api/rustmax/anyhow/trait.Context.html#tymethod.context",
     "crate::std::error::Error":
-    "https://doc.rust-lang.org/stable/std/error/trait.Error.html",
+    "api/std/error/trait.Error.html",
 
     // blake3
     "crate::blake3::hash":
@@ -63,13 +63,13 @@
     "crate::crossbeam::utils::Backoff":
     "api/rustmax/crossbeam/utils/struct.Backoff.html",
     "crate::std::sync":
-    "https://doc.rust-lang.org/stable/std/sync/index.html",
+    "api/std/sync/index.html",
     "crate::std::thread":
-    "https://doc.rust-lang.org/stable/std/thread/index.html",
+    "api/std/thread/index.html",
     "crate::std::sync::mpsc":
-    "https://doc.rust-lang.org/stable/std/sync/mpsc/index.html",
+    "api/std/sync/mpsc/index.html",
     "crate::std::thread::spawn":
-    "https://doc.rust-lang.org/stable/std/thread/fn.spawn.html",
+    "api/std/thread/fn.spawn.html",
 
     // futures
     "crate::futures::Future":
@@ -225,25 +225,25 @@
     "crate::thiserror::Error":
     "api/rustmax/thiserror/derive.Error.html",
     "crate::std::fmt::Display":
-    "https://doc.rust-lang.org/stable/std/fmt/trait.Display.html",
+    "api/std/fmt/trait.Display.html",
     "crate::std::convert::From":
-    "https://doc.rust-lang.org/stable/std/convert/trait.From.html",
+    "api/std/convert/trait.From.html",
     "crate::anyhow":
     "api/rustmax/anyhow/index.html",
 
     // derive_more
     "crate::std::ops::Add":
-    "https://doc.rust-lang.org/stable/std/ops/trait.Add.html",
+    "api/std/ops/trait.Add.html",
     "crate::std::ops::Mul":
-    "https://doc.rust-lang.org/stable/std/ops/trait.Mul.html",
+    "api/std/ops/trait.Mul.html",
     "crate::std::ops::Deref":
-    "https://doc.rust-lang.org/stable/std/ops/trait.Deref.html",
+    "api/std/ops/trait.Deref.html",
     "crate::std::convert::Into":
-    "https://doc.rust-lang.org/stable/std/convert/trait.Into.html",
+    "api/std/convert/trait.Into.html",
     "crate::std::convert::TryFrom":
-    "https://doc.rust-lang.org/stable/std/convert/trait.TryFrom.html",
+    "api/std/convert/trait.TryFrom.html",
     "crate::std::iter::IntoIterator":
-    "https://doc.rust-lang.org/stable/std/iter/trait.IntoIterator.html",
+    "api/std/iter/trait.IntoIterator.html",
 
     // comrak
     "crate::comrak::markdown_to_html":
@@ -411,7 +411,7 @@
     "https://semver.org/":
     "https://semver.org/",
     "https://doc.rust-lang.org/cargo/reference/semver.html":
-    "https://doc.rust-lang.org/cargo/reference/semver.html",
+    "library/cargo-book/reference/semver.html",
 
     // tempfile
     "crate::tempfile::tempfile":
