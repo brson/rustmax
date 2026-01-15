@@ -7,61 +7,61 @@
     "crate::std::hash::Hasher":
     "https://doc.rust-lang.org/stable/std/hash/trait.Hasher.html",
     "crate::ahash::AHasher":
-    "https://docs.rs/ahash/latest/ahash/struct.AHasher.html",
+    "api/rustmax/ahash/struct.AHasher.html",
     "crate::ahash::AHashMap":
-    "https://docs.rs/ahash/latest/ahash/struct.AHashMap.html",
+    "api/rustmax/ahash/struct.AHashMap.html",
 
     // anyhow
     "crate::thiserror":
-    "https://docs.rs/thiserror",
+    "api/rustmax/thiserror/index.html",
     "crate::anyhow::anyhow":
-    "https://docs.rs/anyhow/latest/anyhow/macro.anyhow.html",
+    "api/rustmax/anyhow/macro.anyhow.html",
     "crate::anyhow::bail":
-    "https://docs.rs/anyhow/latest/anyhow/macro.bail.html",
+    "api/rustmax/anyhow/macro.bail.html",
     "crate::anyhow::Error":
-    "https://docs.rs/anyhow/latest/anyhow/struct.Error.html",
+    "api/rustmax/anyhow/struct.Error.html",
     "crate::anyhow::Result":
-    "https://docs.rs/anyhow/latest/anyhow/type.Result.html",
+    "api/rustmax/anyhow/type.Result.html",
     "crate::anyhow::Context":
-    "https://docs.rs/anyhow/latest/anyhow/trait.Context.html",
+    "api/rustmax/anyhow/trait.Context.html",
     "crate::anyhow::Context::context":
-    "https://docs.rs/anyhow/latest/anyhow/trait.Context.html#tymethod.context",
+    "api/rustmax/anyhow/trait.Context.html#tymethod.context",
     "crate::std::error::Error":
     "https://doc.rust-lang.org/stable/std/error/trait.Error.html",
 
     // blake3
     "crate::blake3::hash":
-    "https://docs.rs/blake3/latest/blake3/fn.hash.html",
+    "api/rustmax/blake3/fn.hash.html",
     "crate::blake3::Hasher":
-    "https://docs.rs/blake3/latest/blake3/struct.Hasher.html",
+    "api/rustmax/blake3/struct.Hasher.html",
     "crate::blake3::keyed_hash":
-    "https://docs.rs/blake3/latest/blake3/fn.keyed_hash.html",
+    "api/rustmax/blake3/fn.keyed_hash.html",
     "crate::blake3::derive_key":
-    "https://docs.rs/blake3/latest/blake3/fn.derive_key.html",
+    "api/rustmax/blake3/fn.derive_key.html",
     "crate::blake3::Hasher::finalize_xof":
-    "https://docs.rs/blake3/latest/blake3/struct.Hasher.html#method.finalize_xof",
+    "api/rustmax/blake3/struct.Hasher.html#method.finalize_xof",
     "crate::blake3::OutputReader":
-    "https://docs.rs/blake3/latest/blake3/struct.OutputReader.html",
+    "api/rustmax/blake3/struct.OutputReader.html",
 
     // bytes
     "crate::bytes::Bytes":
-    "https://docs.rs/bytes/latest/bytes/struct.Bytes.html",
+    "api/rustmax/bytes/struct.Bytes.html",
     "crate::bytes::BytesMut":
-    "https://docs.rs/bytes/latest/bytes/struct.BytesMut.html",
+    "api/rustmax/bytes/struct.BytesMut.html",
     "crate::bytes::Buf":
-    "https://docs.rs/bytes/latest/bytes/trait.Buf.html",
+    "api/rustmax/bytes/trait.Buf.html",
     "crate::bytes::BufMut":
-    "https://docs.rs/bytes/latest/bytes/trait.BufMut.html",
+    "api/rustmax/bytes/trait.BufMut.html",
 
     // crossbeam
     "crate::crossbeam::channel":
-    "https://docs.rs/crossbeam/latest/crossbeam/channel/index.html",
+    "api/rustmax/crossbeam/channel/index.html",
     "crate::crossbeam::scope":
-    "https://docs.rs/crossbeam/latest/crossbeam/fn.scope.html",
+    "api/rustmax/crossbeam/fn.scope.html",
     "crate::crossbeam::select":
-    "https://docs.rs/crossbeam/latest/crossbeam/macro.select.html",
+    "api/rustmax/crossbeam/macro.select.html",
     "crate::crossbeam::utils::Backoff":
-    "https://docs.rs/crossbeam/latest/crossbeam/utils/struct.Backoff.html",
+    "api/rustmax/crossbeam/utils/struct.Backoff.html",
     "crate::std::sync":
     "https://doc.rust-lang.org/stable/std/sync/index.html",
     "crate::std::thread":
@@ -73,147 +73,147 @@
 
     // futures
     "crate::futures::Future":
-    "https://docs.rs/futures/latest/futures/future/trait.Future.html",
+    "api/rustmax/futures/future/trait.Future.html",
     "crate::futures::Stream":
-    "https://docs.rs/futures/latest/futures/stream/trait.Stream.html",
+    "api/rustmax/futures/stream/trait.Stream.html",
     "crate::futures::Sink":
-    "https://docs.rs/futures/latest/futures/sink/trait.Sink.html",
+    "api/rustmax/futures/sink/trait.Sink.html",
     "crate::futures::future":
-    "https://docs.rs/futures/latest/futures/future/index.html",
+    "api/rustmax/futures/future/index.html",
     "crate::futures::stream":
-    "https://docs.rs/futures/latest/futures/stream/index.html",
+    "api/rustmax/futures/stream/index.html",
     "crate::futures::sink":
-    "https://docs.rs/futures/latest/futures/sink/index.html",
+    "api/rustmax/futures/sink/index.html",
     "crate::futures::executor":
-    "https://docs.rs/futures/latest/futures/executor/index.html",
+    "api/rustmax/futures/executor/index.html",
     "crate::futures::channel":
-    "https://docs.rs/futures/latest/futures/channel/index.html",
+    "api/rustmax/futures/channel/index.html",
     "crate::futures::channel::mpsc":
-    "https://docs.rs/futures/latest/futures/channel/mpsc/index.html",
+    "api/rustmax/futures/channel/mpsc/index.html",
     "crate::futures::channel::oneshot":
-    "https://docs.rs/futures/latest/futures/channel/oneshot/index.html",
+    "api/rustmax/futures/channel/oneshot/index.html",
 
     // flate2
     "crate::flate2::write::DeflateEncoder":
-    "https://docs.rs/flate2/latest/flate2/write/struct.DeflateEncoder.html",
+    "api/rustmax/flate2/write/struct.DeflateEncoder.html",
     "crate::flate2::read::DeflateDecoder":
-    "https://docs.rs/flate2/latest/flate2/read/struct.DeflateDecoder.html",
+    "api/rustmax/flate2/read/struct.DeflateDecoder.html",
     "crate::flate2::write::GzEncoder":
-    "https://docs.rs/flate2/latest/flate2/write/struct.GzEncoder.html",
+    "api/rustmax/flate2/write/struct.GzEncoder.html",
     "crate::flate2::read::GzDecoder":
-    "https://docs.rs/flate2/latest/flate2/read/struct.GzDecoder.html",
+    "api/rustmax/flate2/read/struct.GzDecoder.html",
     "crate::flate2::write::ZlibEncoder":
-    "https://docs.rs/flate2/latest/flate2/write/struct.ZlibEncoder.html",
+    "api/rustmax/flate2/write/struct.ZlibEncoder.html",
     "crate::flate2::read::ZlibDecoder":
-    "https://docs.rs/flate2/latest/flate2/read/struct.ZlibDecoder.html",
+    "api/rustmax/flate2/read/struct.ZlibDecoder.html",
 
     // glob
     "crate::glob::glob":
-    "https://docs.rs/glob/latest/glob/fn.glob.html",
+    "api/rustmax/glob/fn.glob.html",
     "crate::glob::glob_with":
-    "https://docs.rs/glob/latest/glob/fn.glob_with.html",
+    "api/rustmax/glob/fn.glob_with.html",
     "crate::glob::Pattern":
-    "https://docs.rs/glob/latest/glob/struct.Pattern.html",
+    "api/rustmax/glob/struct.Pattern.html",
 
     // chrono
     "crate::chrono::NaiveDate":
-    "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html",
+    "api/rustmax/chrono/naive/struct.NaiveDate.html",
     "crate::chrono::NaiveTime":
-    "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveTime.html",
+    "api/rustmax/chrono/naive/struct.NaiveTime.html",
     "crate::chrono::NaiveDateTime":
-    "https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDateTime.html",
+    "api/rustmax/chrono/naive/struct.NaiveDateTime.html",
     "crate::chrono::DateTime":
-    "https://docs.rs/chrono/latest/chrono/struct.DateTime.html",
+    "api/rustmax/chrono/struct.DateTime.html",
     "crate::chrono::TimeZone":
-    "https://docs.rs/chrono/latest/chrono/trait.TimeZone.html",
+    "api/rustmax/chrono/trait.TimeZone.html",
     "crate::jiff":
-    "https://docs.rs/jiff",
+    "api/rustmax/jiff/index.html",
 
     // jiff
     "crate::jiff::Timestamp":
-    "https://docs.rs/jiff/latest/jiff/struct.Timestamp.html",
+    "api/rustmax/jiff/struct.Timestamp.html",
     "crate::jiff::Zoned":
-    "https://docs.rs/jiff/latest/jiff/struct.Zoned.html",
+    "api/rustmax/jiff/struct.Zoned.html",
     "crate::jiff::civil::DateTime":
-    "https://docs.rs/jiff/latest/jiff/civil/struct.DateTime.html",
+    "api/rustmax/jiff/civil/struct.DateTime.html",
     "crate::jiff::civil::Date":
-    "https://docs.rs/jiff/latest/jiff/civil/struct.Date.html",
+    "api/rustmax/jiff/civil/struct.Date.html",
     "crate::jiff::civil::Time":
-    "https://docs.rs/jiff/latest/jiff/civil/struct.Time.html",
+    "api/rustmax/jiff/civil/struct.Time.html",
 
     // serde
     "crate::serde":
-    "https://docs.rs/serde",
+    "api/rustmax/serde/index.html",
     "crate::serde::Serialize":
-    "https://docs.rs/serde/latest/serde/trait.Serialize.html",
+    "api/rustmax/serde/trait.Serialize.html",
     "crate::serde::Deserialize":
-    "https://docs.rs/serde/latest/serde/trait.Deserialize.html",
+    "api/rustmax/serde/trait.Deserialize.html",
     "crate::serde_json":
-    "https://docs.rs/serde_json",
+    "api/rustmax/serde_json/index.html",
 
     // tokio
     "crate::tokio::runtime::Runtime":
-    "https://docs.rs/tokio/latest/tokio/runtime/struct.Runtime.html",
+    "api/rustmax/tokio/runtime/struct.Runtime.html",
     "crate::tokio::main":
-    "https://docs.rs/tokio/latest/tokio/attr.main.html",
+    "api/rustmax/tokio/attr.main.html",
     "crate::tokio::net::TcpListener":
-    "https://docs.rs/tokio/latest/tokio/net/struct.TcpListener.html",
+    "api/rustmax/tokio/net/struct.TcpListener.html",
     "crate::tokio::net::TcpStream":
-    "https://docs.rs/tokio/latest/tokio/net/struct.TcpStream.html",
+    "api/rustmax/tokio/net/struct.TcpStream.html",
 
     // regex
     "crate::regex::Regex":
-    "https://docs.rs/regex/latest/regex/struct.Regex.html",
+    "api/rustmax/regex/struct.Regex.html",
     "crate::regex::Regex::new":
-    "https://docs.rs/regex/latest/regex/struct.Regex.html#method.new",
+    "api/rustmax/regex/struct.Regex.html#method.new",
     "crate::regex::Regex::is_match":
-    "https://docs.rs/regex/latest/regex/struct.Regex.html#method.is_match",
+    "api/rustmax/regex/struct.Regex.html#method.is_match",
 
     // itertools
     "crate::itertools::Itertools":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html",
+    "api/rustmax/itertools/trait.Itertools.html",
     "crate::itertools::Itertools::group_by":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.group_by",
+    "api/rustmax/itertools/trait.Itertools.html#method.group_by",
     "crate::itertools::Itertools::chunks":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.chunks",
+    "api/rustmax/itertools/trait.Itertools.html#method.chunks",
     "crate::itertools::Itertools::sorted":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.sorted",
+    "api/rustmax/itertools/trait.Itertools.html#method.sorted",
     "crate::itertools::Itertools::dedup":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.dedup",
+    "api/rustmax/itertools/trait.Itertools.html#method.dedup",
     "crate::itertools::Itertools::intersperse":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.intersperse",
+    "api/rustmax/itertools/trait.Itertools.html#method.intersperse",
     "crate::itertools::Itertools::cartesian_product":
-    "https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.cartesian_product",
+    "api/rustmax/itertools/trait.Itertools.html#method.cartesian_product",
     "crate::itertools::zip_eq":
-    "https://docs.rs/itertools/latest/itertools/fn.zip_eq.html",
+    "api/rustmax/itertools/fn.zip_eq.html",
     "crate::itertools::repeat_n":
-    "https://docs.rs/itertools/latest/itertools/fn.repeat_n.html",
+    "api/rustmax/itertools/fn.repeat_n.html",
 
     // memchr
     "crate::memchr::memchr":
-    "https://docs.rs/memchr/latest/memchr/fn.memchr.html",
+    "api/rustmax/memchr/fn.memchr.html",
     "crate::memchr::memchr2":
-    "https://docs.rs/memchr/latest/memchr/fn.memchr2.html",
+    "api/rustmax/memchr/fn.memchr2.html",
     "crate::memchr::memchr3":
-    "https://docs.rs/memchr/latest/memchr/fn.memchr3.html",
+    "api/rustmax/memchr/fn.memchr3.html",
     "crate::memchr::memmem":
-    "https://docs.rs/memchr/latest/memchr/memmem/index.html",
+    "api/rustmax/memchr/memmem/index.html",
     "crate::regex":
-    "https://docs.rs/regex",
+    "api/rustmax/regex/index.html",
 
     // log
     "crate::log::error":
-    "https://docs.rs/log/latest/log/macro.error.html",
+    "api/rustmax/log/macro.error.html",
     "crate::log::warn":
-    "https://docs.rs/log/latest/log/macro.warn.html",
+    "api/rustmax/log/macro.warn.html",
     "crate::log::info":
-    "https://docs.rs/log/latest/log/macro.info.html",
+    "api/rustmax/log/macro.info.html",
     "crate::log::debug":
-    "https://docs.rs/log/latest/log/macro.debug.html",
+    "api/rustmax/log/macro.debug.html",
     "crate::log::trace":
-    "https://docs.rs/log/latest/log/macro.trace.html",
+    "api/rustmax/log/macro.trace.html",
     "crate::env_logger":
-    "https://docs.rs/env_logger",
+    "api/rustmax/env_logger/index.html",
     "crate::simplelog":
     "https://docs.rs/simplelog",
     "crate::fern":
@@ -223,13 +223,13 @@
 
     // thiserror
     "crate::thiserror::Error":
-    "https://docs.rs/thiserror/latest/thiserror/derive.Error.html",
+    "api/rustmax/thiserror/derive.Error.html",
     "crate::std::fmt::Display":
     "https://doc.rust-lang.org/stable/std/fmt/trait.Display.html",
     "crate::std::convert::From":
     "https://doc.rust-lang.org/stable/std/convert/trait.From.html",
     "crate::anyhow":
-    "https://docs.rs/anyhow",
+    "api/rustmax/anyhow/index.html",
 
     // derive_more
     "crate::std::ops::Add":
@@ -247,167 +247,167 @@
 
     // comrak
     "crate::comrak::markdown_to_html":
-    "https://docs.rs/comrak/latest/comrak/fn.markdown_to_html.html",
+    "api/rustmax/comrak/fn.markdown_to_html.html",
     "crate::comrak::parse_document":
-    "https://docs.rs/comrak/latest/comrak/fn.parse_document.html",
+    "api/rustmax/comrak/fn.parse_document.html",
     "crate::comrak::Options":
-    "https://docs.rs/comrak/latest/comrak/struct.Options.html",
+    "api/rustmax/comrak/struct.Options.html",
 
     // clap
     "crate::clap::Parser":
-    "https://docs.rs/clap/latest/clap/trait.Parser.html",
+    "api/rustmax/clap/trait.Parser.html",
     "crate::clap::Subcommand":
-    "https://docs.rs/clap/latest/clap/trait.Subcommand.html",
+    "api/rustmax/clap/trait.Subcommand.html",
     "crate::clap::Command":
-    "https://docs.rs/clap/latest/clap/struct.Command.html",
+    "api/rustmax/clap/struct.Command.html",
     "crate::clap::Arg":
-    "https://docs.rs/clap/latest/clap/struct.Arg.html",
+    "api/rustmax/clap/struct.Arg.html",
 
     // rayon
     "crate::rayon::iter::ParallelIterator":
-    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html",
+    "api/rustmax/rayon/iter/trait.ParallelIterator.html",
     "crate::rayon::slice::ParallelSlice":
-    "https://docs.rs/rayon/latest/rayon/slice/trait.ParallelSlice.html",
+    "api/rustmax/rayon/slice/trait.ParallelSlice.html",
     "crate::rayon::iter::ParallelIterator::map":
-    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html#method.map",
+    "api/rustmax/rayon/iter/trait.ParallelIterator.html#method.map",
     "crate::rayon::iter::ParallelIterator::filter":
-    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html#method.filter",
+    "api/rustmax/rayon/iter/trait.ParallelIterator.html#method.filter",
     "crate::rayon::iter::ParallelIterator::reduce":
-    "https://docs.rs/rayon/latest/rayon/iter/trait.ParallelIterator.html#method.reduce",
+    "api/rustmax/rayon/iter/trait.ParallelIterator.html#method.reduce",
     "crate::rayon::slice::ParallelSliceMut::par_sort":
-    "https://docs.rs/rayon/latest/rayon/slice/trait.ParallelSliceMut.html#method.par_sort",
+    "api/rustmax/rayon/slice/trait.ParallelSliceMut.html#method.par_sort",
     "crate::rayon::join":
-    "https://docs.rs/rayon/latest/rayon/fn.join.html",
+    "api/rustmax/rayon/fn.join.html",
     "crate::rayon::scope":
-    "https://docs.rs/rayon/latest/rayon/fn.scope.html",
+    "api/rustmax/rayon/fn.scope.html",
     "crate::rayon::ThreadPool":
-    "https://docs.rs/rayon/latest/rayon/struct.ThreadPool.html",
+    "api/rustmax/rayon/struct.ThreadPool.html",
 
     // num-bigint
     "crate::num_bigint::BigInt":
-    "https://docs.rs/num-bigint/latest/num_bigint/struct.BigInt.html",
+    "api/rustmax/num_bigint/struct.BigInt.html",
     "crate::num_bigint::BigUint":
-    "https://docs.rs/num-bigint/latest/num_bigint/struct.BigUint.html",
+    "api/rustmax/num_bigint/struct.BigUint.html",
 
     // sha2
     "crate::sha2::Digest":
-    "https://docs.rs/sha2/latest/sha2/trait.Digest.html",
+    "api/rustmax/sha2/trait.Digest.html",
     "crate::sha2::Digest::digest":
-    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.digest",
+    "api/rustmax/sha2/trait.Digest.html#method.digest",
     "crate::sha2::Digest::new":
-    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.new",
+    "api/rustmax/sha2/trait.Digest.html#method.new",
     "crate::sha2::Digest::update":
-    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.update",
+    "api/rustmax/sha2/trait.Digest.html#method.update",
     "crate::sha2::Digest::finalize":
-    "https://docs.rs/sha2/latest/sha2/trait.Digest.html#method.finalize",
+    "api/rustmax/sha2/trait.Digest.html#method.finalize",
 
     // base64
     "crate::base64::encode":
-    "https://docs.rs/base64/latest/base64/fn.encode.html",
+    "api/rustmax/base64/fn.encode.html",
     "crate::base64::decode":
-    "https://docs.rs/base64/latest/base64/fn.decode.html",
+    "api/rustmax/base64/fn.decode.html",
     "crate::base64::Engine":
-    "https://docs.rs/base64/latest/base64/trait.Engine.html",
+    "api/rustmax/base64/trait.Engine.html",
 
     // serde_json
     "crate::serde_json::to_string":
-    "https://docs.rs/serde_json/latest/serde_json/fn.to_string.html",
+    "api/rustmax/serde_json/fn.to_string.html",
     "crate::serde_json::from_str":
-    "https://docs.rs/serde_json/latest/serde_json/fn.from_str.html",
+    "api/rustmax/serde_json/fn.from_str.html",
     "crate::serde_json::to_writer":
-    "https://docs.rs/serde_json/latest/serde_json/fn.to_writer.html",
+    "api/rustmax/serde_json/fn.to_writer.html",
     "crate::serde_json::from_reader":
-    "https://docs.rs/serde_json/latest/serde_json/fn.from_reader.html",
+    "api/rustmax/serde_json/fn.from_reader.html",
     "crate::serde_json::to_value":
-    "https://docs.rs/serde_json/latest/serde_json/fn.to_value.html",
+    "api/rustmax/serde_json/fn.to_value.html",
     "crate::serde_json::from_value":
-    "https://docs.rs/serde_json/latest/serde_json/fn.from_value.html",
+    "api/rustmax/serde_json/fn.from_value.html",
     "crate::serde_json::Value":
-    "https://docs.rs/serde_json/latest/serde_json/enum.Value.html",
+    "api/rustmax/serde_json/enum.Value.html",
 
     // rand
     "crate::rand::rng":
-    "https://docs.rs/rand/latest/rand/fn.rng.html",
+    "api/rustmax/rand/fn.rng.html",
     "crate::rand::Rng":
-    "https://docs.rs/rand/latest/rand/trait.Rng.html",
+    "api/rustmax/rand/trait.Rng.html",
     "crate::rand::random":
-    "https://docs.rs/rand/latest/rand/fn.random.html",
+    "api/rustmax/rand/fn.random.html",
     "crate::rand::RngCore":
-    "https://docs.rs/rand/latest/rand/trait.RngCore.html",
+    "api/rustmax/rand/trait.RngCore.html",
     "crate::rand::SeedableRng":
-    "https://docs.rs/rand/latest/rand/trait.SeedableRng.html",
+    "api/rustmax/rand/trait.SeedableRng.html",
     "crate::rand::rngs::StdRng":
-    "https://docs.rs/rand/latest/rand/rngs/struct.StdRng.html",
+    "api/rustmax/rand/rngs/struct.StdRng.html",
     "crate::rand::rngs::SmallRng":
-    "https://docs.rs/rand/latest/rand/rngs/struct.SmallRng.html",
+    "api/rustmax/rand/rngs/struct.SmallRng.html",
     "crate::rand_chacha":
-    "https://docs.rs/rand_chacha",
+    "api/rustmax/rand_chacha/index.html",
     "crate::rand_pcg":
-    "https://docs.rs/rand_pcg",
+    "api/rustmax/rand_pcg/index.html",
     "crate::rand_chacha::ChaCha12Rng":
-    "https://docs.rs/rand_chacha/latest/rand_chacha/struct.ChaCha12Rng.html",
+    "api/rustmax/rand_chacha/struct.ChaCha12Rng.html",
     "crate::rand_pcg::Pcg64":
-    "https://docs.rs/rand_pcg/latest/rand_pcg/type.Pcg64.html",
+    "api/rustmax/rand_pcg/type.Pcg64.html",
 
     // ignore
     "crate::ignore::WalkBuilder":
-    "https://docs.rs/ignore/latest/ignore/struct.WalkBuilder.html",
+    "api/rustmax/ignore/struct.WalkBuilder.html",
     "crate::ignore::Walk":
-    "https://docs.rs/ignore/latest/ignore/struct.Walk.html",
+    "api/rustmax/ignore/struct.Walk.html",
     "crate::ignore::WalkParallel":
-    "https://docs.rs/ignore/latest/ignore/struct.WalkParallel.html",
+    "api/rustmax/ignore/struct.WalkParallel.html",
 
     // image
     "crate::image::DynamicImage":
-    "https://docs.rs/image/latest/image/enum.DynamicImage.html",
+    "api/rustmax/image/enum.DynamicImage.html",
     "crate::image::ImageBuffer":
-    "https://docs.rs/image/latest/image/struct.ImageBuffer.html",
+    "api/rustmax/image/struct.ImageBuffer.html",
     "crate::image::open":
-    "https://docs.rs/image/latest/image/fn.open.html",
+    "api/rustmax/image/fn.open.html",
 
     // indicatif
     "crate::indicatif::ProgressBar":
-    "https://docs.rs/indicatif/latest/indicatif/struct.ProgressBar.html",
+    "api/rustmax/indicatif/struct.ProgressBar.html",
     "crate::indicatif::MultiProgress":
-    "https://docs.rs/indicatif/latest/indicatif/struct.MultiProgress.html",
+    "api/rustmax/indicatif/struct.MultiProgress.html",
     "crate::indicatif::ProgressStyle":
-    "https://docs.rs/indicatif/latest/indicatif/struct.ProgressStyle.html",
+    "api/rustmax/indicatif/struct.ProgressStyle.html",
 
     // notify
     "crate::notify::recommended_watcher":
-    "https://docs.rs/notify/latest/notify/fn.recommended_watcher.html",
+    "api/rustmax/notify/fn.recommended_watcher.html",
     "crate::notify::Watcher":
-    "https://docs.rs/notify/latest/notify/trait.Watcher.html",
+    "api/rustmax/notify/trait.Watcher.html",
     "crate::notify::RecursiveMode":
-    "https://docs.rs/notify/latest/notify/enum.RecursiveMode.html",
+    "api/rustmax/notify/enum.RecursiveMode.html",
 
     // hex
     "crate::hex::encode":
-    "https://docs.rs/hex/latest/hex/fn.encode.html",
+    "api/rustmax/hex/fn.encode.html",
     "crate::hex::decode":
-    "https://docs.rs/hex/latest/hex/fn.decode.html",
+    "api/rustmax/hex/fn.decode.html",
     "crate::hex::encode_upper":
-    "https://docs.rs/hex/latest/hex/fn.encode_upper.html",
+    "api/rustmax/hex/fn.encode_upper.html",
 
     // mime
     "crate::mime::Mime":
-    "https://docs.rs/mime/latest/mime/struct.Mime.html",
+    "api/rustmax/mime/struct.Mime.html",
     "crate::mime::TEXT_PLAIN":
-    "https://docs.rs/mime/latest/mime/constant.TEXT_PLAIN.html",
+    "api/rustmax/mime/constant.TEXT_PLAIN.html",
     "crate::mime::APPLICATION_JSON":
-    "https://docs.rs/mime/latest/mime/constant.APPLICATION_JSON.html",
+    "api/rustmax/mime/constant.APPLICATION_JSON.html",
 
     // nom
     "crate::nom::IResult":
-    "https://docs.rs/nom/latest/nom/type.IResult.html",
+    "api/rustmax/nom/type.IResult.html",
 
     // semver
     "crate::semver::Version":
-    "https://docs.rs/semver/latest/semver/struct.Version.html",
+    "api/rustmax/semver/struct.Version.html",
     "crate::semver::VersionReq":
-    "https://docs.rs/semver/latest/semver/struct.VersionReq.html",
+    "api/rustmax/semver/struct.VersionReq.html",
     "crate::semver::Version::parse":
-    "https://docs.rs/semver/latest/semver/struct.Version.html#method.parse",
+    "api/rustmax/semver/struct.Version.html#method.parse",
     "https://semver.org/":
     "https://semver.org/",
     "https://doc.rust-lang.org/cargo/reference/semver.html":
@@ -415,74 +415,74 @@
 
     // tempfile
     "crate::tempfile::tempfile":
-    "https://docs.rs/tempfile/latest/tempfile/fn.tempfile.html",
+    "api/rustmax/tempfile/fn.tempfile.html",
     "crate::tempfile::NamedTempFile":
-    "https://docs.rs/tempfile/latest/tempfile/struct.NamedTempFile.html",
+    "api/rustmax/tempfile/struct.NamedTempFile.html",
     "crate::tempfile::TempDir":
-    "https://docs.rs/tempfile/latest/tempfile/struct.TempDir.html",
+    "api/rustmax/tempfile/struct.TempDir.html",
     "crate::tempfile::spooled_tempfile":
-    "https://docs.rs/tempfile/latest/tempfile/fn.spooled_tempfile.html",
+    "api/rustmax/tempfile/fn.spooled_tempfile.html",
 
     // toml
     "crate::toml::Value":
-    "https://docs.rs/toml/latest/toml/enum.Value.html",
+    "api/rustmax/toml/enum.Value.html",
     "crate::toml::from_str":
-    "https://docs.rs/toml/latest/toml/fn.from_str.html",
+    "api/rustmax/toml/fn.from_str.html",
     "crate::toml::to_string":
-    "https://docs.rs/toml/latest/toml/fn.to_string.html",
+    "api/rustmax/toml/fn.to_string.html",
 
     // url
     "crate::url::Url":
-    "https://docs.rs/url/latest/url/struct.Url.html",
+    "api/rustmax/url/struct.Url.html",
     "crate::url::Url::parse":
-    "https://docs.rs/url/latest/url/struct.Url.html#method.parse",
+    "api/rustmax/url/struct.Url.html#method.parse",
     "crate::url::Url::join":
-    "https://docs.rs/url/latest/url/struct.Url.html#method.join",
+    "api/rustmax/url/struct.Url.html#method.join",
 
     // walkdir
     "crate::walkdir::WalkDir":
-    "https://docs.rs/walkdir/latest/walkdir/struct.WalkDir.html",
+    "api/rustmax/walkdir/struct.WalkDir.html",
     "crate::walkdir::WalkDir::new":
-    "https://docs.rs/walkdir/latest/walkdir/struct.WalkDir.html#method.new",
+    "api/rustmax/walkdir/struct.WalkDir.html#method.new",
     "crate::walkdir::WalkDir::max_depth":
-    "https://docs.rs/walkdir/latest/walkdir/struct.WalkDir.html#method.max_depth",
+    "api/rustmax/walkdir/struct.WalkDir.html#method.max_depth",
 
     // proptest
     "crate::proptest::strategy::Strategy":
-    "https://docs.rs/proptest/latest/proptest/strategy/trait.Strategy.html",
+    "api/rustmax/proptest/strategy/trait.Strategy.html",
     "crate::proptest::proptest":
-    "https://docs.rs/proptest/latest/proptest/macro.proptest.html",
+    "api/rustmax/proptest/macro.proptest.html",
     "crate::proptest::prop_assert":
-    "https://docs.rs/proptest/latest/proptest/macro.prop_assert.html",
+    "api/rustmax/proptest/macro.prop_assert.html",
 
     // powerletters
     "crate::powerletters::C":
-    "https://docs.rs/powerletters/latest/powerletters/trait.C.html",
+    "api/rustmax/powerletters/trait.C.html",
     "crate::powerletters::O":
-    "https://docs.rs/powerletters/latest/powerletters/trait.O.html",
+    "api/rustmax/powerletters/trait.O.html",
     "crate::powerletters::S":
-    "https://docs.rs/powerletters/latest/powerletters/trait.S.html",
+    "api/rustmax/powerletters/trait.S.html",
     "crate::powerletters::I":
-    "https://docs.rs/powerletters/latest/powerletters/trait.I.html",
+    "api/rustmax/powerletters/trait.I.html",
     "crate::powerletters::X":
-    "https://docs.rs/powerletters/latest/powerletters/trait.X.html",
+    "api/rustmax/powerletters/trait.X.html",
 
     // reqwest
     "crate::reqwest::Client":
-    "https://docs.rs/reqwest/latest/reqwest/struct.Client.html",
+    "api/rustmax/reqwest/struct.Client.html",
     "crate::reqwest::get":
-    "https://docs.rs/reqwest/latest/reqwest/fn.get.html",
+    "api/rustmax/reqwest/fn.get.html",
     "crate::reqwest::blocking":
-    "https://docs.rs/reqwest/latest/reqwest/blocking/index.html",
+    "api/rustmax/reqwest/blocking/index.html",
     "crate::hyper":
-    "https://docs.rs/hyper",
+    "api/rustmax/hyper/index.html",
 
     // zip
     "crate::zip::ZipArchive":
-    "https://docs.rs/zip/latest/zip/read/struct.ZipArchive.html",
+    "api/rustmax/zip/read/struct.ZipArchive.html",
     "crate::zip::ZipWriter":
-    "https://docs.rs/zip/latest/zip/write/struct.ZipWriter.html",
+    "api/rustmax/zip/write/struct.ZipWriter.html",
     "crate::zip::ZipArchive::new":
-    "https://docs.rs/zip/latest/zip/read/struct.ZipArchive.html#method.new",
+    "api/rustmax/zip/read/struct.ZipArchive.html#method.new",
 
 }

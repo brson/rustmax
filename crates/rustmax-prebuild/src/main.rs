@@ -485,10 +485,9 @@ fn substitute_versions(md: &str, crates: &[CrateInfo]) -> String {
             let crate_name = crate_name.as_str();
             let link_tail = caps.get(3).expect(".");
             let link_tail = link_tail.as_str().trim();
-            if let Some(info) = find_crate(crates, crate_name) {
-                let version = &info.version;
+            if find_crate(crates, crate_name).is_some() {
                 buf.push_str(&format!(
-                    "[{link_name}]: https://docs.rs/{crate_name}/{version}/{link_tail}"
+                    "[{link_name}]: api/rustmax/{link_tail}"
                 ));
             } else {
                 buf.push_str(line);
