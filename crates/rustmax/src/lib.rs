@@ -5,6 +5,11 @@
 
 /* ---------- */
 
+pub mod guide {
+    #![doc = include_str!("../doc-src/guide.md")]
+    use super::*;
+}
+
 pub mod prelude {
     //! The `rmx` prelude.
 
