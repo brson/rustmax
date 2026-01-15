@@ -1,18 +1,8 @@
-// Initialize highlight.js after HTMX loads content
+// Initialize after HTMX loads content.
+// Note: Syntax highlighting is pre-rendered by syntect, no client-side hljs needed.
 document.addEventListener("htmx:afterSettle", function(evt) {
-    // Highlight all code blocks in the dynamically loaded content
-    document.querySelectorAll('pre code').forEach((block) => {
-        if (!block.dataset.highlighted) {
-            hljs.highlightElement(block);
-        }
-    });
-
-    // Set up example buttons for dynamically loaded content
     setupExampleButtons();
-
-    // Set up post expand button for dynamically loaded content
     setupPostExpandButton();
-
     loadBuildInfo();
 });
 

@@ -5,9 +5,14 @@
 //! mdbook SUMMARY.md format and renders markdown to HTML.
 
 use rmx::prelude::*;
+use std::collections::HashMap;
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
-use pulldown_cmark::{Parser, Options, html};
+
+use comrak::adapters::SyntaxHighlighterAdapter;
+use syntect::html::{ClassStyle, ClassedHTMLGenerator};
+use syntect::parsing::SyntaxSet;
 
 /// A chapter in the book.
 #[derive(Debug, Clone)]
@@ -48,6 +53,10 @@ pub fn build(input: &Path, output: &Path) -> AnyResult<()> {
     // Copy shared theme CSS from www/.
     let themes_css = include_str!("../../../www/rustmax-themes.css");
     fs::write(output.join("rustmax-themes.css"), themes_css)?;
+
+    // Copy shared syntax highlighting CSS.
+    let syntax_css = include_str!("../../../www/rustmax-syntax.css");
+    fs::write(output.join("rustmax-syntax.css"), syntax_css)?;
 
     // Generate book-specific CSS.
     let css = generate_css();
@@ -284,6 +293,7 @@ fn render_chapter(
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{path_to_root}rustmax-themes.css">
+    <link rel="stylesheet" href="{path_to_root}rustmax-syntax.css">
     <link rel="stylesheet" href="{path_to_root}rmxbook.css">
     <script>{script}</script>
 </head>
@@ -359,16 +369,108 @@ fn build_nav(chapters: &[Chapter], current: Option<&PathBuf>, path_to_root: &str
 }
 
 fn markdown_to_html(markdown: &str) -> String {
-    let mut options = Options::empty();
-    options.insert(Options::ENABLE_TABLES);
-    options.insert(Options::ENABLE_FOOTNOTES);
-    options.insert(Options::ENABLE_STRIKETHROUGH);
-    options.insert(Options::ENABLE_TASKLISTS);
+    // Create highlighter for syntax highlighting.
+    let highlighter = Highlighter::new();
+    let adapter = HighlightAdapter { highlighter: &highlighter };
 
-    let parser = Parser::new_ext(markdown, options);
-    let mut html_output = String::new();
-    html::push_html(&mut html_output, parser);
-    html_output
+    // Configure comrak options.
+    let mut options = comrak::Options::default();
+    options.extension.strikethrough = true;
+    options.extension.table = true;
+    options.extension.autolink = true;
+    options.extension.tasklist = true;
+    options.extension.footnotes = true;
+
+    // Use syntax highlighting plugin.
+    let plugins = comrak::Plugins {
+        render: comrak::RenderPlugins {
+            codefence_syntax_highlighter: Some(&adapter),
+            ..Default::default()
+        },
+    };
+
+    comrak::markdown_to_html_with_plugins(markdown, &options, &plugins)
+}
+
+/// Syntax highlighter using syntect.
+struct Highlighter {
+    syntax_set: SyntaxSet,
+}
+
+impl Highlighter {
+    fn new() -> Self {
+        let syntax_set = SyntaxSet::load_defaults_newlines();
+        Self { syntax_set }
+    }
+
+    fn highlight(&self, code: &str, lang: &str) -> String {
+        let syntax = self.syntax_set
+            .find_syntax_by_token(lang)
+            .or_else(|| self.syntax_set.find_syntax_by_extension(lang))
+            .unwrap_or_else(|| self.syntax_set.find_syntax_plain_text());
+
+        let mut generator = ClassedHTMLGenerator::new_with_class_style(
+            syntax,
+            &self.syntax_set,
+            ClassStyle::Spaced,
+        );
+
+        for line in syntect::util::LinesWithEndings::from(code) {
+            let _ = generator.parse_html_for_line_which_includes_newline(line);
+        }
+
+        generator.finalize()
+    }
+}
+
+/// Adapter for comrak's syntax highlighting.
+struct HighlightAdapter<'a> {
+    highlighter: &'a Highlighter,
+}
+
+impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
+    fn write_highlighted(
+        &self,
+        output: &mut dyn Write,
+        lang: Option<&str>,
+        code: &str,
+    ) -> std::io::Result<()> {
+        // Default to rust for unlabeled code blocks, strip modifiers like ",ignore".
+        let base_lang = lang
+            .map(|l| l.split(',').next().unwrap_or(l).trim())
+            .filter(|l| !l.is_empty())
+            .unwrap_or("rust");
+
+        if base_lang == "text" {
+            write!(output, "{}", html_escape(code))
+        } else {
+            let highlighted = self.highlighter.highlight(code, base_lang);
+            write!(output, "{}", highlighted)
+        }
+    }
+
+    fn write_pre_tag(
+        &self,
+        output: &mut dyn Write,
+        attributes: HashMap<String, String>,
+    ) -> std::io::Result<()> {
+        let mut attrs = String::new();
+        for (key, value) in &attributes {
+            attrs.push_str(&format!(" {}=\"{}\"", key, html_escape(value)));
+        }
+        write!(output, "<pre class=\"highlight\"{}>", attrs)
+    }
+
+    fn write_code_tag(
+        &self,
+        output: &mut dyn Write,
+        attributes: HashMap<String, String>,
+    ) -> std::io::Result<()> {
+        let lang = attributes.get("class")
+            .and_then(|c| c.strip_prefix("language-"))
+            .unwrap_or("rust");
+        write!(output, "<code class=\"language-{}\">", html_escape(lang))
+    }
 }
 
 fn html_escape(s: &str) -> String {
@@ -399,6 +501,7 @@ fn generate_index(book: &Book, output: &Path) -> AnyResult<()> {
     <meta http-equiv="refresh" content="0; url={target}">
     <title>{title}</title>
     <link rel="stylesheet" href="rustmax-themes.css">
+    <link rel="stylesheet" href="rustmax-syntax.css">
     <link rel="stylesheet" href="rmxbook.css">
 </head>
 <body>

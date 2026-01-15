@@ -15,6 +15,7 @@
 #![allow(unused)]
 
 mod feed;
+mod highlight;
 
 use anyhow::Context;
 use anyhow::Result as AnyResult;
@@ -134,13 +135,16 @@ fn main() -> AnyResult<()> {
 
     let crate_info = build_crate_info(&crates_meta, &maintainers_meta, &rmx_manifest, examples_dir)?;
 
+    // Create syntax highlighter for code examples.
+    let highlighter = highlight::Highlighter::new();
+
     let out_crates_md_file = workspace_dir.join(OUT_CRATES_MD);
     let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
     let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
     let out_build_info_file = workspace_dir.join(OUT_BUILD_INFO);
 
     let (out_crates_md_str, out_crates_json_str, out_crates_html_str) =
-        make_crate_lists(&crate_info, &link_subs);
+        make_crate_lists(&crate_info, &link_subs, &highlighter);
 
     let build_info_str = make_build_info()?;
 
@@ -321,6 +325,7 @@ fn get_examples(mut examples_dir: fs::ReadDir) -> AnyResult<Vec<CrateExample>> {
 fn make_crate_lists(
     crates: &[CrateInfo],
     link_subs: &BTreeMap<String, String>,
+    highlighter: &highlight::Highlighter,
 ) -> (String, String, String) {
     let mut md = String::new();
     let mut json = String::new();
@@ -344,7 +349,7 @@ fn make_crate_lists(
             krate.version,
             krate.name.replace("-", "_"),
         );
-        let example_html = render_example(krate, link_subs, crates);
+        let example_html = render_example(krate, link_subs, crates, highlighter);
 
         md.push_str(&format!(
             "| `{} = \"{}\"` | {} | [📖]({}) |\n",
@@ -413,10 +418,20 @@ fn render_example(
     krate: &CrateInfo,
     link_subs: &BTreeMap<String, String>,
     crates: &[CrateInfo],
+    highlighter: &highlight::Highlighter,
 ) -> Option<String> {
     if !krate.example.is_empty() {
         let md = process_md(&krate.example, link_subs, crates);
-        let html = comrak::markdown_to_html(&md, &Default::default());
+
+        // Use comrak with syntax highlighting.
+        let adapter = highlight::HighlightAdapter { highlighter };
+        let plugins = comrak::Plugins {
+            render: comrak::RenderPlugins {
+                codefence_syntax_highlighter: Some(&adapter),
+                ..Default::default()
+            },
+        };
+        let html = comrak::markdown_to_html_with_plugins(&md, &Default::default(), &plugins);
         Some(html)
     } else {
         None
