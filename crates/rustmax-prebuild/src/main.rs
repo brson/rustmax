@@ -343,17 +343,15 @@ fn make_crate_lists(
     html.push_str("</thead>\n");
 
     for (i, krate) in crates.iter().enumerate() {
-        let docrs_link = format!(
-            "https://docs.rs/{}/{}/{}",
-            krate.name,
-            krate.version,
+        let api_link = format!(
+            "api/rustmax/{}/index.html",
             krate.name.replace("-", "_"),
         );
         let example_html = render_example(krate, link_subs, crates, highlighter);
 
         md.push_str(&format!(
             "| `{} = \"{}\"` | {} | [📖]({}) |\n",
-            krate.name, krate.version, krate.short_desc, docrs_link,
+            krate.name, krate.version, krate.short_desc, api_link,
         ));
 
         if i + 1 < crates.len() {
@@ -379,7 +377,7 @@ fn make_crate_lists(
         html.push_str(&format!("<td>{}</td>\n", maintainer_badge));
         html.push_str(&format!(
             "<td><a href='{}'><code>{} = \"{}\"</code></a></td>\n",
-            docrs_link, krate.name, krate.version,
+            api_link, krate.name, krate.version,
         ));
         html.push_str(&format!("<td>{}</td>\n", krate.short_desc));
         if example_html.is_some() {
