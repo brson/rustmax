@@ -65,16 +65,15 @@ prebuild:
 doc-clean:
     rm -rf out
 
-doc-crates: prebuild
-    # Copy standard library docs first (dynamically find toolchain location)
-    mkdir -p target/doc
-    cp -a "$(rustup which rustc | sed 's|/bin/rustc|/share/doc/rust/html|')/"* target/doc/
-    RUSTDOCFLAGS="--html-in-header $(pwd)/www/mixins/mixin-rustdoc-header.html" \
-      cargo doc -p rustmax --features rmx-profile-max
-    cp www/mixins/mixin-rustdoc-themes.css target/doc/
-    cp www/mixins/mixin-rustdoc-script.js target/doc/
-    cp www/rustmax-themes.css target/doc/
-    cp work/crates.json target/doc/
+doc-api: prebuild
+    # Generate JSON for rustmax and all dependencies.
+    RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +nightly doc -p rustmax --features rmx-profile-max
+    # Copy std library JSON files from nightly toolchain (requires rust-docs-json component).
+    cp "$$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
+    # Build HTML docs with rustmax-rustdoc.
+    rm -rf out/api
+    mkdir -p out/api
+    cargo run -p rustmax-cli --release -- rustdoc build target/doc/ -o out/api
 
 doc-book:
     rm -rf book/book
@@ -95,24 +94,9 @@ doc-www: prebuild
     cp work/news.html out/ || true
     cp work/news.xml out/ || true
 
-doc-api2:
-    # Generate JSON for rustmax and all dependencies.
-    RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +nightly doc -p rustmax --features rmx-profile-max
-    # Copy std library JSON files from nightly toolchain (requires rust-docs-json component).
-    cp "$$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
-    # Build docs from directory with cross-crate linking.
-    mkdir -p out/api2
-    cargo run -p rustmax-cli --release -- rustdoc build target/doc/ -o out/api2
-
-doc-build: doc-www doc-crates doc-book doc-library
+doc-build: doc-www doc-api doc-book doc-library
     mkdir -p out/book
     cp -r book/book/* out/book/
-    rm -rf out/api
-    if [ -n "${RUSTMAX_CI:-}" ]; then \
-        mv target/doc out/api; \
-    else \
-        ln -s ../target/doc out/api; \
-    fi
     mkdir -p out/library
     cp -r work/library/* out/library/
 
