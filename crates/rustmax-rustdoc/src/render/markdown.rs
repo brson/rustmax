@@ -368,9 +368,21 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
         lang: Option<&str>,
         code: &str,
     ) -> std::io::Result<()> {
-        let lang = lang.unwrap_or("rust");
-        let highlighted = self.highlighter.highlight(code, lang);
-        write!(output, "{}", highlighted)
+        // Extract base language, stripping modifiers like ",ignore", ",no_run", etc.
+        // Rustdoc assumes unlabeled code blocks are Rust.
+        // "text" means plain text (no highlighting).
+        let base_lang = lang
+            .map(|l| l.split(',').next().unwrap_or(l).trim())
+            .filter(|l| !l.is_empty())
+            .unwrap_or("rust");
+
+        // "text" means no syntax highlighting.
+        if base_lang == "text" {
+            write!(output, "{}", html_escape(code))
+        } else {
+            let highlighted = self.highlighter.highlight(code, base_lang);
+            write!(output, "{}", highlighted)
+        }
     }
 
     fn write_pre_tag(

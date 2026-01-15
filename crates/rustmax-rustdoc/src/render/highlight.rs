@@ -1,34 +1,38 @@
-//! Syntax highlighting using syntect.
+//! Syntax highlighting using syntect with CSS classes.
 
-use syntect::highlighting::{ThemeSet, Theme};
-use syntect::html::highlighted_html_for_string;
+use syntect::html::{ClassStyle, ClassedHTMLGenerator};
 use syntect::parsing::SyntaxSet;
 
 /// Syntax highlighter for code blocks.
 pub struct Highlighter {
     syntax_set: SyntaxSet,
-    theme: Theme,
 }
 
 impl Highlighter {
-    /// Create a new highlighter with default theme.
+    /// Create a new highlighter.
     pub fn new() -> Self {
         let syntax_set = SyntaxSet::load_defaults_newlines();
-        let theme_set = ThemeSet::load_defaults();
-        let theme = theme_set.themes["InspiredGitHub"].clone();
-
-        Self { syntax_set, theme }
+        Self { syntax_set }
     }
 
-    /// Highlight code with the given language.
+    /// Highlight code with the given language, returning HTML with CSS classes.
     pub fn highlight(&self, code: &str, lang: &str) -> String {
         let syntax = self.syntax_set
             .find_syntax_by_token(lang)
             .or_else(|| self.syntax_set.find_syntax_by_extension(lang))
             .unwrap_or_else(|| self.syntax_set.find_syntax_plain_text());
 
-        highlighted_html_for_string(code, &self.syntax_set, syntax, &self.theme)
-            .unwrap_or_else(|_| html_escape(code))
+        let mut generator = ClassedHTMLGenerator::new_with_class_style(
+            syntax,
+            &self.syntax_set,
+            ClassStyle::Spaced,
+        );
+
+        for line in syntect::util::LinesWithEndings::from(code) {
+            let _ = generator.parse_html_for_line_which_includes_newline(line);
+        }
+
+        generator.finalize()
     }
 }
 
@@ -36,11 +40,4 @@ impl Default for Highlighter {
     fn default() -> Self {
         Self::new()
     }
-}
-
-fn html_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
 }

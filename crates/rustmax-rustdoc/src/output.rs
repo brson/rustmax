@@ -395,6 +395,47 @@ blockquote {
     background: var(--code-bg);
 }
 
+/* Syntax highlighting - light theme (matching rustdoc) */
+:root {
+    --syntax-keyword: #8959a8;
+    --syntax-keyword2: #4271ae;
+    --syntax-string: #718c00;
+    --syntax-number: #c82829;
+    --syntax-comment: #8e908c;
+    --syntax-type: #4271ae;
+    --syntax-function: #4271ae;
+    --syntax-macro: #3e999f;
+    --syntax-lifetime: #b76514;
+    --syntax-attribute: #c82829;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --syntax-keyword: #ab8ac1;
+        --syntax-keyword2: #6e9bcf;
+        --syntax-string: #83a300;
+        --syntax-number: #d19a66;
+        --syntax-comment: #8d8d8b;
+        --syntax-type: #6e9bcf;
+        --syntax-function: #6e9bcf;
+        --syntax-macro: #56b6c2;
+        --syntax-lifetime: #d19a66;
+        --syntax-attribute: #d19a66;
+    }
+}
+
+/* Syntect scope-based classes (space-separated) */
+pre code .keyword { color: var(--syntax-keyword); }
+pre code .storage { color: var(--syntax-keyword); }
+pre code .storage.type { color: var(--syntax-type); }
+pre code .constant { color: var(--syntax-number); }
+pre code .string { color: var(--syntax-string); }
+pre code .comment { color: var(--syntax-comment); font-style: italic; }
+pre code .entity.name { color: var(--syntax-function); }
+pre code .support { color: var(--syntax-type); }
+pre code .variable.annotation { color: var(--syntax-attribute); }
+pre code .meta.annotation { color: var(--syntax-attribute); }
+
 /* Mobile */
 @media (max-width: 768px) {
     body { flex-direction: column; }
