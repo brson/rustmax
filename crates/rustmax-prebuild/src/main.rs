@@ -40,8 +40,6 @@ const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
 const OUT_BUILD_INFO: &str = "work/build-info.json";
 
-const OUT_README: &str = "README.md";
-
 #[derive(Debug)]
 struct CrateInfo {
     name: String,
@@ -164,8 +162,6 @@ fn main() -> AnyResult<()> {
     feed::generate_feed_page(&posts, &tera, &out_dir)?;
     feed::generate_latest_post(&posts, &tera, &out_dir)?;
     feed::generate_rss(&posts, &out_dir, "https://rustmax.org")?;
-
-    create_readme(&workspace_dir, &out_crates_md_str)?;
 
     copy_cli_assets(&workspace_dir, &cli_dir);
 
@@ -507,20 +503,6 @@ fn substitute_versions(md: &str, crates: &[CrateInfo]) -> String {
 
 fn find_crate<'c>(crates: &'c [CrateInfo], name: &str) -> Option<&'c CrateInfo> {
     crates.iter().find(|c| c.name == name)
-}
-
-fn create_readme(workspace_dir: &Path, cratesmd: &str) -> AnyResult<()> {
-    let mut tera = tera::Tera::new("src/*.template.*")?;
-    let mut context = tera::Context::new();
-    context.insert("cratelist", cratesmd);
-
-    let rendered = tera.render("README.template.md", &context)?;
-
-    let outfile = workspace_dir.join(OUT_README);
-
-    std::fs::write(outfile, rendered)?;
-
-    Ok(())
 }
 
 fn copy_cli_assets(workspace_dir: &Path, cli_dir: &Path) -> AnyResult<()> {
