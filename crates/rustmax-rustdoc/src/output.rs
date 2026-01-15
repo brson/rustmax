@@ -137,6 +137,12 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
 }
 
 fn write_css(output_dir: &Path) -> AnyResult<()> {
+    // Copy shared theme CSS (colors and fonts).
+    let themes_css = include_str!("../../../www/rustmax-themes.css");
+    let themes_path = output_dir.join("rustmax-themes.css");
+    fs::write(&themes_path, themes_css)
+        .with_context(|| format!("Failed to write themes CSS to {}", themes_path.display()))?;
+
     // Write main rustdoc CSS.
     let css = generate_css();
     let path = output_dir.join("rustdoc.css");
@@ -151,26 +157,11 @@ fn write_css(output_dir: &Path) -> AnyResult<()> {
 }
 
 fn generate_css() -> &'static str {
-    r#"/* rustmax-rustdoc styles */
+    r#"/* rustmax-rustdoc styles
+ * Colors and fonts come from rustmax-themes.css
+ */
 :root {
-    --bg: #fff;
-    --fg: #333;
-    --link: #0066cc;
-    --sidebar-bg: #f5f5f5;
-    --sidebar-width: 280px;
-    --code-bg: #f4f4f4;
-    --border: #ddd;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #1a1a1a;
-        --fg: #ddd;
-        --link: #6db3f2;
-        --sidebar-bg: #252525;
-        --code-bg: #2a2a2a;
-        --border: #444;
-    }
+    --rmx-sidebar-width: 280px;
 }
 
 * { box-sizing: border-box; }
@@ -178,11 +169,10 @@ fn generate_css() -> &'static str {
 html, body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-    font-size: 16px;
+    font: var(--rmx-font-text);
     line-height: 1.6;
-    background: var(--bg);
-    color: var(--fg);
+    background: var(--rmx-color-bg);
+    color: var(--rmx-color-fg);
 }
 
 body {
@@ -190,7 +180,7 @@ body {
     min-height: 100vh;
 }
 
-a { color: var(--link); text-decoration: none; }
+a { color: var(--rmx-color-links); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* Nav toggle button */
@@ -202,9 +192,9 @@ a:hover { text-decoration: underline; }
     height: 36px;
     margin: 0.5rem;
     padding: 0;
-    border: 1px solid var(--border);
+    border: 1px solid var(--rmx-color-border);
     border-radius: 4px;
-    background: var(--bg);
+    background: var(--rmx-color-bg);
     cursor: pointer;
     flex-shrink: 0;
 }
@@ -215,25 +205,25 @@ a:hover { text-decoration: underline; }
     width: 18px;
     height: 2px;
     margin: 7px auto;
-    background: var(--fg);
-    box-shadow: 0 5px 0 var(--fg), 0 10px 0 var(--fg);
+    background: var(--rmx-color-fg);
+    box-shadow: 0 5px 0 var(--rmx-color-fg), 0 10px 0 var(--rmx-color-fg);
 }
 
 .nav-toggle:hover {
-    background: var(--sidebar-bg);
+    background: var(--rmx-color-bg-alt);
 }
 
 /* Sidebar */
 .sidebar {
     flex-shrink: 0;
-    width: var(--sidebar-width);
+    width: var(--rmx-sidebar-width);
     height: 100vh;
     position: sticky;
     top: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    background: var(--sidebar-bg);
-    border-right: 1px solid var(--border);
+    background: var(--rmx-color-bg-alt);
+    border-right: 1px solid var(--rmx-color-border);
     padding: 1rem;
     transition: width 0.2s ease, padding 0.2s ease;
 }
@@ -249,11 +239,11 @@ a:hover { text-decoration: underline; }
     font-size: 1.2rem;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--rmx-color-border);
     white-space: nowrap;
 }
 
-.sidebar-title a { color: var(--fg); }
+.sidebar-title a { color: var(--rmx-color-fg); }
 
 .module-tree {
     list-style: none;
@@ -306,25 +296,25 @@ h2 {
     font-size: 1.3rem;
     margin-top: 2rem;
     margin-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--rmx-color-border);
     padding-bottom: 0.3rem;
 }
 
 /* Code */
 code {
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font: var(--rmx-font-code);
     font-size: 0.9em;
-    background: var(--code-bg);
+    background: var(--rmx-color-bg-alt);
     padding: 0.1em 0.3em;
     border-radius: 3px;
 }
 
 pre {
-    background: var(--code-bg);
+    background: var(--rmx-color-bg-alt);
     padding: 1rem;
     overflow-x: auto;
     border-radius: 4px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--rmx-color-border);
 }
 
 pre code {
@@ -345,7 +335,7 @@ pre code {
 
 .item-list li {
     padding: 0.3rem 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--rmx-color-border);
 }
 
 .item-list li:last-child { border-bottom: none; }
@@ -387,19 +377,19 @@ table {
 }
 
 th, td {
-    border: 1px solid var(--border);
+    border: 1px solid var(--rmx-color-border);
     padding: 0.5rem;
     text-align: left;
 }
 
-th { background: var(--code-bg); }
+th { background: var(--rmx-color-bg-alt); }
 
 /* Blockquotes */
 blockquote {
     margin: 1rem 0;
     padding: 0.5rem 1rem;
-    border-left: 4px solid var(--border);
-    background: var(--code-bg);
+    border-left: 4px solid var(--rmx-color-border);
+    background: var(--rmx-color-bg-alt);
 }
 
 /* Syntax highlighting is in rustmax-syntax.css (shared with www and rmxbook) */
@@ -424,7 +414,7 @@ blockquote {
         height: auto;
         max-height: 60vh;
         border-right: none;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px solid var(--rmx-color-border);
         transition: max-height 0.2s ease, padding 0.2s ease;
     }
 
