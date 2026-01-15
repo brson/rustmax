@@ -1,5 +1,6 @@
 //! Output file writing.
 
+use rayon::prelude::*;
 use rmx::prelude::*;
 use rustdoc_types::{ItemEnum, ItemKind};
 use std::fs;
@@ -39,56 +40,59 @@ fn write_module_tree(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<()> {
             .with_context(|| format!("Failed to write {}", out_path.display()))?;
     }
 
-    // Write item pages.
-    for item in &tree.items {
-        // For re-exports, look up the target item and render it.
-        let (render_item, html_path) = if let ItemEnum::Use(use_item) = &item.item.inner {
-            if use_item.is_glob || use_item.id.is_none() {
-                continue;
-            }
-            let target_id = use_item.id.as_ref().unwrap();
-            let Some(target_item) = ctx.krate.index.get(target_id) else {
-                continue;
-            };
-            // Create a renderable item for the target at the re-export path.
-            let target_renderable = crate::types::RenderableItem {
-                id: target_id,
-                item: target_item,
-                path: item.path.clone(),
-                html_path: build_reexport_html_path(&item.path, &target_item.inner),
-            };
-            (target_renderable, build_reexport_html_path(&item.path, &target_item.inner))
-        } else {
-            (item.clone(), item.html_path.clone())
-        };
+    // Write item pages in parallel.
+    tree.items.par_iter().try_for_each(|item| {
+        write_item(ctx, item)
+    })?;
 
-        let html = match &render_item.item.inner {
-            ItemEnum::Struct(_) => render::item::render_struct(ctx, &render_item)?,
-            ItemEnum::Enum(_) => render::item::render_enum(ctx, &render_item)?,
-            ItemEnum::Trait(_) => render::item::render_trait(ctx, &render_item)?,
-            ItemEnum::Function(_) => render::item::render_function(ctx, &render_item)?,
-            ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, &render_item)?,
-            ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, &render_item)?,
-            ItemEnum::Macro(_) => render::item::render_macro(ctx, &render_item)?,
-            _ => continue,
-        };
+    // Recurse into submodules in parallel.
+    tree.submodules.par_iter().try_for_each(|submodule| {
+        write_module_tree(ctx, submodule)
+    })
+}
 
-        let out_path = ctx.config.output_dir.join(&html_path);
-
-        if let Some(parent) = out_path.parent() {
-            fs::create_dir_all(parent)?;
+/// Write a single item page.
+fn write_item(ctx: &RenderContext, item: &crate::types::RenderableItem) -> AnyResult<()> {
+    // For re-exports, look up the target item and render it.
+    let (render_item, html_path) = if let ItemEnum::Use(use_item) = &item.item.inner {
+        if use_item.is_glob || use_item.id.is_none() {
+            return Ok(());
         }
+        let target_id = use_item.id.as_ref().unwrap();
+        let Some(target_item) = ctx.krate.index.get(target_id) else {
+            return Ok(());
+        };
+        // Create a renderable item for the target at the re-export path.
+        let target_renderable = crate::types::RenderableItem {
+            id: target_id,
+            item: target_item,
+            path: item.path.clone(),
+            html_path: build_reexport_html_path(&item.path, &target_item.inner),
+        };
+        (target_renderable, build_reexport_html_path(&item.path, &target_item.inner))
+    } else {
+        (item.clone(), item.html_path.clone())
+    };
 
-        fs::write(&out_path, &html)
-            .with_context(|| format!("Failed to write {}", out_path.display()))?;
+    let html = match &render_item.item.inner {
+        ItemEnum::Struct(_) => render::item::render_struct(ctx, &render_item)?,
+        ItemEnum::Enum(_) => render::item::render_enum(ctx, &render_item)?,
+        ItemEnum::Trait(_) => render::item::render_trait(ctx, &render_item)?,
+        ItemEnum::Function(_) => render::item::render_function(ctx, &render_item)?,
+        ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, &render_item)?,
+        ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, &render_item)?,
+        ItemEnum::Macro(_) => render::item::render_macro(ctx, &render_item)?,
+        _ => return Ok(()),
+    };
+
+    let out_path = ctx.config.output_dir.join(&html_path);
+
+    if let Some(parent) = out_path.parent() {
+        fs::create_dir_all(parent)?;
     }
 
-    // Recurse into submodules.
-    for submodule in &tree.submodules {
-        write_module_tree(ctx, submodule)?;
-    }
-
-    Ok(())
+    fs::write(&out_path, &html)
+        .with_context(|| format!("Failed to write {}", out_path.display()))
 }
 
 /// Build HTML path for a re-exported item.

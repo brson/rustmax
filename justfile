@@ -77,13 +77,13 @@ doc-api: prebuild
 
 doc-book:
     rm -rf book/book
-    cargo run -- rmxbook book book/book
+    cargo run --release -- rmxbook book book/book
 
 doc-library: prebuild
     @if [ -n "${RUSTMAX_CI:-}" ]; then \
         cargo run -- refresh-library; \
     fi
-    cargo run -- build-library --generate-library-page
+    cargo run --release -- build-library --generate-library-page
 
 doc-www: prebuild
     mkdir -p out/

@@ -27,3 +27,4 @@ serde.features = ["derive"]
 comrak.version = "0.35"
 syntect.version = "5"
 include_dir.version = "0.7"
+rayon.version = "1"

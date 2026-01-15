@@ -13,6 +13,7 @@ pub use types::{ModuleTree, RenderableItem};
 pub use render::RenderContext;
 pub use output::write_docs;
 
+use rayon::prelude::*;
 use rmx::prelude::*;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -170,8 +171,8 @@ impl RustDocSet {
         // Build global item index for cross-crate linking.
         let global_index = self.build_global_index();
 
-        // Render each crate.
-        for (crate_name, krate) in &self.crates {
+        // Render each crate in parallel.
+        self.crates.par_iter().try_for_each(|(crate_name, krate)| {
             eprintln!("Rendering {}...", crate_name);
             let ctx = render::RenderContext::new_full(
                 krate,
@@ -179,10 +180,8 @@ impl RustDocSet {
                 &global_index,
                 &self.crates,
             )?;
-            output::write_docs(&ctx)?;
-        }
-
-        Ok(())
+            output::write_docs(&ctx)
+        })
     }
 
     /// Build a global index mapping item paths to their crate and URL.
