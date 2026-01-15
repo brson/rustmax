@@ -190,8 +190,9 @@ a:hover { text-decoration: underline; }
 /* Nav toggle button */
 .nav-toggle {
     position: sticky;
-    top: 0;
-    z-index: 100;
+    top: 0.5rem;
+    align-self: flex-start;
+    flex-shrink: 0;
     width: 36px;
     height: 36px;
     margin: 0.5rem;
@@ -200,17 +201,18 @@ a:hover { text-decoration: underline; }
     border-radius: 4px;
     background: var(--rmx-color-bg);
     cursor: pointer;
-    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
 }
 
 .nav-toggle::before {
     content: '';
-    display: block;
     width: 18px;
     height: 2px;
-    margin: 7px auto;
     background: var(--rmx-color-fg);
-    box-shadow: 0 5px 0 var(--rmx-color-fg), 0 10px 0 var(--rmx-color-fg);
+    box-shadow: 0 6px 0 var(--rmx-color-fg), 0 -6px 0 var(--rmx-color-fg);
 }
 
 .nav-toggle:hover {
