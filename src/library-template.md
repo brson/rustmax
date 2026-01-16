@@ -4,7 +4,6 @@
 
 The Rust language and its ecosystem is documented in "books"
 and most of these links are to books.
-
 Links with a bookmark icon, 🔖, are to particularly
 notable or useful chapters within a book.
 
