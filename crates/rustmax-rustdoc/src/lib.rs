@@ -238,14 +238,26 @@ impl RustDocSet {
                 // Build the full path as it would appear in this crate.
                 let full_path = format!("{}::{}", crate_name, relative_path);
 
+                // For external items (crate_id != 0), use the canonical source path.
+                // This ensures re-exports like rustmax::anyhow::Error link to anyhow/Error,
+                // not rustmax/anyhow/Error (which doesn't exist).
+                let (target_crate, target_path) = if path_info.crate_id != 0 {
+                    // Use the canonical path from the source crate.
+                    let source_crate = path_info.path.first()
+                        .map(|s| s.as_str())
+                        .unwrap_or(crate_name);
+                    (source_crate.to_string(), path_info.path.clone())
+                } else {
+                    // Local item, use the re-export path.
+                    let mut path = vec![crate_name.to_string()];
+                    path.extend(relative_path.split("::").map(String::from));
+                    (crate_name.to_string(), path)
+                };
+
                 // Only insert if not already present (prefer earlier passes).
                 index.items.entry(full_path).or_insert_with(|| ItemLocation {
-                    crate_name: crate_name.to_string(),
-                    path: {
-                        let mut path = vec![crate_name.to_string()];
-                        path.extend(relative_path.split("::").map(String::from));
-                        path
-                    },
+                    crate_name: target_crate,
+                    path: target_path,
                     kind: path_info.kind,
                 });
             }
@@ -303,11 +315,21 @@ impl RustDocSet {
 
                     let path_str = reexport_path.join("::");
 
-                    // Use the re-export path for URL building since pages are generated there.
+                    // For external items (crate_id != 0), use the canonical source path.
+                    // This ensures re-exports link to the source crate's docs.
+                    let (target_crate, target_path) = if path_info.crate_id != 0 {
+                        let source_crate = path_info.path.first()
+                            .map(|s| s.as_str())
+                            .unwrap_or(crate_name);
+                        (source_crate.to_string(), path_info.path.clone())
+                    } else {
+                        (crate_name.to_string(), reexport_path)
+                    };
+
                     // Only insert if not already present (prefer canonical paths).
                     index.items.entry(path_str).or_insert_with(|| ItemLocation {
-                        crate_name: crate_name.to_string(),
-                        path: reexport_path,
+                        crate_name: target_crate,
+                        path: target_path,
                         kind,
                     });
                 }

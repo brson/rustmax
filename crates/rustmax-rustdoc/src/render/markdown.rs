@@ -243,6 +243,22 @@ fn resolve_rust_path(
         clean_path.to_string()
     };
 
+    // std re-exports most of core/alloc, so try core::/alloc:: FIRST.
+    // This ensures std::error::Error resolves to core, not a crate's re-export.
+    // Also handle crate::std::... patterns (e.g., rustmax::std::error::Error).
+    let std_rest = lookup_path.strip_prefix("std::")
+        .or_else(|| lookup_path.strip_prefix(&format!("{}::std::", current_crate)));
+    if let Some(rest) = std_rest {
+        for alt_crate in ["core", "alloc"] {
+            let alt_lookup = format!("{}::{}", alt_crate, rest);
+            if let Some(location) = index.items.get(&alt_lookup) {
+                if matches_kind_filter(location, kind_filter) {
+                    return Some(build_url(location, current_depth));
+                }
+            }
+        }
+    }
+
     // For paths without ::, try current crate prefix FIRST.
     // This ensures `anyhow` in rustmax docs resolves to `rustmax::anyhow` (module)
     // rather than `anyhow` (external crate).
@@ -278,16 +294,6 @@ fn resolve_rust_path(
     // should resolve to some_crate::Item.
     if let Some(rest) = lookup_path.strip_prefix(&format!("{}::", current_crate)) {
         if let Some(location) = index.items.get(rest) {
-            if matches_kind_filter(location, kind_filter) {
-                return Some(build_url(location, current_depth));
-            }
-        }
-    }
-
-    // std re-exports most of core, so try core:: when std:: fails.
-    if let Some(core_path) = lookup_path.strip_prefix("std::") {
-        let core_lookup = format!("core::{}", core_path);
-        if let Some(location) = index.items.get(&core_lookup) {
             if matches_kind_filter(location, kind_filter) {
                 return Some(build_url(location, current_depth));
             }
