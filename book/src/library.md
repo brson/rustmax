@@ -28,17 +28,17 @@ notable or useful chapters within a book.
 
 ## The Rust standard library
 
-- **[`std`](https://doc.rust-lang.org/std/index.html)**
+- **[`std`](../api/std/index.html)**
   <!-- duplicated in std.md -->
-  - 🔖 [`std::collections`](https://doc.rust-lang.org/std/collections/index.html)
-  - 🔖 [`std::error`](https://doc.rust-lang.org/stable/std/error/index.html)
-  - 🔖 [`std::ptr`](https://doc.rust-lang.org/std/ptr/index.html).
+  - 🔖 [`std::collections`](../api/std/collections/index.html)
+  - 🔖 [`std::error`](../api/std/error/index.html)
+  - 🔖 [`std::ptr`](../api/core/ptr/index.html).
     Safety, undefined behavior, and "provenance".
-  - 🔖 [`std::sync`](https://doc.rust-lang.org/std/sync/index.html)
-  - 🔖 [`std::sync::atomic`](https://doc.rust-lang.org/std/atomic/index.html)
-- [`core`](https://doc.rust-lang.org/core/index.html)
-- [`alloc`](https://doc.rust-lang.org/alloc/index.html)
-- [`proc_macro`](https://doc.rust-lang.org/proc_macro/index.html)
+  - 🔖 [`std::sync`](../api/std/sync/index.html)
+  - 🔖 [`std::sync::atomic`](../api/core/sync/atomic/index.html)
+- [`core`](../api/core/index.html)
+- [`alloc`](../api/alloc/index.html)
+- [`proc_macro`](../api/proc_macro/index.html)
 
 
 ## Standard Rust tools

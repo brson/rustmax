@@ -125,17 +125,17 @@ fn generate_markdown(books: &Books) -> AnyResult<String> {
 
     // The Rust standard library section
     content.push_str("\n## The Rust standard library\n\n");
-    content.push_str("- **[`std`](https://doc.rust-lang.org/std/index.html)**\n");
+    content.push_str("- **[`std`](../api/std/index.html)**\n");
     content.push_str("  <!-- duplicated in std.md -->\n");
-    content.push_str("  - 🔖 [`std::collections`](https://doc.rust-lang.org/std/collections/index.html)\n");
-    content.push_str("  - 🔖 [`std::error`](https://doc.rust-lang.org/stable/std/error/index.html)\n");
-    content.push_str("  - 🔖 [`std::ptr`](https://doc.rust-lang.org/std/ptr/index.html).\n");
+    content.push_str("  - 🔖 [`std::collections`](../api/std/collections/index.html)\n");
+    content.push_str("  - 🔖 [`std::error`](../api/std/error/index.html)\n");
+    content.push_str("  - 🔖 [`std::ptr`](../api/core/ptr/index.html).\n");
     content.push_str("    Safety, undefined behavior, and \"provenance\".\n");
-    content.push_str("  - 🔖 [`std::sync`](https://doc.rust-lang.org/std/sync/index.html)\n");
-    content.push_str("  - 🔖 [`std::sync::atomic`](https://doc.rust-lang.org/std/atomic/index.html)\n");
-    content.push_str("- [`core`](https://doc.rust-lang.org/core/index.html)\n");
-    content.push_str("- [`alloc`](https://doc.rust-lang.org/alloc/index.html)\n");
-    content.push_str("- [`proc_macro`](https://doc.rust-lang.org/proc_macro/index.html)\n");
+    content.push_str("  - 🔖 [`std::sync`](../api/std/sync/index.html)\n");
+    content.push_str("  - 🔖 [`std::sync::atomic`](../api/core/sync/atomic/index.html)\n");
+    content.push_str("- [`core`](../api/core/index.html)\n");
+    content.push_str("- [`alloc`](../api/alloc/index.html)\n");
+    content.push_str("- [`proc_macro`](../api/proc_macro/index.html)\n");
 
     // Standard Rust tools section
     content.push_str("\n\n## Standard Rust tools\n\n");
