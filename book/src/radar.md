@@ -142,3 +142,5 @@ but are now deprecated by others.
   Use [`std::thread::available_parallelism`](https://doc.rust-lang.org/std/thread/fn.available_parallelism.html).
 - [`once_cell`](https://docs.rs/once_cell).
   Use [`std::sync::OnceLock`](https://doc.rust-lang.org/std/sync/struct.OnceLock.html).
+- [`memoffset`](https://docs.rs/memoffset).
+  Use [`std::mem::offset_of!`](https://doc.rust-lang.org/std/mem/macro.offset_of.html).
