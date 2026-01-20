@@ -82,6 +82,20 @@
         </section>
         {% endif %}
 
+        {% if unions | length > 0 %}
+        <section class="item-list">
+            <h2>Unions</h2>
+            <ul>
+                {% for item in unions %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
         {% if enums | length > 0 %}
         <section class="item-list">
             <h2>Enums</h2>

@@ -76,12 +76,13 @@ fn write_item(ctx: &RenderContext, item: &crate::types::RenderableItem) -> AnyRe
 
     let html = match &render_item.item.inner {
         ItemEnum::Struct(_) => render::item::render_struct(ctx, &render_item)?,
+        ItemEnum::Union(_) => render::item::render_union(ctx, &render_item)?,
         ItemEnum::Enum(_) => render::item::render_enum(ctx, &render_item)?,
         ItemEnum::Trait(_) => render::item::render_trait(ctx, &render_item)?,
         ItemEnum::Function(_) => render::item::render_function(ctx, &render_item)?,
         ItemEnum::TypeAlias(_) => render::item::render_type_alias(ctx, &render_item)?,
         ItemEnum::Constant { .. } | ItemEnum::Static(_) => render::item::render_constant(ctx, &render_item)?,
-        ItemEnum::Macro(_) => render::item::render_macro(ctx, &render_item)?,
+        ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => render::item::render_macro(ctx, &render_item)?,
         _ => return Ok(()),
     };
 

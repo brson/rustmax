@@ -365,6 +365,31 @@ pub fn render_struct_sig(s: &Struct, name: &str, generics: &Generics) -> String 
     result
 }
 
+/// Render union definition.
+pub fn render_union_sig(_u: &Union, name: &str, generics: &Generics) -> String {
+    let mut result = String::from("union ");
+    result.push_str(name);
+
+    if !generics.params.is_empty() {
+        result.push('<');
+        let params: Vec<_> = generics.params.iter().map(render_generic_param_def).collect();
+        result.push_str(&params.join(", "));
+        result.push('>');
+    }
+
+    result.push_str(" { ... }");
+
+    if !generics.where_predicates.is_empty() {
+        result.push_str("\nwhere\n    ");
+        let predicates: Vec<_> = generics.where_predicates.iter()
+            .map(render_where_predicate)
+            .collect();
+        result.push_str(&predicates.join(",\n    "));
+    }
+
+    result
+}
+
 /// Render enum definition.
 pub fn render_enum_sig(_e: &Enum, name: &str, generics: &Generics) -> String {
     let mut result = String::from("enum ");

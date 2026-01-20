@@ -5,7 +5,7 @@ use rmx::tera::Context;
 use rustdoc_types::{ItemEnum, VariantKind};
 
 use super::RenderContext;
-use super::signature::{render_struct_sig, render_enum_sig, render_trait_sig, render_type, LinkedRenderer};
+use super::signature::{render_struct_sig, render_union_sig, render_enum_sig, render_trait_sig, render_type, LinkedRenderer};
 use crate::types::RenderableItem;
 
 /// Render a struct page to HTML.
@@ -69,6 +69,67 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
 
     ctx.tera.render("struct.html", &tera_ctx)
         .context("Failed to render struct template")
+}
+
+/// Render a union page to HTML.
+pub fn render_union(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<String> {
+    let ItemEnum::Union(u) = &item.item.inner else {
+        bail!("Expected union item");
+    };
+
+    let mut tera_ctx = Context::new();
+    let name = item.item.name.as_deref().unwrap_or("?");
+
+    tera_ctx.insert("crate_name", ctx.crate_name());
+    tera_ctx.insert("item_name", name);
+    tera_ctx.insert("item_path", &item.path);
+
+    // Path to root (needed for linked rendering).
+    let depth = item.path.len().saturating_sub(1);
+    let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
+
+    // Get generics from the item.
+    let generics = &u.generics;
+    let signature = html_escape_sig(&render_union_sig(u, name, generics));
+    tera_ctx.insert("signature", &signature);
+
+    // Documentation.
+    let docs = item.item.docs.as_ref()
+        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .unwrap_or_default();
+    tera_ctx.insert("docs", &docs);
+
+    // Use linked renderer for field types with links.
+    let linked = LinkedRenderer::new(ctx, depth);
+
+    // Fields.
+    let mut fields = Vec::new();
+    for field_id in &u.fields {
+        if let Some(field_item) = ctx.krate.index.get(field_id) {
+            if let ItemEnum::StructField(ty) = &field_item.inner {
+                fields.push(FieldInfo {
+                    name: field_item.name.clone().unwrap_or_default(),
+                    type_: linked.render_type(ty),
+                    docs: field_item.docs.as_ref()
+                        .map(|d| ctx.render_markdown_with_links(d, depth))
+                        .unwrap_or_default(),
+                });
+            }
+        }
+    }
+    tera_ctx.insert("fields", &fields);
+
+    // Collect impl blocks for this type.
+    let impls = collect_impls(ctx, item.id, depth);
+    tera_ctx.insert("impls", &impls);
+    tera_ctx.insert("path_to_root", &path_to_root);
+
+    // Sidebar HTML.
+    let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
+    tera_ctx.insert("sidebar", &sidebar_html);
+
+    ctx.tera.render("union.html", &tera_ctx)
+        .context("Failed to render union template")
 }
 
 /// Render a function page to HTML.

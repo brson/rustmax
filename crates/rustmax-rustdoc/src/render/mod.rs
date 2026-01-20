@@ -124,6 +124,7 @@ impl<'a> RenderContext<'a> {
     fn build_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
         let kind_prefix = match kind {
             ItemKind::Struct => "struct.",
+            ItemKind::Union => "union.",
             ItemKind::Enum => "enum.",
             ItemKind::Trait => "trait.",
             ItemKind::Function => "fn.",
@@ -201,6 +202,7 @@ fn load_templates() -> AnyResult<Tera> {
     tera.add_raw_template("base.html", include_str!("../templates/base.html"))?;
     tera.add_raw_template("module.html", include_str!("../templates/module.html"))?;
     tera.add_raw_template("struct.html", include_str!("../templates/struct.html"))?;
+    tera.add_raw_template("union.html", include_str!("../templates/union.html"))?;
     tera.add_raw_template("enum.html", include_str!("../templates/enum.html"))?;
     tera.add_raw_template("trait.html", include_str!("../templates/trait.html"))?;
     tera.add_raw_template("function.html", include_str!("../templates/function.html"))?;

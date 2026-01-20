@@ -53,6 +53,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     // Item paths are absolute from output root, so prepend path_to_root to make relative.
     let mut modules = Vec::new();
     let mut structs = Vec::new();
+    let mut unions = Vec::new();
     let mut enums = Vec::new();
     let mut traits = Vec::new();
     let mut functions = Vec::new();
@@ -84,12 +85,13 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
 
         match &item.item.inner {
             ItemEnum::Struct(_) => structs.push(summary),
+            ItemEnum::Union(_) => unions.push(summary),
             ItemEnum::Enum(_) => enums.push(summary),
             ItemEnum::Trait(_) => traits.push(summary),
             ItemEnum::Function(_) => functions.push(summary),
             ItemEnum::TypeAlias(_) => types.push(summary),
             ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
-            ItemEnum::Macro(_) => macros.push(summary),
+            ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
             _ => {}
         }
     }
@@ -131,12 +133,13 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                                 match &child_item.inner {
                                     ItemEnum::Module(_) => modules.push(summary),
                                     ItemEnum::Struct(_) => structs.push(summary),
+                                    ItemEnum::Union(_) => unions.push(summary),
                                     ItemEnum::Enum(_) => enums.push(summary),
                                     ItemEnum::Trait(_) => traits.push(summary),
                                     ItemEnum::Function(_) => functions.push(summary),
                                     ItemEnum::TypeAlias(_) => types.push(summary),
                                     ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
-                                    ItemEnum::Macro(_) => macros.push(summary),
+                                    ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
                                     _ => {}
                                 }
                             }
@@ -150,6 +153,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     // Sort all item lists alphabetically.
     modules.sort_by(|a, b| a.name.cmp(&b.name));
     structs.sort_by(|a, b| a.name.cmp(&b.name));
+    unions.sort_by(|a, b| a.name.cmp(&b.name));
     enums.sort_by(|a, b| a.name.cmp(&b.name));
     traits.sort_by(|a, b| a.name.cmp(&b.name));
     functions.sort_by(|a, b| a.name.cmp(&b.name));
@@ -159,6 +163,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
 
     tera_ctx.insert("modules", &modules);
     tera_ctx.insert("structs", &structs);
+    tera_ctx.insert("unions", &unions);
     tera_ctx.insert("enums", &enums);
     tera_ctx.insert("traits", &traits);
     tera_ctx.insert("functions", &functions);
