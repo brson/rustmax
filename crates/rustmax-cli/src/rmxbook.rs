@@ -50,12 +50,12 @@ pub fn build(input: &Path, output: &Path) -> AnyResult<()> {
     // Create output directory.
     fs::create_dir_all(output)?;
 
-    // Copy shared theme CSS from www/.
-    let themes_css = include_str!("../../../www/rustmax-themes.css");
+    // Copy shared theme CSS.
+    let themes_css = include_str!("../assets/rustmax-themes.css");
     fs::write(output.join("rustmax-themes.css"), themes_css)?;
 
     // Copy shared syntax highlighting CSS.
-    let syntax_css = include_str!("../../../www/rustmax-syntax.css");
+    let syntax_css = include_str!("../assets/rustmax-syntax.css");
     fs::write(output.join("rustmax-syntax.css"), syntax_css)?;
 
     // Generate book-specific CSS.
