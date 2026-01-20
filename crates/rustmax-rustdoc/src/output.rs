@@ -142,7 +142,7 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
 
 fn write_css(output_dir: &Path) -> AnyResult<()> {
     // Copy shared theme CSS (colors and fonts).
-    let themes_css = include_str!("../../../www/rustmax-themes.css");
+    let themes_css = include_str!("../assets/rustmax-themes.css");
     let themes_path = output_dir.join("rustmax-themes.css");
     fs::write(&themes_path, themes_css)
         .with_context(|| format!("Failed to write themes CSS to {}", themes_path.display()))?;
@@ -154,7 +154,7 @@ fn write_css(output_dir: &Path) -> AnyResult<()> {
         .with_context(|| format!("Failed to write CSS to {}", path.display()))?;
 
     // Copy shared syntax highlighting CSS.
-    let syntax_css = include_str!("../../../www/rustmax-syntax.css");
+    let syntax_css = include_str!("../assets/rustmax-syntax.css");
     let syntax_path = output_dir.join("rustmax-syntax.css");
     fs::write(&syntax_path, syntax_css)
         .with_context(|| format!("Failed to write syntax CSS to {}", syntax_path.display()))

@@ -6,6 +6,7 @@ license.workspace = true
 authors.workspace = true
 repository.workspace = true
 description = "Custom rustdoc HTML renderer for rustmax documentation"
+include = ["src/**/*", "assets/**/*", "Cargo.toml", "build.rs"]
 
 [dependencies]
 rmx.path = "../rustmax"
