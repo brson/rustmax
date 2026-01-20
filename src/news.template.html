@@ -10,21 +10,17 @@
 
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Zilla+Slab:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link href='rustmax-themes.css' rel='stylesheet'/>
-    <link href='fonts/Bright/cmun-bright.css' rel='stylesheet'/>
-    <link href='fonts/Serif/cmun-serif.css' rel='stylesheet'/>
-    <link href='fonts/Typewriter/cmun-typewriter.css' rel='stylesheet'/>
-    <link href='fonts/Concrete/cmun-concrete.css' rel='stylesheet'/>
-    <link href='fonts/Sans/cmun-sans.css' rel='stylesheet'/>
     <link href='style.css' rel='stylesheet'/>
 
-    <!-- Highlight.js for syntax highlighting -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark-theme">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light-theme" disabled>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+    <!-- Syntax highlighting (pre-rendered by syntect) -->
+    <link href='rustmax-syntax.css' rel='stylesheet'/>
 
     <script src='set-theme.js'></script>
+    <script src='script.js'></script>
 
     <link rel="alternate" type="application/rss+xml" title="Rustmax News" href="news.xml">
 
@@ -68,11 +64,3 @@
     </footer>
 
   </main>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
-      });
-    });
-  </script>
