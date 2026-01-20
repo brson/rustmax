@@ -101,13 +101,13 @@ doc-build: doc-www doc-api doc-book doc-library
     cp -r work/library/* out/library/
 
 publish-dry:
-    cargo publish -p rustmax-doctest --dry-run
     cargo publish -p rustmax --dry-run
+    cargo publish -p rustmax-doctest --dry-run
     cargo publish -p rustmax-cli --dry-run
 
 publish:
-    cargo publish -p rustmax-doctest
     cargo publish -p rustmax
+    cargo publish -p rustmax-doctest
     cargo publish -p rustmax-cli --allow-dirty
 
 replace-version old new:
