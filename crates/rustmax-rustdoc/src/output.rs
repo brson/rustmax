@@ -6,7 +6,7 @@ use rustdoc_types::{ItemEnum, ItemKind};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::render::{self, RenderContext};
+use crate::render::{self, RenderContext, ReexportTarget};
 use crate::types::ModuleTree;
 
 /// Write all documentation to the output directory.
@@ -59,6 +59,17 @@ fn write_item(ctx: &RenderContext, item: &crate::types::RenderableItem) -> AnyRe
             return Ok(());
         }
         let target_id = use_item.id.as_ref().unwrap();
+
+        // Skip page creation if target has a public page elsewhere.
+        match ctx.reexport_target(target_id) {
+            ReexportTarget::LocalPublic { .. } | ReexportTarget::External { .. } => {
+                return Ok(());
+            }
+            ReexportTarget::NeedsPage => {
+                // Proceed with page creation.
+            }
+        }
+
         let Some(target_item) = ctx.krate.index.get(target_id) else {
             return Ok(());
         };

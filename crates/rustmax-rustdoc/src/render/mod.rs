@@ -9,12 +9,22 @@ pub mod sidebar;
 
 use rmx::prelude::*;
 use rmx::tera::Tera;
-use rustdoc_types::{Crate, Id, ItemKind};
+use rustdoc_types::{Crate, Id, ItemKind, Visibility};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
 use crate::{RenderConfig, ModuleTree, GlobalItemIndex};
 use crate::types::{build_module_tree, build_impl_index, ImplIndex};
+
+/// Where a re-export target's page exists.
+pub enum ReexportTarget {
+    /// Target has a local public page.
+    LocalPublic { path: Vec<String>, kind: ItemKind },
+    /// Target has a page in an external crate we have docs for.
+    External { path: Vec<String>, kind: ItemKind },
+    /// Target needs its own page (private or external without docs).
+    NeedsPage,
+}
 
 /// Context for rendering documentation.
 pub struct RenderContext<'a> {
@@ -121,7 +131,7 @@ impl<'a> RenderContext<'a> {
     }
 
     /// Build a URL for an item given its path and kind.
-    fn build_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
+    pub fn build_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
         let kind_prefix = match kind {
             ItemKind::Struct => "struct.",
             ItemKind::Union => "union.",
@@ -192,6 +202,38 @@ impl<'a> RenderContext<'a> {
             self.crate_name(),
             current_depth,
         )
+    }
+
+    /// Determine where a re-export target's page exists.
+    pub fn reexport_target(&self, target_id: &Id) -> ReexportTarget {
+        let Some(summary) = self.krate.paths.get(target_id) else {
+            return ReexportTarget::NeedsPage;
+        };
+
+        if summary.crate_id == 0 {
+            // Local item - check if public.
+            if let Some(target) = self.krate.index.get(target_id) {
+                if target.visibility == Visibility::Public {
+                    return ReexportTarget::LocalPublic {
+                        path: summary.path.clone(),
+                        kind: summary.kind,
+                    };
+                }
+            }
+        } else {
+            // External item - check if we have docs for that crate.
+            if let Some(all_crates) = self.all_crates {
+                if let Some(crate_name) = summary.path.first() {
+                    if all_crates.contains_key(crate_name) {
+                        return ReexportTarget::External {
+                            path: summary.path.clone(),
+                            kind: summary.kind,
+                        };
+                    }
+                }
+            }
+        }
+        ReexportTarget::NeedsPage
     }
 }
 

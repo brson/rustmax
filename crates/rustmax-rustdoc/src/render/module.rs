@@ -4,7 +4,7 @@ use rmx::prelude::*;
 use rmx::tera::Context;
 use rustdoc_types::ItemEnum;
 
-use super::RenderContext;
+use super::{RenderContext, ReexportTarget};
 use crate::types::ModuleTree;
 
 /// Render a module page to HTML.
@@ -75,6 +75,53 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     }
 
     for item in &tree.items {
+        // Handle re-exports specially.
+        if let ItemEnum::Use(use_item) = &item.item.inner {
+            if use_item.is_glob || use_item.id.is_none() {
+                continue;
+            }
+            let target_id = use_item.id.as_ref().unwrap();
+            let Some(target_item) = ctx.krate.index.get(target_id) else {
+                continue;
+            };
+
+            // Determine link URL.
+            let item_url = match ctx.reexport_target(target_id) {
+                ReexportTarget::LocalPublic { ref path, kind }
+                | ReexportTarget::External { ref path, kind } => {
+                    // Link to original.
+                    ctx.build_item_url(path, kind, depth).unwrap_or_default()
+                }
+                ReexportTarget::NeedsPage => {
+                    // Link to re-export's page.
+                    format!("{}{}", path_to_root, item.html_path.display())
+                }
+            };
+
+            let summary = ItemSummary {
+                name: use_item.name.clone(),
+                path: item_url,
+                short_doc: target_item.docs.as_ref()
+                    .map(|d| ctx.render_short_doc(d, depth))
+                    .unwrap_or_default(),
+            };
+
+            // Categorize by target type.
+            match &target_item.inner {
+                ItemEnum::Struct(_) => structs.push(summary),
+                ItemEnum::Union(_) => unions.push(summary),
+                ItemEnum::Enum(_) => enums.push(summary),
+                ItemEnum::Trait(_) => traits.push(summary),
+                ItemEnum::Function(_) => functions.push(summary),
+                ItemEnum::TypeAlias(_) => types.push(summary),
+                ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
+                ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
+                _ => {}
+            }
+            continue;
+        }
+
+        // Non-Use items.
         let summary = ItemSummary {
             name: item.item.name.clone().unwrap_or_default(),
             path: format!("{}{}", path_to_root, item.html_path.display()),
