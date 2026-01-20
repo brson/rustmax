@@ -1,4 +1,4 @@
-# Task: prepare-release
+# Task: task-prepare-release
 
 Bump the version numbers of all rustmax crates,
 including the demoapp.
