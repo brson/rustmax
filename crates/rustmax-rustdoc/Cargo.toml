@@ -9,7 +9,7 @@ description = "Custom rustdoc HTML renderer for rustmax documentation"
 
 [dependencies]
 rmx.path = "../rustmax"
-rmx.version = "0.0.7"
+rmx.version = "0.0.8"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
