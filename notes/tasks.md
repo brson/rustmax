@@ -1,3 +1,15 @@
+# Task: prepare-release
+
+Bump the version numbers of all rustmax crates,
+including the demoapp.
+Run `just test` to verify.
+Run the demoapp test suite to verify.
+Add release notes to src/posts.
+Run `just build`.
+
+
+
+
 # Task: task-update-library
 
 The library is a collection of mdbooks
