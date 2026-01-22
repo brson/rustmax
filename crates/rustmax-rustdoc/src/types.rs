@@ -97,7 +97,8 @@ fn build_tree_recursive<'a>(
         };
 
         // Skip private items unless requested.
-        if !include_private && is_private(child_item) {
+        // But always include modules (they're navigable) and check re-exports by their target.
+        if !include_private && is_private(child_item, krate) {
             continue;
         }
 
@@ -234,8 +235,35 @@ fn item_kind(inner: &ItemEnum) -> Option<ItemKind> {
     }
 }
 
-fn is_private(item: &Item) -> bool {
+/// Check if an item should be considered private.
+///
+/// Modules are never private (they're always navigable).
+/// Re-exports (Use items) check the target item's visibility.
+/// Other items are private if they have `Visibility::Default`.
+fn is_private(item: &Item, krate: &Crate) -> bool {
     use rustdoc_types::Visibility;
+
+    // Modules are always public for navigation purposes.
+    if matches!(item.inner, ItemEnum::Module(_)) {
+        return false;
+    }
+
+    // For re-exports, check the target item's visibility.
+    if let ItemEnum::Use(use_item) = &item.inner {
+        if let Some(ref target_id) = use_item.id {
+            if let Some(target_item) = krate.index.get(target_id) {
+                // If target is a module, it's public.
+                if matches!(target_item.inner, ItemEnum::Module(_)) {
+                    return false;
+                }
+                // Check target's visibility.
+                return matches!(target_item.visibility, Visibility::Default);
+            }
+        }
+        // If we can't resolve the target, consider it public (it's an external re-export).
+        return false;
+    }
+
     matches!(item.visibility, Visibility::Default)
 }
 

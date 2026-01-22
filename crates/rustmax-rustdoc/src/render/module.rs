@@ -81,9 +81,6 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                 continue;
             }
             let target_id = use_item.id.as_ref().unwrap();
-            let Some(target_item) = ctx.krate.index.get(target_id) else {
-                continue;
-            };
 
             // Determine link URL.
             let item_url = match ctx.reexport_target(target_id) {
@@ -98,25 +95,49 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                 }
             };
 
-            let summary = ItemSummary {
-                name: use_item.name.clone(),
-                path: item_url,
-                short_doc: target_item.docs.as_ref()
-                    .map(|d| ctx.render_short_doc(d, depth))
-                    .unwrap_or_default(),
-            };
+            // Try to get target from index first, then fall back to paths.
+            if let Some(target_item) = ctx.krate.index.get(target_id) {
+                let summary = ItemSummary {
+                    name: use_item.name.clone(),
+                    path: item_url,
+                    short_doc: target_item.docs.as_ref()
+                        .map(|d| ctx.render_short_doc(d, depth))
+                        .unwrap_or_default(),
+                };
 
-            // Categorize by target type.
-            match &target_item.inner {
-                ItemEnum::Struct(_) => structs.push(summary),
-                ItemEnum::Union(_) => unions.push(summary),
-                ItemEnum::Enum(_) => enums.push(summary),
-                ItemEnum::Trait(_) => traits.push(summary),
-                ItemEnum::Function(_) => functions.push(summary),
-                ItemEnum::TypeAlias(_) => types.push(summary),
-                ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
-                ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
-                _ => {}
+                // Categorize by target type.
+                match &target_item.inner {
+                    ItemEnum::Struct(_) => structs.push(summary),
+                    ItemEnum::Union(_) => unions.push(summary),
+                    ItemEnum::Enum(_) => enums.push(summary),
+                    ItemEnum::Trait(_) => traits.push(summary),
+                    ItemEnum::Function(_) => functions.push(summary),
+                    ItemEnum::TypeAlias(_) => types.push(summary),
+                    ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
+                    ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
+                    _ => {}
+                }
+            } else if let Some(path_info) = ctx.krate.paths.get(target_id) {
+                // External re-export - use paths info to categorize.
+                let summary = ItemSummary {
+                    name: use_item.name.clone(),
+                    path: item_url,
+                    short_doc: String::new(), // No docs available for external items.
+                };
+
+                use rustdoc_types::ItemKind;
+                match path_info.kind {
+                    ItemKind::Struct => structs.push(summary),
+                    ItemKind::Union => unions.push(summary),
+                    ItemKind::Enum => enums.push(summary),
+                    ItemKind::Trait => traits.push(summary),
+                    ItemKind::Function => functions.push(summary),
+                    ItemKind::TypeAlias => types.push(summary),
+                    ItemKind::Constant | ItemKind::Static => constants.push(summary),
+                    ItemKind::Macro => macros.push(summary),
+                    ItemKind::Module => modules.push(summary),
+                    _ => {}
+                }
             }
             continue;
         }
@@ -139,6 +160,18 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
             ItemEnum::TypeAlias(_) => types.push(summary),
             ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
             ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
+            ItemEnum::ExternCrate { name, rename } => {
+                // Extern crate appears as a module linking to the external crate.
+                let display_name = rename.as_ref().unwrap_or(name);
+                let extern_path = format!("{}{}/index.html", path_to_root, display_name);
+                modules.push(ItemSummary {
+                    name: display_name.clone(),
+                    path: extern_path,
+                    short_doc: item.item.docs.as_ref()
+                        .map(|d| ctx.render_short_doc(d, depth))
+                        .unwrap_or_default(),
+                });
+            }
             _ => {}
         }
     }
