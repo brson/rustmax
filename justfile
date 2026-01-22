@@ -28,9 +28,18 @@ test:
 test-rustdoc:
     cargo test -p rustmax --features rmx-profile-max --doc
 
+test-musl:
+    cargo check -p rustmax --target x86_64-unknown-linux-musl --features rmx-profile-portable
+
+test-wasm:
+    cargo check -p rustmax --target wasm32-unknown-unknown --features rmx-profile-portable
+
 test-min-version-build: maint-lock-minimum-versions
     cargo test -p rustmax --features rmx-profile-std
 
+test-ci-linux: test test-musl
+
+test-ci-win: test
 
 lint:
     cargo deny check
