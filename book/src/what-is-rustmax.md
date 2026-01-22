@@ -24,5 +24,5 @@ of selected high-quality Rust libraries:
 
 - Step 1: **Install Rust** with [`rustup`](https://rustup.rs).
 - Step 2: **Learn Rust** from this book and [the library](library.md).
-- Step 3: **Build programs** with [the crates](crates.md).
+- Step 3: **Build programs** with [the crates](../api/rustmax/index.html).
 - Step 4: **Maintain programs** with [the tools](tools.md).
