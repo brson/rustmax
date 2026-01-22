@@ -36,7 +36,7 @@ A Guide to the `rustmax` crate.
   which correspond to common target environments and application types.
   - [🌎 Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
   - **[🌎 Profile: `rmx-profile-std`][`rmx-profile-std`]**
-  - [🌎 Profile: `rmx-profile-wasm`][`rmx-profile-wasm`]
+  - [🌎 Profile: `rmx-profile-portable`][`rmx-profile-portable`]
   - [🌎 Profile: `rmx-profile-net`][`rmx-profile-net`]
   - [🌎 Profile: `rmx-profile-cli`][`rmx-profile-cli`]
   - [🌎 Profile: `rmx-profile-build-script`][`rmx-profile-build-script`]
@@ -179,26 +179,28 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 
 
 
-## 🌎 Profile: `rmx-profile-wasm`
+## 🌎 Profile: `rmx-profile-portable`
 
-This profile is designed for WebAssembly (WASM) targets.
+This profile is designed for portable targets including WebAssembly (WASM)
+and cross-compiled environments like Linux musl.
 It includes all crates from [`rmx-profile-no-std`],
-plus additional crates that are compatible with WASM environments.
+plus additional crates that are compatible with these environments.
 
-This profile uses WASM-specific variants of ecosystem features
-that exclude features incompatible with WASM environments,
-such as OS-specific threading APIs and file system operations
-that require native OS support.
+This profile uses portable variants of ecosystem features
+that exclude features incompatible with WASM or requiring
+a C cross-compiler toolchain, such as OS-specific threading APIs,
+file system operations that require native OS support,
+and C library dependencies like zstd.
 
 💡 This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].\
-💡 This profile also enables [`rmx-feature-std-wasm`].\
-💡 This profile also enables [`rmx-feature-default-wasm`].\
-💡 This profile also enables [`rmx-feature-more-wasm`].\
+💡 This profile also enables [`rmx-feature-std-portable`].\
+💡 This profile also enables [`rmx-feature-default-portable`].\
+💡 This profile also enables [`rmx-feature-more-portable`].\
 💡 This profile also enables [`rmx-feature-derive`].\
 💡 This profile also enables [`rmx-feature-serde`].
 
 
-### Crates in `rmx-profile-wasm`
+### Crates in `rmx-profile-portable`
 
 All crates from [`rmx-profile-no-std`], plus:
 
@@ -217,7 +219,7 @@ All crates from [`rmx-profile-no-std`], plus:
 - [`zip`] - Read and write ZIP archives.
 
 Note: Some crates from [`rmx-profile-std`] are not included
-because they require native OS features unavailable in WASM environments:
+because they require native OS features or C dependencies:
 [`proptest`], [`tera`], [`xshell`].
 
 
@@ -361,13 +363,13 @@ It enables the "std" feature of crates
 and other default features that require the standard library.
 
 
-## ⛲ Feature: `rmx-feature-std-wasm`
+## ⛲ Feature: `rmx-feature-std-portable`
 
-This feature is enabled by [`rmx-profile-wasm`].
+This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
 
 Similar to [`rmx-feature-std`], but excludes features
-that are incompatible with WebAssembly targets,
+that are incompatible with portable targets (WASM, musl cross-compilation),
 such as those requiring threading or OS-specific APIs.
 
 
@@ -379,13 +381,13 @@ It does not typically need to be set manually.
 It enables the "default" feature of crates.
 
 
-## ⛲ Feature: `rmx-feature-default-wasm`
+## ⛲ Feature: `rmx-feature-default-portable`
 
-This feature is enabled by [`rmx-profile-wasm`].
+This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
 
-Similar to [`rmx-feature-default`], but uses WASM-compatible
-default features where necessary.
+Similar to [`rmx-feature-default`], but uses portable
+default features where necessary (e.g., excludes zstd from zip).
 
 
 ## ⛲ Feature: `rmx-feature-more`
@@ -397,13 +399,13 @@ This activates extra crate features for convenience
 that the crates themselves do not typically activate by default.
 
 
-## ⛲ Feature: `rmx-feature-more-wasm`
+## ⛲ Feature: `rmx-feature-more-portable`
 
-This feature is enabled by [`rmx-profile-wasm`].
+This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
 
 Similar to [`rmx-feature-more`], but excludes features
-that are incompatible with WebAssembly targets,
+that are incompatible with portable targets,
 such as blocking I/O and threading.
 
 
@@ -578,7 +580,7 @@ through cargo features like `rmx-profile-std`.
 
 [`rmx-profile-no-std`]: #-profile-rmx-profile-no-std
 [`rmx-profile-std`]: #-profile-rmx-profile-std
-[`rmx-profile-wasm`]: #-profile-rmx-profile-wasm
+[`rmx-profile-portable`]: #-profile-rmx-profile-portable
 [`rmx-profile-net`]: #-profile-rmx-profile-net
 [`rmx-profile-cli`]: #-profile-rmx-profile-cli
 [`rmx-profile-build-script`]: #-profile-rmx-profile-build-script
@@ -588,11 +590,11 @@ through cargo features like `rmx-profile-std`.
 [`rmx-profile-max-nightly`]: #-profile-rmx-profile-max-nightly
 [`rmx-feature-no-std`]: #-feature-rmx-feature-no-std
 [`rmx-feature-std`]: #-feature-rmx-feature-std
-[`rmx-feature-std-wasm`]: #-feature-rmx-feature-std-wasm
+[`rmx-feature-std-portable`]: #-feature-rmx-feature-std-portable
 [`rmx-feature-default`]: #-feature-rmx-feature-default
-[`rmx-feature-default-wasm`]: #-feature-rmx-feature-default-wasm
+[`rmx-feature-default-portable`]: #-feature-rmx-feature-default-portable
 [`rmx-feature-more`]: #-feature-rmx-feature-more
-[`rmx-feature-more-wasm`]: #-feature-rmx-feature-more-wasm
+[`rmx-feature-more-portable`]: #-feature-rmx-feature-more-portable
 [`rmx-feature-derive`]: #-feature-rmx-feature-derive
 [`rmx-feature-serde`]: #-feature-rmx-feature-serde
 [`rmx-feature-backtrace`]: #-feature-rmx-feature-backtrace

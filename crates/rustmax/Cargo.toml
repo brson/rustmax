@@ -60,7 +60,7 @@ rmx-crates-no-std = [
   "toml",
 ]
 
-rmx-crates-wasm = [
+rmx-crates-portable = [
   "rmx-crates-no-std",
   "clap",
   "comrak",
@@ -149,14 +149,14 @@ rmx-profile-no-std = [
   "rmx-crates-no-std",
 ]
 
-rmx-profile-wasm = [
+rmx-profile-portable = [
   "rmx-rustlibs-std",
-  "rmx-feature-std-wasm",
-  "rmx-feature-default-wasm",
-  "rmx-feature-more-wasm",
+  "rmx-feature-std-portable",
+  "rmx-feature-default-portable",
+  "rmx-feature-more-portable",
   "rmx-feature-derive",
   "rmx-feature-serde",
-  "rmx-crates-wasm",
+  "rmx-crates-portable",
 ]
 
 rmx-profile-std = [
@@ -221,7 +221,7 @@ rmx-feature-no-std = [
   "serde_json?/alloc",
 ]
 
-rmx-feature-std-wasm = [
+rmx-feature-std-portable = [
   "rmx-feature-no-std",
   "ahash?/std",
   "anyhow?/std",
@@ -295,7 +295,7 @@ rmx-feature-std = [
   "sha2?/std",
 ]
 
-rmx-feature-default-wasm = [
+rmx-feature-default-portable = [
   #"ahash?/default",
   "ahash?/compile-time-rng",
   "axum?/default",
@@ -359,7 +359,7 @@ rmx-feature-default = [
   "zip?/default",
 ]
 
-rmx-feature-more-wasm = [
+rmx-feature-more-portable = [
   "hyper?/full",
   #"rand?/thread_rng",
   #"rand?/small_rng",
@@ -521,5 +521,5 @@ zip = { version = "7.0", optional = true, default-features = false }
 _gcc = { package = "gcc", version = "0.3.55", optional = true, default-features = false }
 # cargo audit
 _thread_local = { package = "thread_local", version = "1.1.4", optional = true, default-features = false }
-# need to control this for wasm
+# need to control this for wasm/portable builds
 _getrandom = { package = "getrandom", version = "0.2.16", optional = true, default-features = false }
