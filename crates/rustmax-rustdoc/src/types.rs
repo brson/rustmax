@@ -239,25 +239,6 @@ fn is_private(item: &Item) -> bool {
     matches!(item.visibility, Visibility::Default)
 }
 
-/// Collect all renderable items in the tree as a flat list.
-pub fn flatten_items<'a>(tree: &'a ModuleTree<'a>) -> Vec<&'a RenderableItem<'a>> {
-    let mut result = Vec::new();
-
-    if let Some(ref module_item) = tree.module_item {
-        result.push(module_item);
-    }
-
-    for item in &tree.items {
-        result.push(item);
-    }
-
-    for submodule in &tree.submodules {
-        result.extend(flatten_items(submodule));
-    }
-
-    result
-}
-
 /// Information about an impl block.
 #[derive(Debug, Clone)]
 pub struct ImplInfo<'a> {

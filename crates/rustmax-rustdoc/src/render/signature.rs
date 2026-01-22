@@ -247,61 +247,6 @@ fn render_fn_pointer(fp: &FunctionPointer) -> String {
     result
 }
 
-/// Render function signature.
-pub fn render_function_sig(func: &Function, name: &str) -> String {
-    let mut result = String::new();
-
-    // Header modifiers.
-    if func.header.is_unsafe {
-        result.push_str("unsafe ");
-    }
-    if func.header.is_async {
-        result.push_str("async ");
-    }
-    if func.header.is_const {
-        result.push_str("const ");
-    }
-    if func.header.abi != Abi::Rust {
-        result.push_str(&format!("extern {:?} ", func.header.abi));
-    }
-
-    result.push_str("fn ");
-    result.push_str(name);
-
-    // Generics.
-    if !func.generics.params.is_empty() {
-        result.push('<');
-        let params: Vec<_> = func.generics.params.iter().map(render_generic_param_def).collect();
-        result.push_str(&params.join(", "));
-        result.push('>');
-    }
-
-    // Parameters.
-    result.push('(');
-    let params: Vec<_> = func.sig.inputs.iter().map(|(name, ty)| {
-        format!("{}: {}", name, render_type(ty))
-    }).collect();
-    result.push_str(&params.join(", "));
-    result.push(')');
-
-    // Return type.
-    if let Some(ref output) = func.sig.output {
-        result.push_str(" -> ");
-        result.push_str(&render_type(output));
-    }
-
-    // Where clause.
-    if !func.generics.where_predicates.is_empty() {
-        result.push_str("\nwhere\n    ");
-        let predicates: Vec<_> = func.generics.where_predicates.iter()
-            .map(render_where_predicate)
-            .collect();
-        result.push_str(&predicates.join(",\n    "));
-    }
-
-    result
-}
-
 fn render_where_predicate(pred: &WherePredicate) -> String {
     match pred {
         WherePredicate::BoundPredicate { type_, bounds, generic_params } => {

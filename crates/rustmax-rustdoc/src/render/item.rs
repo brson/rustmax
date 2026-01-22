@@ -561,35 +561,6 @@ fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id, depth: usize)
     result
 }
 
-/// Render an impl block header like "impl Trait for Type".
-fn render_impl_header(impl_: &rustdoc_types::Impl, for_type: &str, trait_name: Option<&str>) -> String {
-    use super::signature::render_generic_param_def;
-
-    let mut result = String::from("impl");
-
-    // Generics.
-    if !impl_.generics.params.is_empty() {
-        result.push('<');
-        let params: Vec<_> = impl_.generics.params.iter()
-            .map(render_generic_param_def)
-            .collect();
-        result.push_str(&params.join(", "));
-        result.push('>');
-    }
-
-    result.push(' ');
-
-    // Trait name if this is a trait impl.
-    if let Some(name) = trait_name {
-        result.push_str(name);
-        result.push_str(" for ");
-    }
-
-    result.push_str(for_type);
-
-    result
-}
-
 /// Render an impl block header with HTML-escaped content.
 /// The for_type should already be HTML (with links).
 fn render_impl_header_linked(impl_: &rustdoc_types::Impl, for_type: &str, trait_name: Option<&str>) -> String {
