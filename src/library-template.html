@@ -1,0 +1,160 @@
+<!-- GENERATED FILE DO NOT EDIT -->
+<!doctype html>
+
+<html lang='en'>
+
+  <head>
+    <meta charset='utf-8'>
+
+    <title>Rustmax Library</title>
+    <meta name='description' content='A collection of crates, tools, and documentation for the Rust programming language.'>
+
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Zilla+Slab:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href='rustmax-themes.css' rel='stylesheet'/>
+    <link href='style.css' rel='stylesheet'/>
+
+    <!-- Syntax highlighting (pre-rendered by syntect) -->
+    <link href='rustmax-syntax.css' rel='stylesheet'/>
+
+    <script src='set-theme.js'></script>
+    <script src='script.js'></script>
+
+  </head>
+
+  <main>
+
+    <header>
+      <hgroup>
+        <h1>L<span>·</span>I<span>·</span>B<span>·</span>R<span>·</span>A<span>·</span>R<span>·</span>Y</h1>
+        <p>
+          A library of documentation for <a href="index.html">Rustmax</a>,
+          <br>
+          a collection of crates, tools, and documentation for
+          <br>
+          the Rust programming language.
+        </p>
+      </hgroup>
+    </header>
+
+    <section>
+      <p>
+        The Rust language and its ecosystem is documented in "books"
+        and most of these links are to books.
+        Links with a bookmark icon, 🔖, are to particularly
+        notable or useful chapters within a book.
+      </p>
+
+      <h2>The Rust language</h2>
+      <ul>
+        {{book:trpl:bold}}
+        <li><strong><a href="https://doc.rust-lang.org/rust-by-example/">Rust By Example</a></strong> (offsite)
+        {{book:reference:bold}}
+        {{#if-book:reference}}
+        <ul>
+          <li>🔖 <a href="library/reference/conditional-compilation.html">Conditional compilation</a>.
+              Including which cfgs are set by rustc.
+          <li>🔖 <a href="library/reference/behavior-considered-undefined.html">Behavior considered undefined</a>
+        </ul>
+        {{/if-book}}
+        {{book:nomicon:bold}}
+        {{book:edition-guide}}
+        <li><a href="https://veykril.github.io/tlborm/">The Little Book of Rust Macros</a> (offsite)
+        {{book:api-guidelines}}
+        {{book:unsafe-code-guidelines}}
+        <li><a href="https://doc.rust-lang.org/stable/error_codes/error-index.html">Rust Error Codes Index</a> (offsite)
+        <li><a href="https://doc.rust-lang.org/unstable-book/">The Rust Unstable Book</a> (offsite)
+        <li><a href="https://doc.rust-lang.org/nightly/style-guide/index.html">The Rust Style Guide</a> (offsite)
+        <li><a href="https://doc.rust-lang.org/nightly/releases.html">Rust Release Notes</a> (offsite)
+      </ul>
+
+      <h2>The Rust standard library</h2>
+      <ul>
+        <li><strong><a href="api/std/index.html"><code>std</code></a></strong>
+          <ul>
+            <li>🔖 <a href="api/std/collections/index.html"><code>std::collections</code></a>
+            <li>🔖 <a href="api/std/error/index.html"><code>std::error</code></a>
+            <li>🔖 <a href="api/core/ptr/index.html"><code>std::ptr</code></a>.
+                Safety, undefined behavior, and "provenance".
+            <li>🔖 <a href="api/std/sync/index.html"><code>std::sync</code></a>
+            <li>🔖 <a href="api/core/sync/atomic/index.html"><code>std::sync::atomic</code></a>
+          </ul>
+        <li><a href="api/core/index.html"><code>core</code></a>
+        <li><a href="api/alloc/index.html"><code>alloc</code></a>
+        <li><a href="api/proc_macro/index.html"><code>proc_macro</code></a>
+      </ul>
+
+      <h2>Standard Rust tools</h2>
+      <ul>
+        {{book:cargo-book}}
+        {{#if-book:cargo-book}}
+        <ul>
+          <li>🔖 <a href="library/cargo-book/reference/manifest.html">The manifest format</a>
+          <li>🔖 <a href="library/cargo-book/reference/environment-variables.html">Environment variables</a>
+              that affect the Cargo build process.
+          <li>🔖 <a href="library/cargo-book/reference/config.html">Configuration format</a>.
+              Cargo has many interesting configuration options.
+          <li>🔖 <a href="library/cargo-book/reference/semver.html">SemVer compatibility</a>.
+              Guidelines for maintaining semver compatibility.
+        </ul>
+        {{/if-book}}
+        {{book:rustc-book}}
+        {{#if-book:rustc-book}}
+        <ul>
+          <li>🔖 <a href="library/rustc-book/lints/index.html">The lint system and built-in lints</a>
+          <li>🔖 <a href="library/rustc-book/platform-support.html">Rust platform support tiers</a>
+        </ul>
+        {{/if-book}}
+        <li><a href="https://rust-lang.github.io/rustup/index.html">The <code>rustup</code> Book</a> (offsite)
+        {{book:rustdoc-book}}
+        <li><a href="https://doc.rust-lang.org/nightly/clippy/development/infrastructure/book.html">The <code>clippy</code> Book</a> (offsite)
+        <li><a href="https://just.systems/man/en/">The <code>just</code> Programmer's Manual</a> (offsite)
+        {{book:mdbook}}
+        {{book:bindgen}}
+      </ul>
+
+      <h2>The Rust crate ecosystem</h2>
+      <ul>
+        {{book:rand-book}}
+        <li><a href="https://proptest-rs.github.io/proptest/intro.html">The <code>proptest</code> Book</a> (offsite)
+        <li><a href="https://serde.rs/">The <code>serde</code> Book</a> (offsite)
+        {{book:rust-cookbook}}
+      </ul>
+
+      <h2>Domain-specific Rust</h2>
+      <ul>
+        {{book:embedded-book}}
+      </ul>
+
+      <h2>The Rust Project internals</h2>
+      <ul>
+        <li><a href="https://rust-lang.github.io/rust-project-goals/">Rust Project Goals</a> (offsite)
+        {{book:rustc-dev-guide}}
+        {{book:std-dev-guide}}
+        {{book:rust-forge}}
+        {{#if-book:rust-forge}}
+        <ul>
+          <li>🔖 <a href="library/rust-forge/infra/other-installation-methods.html">Alternative Rust Installation Methods</a>
+        </ul>
+        {{/if-book}}
+        {{book:rfcs}}
+      </ul>
+    </section>
+
+    <footer>
+      <p>
+        <span>...</span> see me on <a href="https://github.com/brson/rustmax">GitHub</a>.
+      </p>
+      <p id="build-info" class="build-info">
+        <span id="commit-sha"></span>
+      </p>
+    </footer>
+
+  </main>
+
+</html>

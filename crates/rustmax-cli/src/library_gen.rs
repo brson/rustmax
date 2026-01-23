@@ -26,8 +26,8 @@ pub fn generate_library_page() -> AnyResult<()> {
     let books = load_books(root)?;
     let template = load_template(root)?;
     let content = render_template(&template, &books)?;
-    fs::write("book/src/library.md", content)?;
-    println!("Generated library.md with local book links");
+    fs::write("www/library.html", content)?;
+    println!("Generated library.html with local book links");
     Ok(())
 }
 
@@ -38,7 +38,7 @@ fn load_books(root: &std::path::Path) -> AnyResult<Books> {
 }
 
 fn load_template(root: &std::path::Path) -> AnyResult<String> {
-    let path = root.join("src/library-template.md");
+    let path = root.join("src/library-template.html");
     Ok(fs::read_to_string(path)?)
 }
 
@@ -111,15 +111,16 @@ fn try_render_book_directive(line: &str, book_map: &HashMap<&str, &Book>) -> Opt
 
     let upstream_link = book.upstream_url.as_ref().unwrap_or(&book.repo);
 
+    // Output HTML <li> elements for top-level library.html
     if bold {
         Some(format!(
-            "- **[{}](../library/{}/)** ([upstream]({}))",
-            book.name, book.slug, upstream_link
+            "<li><strong><a href=\"library/{}/\">{}</a></strong> (<a href=\"{}\">offsite</a>)",
+            book.slug, book.name, upstream_link
         ))
     } else {
         Some(format!(
-            "- [{}](../library/{}/) ([upstream]({}))",
-            book.name, book.slug, upstream_link
+            "<li><a href=\"library/{}/\">{}</a> (<a href=\"{}\">offsite</a>)",
+            book.slug, book.name, upstream_link
         ))
     }
 }

@@ -57,6 +57,8 @@ enum CliCmd {
     BuildLibrary(CliCmdBuildLibrary),
     /// Refresh the library or a specific book.
     RefreshLibrary(CliCmdRefreshLibrary),
+    /// Generate the library.html page.
+    GenerateLibraryPage(CliCmdGenerateLibraryPage),
 
     /// Build a book using the rmxbook renderer.
     Rmxbook(CliCmdRmxbook),
@@ -125,7 +127,7 @@ struct CliCmdBuildLibrary {
     /// Force git clone/fetch operations (by default skipped for dev speed)
     #[arg(long)]
     fetch: bool,
-    /// Generate library.md with local book links (off by default during development)
+    /// Generate library.html with local book links (off by default during development)
     #[arg(long)]
     generate_library_page: bool,
 }
@@ -134,6 +136,9 @@ struct CliCmdBuildLibrary {
 struct CliCmdRefreshLibrary {
     book: Option<String>,
 }
+
+#[derive(clap::Args)]
+struct CliCmdGenerateLibraryPage {}
 
 
 #[derive(clap::Args)]
@@ -226,6 +231,7 @@ impl CliOpts {
             CliCmd::ListLibrary(cmd) => cmd.run(),
             CliCmd::BuildLibrary(cmd) => cmd.run(),
             CliCmd::RefreshLibrary(cmd) => cmd.run(),
+            CliCmd::GenerateLibraryPage(cmd) => cmd.run(),
 
             CliCmd::Rmxbook(cmd) => cmd.run(),
 
@@ -356,6 +362,11 @@ impl CliCmdRefreshLibrary {
     }
 }
 
+impl CliCmdGenerateLibraryPage {
+    fn run(&self) -> AnyResult<()> {
+        library_gen::generate_library_page()
+    }
+}
 
 impl CliCmdRmxbook {
     fn run(&self) -> AnyResult<()> {

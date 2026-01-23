@@ -3,7 +3,6 @@
 - [What is Rustmax?](what-is-rustmax.md)
 - [Easy-mode Rust](easy-mode-rust.md)
 - [Rustmax: The Tools](tools.md)
-- [The Rustmax Library](library.md)
 - [The Rustmax CLI](cli.md)
 
 ---

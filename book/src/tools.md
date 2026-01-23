@@ -2,7 +2,7 @@
 
 ---
 
-<!-- order of tools here is same is in library.md -->
+<!-- order of tools here is same is in library.html -->
 - Standard Rust tools:
   [`cargo`](#user-content--cargo)
   [`rustc`](#user-content--rustc)
