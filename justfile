@@ -94,7 +94,7 @@ doc-library: prebuild
     fi
     cargo run --release -- build-library --generate-library-page
 
-doc-www: prebuild
+doc-www: doc-library
     mkdir -p out/
     cp -r www/* out/
     cp work/crates.html out/
