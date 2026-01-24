@@ -1,6 +1,11 @@
-todo link to definitions and documentation
+# Rust Concept Index
 
-- turbofish
+Categorization of major subjects in Rust,
+primarily for informing future search indexing.
+
+## Turbofish
+
+
 - futures
 - phantom types, phantom data, `PhantomData`
 - pinning
