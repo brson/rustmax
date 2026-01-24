@@ -1,7 +1,7 @@
 :root {
-    --rmx-font-text: normal normal 16pt "Zilla Slab", serif;
-    --rmx-font-code: normal normal 16pt "Source Code Pro", monospace;
-    --rmx-font-em: normal bold 16pt "Zilla Slab", serif;
+    --rmx-font-text: normal normal 15pt "Zilla Slab", serif;
+    --rmx-font-code: normal normal 14pt "Source Code Pro", monospace;
+    --rmx-font-em: normal bold 15pt "Zilla Slab", serif;
 
     /* Light theme - default */
     /* Fallback colors for older browsers */

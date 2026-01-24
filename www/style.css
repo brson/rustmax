@@ -3,7 +3,7 @@
 }
 
 :root {
-    font-size: 16pt;
+    /*font-size: 16pt;*/
     font: var(--rmx-font-text);
 
     color: var(--rmx-color-fg);
@@ -250,7 +250,7 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
 /* Tablet breakpoint */
 @media (max-width: 768px) {
     :root {
-        font-size: 14pt;
+        /*font-size: 14pt;*/
     }
 
     body {
