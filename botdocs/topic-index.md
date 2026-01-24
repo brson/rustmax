@@ -551,7 +551,11 @@ Rust community concepts and history.
 
 2. Should individual struct/trait names be topics? (e.g., is `Iterator` a topic separate from "iterators"?)
 
+important traits should be topics
+
 3. How to handle versioned features? (e.g., "let else" is 1.65+)
+
+anything stable is fine, don't worry about versions
 
 4. Should we have "negative" topics for anti-patterns? (e.g., "don't use Rc<RefCell<T>> for this")
 
