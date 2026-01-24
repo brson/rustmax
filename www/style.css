@@ -3,8 +3,8 @@
 }
 
 :root {
-    /*font-size: 16pt;*/
     font: var(--rmx-font-text);
+    font-feature-settings: "onum" 1, "kern" 1;
 
     color: var(--rmx-color-fg);
     background-color: var(--rmx-color-bg);
@@ -12,13 +12,25 @@
 
 code {
     font: var(--rmx-font-code);
+    font-feature-settings: "lnum" 1;
+    background: var(--rmx-color-bg-alt);
+    padding: 0.15em 0.3em;
+    border-radius: 3px;
 }
 
 pre {
     font: var(--rmx-font-code);
-    padding: 20px;
-    /*border: 1px dashed var(--rmx-color-border);*/
+    font-feature-settings: "lnum" 1;
+    padding: 1rem;
     background-color: var(--rmx-color-bg-alt);
+    border-left: 3px solid var(--rmx-color-accents);
+    border-radius: 0 3px 3px 0;
+    overflow-x: auto;
+}
+
+pre code {
+    background: none;
+    padding: 0;
 }
 
 em {
