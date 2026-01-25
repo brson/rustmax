@@ -1,0 +1,254 @@
+# Programming domains and task areas
+
+[topics.error-handling]
+name = "Error Handling"
+aliases = ["errors", "error management", "handling errors"]
+category = "domain"
+tags = []
+brief = "Strategies for dealing with failures and unexpected conditions"
+relations = [
+    { kind = "related", target = "result" },
+    { kind = "related", target = "option" },
+    { kind = "related", target = "anyhow" },
+    { kind = "related", target = "thiserror" },
+]
+
+[topics.serialization]
+name = "Serialization"
+aliases = ["serialize", "deserialize", "marshalling", "encoding data"]
+category = "domain"
+tags = []
+brief = "Converting data structures to/from bytes or text formats"
+relations = [
+    { kind = "related", target = "serde" },
+    { kind = "related", target = "json" },
+]
+
+[topics.json]
+name = "JSON"
+aliases = ["JSON format", "JavaScript Object Notation"]
+category = "domain"
+tags = ["serialization"]
+brief = "Lightweight data interchange format"
+relations = [
+    { kind = "parent", target = "serialization" },
+    { kind = "related", target = "serde-json" },
+]
+
+[topics.configuration]
+name = "Configuration"
+aliases = ["config", "config files", "settings"]
+category = "domain"
+tags = []
+brief = "Managing application settings and configuration files"
+relations = [
+    { kind = "related", target = "toml-crate" },
+    { kind = "related", target = "serialization" },
+]
+
+[topics.networking]
+name = "Networking"
+aliases = ["network programming", "sockets", "TCP/IP"]
+category = "domain"
+tags = []
+brief = "Communication over networks"
+relations = [
+    { kind = "related", target = "tokio" },
+    { kind = "related", target = "http-protocol" },
+]
+
+[topics.http-protocol]
+name = "HTTP"
+aliases = ["HTTP protocol", "web requests", "HTTP/2"]
+category = "domain"
+tags = ["networking"]
+brief = "Hypertext Transfer Protocol"
+relations = [
+    { kind = "parent", target = "networking" },
+    { kind = "related", target = "hyper" },
+    { kind = "related", target = "reqwest" },
+]
+
+[topics.http-client]
+name = "HTTP Client"
+aliases = ["making requests", "web client", "HTTP requests"]
+category = "domain"
+tags = ["networking", "http"]
+brief = "Making HTTP requests to servers"
+relations = [
+    { kind = "parent", target = "http-protocol" },
+    { kind = "related", target = "reqwest" },
+]
+
+[topics.web-framework]
+name = "Web Framework"
+aliases = ["web server", "web development", "backend"]
+category = "domain"
+tags = ["networking", "http"]
+brief = "Building web applications and APIs"
+relations = [
+    { kind = "parent", target = "http-protocol" },
+    { kind = "related", target = "axum" },
+]
+
+[topics.async-io]
+name = "Async I/O"
+aliases = ["asynchronous IO", "non-blocking IO", "event loop"]
+category = "domain"
+tags = ["async"]
+brief = "Non-blocking input/output operations"
+relations = [
+    { kind = "related", target = "async-await" },
+    { kind = "related", target = "tokio" },
+]
+
+[topics.concurrency]
+name = "Concurrency"
+aliases = ["concurrent programming", "thread safety"]
+category = "domain"
+tags = []
+brief = "Managing multiple tasks that may run simultaneously"
+relations = [
+    { kind = "related", target = "threads" },
+    { kind = "related", target = "channels" },
+    { kind = "related", target = "send-sync" },
+]
+
+[topics.parallelism]
+name = "Parallelism"
+aliases = ["parallel programming", "data parallelism", "parallel iterators"]
+category = "domain"
+tags = []
+brief = "Executing multiple computations simultaneously"
+relations = [
+    { kind = "related", target = "rayon" },
+    { kind = "related", target = "threads" },
+]
+
+[topics.threads]
+name = "Threads"
+aliases = ["threading", "std::thread", "spawn", "JoinHandle"]
+category = "domain"
+tags = ["concurrency"]
+brief = "OS-level threads for parallel execution"
+relations = [
+    { kind = "related", target = "concurrency" },
+    { kind = "related", target = "send-sync" },
+]
+
+[topics.channels]
+name = "Channels"
+aliases = ["mpsc", "message passing", "crossbeam channels"]
+category = "domain"
+tags = ["concurrency"]
+brief = "Communication between threads via message passing"
+relations = [
+    { kind = "related", target = "concurrency" },
+    { kind = "related", target = "crossbeam" },
+]
+
+[topics.cli-parsing]
+name = "CLI Parsing"
+aliases = ["command line parsing", "argument parsing", "CLI arguments"]
+category = "domain"
+tags = ["cli"]
+brief = "Parsing command line arguments"
+relations = [
+    { kind = "related", target = "clap" },
+]
+
+[topics.logging]
+name = "Logging"
+aliases = ["log messages", "debug logging", "tracing"]
+category = "domain"
+tags = []
+brief = "Recording application events and messages"
+relations = [
+    { kind = "related", target = "log" },
+    { kind = "related", target = "env-logger" },
+]
+
+[topics.testing]
+name = "Testing"
+aliases = ["unit tests", "integration tests", "test framework"]
+category = "domain"
+tags = []
+brief = "Verifying code correctness"
+relations = [
+    { kind = "related", target = "proptest" },
+]
+
+[topics.filesystem]
+name = "Filesystem"
+aliases = ["file IO", "file system", "reading files", "writing files"]
+category = "domain"
+tags = []
+brief = "Interacting with files and directories"
+relations = [
+    { kind = "related", target = "walkdir" },
+    { kind = "related", target = "tempfile" },
+]
+
+[topics.temporary-files]
+name = "Temporary Files"
+aliases = ["temp files", "temp directory", "tempdir"]
+category = "domain"
+tags = ["filesystem", "testing"]
+brief = "Creating files that are automatically cleaned up"
+relations = [
+    { kind = "parent", target = "filesystem" },
+    { kind = "related", target = "tempfile" },
+]
+
+[topics.datetime]
+name = "Date and Time"
+aliases = ["timestamps", "date time", "time zones", "durations"]
+category = "domain"
+tags = []
+brief = "Working with dates, times, and durations"
+relations = [
+    { kind = "related", target = "chrono" },
+    { kind = "related", target = "jiff" },
+]
+
+[topics.random-numbers]
+name = "Random Numbers"
+aliases = ["RNG", "random generation", "PRNG", "CSPRNG"]
+category = "domain"
+tags = []
+brief = "Generating random values"
+relations = [
+    { kind = "related", target = "rand" },
+]
+
+[topics.hashing]
+name = "Hashing"
+aliases = ["hash functions", "cryptographic hashing", "checksums"]
+category = "domain"
+tags = ["crypto"]
+brief = "Computing fixed-size digests from data"
+relations = [
+    { kind = "related", target = "blake3" },
+    { kind = "related", target = "sha2" },
+]
+
+[topics.regex]
+name = "Regular Expressions"
+aliases = ["regex", "regexp", "pattern matching text"]
+category = "domain"
+tags = ["text", "parsing"]
+brief = "Pattern matching in text"
+relations = [
+    { kind = "related", target = "regex-crate" },
+]
+
+[topics.ffi]
+name = "FFI"
+aliases = ["foreign function interface", "C interop", "C FFI", "extern"]
+category = "domain"
+tags = ["systems", "interop"]
+brief = "Calling code written in other languages"
+relations = [
+    { kind = "related", target = "unsafe-rust" },
+    { kind = "related", target = "raw-pointers" },
+]

@@ -6,6 +6,7 @@ mod library_gen;
 mod moldman;
 mod rmxbook;
 mod tools;
+mod topics;
 
 use include_dir::{include_dir, Dir};
 use rmx::prelude::*;
@@ -81,6 +82,12 @@ enum CliCmd {
 
     /// Generate documentation from rustdoc JSON.
     Rustdoc(CliCmdRustdoc),
+
+    /// Validate the topic index.
+    ValidateTopics(CliCmdValidateTopics),
+
+    /// Summarize the topic index.
+    SummarizeTopics(CliCmdSummarizeTopics),
 }
 
 #[derive(clap::Args)]
@@ -190,6 +197,24 @@ struct CliCmdWriteClippyControlConfig {}
 struct CliCmdRunAllChecks {}
 
 #[derive(clap::Args)]
+struct CliCmdValidateTopics {
+    /// Path to the topics directory.
+    #[arg(default_value = "src/topics")]
+    path: String,
+}
+
+#[derive(clap::Args)]
+struct CliCmdSummarizeTopics {
+    /// Path to the topics directory.
+    #[arg(default_value = "src/topics")]
+    path: String,
+
+    /// Show full topic lists (not just counts).
+    #[arg(long, short)]
+    verbose: bool,
+}
+
+#[derive(clap::Args)]
 struct CliCmdRustdoc {
     #[command(subcommand)]
     action: RustdocAction,
@@ -245,6 +270,8 @@ impl CliOpts {
 
             CliCmd::RunAllChecks(cmd) => cmd.run(),
             CliCmd::Rustdoc(cmd) => cmd.run(),
+            CliCmd::ValidateTopics(cmd) => cmd.run(),
+            CliCmd::SummarizeTopics(cmd) => cmd.run(),
         }
     }
 }
@@ -474,6 +501,32 @@ impl CliCmdRunAllChecks {
         // cargo-deny
         // cargo-audit
         todo!()
+    }
+}
+
+impl CliCmdValidateTopics {
+    fn run(&self) -> AnyResult<()> {
+        let path = Path::new(&self.path);
+        println!("Loading topics from {}...", path.display());
+
+        let index = topics::TopicIndex::load(path)?;
+        let result = index.validate();
+        result.print_report();
+
+        if result.is_ok() {
+            Ok(())
+        } else {
+            bail!("topic index validation failed")
+        }
+    }
+}
+
+impl CliCmdSummarizeTopics {
+    fn run(&self) -> AnyResult<()> {
+        let path = Path::new(&self.path);
+        let index = topics::TopicIndex::load(path)?;
+        index.print_summary(self.verbose);
+        Ok(())
     }
 }
 

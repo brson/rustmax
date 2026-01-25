@@ -1,0 +1,37 @@
+# Topic categories for search faceting
+
+[categories.lang]
+name = "Language"
+description = "Rust language features and syntax"
+
+[categories.std]
+name = "Standard Library"
+description = "Rust standard library modules and types"
+
+[categories.crate]
+name = "Crates"
+description = "Ecosystem crates and libraries"
+
+[categories.tool]
+name = "Tools"
+description = "Toolchain and development tools"
+
+[categories.domain]
+name = "Domains"
+description = "Programming task domains and use cases"
+
+[categories.pattern]
+name = "Patterns"
+description = "Idioms, patterns, and best practices"
+
+[categories.error]
+name = "Errors"
+description = "Compiler errors and diagnostics"
+
+[categories.culture]
+name = "Culture"
+description = "Community, events, and history"
+
+[categories.platform]
+name = "Platforms"
+description = "Operating systems and target platforms"

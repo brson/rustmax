@@ -1,0 +1,313 @@
+# Ecosystem crates
+
+[topics.anyhow]
+name = "anyhow"
+aliases = ["error handling crate", "anyhow::Result", "anyhow::Error"]
+category = "crate"
+tags = ["error-handling"]
+brief = "Flexible error handling with context and backtraces"
+relations = [
+    { kind = "implements", target = "error-handling" },
+    { kind = "contrast", target = "thiserror" },
+]
+
+[topics.thiserror]
+name = "thiserror"
+aliases = ["custom errors", "error derive"]
+category = "crate"
+tags = ["error-handling", "derive"]
+brief = "Derive macro for custom error types"
+relations = [
+    { kind = "implements", target = "error-handling" },
+    { kind = "contrast", target = "anyhow" },
+]
+
+[topics.serde]
+name = "serde"
+aliases = ["serialization framework", "serialize", "deserialize", "Serialize", "Deserialize"]
+category = "crate"
+tags = ["serialization", "derive"]
+brief = "Framework for serializing and deserializing Rust data structures"
+relations = [
+    { kind = "implements", target = "serialization" },
+    { kind = "related", target = "serde-json" },
+    { kind = "related", target = "toml-crate" },
+]
+
+[topics.serde-json]
+name = "serde_json"
+aliases = ["json crate", "JSON parsing", "json serialization"]
+category = "crate"
+tags = ["serialization", "json"]
+brief = "JSON serialization and deserialization with serde"
+relations = [
+    { kind = "implements", target = "json" },
+    { kind = "related", target = "serde" },
+]
+
+[topics.toml-crate]
+name = "toml"
+aliases = ["toml crate", "TOML parsing"]
+category = "crate"
+tags = ["serialization", "config"]
+brief = "TOML serialization and deserialization"
+relations = [
+    { kind = "implements", target = "configuration" },
+    { kind = "related", target = "serde" },
+]
+
+[topics.tokio]
+name = "tokio"
+aliases = ["tokio runtime", "async runtime", "tokio::spawn"]
+category = "crate"
+tags = ["async", "networking"]
+brief = "Asynchronous runtime for Rust"
+relations = [
+    { kind = "implements", target = "async-await" },
+    { kind = "implements", target = "async-io" },
+    { kind = "related", target = "futures-crate" },
+]
+
+[topics.futures-crate]
+name = "futures"
+aliases = ["futures crate", "futures-rs", "StreamExt", "FutureExt"]
+category = "crate"
+tags = ["async"]
+brief = "Abstractions for asynchronous programming"
+relations = [
+    { kind = "implements", target = "futures" },
+    { kind = "related", target = "tokio" },
+]
+
+[topics.reqwest]
+name = "reqwest"
+aliases = ["http client", "HTTP requests"]
+category = "crate"
+tags = ["networking", "http"]
+brief = "Ergonomic HTTP client for Rust"
+relations = [
+    { kind = "implements", target = "http-client" },
+    { kind = "related", target = "hyper" },
+]
+
+[topics.hyper]
+name = "hyper"
+aliases = ["http library", "HTTP implementation"]
+category = "crate"
+tags = ["networking", "http"]
+brief = "Low-level HTTP implementation"
+relations = [
+    { kind = "implements", target = "http-protocol" },
+    { kind = "related", target = "reqwest" },
+    { kind = "related", target = "axum" },
+]
+
+[topics.axum]
+name = "axum"
+aliases = ["web framework", "axum framework"]
+category = "crate"
+tags = ["web", "networking"]
+brief = "Ergonomic web framework built on tokio and hyper"
+relations = [
+    { kind = "implements", target = "web-framework" },
+    { kind = "related", target = "hyper" },
+    { kind = "related", target = "tower" },
+]
+
+[topics.tower]
+name = "tower"
+aliases = ["tower service", "middleware", "Service trait"]
+category = "crate"
+tags = ["networking", "async"]
+brief = "Modular components for building network clients and servers"
+relations = [
+    { kind = "related", target = "axum" },
+    { kind = "related", target = "hyper" },
+]
+
+[topics.clap]
+name = "clap"
+aliases = ["argument parsing", "CLI parser", "command line"]
+category = "crate"
+tags = ["cli"]
+brief = "Command line argument parser"
+relations = [
+    { kind = "implements", target = "cli-parsing" },
+]
+
+[topics.regex-crate]
+name = "regex"
+aliases = ["regular expressions", "regex crate", "pattern matching"]
+category = "crate"
+tags = ["parsing", "text"]
+brief = "Regular expression library"
+relations = [
+    { kind = "implements", target = "regex" },
+]
+
+[topics.rayon]
+name = "rayon"
+aliases = ["parallel iterators", "data parallelism", "par_iter"]
+category = "crate"
+tags = ["parallelism"]
+brief = "Data parallelism library with parallel iterators"
+relations = [
+    { kind = "implements", target = "parallelism" },
+    { kind = "related", target = "iterators" },
+]
+
+[topics.crossbeam]
+name = "crossbeam"
+aliases = ["concurrent data structures", "crossbeam channels"]
+category = "crate"
+tags = ["concurrency"]
+brief = "Tools for concurrent programming"
+relations = [
+    { kind = "implements", target = "concurrency" },
+    { kind = "related", target = "channels" },
+]
+
+[topics.rand]
+name = "rand"
+aliases = ["random numbers", "RNG", "random crate"]
+category = "crate"
+tags = ["random"]
+brief = "Random number generation"
+relations = [
+    { kind = "implements", target = "random-numbers" },
+]
+
+[topics.chrono]
+name = "chrono"
+aliases = ["date time", "chrono crate"]
+category = "crate"
+tags = ["time"]
+brief = "Date and time library (legacy)"
+relations = [
+    { kind = "implements", target = "datetime" },
+    { kind = "supersedes", target = "jiff" },
+]
+
+[topics.jiff]
+name = "jiff"
+aliases = ["date time", "jiff crate", "temporal"]
+category = "crate"
+tags = ["time"]
+brief = "Modern date and time library"
+relations = [
+    { kind = "implements", target = "datetime" },
+]
+
+[topics.syn]
+name = "syn"
+aliases = ["syntax parsing", "AST", "proc macro parsing"]
+category = "crate"
+tags = ["metaprogramming"]
+brief = "Parser for Rust source code"
+relations = [
+    { kind = "implements", target = "proc-macros" },
+    { kind = "related", target = "quote" },
+]
+
+[topics.quote]
+name = "quote"
+aliases = ["quasi-quoting", "code generation"]
+category = "crate"
+tags = ["metaprogramming"]
+brief = "Quasi-quoting for generating Rust code"
+relations = [
+    { kind = "implements", target = "proc-macros" },
+    { kind = "related", target = "syn" },
+]
+
+[topics.itertools]
+name = "itertools"
+aliases = ["iterator extensions", "extra iterators"]
+category = "crate"
+tags = ["iterators"]
+brief = "Extra iterator methods and adaptors"
+relations = [
+    { kind = "implements", target = "iterators" },
+]
+
+[topics.bytes]
+name = "bytes"
+aliases = ["byte buffers", "Bytes", "BytesMut"]
+category = "crate"
+tags = ["io", "networking"]
+brief = "Efficient byte buffer types"
+relations = [
+    { kind = "related", target = "networking" },
+]
+
+[topics.log]
+name = "log"
+aliases = ["logging facade", "log crate"]
+category = "crate"
+tags = ["logging"]
+brief = "Lightweight logging facade"
+relations = [
+    { kind = "implements", target = "logging" },
+    { kind = "related", target = "env-logger" },
+]
+
+[topics.env-logger]
+name = "env_logger"
+aliases = ["environment logger", "RUST_LOG"]
+category = "crate"
+tags = ["logging"]
+brief = "Logger configured via environment variables"
+relations = [
+    { kind = "implements", target = "logging" },
+    { kind = "related", target = "log" },
+]
+
+[topics.tempfile]
+name = "tempfile"
+aliases = ["temporary files", "temp directory"]
+category = "crate"
+tags = ["filesystem", "testing"]
+brief = "Temporary file and directory management"
+relations = [
+    { kind = "implements", target = "temporary-files" },
+]
+
+[topics.walkdir]
+name = "walkdir"
+aliases = ["directory traversal", "recursive directory"]
+category = "crate"
+tags = ["filesystem"]
+brief = "Recursive directory traversal"
+relations = [
+    { kind = "implements", target = "filesystem" },
+]
+
+[topics.blake3]
+name = "blake3"
+aliases = ["BLAKE3 hash", "cryptographic hash"]
+category = "crate"
+tags = ["crypto"]
+brief = "BLAKE3 cryptographic hash function"
+relations = [
+    { kind = "implements", target = "hashing" },
+]
+
+[topics.sha2]
+name = "sha2"
+aliases = ["SHA-256", "SHA-512", "SHA2 hash"]
+category = "crate"
+tags = ["crypto"]
+brief = "SHA-2 family of hash functions"
+relations = [
+    { kind = "implements", target = "hashing" },
+]
+
+[topics.proptest]
+name = "proptest"
+aliases = ["property testing", "quickcheck alternative"]
+category = "crate"
+tags = ["testing"]
+brief = "Property-based testing framework"
+relations = [
+    { kind = "implements", target = "testing" },
+]
