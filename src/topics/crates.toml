@@ -416,7 +416,7 @@ category = "crate"
 tags = ["io", "performance"]
 brief = "Cross-platform memory-mapped file I/O"
 relations = [
-    { kind = "related", target = "filesystem" },
+    { kind = "implements", target = "memory-mapping" },
 ]
 
 [topics.notify-crate]
@@ -426,7 +426,7 @@ category = "crate"
 tags = ["filesystem"]
 brief = "Cross-platform filesystem notification library"
 relations = [
-    { kind = "implements", target = "filesystem" },
+    { kind = "implements", target = "file-watching" },
 ]
 
 [topics.ignore]
@@ -447,7 +447,7 @@ category = "crate"
 tags = ["filesystem"]
 brief = "Unix shell-style pattern matching"
 relations = [
-    { kind = "implements", target = "filesystem" },
+    { kind = "implements", target = "globbing" },
 ]
 
 [topics.flate2]
@@ -457,7 +457,7 @@ category = "crate"
 tags = ["encoding"]
 brief = "Gzip/deflate compression and decompression"
 relations = [
-    { kind = "related", target = "serialization" },
+    { kind = "implements", target = "compression" },
 ]
 
 [topics.zstd]
@@ -467,6 +467,7 @@ category = "crate"
 tags = ["encoding"]
 brief = "Zstandard compression"
 relations = [
+    { kind = "implements", target = "compression" },
     { kind = "related", target = "flate2" },
 ]
 
@@ -477,6 +478,7 @@ category = "crate"
 tags = ["parsing"]
 brief = "Parser combinator library"
 relations = [
+    { kind = "implements", target = "parsing" },
     { kind = "related", target = "regex-crate" },
 ]
 
@@ -487,6 +489,7 @@ category = "crate"
 tags = ["parsing"]
 brief = "PEG parser generator"
 relations = [
+    { kind = "implements", target = "parsing" },
     { kind = "related", target = "nom" },
 ]
 
@@ -497,7 +500,7 @@ category = "crate"
 tags = ["testing", "performance"]
 brief = "Statistics-driven benchmarking library"
 relations = [
-    { kind = "implements", target = "testing" },
+    { kind = "implements", target = "benchmarking" },
 ]
 
 [topics.insta]
@@ -507,7 +510,7 @@ category = "crate"
 tags = ["testing"]
 brief = "Snapshot testing library"
 relations = [
-    { kind = "implements", target = "testing" },
+    { kind = "implements", target = "snapshot-testing" },
 ]
 
 [topics.mockall]
@@ -517,7 +520,7 @@ category = "crate"
 tags = ["testing"]
 brief = "Mocking framework for Rust"
 relations = [
-    { kind = "implements", target = "testing" },
+    { kind = "implements", target = "mocking" },
 ]
 
 [topics.pretty-assertions]
@@ -579,7 +582,9 @@ aliases = ["SQL", "database", "async SQL"]
 category = "crate"
 tags = ["database", "async"]
 brief = "Async SQL toolkit with compile-time checked queries"
-relations = []
+relations = [
+    { kind = "implements", target = "database" },
+]
 
 [topics.diesel]
 name = "diesel"
@@ -588,6 +593,7 @@ category = "crate"
 tags = ["database"]
 brief = "Safe, extensible ORM and query builder"
 relations = [
+    { kind = "implements", target = "database" },
     { kind = "contrast", target = "sqlx" },
 ]
 
@@ -597,7 +603,9 @@ aliases = ["SQLite", "sqlite bindings"]
 category = "crate"
 tags = ["database"]
 brief = "SQLite bindings for Rust"
-relations = []
+relations = [
+    { kind = "implements", target = "database" },
+]
 
 [topics.image-crate]
 name = "image"
@@ -605,7 +613,9 @@ aliases = ["image processing", "PNG", "JPEG", "image formats"]
 category = "crate"
 tags = ["graphics"]
 brief = "Image encoding, decoding, and manipulation"
-relations = []
+relations = [
+    { kind = "implements", target = "image-processing" },
+]
 
 [topics.egui]
 name = "egui"
@@ -613,7 +623,9 @@ aliases = ["immediate mode GUI", "egui UI"]
 category = "crate"
 tags = ["gui"]
 brief = "Easy-to-use immediate mode GUI"
-relations = []
+relations = [
+    { kind = "implements", target = "gui" },
+]
 
 [topics.iced]
 name = "iced"
@@ -622,6 +634,7 @@ category = "crate"
 tags = ["gui"]
 brief = "Cross-platform GUI library inspired by Elm"
 relations = [
+    { kind = "implements", target = "gui" },
     { kind = "contrast", target = "egui" },
 ]
 
@@ -631,7 +644,9 @@ aliases = ["window creation", "windowing"]
 category = "crate"
 tags = ["gui", "graphics"]
 brief = "Cross-platform window creation and handling"
-relations = []
+relations = [
+    { kind = "implements", target = "gui" },
+]
 
 [topics.pyo3]
 name = "PyO3"
@@ -682,4 +697,199 @@ tags = ["system", "windows"]
 brief = "Rust bindings for Windows APIs"
 relations = [
     { kind = "related", target = "windows" },
+]
+
+# More crates with domain implementations
+
+[topics.url-crate]
+name = "url"
+aliases = ["URL parsing", "URL crate", "Url type"]
+category = "crate"
+tags = ["networking"]
+brief = "URL parsing and manipulation"
+relations = [
+    { kind = "implements", target = "url-handling" },
+]
+
+[topics.termcolor]
+name = "termcolor"
+aliases = ["terminal colors", "colored terminal", "ANSI colors"]
+category = "crate"
+tags = ["cli"]
+brief = "Cross-platform terminal colors"
+relations = [
+    { kind = "implements", target = "terminal-colors" },
+]
+
+[topics.indicatif]
+name = "indicatif"
+aliases = ["progress bar", "spinner", "CLI progress"]
+category = "crate"
+tags = ["cli"]
+brief = "Progress bars and spinners for CLI"
+relations = [
+    { kind = "implements", target = "progress-indication" },
+]
+
+[topics.comrak]
+name = "comrak"
+aliases = ["markdown parser", "CommonMark", "GFM"]
+category = "crate"
+tags = ["text", "parsing"]
+brief = "CommonMark and GitHub Flavored Markdown parser"
+relations = [
+    { kind = "implements", target = "markdown" },
+]
+
+[topics.pulldown-cmark]
+name = "pulldown-cmark"
+aliases = ["markdown", "CommonMark parser", "pulldown"]
+category = "crate"
+tags = ["text", "parsing"]
+brief = "Fast CommonMark parser"
+relations = [
+    { kind = "implements", target = "markdown" },
+]
+
+[topics.tera]
+name = "tera"
+aliases = ["template engine", "Jinja2", "templating"]
+category = "crate"
+tags = ["text", "web"]
+brief = "Jinja2-inspired template engine"
+relations = [
+    { kind = "implements", target = "templating" },
+]
+
+[topics.askama]
+name = "askama"
+aliases = ["compile-time templates", "type-safe templates"]
+category = "crate"
+tags = ["text", "web"]
+brief = "Type-safe compiled Jinja-like templates"
+relations = [
+    { kind = "implements", target = "templating" },
+    { kind = "contrast", target = "tera" },
+]
+
+[topics.minijinja]
+name = "minijinja"
+aliases = ["jinja", "template", "minijinja"]
+category = "crate"
+tags = ["text", "web"]
+brief = "Minimal Jinja2 template engine"
+relations = [
+    { kind = "implements", target = "templating" },
+]
+
+[topics.unicode-segmentation]
+name = "unicode-segmentation"
+aliases = ["grapheme", "word boundary", "unicode words"]
+category = "crate"
+tags = ["text"]
+brief = "Unicode grapheme and word segmentation"
+relations = [
+    { kind = "implements", target = "unicode" },
+]
+
+[topics.xshell]
+name = "xshell"
+aliases = ["shell commands", "scripting", "process execution"]
+category = "crate"
+tags = ["system"]
+brief = "Quick shell scripting in Rust"
+relations = [
+    { kind = "implements", target = "process-execution" },
+]
+
+[topics.dotenvy]
+name = "dotenvy"
+aliases = ["dotenv", ".env", "environment file"]
+category = "crate"
+tags = ["configuration"]
+brief = "Load environment variables from .env files"
+relations = [
+    { kind = "implements", target = "environment-variables" },
+]
+
+[topics.tokio-tungstenite]
+name = "tokio-tungstenite"
+aliases = ["websocket client", "websocket server", "tungstenite"]
+category = "crate"
+tags = ["networking", "async"]
+brief = "Async WebSocket implementation"
+relations = [
+    { kind = "implements", target = "websockets" },
+]
+
+[topics.rustls]
+name = "rustls"
+aliases = ["TLS library", "pure Rust TLS", "HTTPS"]
+category = "crate"
+tags = ["networking", "crypto"]
+brief = "Modern TLS library in pure Rust"
+relations = [
+    { kind = "implements", target = "tls" },
+]
+
+[topics.native-tls]
+name = "native-tls"
+aliases = ["platform TLS", "OpenSSL", "schannel"]
+category = "crate"
+tags = ["networking", "crypto"]
+brief = "TLS using platform-native libraries"
+relations = [
+    { kind = "implements", target = "tls" },
+    { kind = "contrast", target = "rustls" },
+]
+
+[topics.ring]
+name = "ring"
+aliases = ["crypto library", "cryptography primitives"]
+category = "crate"
+tags = ["crypto"]
+brief = "Safe, fast cryptographic primitives"
+relations = [
+    { kind = "implements", target = "cryptography" },
+]
+
+[topics.aes]
+name = "aes"
+aliases = ["AES encryption", "block cipher"]
+category = "crate"
+tags = ["crypto"]
+brief = "AES block cipher implementation"
+relations = [
+    { kind = "implements", target = "cryptography" },
+]
+
+[topics.argon2]
+name = "argon2"
+aliases = ["password hashing", "Argon2 hash"]
+category = "crate"
+tags = ["crypto"]
+brief = "Argon2 password hashing"
+relations = [
+    { kind = "implements", target = "cryptography" },
+    { kind = "related", target = "hashing" },
+]
+
+[topics.rodio]
+name = "rodio"
+aliases = ["audio playback", "sound", "audio player"]
+category = "crate"
+tags = ["audio"]
+brief = "Audio playback library"
+relations = [
+    { kind = "implements", target = "audio" },
+]
+
+[topics.cpal]
+name = "cpal"
+aliases = ["cross-platform audio", "audio I/O"]
+category = "crate"
+tags = ["audio"]
+brief = "Cross-platform audio I/O"
+relations = [
+    { kind = "implements", target = "audio" },
 ]
