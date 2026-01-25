@@ -1,0 +1,347 @@
+# Standard library modules and types
+
+[topics.std-collections]
+name = "std::collections"
+aliases = ["collections module", "data structures", "HashMap", "BTreeMap", "VecDeque"]
+category = "std"
+tags = ["collections"]
+brief = "Collection types like HashMap, BTreeMap, VecDeque, and more"
+relations = [
+    { kind = "related", target = "iterators" },
+]
+
+[topics.std-io]
+name = "std::io"
+aliases = ["io module", "Read trait", "Write trait", "BufReader", "BufWriter"]
+category = "std"
+tags = ["io"]
+brief = "Traits and types for input/output operations"
+relations = [
+    { kind = "related", target = "std-fs" },
+    { kind = "related", target = "filesystem" },
+]
+
+[topics.std-fs]
+name = "std::fs"
+aliases = ["fs module", "File", "read_to_string", "write", "metadata"]
+category = "std"
+tags = ["io", "filesystem"]
+brief = "Filesystem operations like reading, writing, and file metadata"
+relations = [
+    { kind = "related", target = "std-io" },
+    { kind = "related", target = "filesystem" },
+    { kind = "related", target = "std-path" },
+]
+
+[topics.std-path]
+name = "std::path"
+aliases = ["path module", "Path", "PathBuf", "file paths"]
+category = "std"
+tags = ["filesystem"]
+brief = "Cross-platform path manipulation"
+relations = [
+    { kind = "related", target = "std-fs" },
+]
+
+[topics.std-net]
+name = "std::net"
+aliases = ["net module", "TcpStream", "TcpListener", "UdpSocket", "IpAddr"]
+category = "std"
+tags = ["networking"]
+brief = "TCP/UDP networking primitives"
+relations = [
+    { kind = "related", target = "networking" },
+    { kind = "related", target = "tokio" },
+]
+
+[topics.std-sync]
+name = "std::sync"
+aliases = ["sync module", "Mutex", "RwLock", "Arc", "Barrier", "Condvar"]
+category = "std"
+tags = ["concurrency"]
+brief = "Synchronization primitives for concurrent programming"
+relations = [
+    { kind = "related", target = "concurrency" },
+    { kind = "related", target = "threads" },
+    { kind = "related", target = "send-sync" },
+]
+
+[topics.std-sync-atomic]
+name = "std::sync::atomic"
+aliases = ["atomic module", "AtomicBool", "AtomicUsize", "Ordering", "memory ordering"]
+category = "std"
+tags = ["concurrency", "advanced"]
+brief = "Atomic types for lock-free concurrent programming"
+relations = [
+    { kind = "parent", target = "std-sync" },
+    { kind = "related", target = "concurrency" },
+]
+
+[topics.std-sync-mpsc]
+name = "std::sync::mpsc"
+aliases = ["mpsc module", "channel", "Sender", "Receiver", "sync_channel"]
+category = "std"
+tags = ["concurrency"]
+brief = "Multi-producer single-consumer channels"
+relations = [
+    { kind = "parent", target = "std-sync" },
+    { kind = "related", target = "channels" },
+    { kind = "related", target = "crossbeam" },
+]
+
+[topics.std-thread]
+name = "std::thread"
+aliases = ["thread module", "spawn", "JoinHandle", "thread::sleep", "thread_local"]
+category = "std"
+tags = ["concurrency"]
+brief = "Native thread creation and management"
+relations = [
+    { kind = "related", target = "threads" },
+    { kind = "related", target = "concurrency" },
+]
+
+[topics.std-process]
+name = "std::process"
+aliases = ["process module", "Command", "Child", "exit", "spawn process"]
+category = "std"
+tags = ["system"]
+brief = "Running and managing external processes"
+relations = [
+    { kind = "related", target = "std-env" },
+]
+
+[topics.std-env]
+name = "std::env"
+aliases = ["env module", "var", "args", "current_dir", "environment variables"]
+category = "std"
+tags = ["system"]
+brief = "Environment variables and process arguments"
+relations = [
+    { kind = "related", target = "std-process" },
+]
+
+[topics.std-mem]
+name = "std::mem"
+aliases = ["mem module", "size_of", "align_of", "swap", "take", "replace", "transmute"]
+category = "std"
+tags = ["memory", "advanced"]
+brief = "Memory manipulation utilities"
+relations = [
+    { kind = "related", target = "std-ptr" },
+    { kind = "related", target = "unsafe-rust" },
+]
+
+[topics.std-ptr]
+name = "std::ptr"
+aliases = ["ptr module", "null", "read", "write", "copy", "pointer operations"]
+category = "std"
+tags = ["memory", "unsafe"]
+brief = "Raw pointer operations"
+relations = [
+    { kind = "related", target = "raw-pointers" },
+    { kind = "related", target = "unsafe-rust" },
+    { kind = "related", target = "std-mem" },
+]
+
+[topics.std-cell]
+name = "std::cell"
+aliases = ["cell module", "Cell", "RefCell", "UnsafeCell"]
+category = "std"
+tags = ["memory"]
+brief = "Types providing interior mutability"
+relations = [
+    { kind = "related", target = "interior-mutability" },
+    { kind = "related", target = "smart-pointers" },
+]
+
+[topics.std-rc]
+name = "std::rc"
+aliases = ["rc module", "Rc", "Weak", "reference counting"]
+category = "std"
+tags = ["memory"]
+brief = "Single-threaded reference counting"
+relations = [
+    { kind = "related", target = "smart-pointers" },
+    { kind = "contrast", target = "std-sync" },
+]
+
+[topics.std-fmt]
+name = "std::fmt"
+aliases = ["fmt module", "Display", "Debug", "format!", "write!", "Formatter"]
+category = "std"
+tags = ["text"]
+brief = "Formatting and display traits"
+relations = [
+    { kind = "related", target = "derive" },
+]
+
+[topics.std-error]
+name = "std::error"
+aliases = ["error module", "Error trait", "source", "error chain"]
+category = "std"
+tags = ["error-handling"]
+brief = "The Error trait for error types"
+relations = [
+    { kind = "related", target = "error-handling" },
+    { kind = "related", target = "result" },
+    { kind = "related", target = "anyhow" },
+]
+
+[topics.std-time]
+name = "std::time"
+aliases = ["time module", "Duration", "Instant", "SystemTime", "elapsed"]
+category = "std"
+tags = ["time"]
+brief = "Time measurement and durations"
+relations = [
+    { kind = "related", target = "datetime" },
+    { kind = "related", target = "chrono" },
+    { kind = "related", target = "jiff" },
+]
+
+[topics.std-future]
+name = "std::future"
+aliases = ["future module", "Future trait", "poll"]
+category = "std"
+tags = ["async"]
+brief = "The Future trait for asynchronous computation"
+relations = [
+    { kind = "related", target = "futures" },
+    { kind = "related", target = "async-await" },
+]
+
+[topics.std-task]
+name = "std::task"
+aliases = ["task module", "Context", "Waker", "Poll", "wake"]
+category = "std"
+tags = ["async"]
+brief = "Types for building async executors"
+relations = [
+    { kind = "related", target = "std-future" },
+    { kind = "related", target = "async-await" },
+]
+
+[topics.std-pin]
+name = "std::pin"
+aliases = ["pin module", "Pin", "pin!"]
+category = "std"
+tags = ["async", "memory"]
+brief = "Pinning types in memory"
+relations = [
+    { kind = "related", target = "pinning" },
+    { kind = "related", target = "async-await" },
+]
+
+[topics.std-any]
+name = "std::any"
+aliases = ["any module", "Any trait", "TypeId", "type erasure", "downcast"]
+category = "std"
+tags = ["advanced"]
+brief = "Runtime type identification and reflection"
+relations = []
+
+[topics.std-marker]
+name = "std::marker"
+aliases = ["marker module", "PhantomData", "Send", "Sync", "Copy", "Sized"]
+category = "std"
+tags = ["core-concept"]
+brief = "Marker traits and phantom types"
+relations = [
+    { kind = "related", target = "send-sync" },
+    { kind = "related", target = "copy-trait" },
+]
+
+[topics.std-ops]
+name = "std::ops"
+aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading"]
+category = "std"
+tags = ["core-concept"]
+brief = "Overloadable operators and traits"
+relations = [
+    { kind = "related", target = "traits" },
+    { kind = "related", target = "closures" },
+]
+
+[topics.std-cmp]
+name = "std::cmp"
+aliases = ["cmp module", "Ord", "PartialOrd", "Eq", "PartialEq", "Ordering"]
+category = "std"
+tags = ["core-concept"]
+brief = "Comparison traits for ordering and equality"
+relations = [
+    { kind = "related", target = "derive" },
+]
+
+[topics.std-hash]
+name = "std::hash"
+aliases = ["hash module", "Hash trait", "Hasher", "BuildHasher"]
+category = "std"
+tags = ["collections"]
+brief = "Hashing traits for HashMap keys"
+relations = [
+    { kind = "related", target = "std-collections" },
+    { kind = "related", target = "derive" },
+]
+
+[topics.std-convert]
+name = "std::convert"
+aliases = ["convert module", "From", "Into", "TryFrom", "TryInto", "AsRef", "AsMut"]
+category = "std"
+tags = ["core-concept"]
+brief = "Type conversion traits"
+relations = [
+    { kind = "related", target = "traits" },
+]
+
+[topics.std-iter]
+name = "std::iter"
+aliases = ["iter module", "Iterator trait", "IntoIterator", "FromIterator", "iterator adapters"]
+category = "std"
+tags = ["core-concept"]
+brief = "Iterator trait and combinators"
+relations = [
+    { kind = "related", target = "iterators" },
+    { kind = "related", target = "itertools" },
+]
+
+[topics.std-ffi]
+name = "std::ffi"
+aliases = ["ffi module", "CString", "CStr", "OsString", "OsStr"]
+category = "std"
+tags = ["ffi"]
+brief = "Foreign function interface utilities"
+relations = [
+    { kind = "related", target = "ffi" },
+    { kind = "related", target = "unsafe-rust" },
+]
+
+[topics.std-alloc]
+name = "std::alloc"
+aliases = ["alloc module", "GlobalAlloc", "allocator", "Layout"]
+category = "std"
+tags = ["memory", "advanced"]
+brief = "Memory allocation APIs"
+relations = [
+    { kind = "related", target = "unsafe-rust" },
+]
+
+[topics.std-panic]
+name = "std::panic"
+aliases = ["panic module", "catch_unwind", "resume_unwind", "set_hook", "panic handler"]
+category = "std"
+tags = ["error-handling"]
+brief = "Panic handling and recovery"
+relations = [
+    { kind = "related", target = "error-handling" },
+]
+
+[topics.std-backtrace]
+name = "std::backtrace"
+aliases = ["backtrace module", "Backtrace", "RUST_BACKTRACE"]
+category = "std"
+tags = ["error-handling", "debugging"]
+brief = "Capturing stack backtraces"
+relations = [
+    { kind = "related", target = "error-handling" },
+    { kind = "related", target = "anyhow" },
+]

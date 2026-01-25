@@ -311,3 +311,375 @@ brief = "Property-based testing framework"
 relations = [
     { kind = "implements", target = "testing" },
 ]
+
+# Additional commonly used crates
+
+[topics.tracing]
+name = "tracing"
+aliases = ["tracing crate", "spans", "instrumentation", "structured logging"]
+category = "crate"
+tags = ["logging", "async"]
+brief = "Application-level tracing for Rust programs"
+relations = [
+    { kind = "implements", target = "logging" },
+    { kind = "supersedes", target = "log" },
+]
+
+[topics.once-cell]
+name = "once_cell"
+aliases = ["once cell", "Lazy", "OnceCell"]
+category = "crate"
+tags = ["concurrency"]
+brief = "Single-assignment cells and lazy values"
+relations = [
+    { kind = "implements", target = "once-cell-pattern" },
+]
+
+[topics.dashmap]
+name = "dashmap"
+aliases = ["concurrent hashmap", "DashMap"]
+category = "crate"
+tags = ["concurrency", "collections"]
+brief = "Concurrent HashMap for Rust"
+relations = [
+    { kind = "implements", target = "concurrency" },
+    { kind = "related", target = "std-collections" },
+]
+
+[topics.parking-lot]
+name = "parking_lot"
+aliases = ["parking lot", "fast mutex"]
+category = "crate"
+tags = ["concurrency"]
+brief = "More compact and efficient synchronization primitives"
+relations = [
+    { kind = "implements", target = "concurrency" },
+    { kind = "related", target = "std-sync" },
+]
+
+[topics.smallvec]
+name = "smallvec"
+aliases = ["SmallVec", "small vector", "inline vector"]
+category = "crate"
+tags = ["collections", "performance"]
+brief = "Vector that stores small arrays inline"
+relations = [
+    { kind = "related", target = "std-collections" },
+]
+
+[topics.arrayvec]
+name = "arrayvec"
+aliases = ["ArrayVec", "fixed capacity vector"]
+category = "crate"
+tags = ["collections", "no-std"]
+brief = "Fixed-capacity vector stored on the stack"
+relations = [
+    { kind = "related", target = "smallvec" },
+]
+
+[topics.indexmap]
+name = "indexmap"
+aliases = ["IndexMap", "IndexSet", "ordered hashmap"]
+category = "crate"
+tags = ["collections"]
+brief = "HashMap and HashSet with consistent ordering"
+relations = [
+    { kind = "related", target = "std-collections" },
+]
+
+[topics.hashbrown]
+name = "hashbrown"
+aliases = ["hashbrown hashmap", "SwissTable"]
+category = "crate"
+tags = ["collections"]
+brief = "Rust port of Google's SwissTable hash map"
+relations = [
+    { kind = "related", target = "std-collections" },
+    { kind = "related", target = "ahash" },
+]
+
+[topics.ahash]
+name = "ahash"
+aliases = ["AHash", "fast hash"]
+category = "crate"
+tags = ["collections", "performance"]
+brief = "Fast non-cryptographic hash function"
+relations = [
+    { kind = "related", target = "std-hash" },
+    { kind = "related", target = "hashbrown" },
+]
+
+[topics.memmap2]
+name = "memmap2"
+aliases = ["mmap", "memory mapped files", "Mmap"]
+category = "crate"
+tags = ["io", "performance"]
+brief = "Cross-platform memory-mapped file I/O"
+relations = [
+    { kind = "related", target = "filesystem" },
+]
+
+[topics.notify-crate]
+name = "notify"
+aliases = ["file watcher", "filesystem events", "inotify"]
+category = "crate"
+tags = ["filesystem"]
+brief = "Cross-platform filesystem notification library"
+relations = [
+    { kind = "implements", target = "filesystem" },
+]
+
+[topics.ignore]
+name = "ignore"
+aliases = ["gitignore", "directory walker"]
+category = "crate"
+tags = ["filesystem"]
+brief = "Directory walker respecting gitignore rules"
+relations = [
+    { kind = "implements", target = "filesystem" },
+    { kind = "related", target = "walkdir" },
+]
+
+[topics.glob-crate]
+name = "glob"
+aliases = ["glob patterns", "file globbing"]
+category = "crate"
+tags = ["filesystem"]
+brief = "Unix shell-style pattern matching"
+relations = [
+    { kind = "implements", target = "filesystem" },
+]
+
+[topics.flate2]
+name = "flate2"
+aliases = ["gzip", "deflate", "zlib", "compression"]
+category = "crate"
+tags = ["encoding"]
+brief = "Gzip/deflate compression and decompression"
+relations = [
+    { kind = "related", target = "serialization" },
+]
+
+[topics.zstd]
+name = "zstd"
+aliases = ["zstandard", "zstd compression"]
+category = "crate"
+tags = ["encoding"]
+brief = "Zstandard compression"
+relations = [
+    { kind = "related", target = "flate2" },
+]
+
+[topics.nom]
+name = "nom"
+aliases = ["parser combinator", "nom parser"]
+category = "crate"
+tags = ["parsing"]
+brief = "Parser combinator library"
+relations = [
+    { kind = "related", target = "regex-crate" },
+]
+
+[topics.pest]
+name = "pest"
+aliases = ["PEG parser", "pest grammar"]
+category = "crate"
+tags = ["parsing"]
+brief = "PEG parser generator"
+relations = [
+    { kind = "related", target = "nom" },
+]
+
+[topics.criterion]
+name = "criterion"
+aliases = ["benchmarking", "cargo bench", "microbenchmarks"]
+category = "crate"
+tags = ["testing", "performance"]
+brief = "Statistics-driven benchmarking library"
+relations = [
+    { kind = "implements", target = "testing" },
+]
+
+[topics.insta]
+name = "insta"
+aliases = ["snapshot testing", "insta snapshots"]
+category = "crate"
+tags = ["testing"]
+brief = "Snapshot testing library"
+relations = [
+    { kind = "implements", target = "testing" },
+]
+
+[topics.mockall]
+name = "mockall"
+aliases = ["mocking", "mock objects", "test doubles"]
+category = "crate"
+tags = ["testing"]
+brief = "Mocking framework for Rust"
+relations = [
+    { kind = "implements", target = "testing" },
+]
+
+[topics.pretty-assertions]
+name = "pretty_assertions"
+aliases = ["diff assertions", "colored assertions"]
+category = "crate"
+tags = ["testing"]
+brief = "Better assertion diff output"
+relations = [
+    { kind = "implements", target = "testing" },
+]
+
+[topics.test-case]
+name = "test-case"
+aliases = ["parameterized tests", "test cases"]
+category = "crate"
+tags = ["testing"]
+brief = "Procedural macro for parameterized tests"
+relations = [
+    { kind = "implements", target = "testing" },
+]
+
+[topics.actix-web]
+name = "actix-web"
+aliases = ["actix", "actix web framework"]
+category = "crate"
+tags = ["web", "networking"]
+brief = "Powerful, pragmatic web framework"
+relations = [
+    { kind = "implements", target = "web-framework" },
+    { kind = "contrast", target = "axum" },
+]
+
+[topics.rocket]
+name = "rocket"
+aliases = ["Rocket framework"]
+category = "crate"
+tags = ["web", "networking"]
+brief = "Web framework with a focus on ease of use"
+relations = [
+    { kind = "implements", target = "web-framework" },
+    { kind = "contrast", target = "axum" },
+]
+
+[topics.warp]
+name = "warp"
+aliases = ["warp framework", "warp web"]
+category = "crate"
+tags = ["web", "networking"]
+brief = "Composable web server framework"
+relations = [
+    { kind = "implements", target = "web-framework" },
+    { kind = "related", target = "hyper" },
+]
+
+[topics.sqlx]
+name = "sqlx"
+aliases = ["SQL", "database", "async SQL"]
+category = "crate"
+tags = ["database", "async"]
+brief = "Async SQL toolkit with compile-time checked queries"
+relations = []
+
+[topics.diesel]
+name = "diesel"
+aliases = ["ORM", "diesel ORM", "database ORM"]
+category = "crate"
+tags = ["database"]
+brief = "Safe, extensible ORM and query builder"
+relations = [
+    { kind = "contrast", target = "sqlx" },
+]
+
+[topics.rusqlite]
+name = "rusqlite"
+aliases = ["SQLite", "sqlite bindings"]
+category = "crate"
+tags = ["database"]
+brief = "SQLite bindings for Rust"
+relations = []
+
+[topics.image-crate]
+name = "image"
+aliases = ["image processing", "PNG", "JPEG", "image formats"]
+category = "crate"
+tags = ["graphics"]
+brief = "Image encoding, decoding, and manipulation"
+relations = []
+
+[topics.egui]
+name = "egui"
+aliases = ["immediate mode GUI", "egui UI"]
+category = "crate"
+tags = ["gui"]
+brief = "Easy-to-use immediate mode GUI"
+relations = []
+
+[topics.iced]
+name = "iced"
+aliases = ["iced GUI", "elm-inspired GUI"]
+category = "crate"
+tags = ["gui"]
+brief = "Cross-platform GUI library inspired by Elm"
+relations = [
+    { kind = "contrast", target = "egui" },
+]
+
+[topics.winit]
+name = "winit"
+aliases = ["window creation", "windowing"]
+category = "crate"
+tags = ["gui", "graphics"]
+brief = "Cross-platform window creation and handling"
+relations = []
+
+[topics.pyo3]
+name = "PyO3"
+aliases = ["Python bindings", "Rust Python", "pyo3"]
+category = "crate"
+tags = ["ffi", "python"]
+brief = "Rust bindings for Python"
+relations = [
+    { kind = "implements", target = "ffi" },
+]
+
+[topics.napi-rs]
+name = "napi-rs"
+aliases = ["Node.js bindings", "N-API", "JavaScript FFI"]
+category = "crate"
+tags = ["ffi", "javascript"]
+brief = "Rust bindings for Node.js N-API"
+relations = [
+    { kind = "implements", target = "ffi" },
+]
+
+[topics.libc-crate]
+name = "libc"
+aliases = ["libc bindings", "C standard library"]
+category = "crate"
+tags = ["ffi", "system"]
+brief = "Raw FFI bindings to platform C libraries"
+relations = [
+    { kind = "implements", target = "ffi" },
+    { kind = "related", target = "std-ffi" },
+]
+
+[topics.nix]
+name = "nix"
+aliases = ["unix API", "POSIX", "nix crate"]
+category = "crate"
+tags = ["system", "unix"]
+brief = "Rust-friendly bindings to *nix APIs"
+relations = [
+    { kind = "related", target = "libc-crate" },
+]
+
+[topics.windows-rs]
+name = "windows-rs"
+aliases = ["Windows API", "Win32", "windows crate"]
+category = "crate"
+tags = ["system", "windows"]
+brief = "Rust bindings for Windows APIs"
+relations = [
+    { kind = "related", target = "windows" },
+]
