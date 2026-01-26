@@ -7,6 +7,31 @@ use rmx::serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
+/// A search index entry for client-side fuzzy search.
+#[derive(Debug, Clone, Serialize)]
+pub struct SearchEntry {
+    /// Unique identifier (topic_id or "topic_id::crate_id" for via entries).
+    pub id: String,
+    /// The topic ID this entry is for.
+    pub topic_id: String,
+    /// Display name.
+    pub name: String,
+    /// Searchable text (name + aliases joined).
+    pub searchable: String,
+    /// Category (crate, domain, lang, etc.).
+    pub category: String,
+    /// Brief description.
+    pub brief: String,
+    /// Relation chain display (e.g., "Web Framework -> axum").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub via: Option<String>,
+    /// Depth: 0 = direct match, 1 = via implements relation.
+    pub depth: u8,
+    /// Crate path for API docs link (only for crate entries).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub crate_path: Option<String>,
+}
+
 /// A complete topic index loaded from multiple TOML files.
 #[derive(Debug, Default)]
 pub struct TopicIndex {
@@ -436,6 +461,89 @@ impl TopicIndex {
         println!("  {} relations", total_relations);
         println!("  {} aliases", total_aliases);
         println!("  {} unique tags", tags.len());
+    }
+
+    /// Export the topic index as a search index for client-side fuzzy search.
+    pub fn export_search_index(&self) -> Vec<SearchEntry> {
+        let mut entries = Vec::new();
+
+        // Build reverse lookup: domain_id -> crates that implement it.
+        let mut implementers: HashMap<&str, Vec<&str>> = HashMap::new();
+        for (id, topic) in &self.topics {
+            for relation in &topic.relations {
+                if relation.kind == RelationKind::Implements {
+                    implementers
+                        .entry(relation.target.as_str())
+                        .or_default()
+                        .push(id.as_str());
+                }
+            }
+        }
+
+        for (id, topic) in &self.topics {
+            // Build searchable text from name + aliases.
+            let searchable = std::iter::once(topic.name.as_str())
+                .chain(topic.aliases.iter().map(|s| s.as_str()))
+                .collect::<Vec<_>>()
+                .join(" ");
+
+            // Crate path for API docs link.
+            let crate_path = if topic.category == "crate" {
+                // Convert topic id to crate name (e.g., "serde-json" -> "serde_json").
+                let crate_name = id.replace('-', "_");
+                Some(format!("/api/rustmax/{}/index.html", crate_name))
+            } else {
+                None
+            };
+
+            // Direct entry (depth 0).
+            entries.push(SearchEntry {
+                id: id.clone(),
+                topic_id: id.clone(),
+                name: topic.name.clone(),
+                searchable: searchable.clone(),
+                category: topic.category.clone(),
+                brief: topic.brief.clone(),
+                via: None,
+                depth: 0,
+                crate_path: crate_path.clone(),
+            });
+
+            // For domains, create additional entries for crates that implement them.
+            // This allows searching for "web server" to surface axum.
+            if topic.category == "domain" {
+                if let Some(crates) = implementers.get(id.as_str()) {
+                    for crate_id in crates {
+                        if let Some(crate_topic) = self.topics.get(*crate_id) {
+                            let crate_name = crate_id.replace('-', "_");
+                            let via_display = format!("{} -> {}", topic.name, crate_topic.name);
+
+                            entries.push(SearchEntry {
+                                id: format!("{}::{}", id, crate_id),
+                                topic_id: crate_id.to_string(),
+                                name: crate_topic.name.clone(),
+                                searchable: searchable.clone(),
+                                category: "crate".to_string(),
+                                brief: crate_topic.brief.clone(),
+                                via: Some(via_display),
+                                depth: 1,
+                                crate_path: Some(format!("/api/rustmax/{}/index.html", crate_name)),
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sort entries: direct matches first, then by category, then by name.
+        entries.sort_by(|a, b| {
+            a.depth
+                .cmp(&b.depth)
+                .then_with(|| a.category.cmp(&b.category))
+                .then_with(|| a.name.cmp(&b.name))
+        });
+
+        entries
     }
 }
 

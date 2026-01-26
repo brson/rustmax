@@ -10,7 +10,7 @@ mod topics;
 
 use include_dir::{include_dir, Dir};
 use rmx::prelude::*;
-use rmx::{clap, serde};
+use rmx::{clap, serde, serde_json};
 use std::path::Path;
 
 use tools::Tool;
@@ -88,6 +88,9 @@ enum CliCmd {
 
     /// Summarize the topic index.
     SummarizeTopics(CliCmdSummarizeTopics),
+
+    /// Export topic search index as JSON for client-side search.
+    ExportSearchIndex(CliCmdExportSearchIndex),
 }
 
 #[derive(clap::Args)]
@@ -215,6 +218,17 @@ struct CliCmdSummarizeTopics {
 }
 
 #[derive(clap::Args)]
+struct CliCmdExportSearchIndex {
+    /// Path to the topics directory.
+    #[arg(default_value = "src/topics")]
+    path: String,
+
+    /// Output JSON file path.
+    #[arg(short, long, default_value = "work/search-index.json")]
+    output: String,
+}
+
+#[derive(clap::Args)]
 struct CliCmdRustdoc {
     #[command(subcommand)]
     action: RustdocAction,
@@ -272,6 +286,7 @@ impl CliOpts {
             CliCmd::Rustdoc(cmd) => cmd.run(),
             CliCmd::ValidateTopics(cmd) => cmd.run(),
             CliCmd::SummarizeTopics(cmd) => cmd.run(),
+            CliCmd::ExportSearchIndex(cmd) => cmd.run(),
         }
     }
 }
@@ -526,6 +541,37 @@ impl CliCmdSummarizeTopics {
         let path = Path::new(&self.path);
         let index = topics::TopicIndex::load(path)?;
         index.print_summary(self.verbose);
+        Ok(())
+    }
+}
+
+impl CliCmdExportSearchIndex {
+    fn run(&self) -> AnyResult<()> {
+        let path = Path::new(&self.path);
+        println!("Loading topics from {}...", path.display());
+
+        let index = topics::TopicIndex::load(path)?;
+        let result = index.validate();
+
+        if !result.is_ok() {
+            result.print_report();
+            bail!("topic index validation failed");
+        }
+
+        let entries = index.export_search_index();
+        println!("Generated {} search entries.", entries.len());
+
+        // Ensure output directory exists.
+        let output_path = Path::new(&self.output);
+        if let Some(parent) = output_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        // Write JSON.
+        let json = serde_json::to_string_pretty(&entries)?;
+        std::fs::write(output_path, json)?;
+
+        println!("Wrote search index to {}", output_path.display());
         Ok(())
     }
 }

@@ -94,7 +94,10 @@ doc-library: prebuild
     fi
     cargo run --release -- build-library --generate-library-page
 
-doc-www: doc-library
+export-search-index:
+    cargo run -p rustmax-cli -- export-search-index
+
+doc-www: doc-library export-search-index
     mkdir -p out/
     cp -r www/* out/
     cp work/crates.html out/
@@ -102,6 +105,7 @@ doc-www: doc-library
     cp work/latest-post.html out/ || true
     cp work/news.html out/ || true
     cp work/news.xml out/ || true
+    cp work/search-index.json out/
 
 doc-build: doc-www doc-api doc-book doc-library
     mkdir -p out/book

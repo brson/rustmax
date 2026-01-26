@@ -459,6 +459,106 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
     font-style: italic;
 }
 
+/* Search styles */
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 30em;
+    margin: 1em auto 0;
+}
+
+#search-input {
+    width: 100%;
+    padding: 0.75em 1em;
+    font: var(--rmx-font-code);
+    font-size: 1em;
+    color: var(--rmx-color-fg);
+    background: var(--rmx-color-bg);
+    border: 1px dashed var(--rmx-color-border);
+    border-radius: 3px;
+    outline: none;
+}
+
+#search-input:focus {
+    border-color: var(--rmx-color-accents);
+}
+
+#search-input::placeholder {
+    color: var(--rmx-color-border);
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--rmx-color-bg);
+    border: 1px dashed var(--rmx-color-border);
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    z-index: 100;
+}
+
+.search-results.visible {
+    display: block;
+}
+
+.search-category {
+    padding: 0.5em 1em;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--rmx-color-border);
+    background: var(--rmx-color-bg-alt);
+    border-top: 1px dashed var(--rmx-color-border);
+}
+
+.search-category:first-child {
+    border-top: none;
+}
+
+.search-result {
+    display: block;
+    padding: 0.75em 1em;
+    text-decoration: none;
+    color: var(--rmx-color-fg);
+    border-bottom: 1px dashed var(--rmx-color-border);
+}
+
+.search-result:last-child {
+    border-bottom: none;
+}
+
+.search-result:hover {
+    background: var(--rmx-color-bg-alt);
+}
+
+.search-result-name {
+    font-weight: bold;
+    color: var(--rmx-color-links);
+}
+
+.search-result:hover .search-result-name {
+    color: var(--rmx-color-accents);
+}
+
+.search-via {
+    display: block;
+    font-size: 0.85em;
+    color: var(--rmx-color-border);
+    margin-top: 0.2em;
+}
+
+.search-result-brief {
+    display: block;
+    font-size: 0.9em;
+    color: var(--rmx-color-border);
+    margin-top: 0.25em;
+}
+
 /* Mobile breakpoint */
 @media (max-width: 480px) {
     :root {
