@@ -548,14 +548,16 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
 .search-via {
     display: block;
     font-size: 0.85em;
-    color: var(--rmx-color-border);
+    color: var(--rmx-color-fg);
+    opacity: 0.6;
     margin-top: 0.2em;
 }
 
 .search-result-brief {
     display: block;
     font-size: 0.9em;
-    color: var(--rmx-color-border);
+    color: var(--rmx-color-fg);
+    opacity: 0.8;
     margin-top: 0.25em;
 }
 
