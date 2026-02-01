@@ -7,38 +7,85 @@
     let searchResults = null;
     let isLoading = false;
 
-    // Fuzzy scoring: returns 0-1, higher is better match.
-    function fuzzyScore(query, target) {
-        query = query.toLowerCase();
-        target = target.toLowerCase();
+    // Match types in priority order.
+    const MATCH_EXACT = 'exact';
+    const MATCH_PREFIX = 'prefix';
+    const MATCH_WORD_START = 'initials';
+    const MATCH_SUBSTRING = 'substring';
+    const MATCH_SEQUENCE = 'fuzzy';
 
-        // Exact match.
-        if (target === query) return 1.0;
+    // Check match type for a query against a target string.
+    // Returns { type, score } or null if no match.
+    function getMatch(query, target) {
+        const q = query.toLowerCase();
+        const t = target.toLowerCase();
 
-        // Prefix match (strong).
-        if (target.startsWith(query)) return 0.9;
+        if (t === q) return { type: MATCH_EXACT, score: 1.0 };
+        if (t.startsWith(q)) return { type: MATCH_PREFIX, score: 0.9 };
 
-        // Word-start match ("ws" matches "web server").
-        const words = target.split(/[\s\-_]+/);
-        const queryChars = query.split('');
+        // Word-start match.
+        const words = t.split(/[\s\-_]+/);
+        const queryChars = q.split('');
         let wordIdx = 0, charIdx = 0;
         while (wordIdx < words.length && charIdx < queryChars.length) {
             if (words[wordIdx].startsWith(queryChars[charIdx])) charIdx++;
             wordIdx++;
         }
-        if (charIdx === queryChars.length) return 0.8;
+        if (charIdx === queryChars.length) return { type: MATCH_WORD_START, score: 0.8 };
 
-        // Substring match.
-        if (target.includes(query)) return 0.6;
+        if (t.includes(q)) return { type: MATCH_SUBSTRING, score: 0.6 };
 
-        // Character sequence match (all chars appear in order).
+        // Character sequence match.
         let ti = 0;
-        for (const c of query) {
-            ti = target.indexOf(c, ti);
-            if (ti === -1) return 0;
+        for (const c of q) {
+            ti = t.indexOf(c, ti);
+            if (ti === -1) return null;
             ti++;
         }
-        return 0.3;
+        return { type: MATCH_SEQUENCE, score: 0.3 };
+    }
+
+    // Find best match for query against an entry.
+    // Returns { score, matchedText, matchType } or null.
+    function findMatch(query, entry) {
+        // Parse searchable into name and aliases.
+        // Format: "name alias1 alias2 ..." but we need to check each part.
+        // Since we don't have structured data, try name first, then search for alias matches.
+        const name = entry.name;
+        const searchable = entry.searchable;
+
+        // Try matching name first.
+        const nameMatch = getMatch(query, name);
+        if (nameMatch && nameMatch.score >= 0.6) {
+            return { score: nameMatch.score, matchedText: null, matchType: nameMatch.type };
+        }
+
+        // Try matching the full searchable text.
+        const fullMatch = getMatch(query, searchable);
+        if (!fullMatch) return null;
+
+        // Find which alias matched (if not the name).
+        // Extract aliases: everything after the name in searchable.
+        const aliasText = searchable.slice(name.length).trim();
+        if (aliasText) {
+            const aliases = aliasText.split(/\s+/);
+            // Find the best matching alias.
+            let bestAlias = null;
+            let bestAliasScore = 0;
+            for (const alias of aliases) {
+                const m = getMatch(query, alias);
+                if (m && m.score > bestAliasScore) {
+                    bestAliasScore = m.score;
+                    bestAlias = alias;
+                }
+            }
+            if (bestAlias && bestAliasScore >= fullMatch.score * 0.8) {
+                return { score: fullMatch.score, matchedText: bestAlias, matchType: fullMatch.type };
+            }
+        }
+
+        // Matched via combined text.
+        return { score: fullMatch.score, matchedText: null, matchType: fullMatch.type };
     }
 
     // Category weights for ranking.
@@ -75,24 +122,41 @@
         const seen = new Set();
 
         for (const entry of searchIndex) {
-            const score = fuzzyScore(query, entry.searchable);
-            if (score < 0.2) continue;
+            const match = findMatch(query, entry);
+            if (!match || match.score < 0.2) continue;
 
             // Apply category weight.
             const categoryWeight = categoryWeights[entry.category] || 1.0;
-            const finalScore = score * categoryWeight;
+            const finalScore = match.score * categoryWeight;
 
             // Deduplicate by id.
             if (seen.has(entry.id)) continue;
             seen.add(entry.id);
 
-            results.push({ entry, score: finalScore });
+            results.push({
+                entry,
+                score: finalScore,
+                matchedText: match.matchedText,
+                matchType: match.matchType,
+            });
         }
 
         // Sort by score descending.
         results.sort((a, b) => b.score - a.score);
 
         return results.slice(0, 20);
+    }
+
+    // Format match explanation.
+    function formatMatchInfo(matchedText, matchType) {
+        if (matchedText) {
+            // Matched an alias.
+            return `aka "${matchedText}"`;
+        }
+        if (matchType === MATCH_WORD_START) {
+            return 'initials';
+        }
+        return null;
     }
 
     // Render search results grouped by category.
@@ -107,10 +171,10 @@
 
         // Group by category.
         const groups = {};
-        for (const { entry, score } of results) {
-            const cat = entry.category;
+        for (const result of results) {
+            const cat = result.entry.category;
             if (!groups[cat]) groups[cat] = [];
-            groups[cat].push({ entry, score });
+            groups[cat].push(result);
         }
 
         // Render order: crate, book, std.
@@ -125,10 +189,14 @@
         for (const cat of sortedCats) {
             const items = groups[cat];
             html += `<div class="search-category">${cat}</div>`;
-            for (const { entry } of items) {
+            for (const { entry, matchedText, matchType } of items) {
                 const href = entry.path || '#';
+                const matchInfo = formatMatchInfo(matchedText, matchType);
+                const matchHtml = matchInfo
+                    ? `<span class="search-match-info">${matchInfo}</span>`
+                    : '';
                 html += `<a class="search-result" href="${href}">
-                    <span class="search-result-name">${entry.name}</span>
+                    <span class="search-result-name">${entry.name}${matchHtml}</span>
                     <span class="search-result-brief">${entry.brief}</span>
                 </a>`;
             }

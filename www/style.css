@@ -545,6 +545,14 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
     color: var(--rmx-color-accents);
 }
 
+.search-match-info {
+    font-weight: normal;
+    font-size: 0.85em;
+    color: var(--rmx-color-fg);
+    opacity: 0.6;
+    margin-left: 0.5em;
+}
+
 .search-via {
     display: block;
     font-size: 0.85em;
