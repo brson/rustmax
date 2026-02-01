@@ -304,16 +304,23 @@ impl TopicIndex {
                 .collect::<Vec<_>>()
                 .join(" ");
 
-            // Generate path based on category.
+            // Generate path based on category (relative, no leading slash).
             let path = match topic.category.as_str() {
                 "crate" => {
-                    // Convert topic id to crate name (e.g., "serde-json" -> "serde_json").
-                    let crate_name = id.replace('-', "_");
-                    Some(format!("/api/rustmax/{}/index.html", crate_name))
+                    // Convert topic id to crate name.
+                    // Strip "-crate" suffix if present, then convert hyphens to underscores.
+                    let base_id = id.strip_suffix("-crate").unwrap_or(id);
+                    let crate_name = base_id.replace('-', "_");
+                    Some(format!("api/rustmax/{}/index.html", crate_name))
                 }
                 "book" => {
-                    // Book path (e.g., "trpl" -> "/books/trpl/").
-                    Some(format!("/books/{}/", id))
+                    // Book path (e.g., "trpl" -> "library/trpl/").
+                    Some(format!("library/{}/", id))
+                }
+                "std" => {
+                    // Std module path (e.g., "std-sync-atomic" -> "api/std/sync/atomic/index.html").
+                    let module_path = id.strip_prefix("std-").unwrap_or(id).replace('-', "/");
+                    Some(format!("api/std/{}/index.html", module_path))
                 }
                 _ => None,
             };
@@ -384,7 +391,7 @@ mod tests {
         assert!(trpl_entry.searchable.contains("The Book"));
 
         // Verify path is generated correctly for books.
-        assert_eq!(trpl_entry.path, Some("/books/trpl/".to_string()));
+        assert_eq!(trpl_entry.path, Some("library/trpl/".to_string()));
     }
 
     #[test]
