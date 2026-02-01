@@ -16,7 +16,7 @@ pub struct SearchEntry {
     pub name: String,
     /// Searchable text (name + aliases joined).
     pub searchable: String,
-    /// Category (crate, book, std, lang).
+    /// Category (crate, book, std).
     pub category: String,
     /// Brief description.
     pub brief: String,
@@ -47,8 +47,6 @@ pub struct Topic {
     pub aliases: Vec<String>,
     pub category: String,
     pub brief: String,
-    #[serde(default)]
-    pub relations: Vec<String>,
 }
 
 /// Intermediate structure for deserializing categories.toml.
@@ -83,7 +81,6 @@ pub struct ValidationResult {
 pub struct ValidationStats {
     pub topic_count: usize,
     pub category_count: usize,
-    pub relation_count: usize,
     pub alias_count: usize,
 }
 
@@ -134,12 +131,8 @@ impl TopicIndex {
     pub fn validate(&self) -> ValidationResult {
         let mut result = ValidationResult::default();
 
-        // Collect all topic IDs for reference checking.
-        let topic_ids: HashSet<&str> = self.topics.keys().map(|s| s.as_str()).collect();
+        // Collect category IDs for reference checking.
         let category_ids: HashSet<&str> = self.categories.keys().map(|s| s.as_str()).collect();
-
-        // Track aliases for uniqueness checking.
-        let mut seen_aliases: HashMap<&str, &str> = HashMap::new();
 
         for (id, topic) in &self.topics {
             // Validate topic ID format (kebab-case).
@@ -158,43 +151,8 @@ impl TopicIndex {
                 });
             }
 
-            // Validate relations.
-            for target in &topic.relations {
-                // Check target exists.
-                if !topic_ids.contains(target.as_str()) {
-                    result.errors.push(ValidationError {
-                        topic_id: id.clone(),
-                        message: format!("relation target '{}' does not exist", target),
-                    });
-                }
-
-                // Check for self-reference.
-                if target == id {
-                    result.errors.push(ValidationError {
-                        topic_id: id.clone(),
-                        message: "topic cannot relate to itself".to_string(),
-                    });
-                }
-
-                result.stats.relation_count += 1;
-            }
-
-            // Check alias uniqueness (warning, not error).
-            for alias in &topic.aliases {
-                let alias_lower = alias.to_lowercase();
-                if let Some(&other_id) = seen_aliases.get(alias_lower.as_str()) {
-                    if other_id != id {
-                        result.warnings.push(ValidationError {
-                            topic_id: id.clone(),
-                            message: format!(
-                                "alias '{}' also used by topic '{}'",
-                                alias, other_id
-                            ),
-                        });
-                    }
-                }
-                result.stats.alias_count += 1;
-            }
+            // Count aliases.
+            result.stats.alias_count += topic.aliases.len();
 
             // Validate brief is not empty.
             if topic.brief.is_empty() {
@@ -256,7 +214,6 @@ impl ValidationResult {
         println!("Statistics:");
         println!("  Topics:     {}", self.stats.topic_count);
         println!("  Categories: {}", self.stats.category_count);
-        println!("  Relations:  {}", self.stats.relation_count);
         println!("  Aliases:    {}", self.stats.alias_count);
         println!();
 
@@ -305,28 +262,6 @@ impl TopicIndex {
             topics.sort_by_key(|(id, _)| *id);
         }
 
-        // Find hub topics (most relations).
-        let mut relation_counts: Vec<(&str, usize)> = self
-            .topics
-            .iter()
-            .map(|(id, t)| (id.as_str(), t.relations.len()))
-            .filter(|(_, count)| *count > 0)
-            .collect();
-        relation_counts.sort_by(|a, b| b.1.cmp(&a.1));
-
-        // Find orphan topics (no relations and not referenced).
-        let referenced: HashSet<&str> = self
-            .topics
-            .values()
-            .flat_map(|t| t.relations.iter().map(|r| r.as_str()))
-            .collect();
-        let orphans: Vec<&str> = self
-            .topics
-            .iter()
-            .filter(|(id, t)| t.relations.is_empty() && !referenced.contains(id.as_str()))
-            .map(|(id, _)| id.as_str())
-            .collect();
-
         // Print summary.
         println!("Topic Index Summary");
         println!("===================\n");
@@ -350,39 +285,11 @@ impl TopicIndex {
         }
         println!();
 
-        // Hub topics (most connected).
-        println!("Most connected topics:");
-        for (id, count) in relation_counts.iter().take(10) {
-            let topic = &self.topics[*id];
-            println!("  {} - {} relations", topic.name, count);
-        }
-        println!();
-
-        // Orphan topics.
-        if !orphans.is_empty() {
-            println!("Isolated topics ({}):", orphans.len());
-            if verbose {
-                for id in &orphans {
-                    let topic = &self.topics[*id];
-                    println!("  {} ({})", topic.name, id);
-                }
-            } else {
-                let display: Vec<_> = orphans.iter().take(5).copied().collect();
-                println!("  {}", display.join(", "));
-                if orphans.len() > 5 {
-                    println!("  ... and {} more", orphans.len() - 5);
-                }
-            }
-            println!();
-        }
-
         // Totals.
         let total_aliases: usize = self.topics.values().map(|t| t.aliases.len()).sum();
-        let total_relations: usize = self.topics.values().map(|t| t.relations.len()).sum();
         println!("Totals:");
         println!("  {} topics", self.topics.len());
         println!("  {} categories", self.categories.len());
-        println!("  {} relations", total_relations);
         println!("  {} aliases", total_aliases);
     }
 

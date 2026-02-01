@@ -46,7 +46,6 @@
         'crate': 1.5,
         'book': 1.3,
         'std': 1.1,
-        'lang': 1.0,
     };
 
     // Load search index on first focus.
@@ -114,8 +113,8 @@
             groups[cat].push({ entry, score });
         }
 
-        // Render order: crate, book, std, lang.
-        const order = ['crate', 'book', 'std', 'lang'];
+        // Render order: crate, book, std.
+        const order = ['crate', 'book', 'std'];
         const sortedCats = Object.keys(groups).sort((a, b) => {
             const ai = order.indexOf(a);
             const bi = order.indexOf(b);

@@ -11,7 +11,3 @@ description = "Library books and documentation"
 [categories.std]
 name = "Standard Library"
 description = "Standard library modules and types"
-
-[categories.lang]
-name = "Language"
-description = "Language features and concepts"

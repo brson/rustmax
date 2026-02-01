@@ -7,14 +7,12 @@ name = "anyhow"
 aliases = ["error handling crate", "anyhow::Result", "anyhow::Error"]
 category = "crate"
 brief = "Flexible error handling with context and backtraces"
-relations = ["thiserror"]
 
 [topics.thiserror]
 name = "thiserror"
 aliases = ["custom errors", "error derive"]
 category = "crate"
 brief = "Derive macro for custom error types"
-relations = ["anyhow"]
 
 # Serialization
 
@@ -23,28 +21,24 @@ name = "serde"
 aliases = ["serialization framework", "serialize", "deserialize", "Serialize", "Deserialize"]
 category = "crate"
 brief = "Framework for serializing and deserializing Rust data structures"
-relations = ["serde-json", "toml-crate"]
 
 [topics.serde-json]
 name = "serde_json"
 aliases = ["json crate", "JSON parsing", "json serialization"]
 category = "crate"
 brief = "JSON serialization and deserialization with serde"
-relations = ["serde"]
 
 [topics.toml-crate]
 name = "toml"
 aliases = ["toml crate", "TOML parsing"]
 category = "crate"
 brief = "TOML serialization and deserialization"
-relations = ["serde"]
 
 [topics.json5-crate]
 name = "json5"
 aliases = ["JSON5 parsing", "json5 crate"]
 category = "crate"
 brief = "JSON5 format support"
-relations = ["serde"]
 
 # Async and networking
 
@@ -53,70 +47,60 @@ name = "tokio"
 aliases = ["tokio runtime", "async runtime", "tokio::spawn"]
 category = "crate"
 brief = "Asynchronous runtime for Rust"
-relations = ["futures-crate", "async-await"]
 
 [topics.futures-crate]
 name = "futures"
 aliases = ["futures crate", "futures-rs", "StreamExt", "FutureExt"]
 category = "crate"
 brief = "Abstractions for asynchronous programming"
-relations = ["tokio", "futures"]
 
 [topics.reqwest]
 name = "reqwest"
 aliases = ["http client", "HTTP requests"]
 category = "crate"
 brief = "Ergonomic HTTP client for Rust"
-relations = ["hyper"]
 
 [topics.hyper]
 name = "hyper"
 aliases = ["http library", "HTTP implementation"]
 category = "crate"
 brief = "Low-level HTTP implementation"
-relations = ["reqwest", "axum"]
 
 [topics.axum]
 name = "axum"
 aliases = ["web framework", "axum framework"]
 category = "crate"
 brief = "Ergonomic web framework built on tokio and hyper"
-relations = ["hyper", "tower"]
 
 [topics.tower]
 name = "tower"
 aliases = ["tower service", "middleware", "Service trait"]
 category = "crate"
 brief = "Modular components for building network clients and servers"
-relations = ["axum", "hyper"]
 
 [topics.http-crate]
 name = "http"
 aliases = ["http types", "Request", "Response", "StatusCode"]
 category = "crate"
 brief = "HTTP types shared by hyper and other crates"
-relations = ["hyper"]
 
 [topics.url-crate]
 name = "url"
 aliases = ["URL parsing", "URL crate", "Url type"]
 category = "crate"
 brief = "URL parsing and manipulation"
-relations = []
 
 [topics.mime-crate]
 name = "mime"
 aliases = ["MIME types", "content type"]
 category = "crate"
 brief = "MIME media type parsing"
-relations = ["http-crate"]
 
 [topics.socket2]
 name = "socket2"
 aliases = ["socket programming", "low-level sockets"]
 category = "crate"
 brief = "Low-level socket programming"
-relations = []
 
 # CLI
 
@@ -125,35 +109,30 @@ name = "clap"
 aliases = ["argument parsing", "CLI parser", "command line"]
 category = "crate"
 brief = "Command line argument parser"
-relations = []
 
 [topics.termcolor]
 name = "termcolor"
 aliases = ["terminal colors", "colored terminal", "ANSI colors"]
 category = "crate"
 brief = "Cross-platform terminal colors"
-relations = []
 
 [topics.indicatif]
 name = "indicatif"
 aliases = ["progress bar", "spinner", "CLI progress"]
 category = "crate"
 brief = "Progress bars and spinners for CLI"
-relations = []
 
 [topics.rustyline]
 name = "rustyline"
 aliases = ["readline", "line editor", "interactive input"]
 category = "crate"
 brief = "Readline-style line editor"
-relations = []
 
 [topics.ctrlc]
 name = "ctrlc"
 aliases = ["Ctrl-C handler", "signal handling", "SIGINT"]
 category = "crate"
 brief = "Cross-platform Ctrl-C handling"
-relations = []
 
 # Concurrency and parallelism
 
@@ -162,14 +141,12 @@ name = "rayon"
 aliases = ["parallel iterators", "data parallelism", "par_iter"]
 category = "crate"
 brief = "Data parallelism library with parallel iterators"
-relations = ["iterators"]
 
 [topics.crossbeam]
 name = "crossbeam"
 aliases = ["concurrent data structures", "crossbeam channels"]
 category = "crate"
 brief = "Tools for concurrent programming"
-relations = ["std-sync-mpsc"]
 
 # Random and crypto
 
@@ -178,35 +155,30 @@ name = "rand"
 aliases = ["random numbers", "RNG", "random crate"]
 category = "crate"
 brief = "Random number generation"
-relations = []
 
 [topics.rand-chacha]
 name = "rand_chacha"
 aliases = ["ChaCha RNG", "cryptographic RNG"]
 category = "crate"
 brief = "ChaCha cryptographically secure RNG"
-relations = ["rand"]
 
 [topics.rand-pcg]
 name = "rand_pcg"
 aliases = ["PCG RNG", "fast RNG"]
 category = "crate"
 brief = "PCG fast non-cryptographic RNG"
-relations = ["rand"]
 
 [topics.blake3]
 name = "blake3"
 aliases = ["BLAKE3 hash", "cryptographic hash"]
 category = "crate"
 brief = "BLAKE3 cryptographic hash function"
-relations = []
 
 [topics.sha2]
 name = "sha2"
 aliases = ["SHA-256", "SHA-512", "SHA2 hash"]
 category = "crate"
 brief = "SHA-2 family of hash functions"
-relations = []
 
 # Time
 
@@ -215,14 +187,12 @@ name = "chrono"
 aliases = ["date time", "chrono crate"]
 category = "crate"
 brief = "Date and time library (legacy)"
-relations = ["jiff", "std-time"]
 
 [topics.jiff]
 name = "jiff"
 aliases = ["date time", "jiff crate", "temporal"]
 category = "crate"
 brief = "Modern date and time library"
-relations = ["std-time"]
 
 # Text and parsing
 
@@ -231,42 +201,36 @@ name = "regex"
 aliases = ["regular expressions", "regex crate", "pattern matching"]
 category = "crate"
 brief = "Regular expression library"
-relations = []
 
 [topics.nom]
 name = "nom"
 aliases = ["parser combinator", "nom parser"]
 category = "crate"
 brief = "Parser combinator library"
-relations = []
 
 [topics.comrak]
 name = "comrak"
 aliases = ["markdown parser", "CommonMark", "GFM"]
 category = "crate"
 brief = "CommonMark and GitHub Flavored Markdown parser"
-relations = []
 
 [topics.memchr]
 name = "memchr"
 aliases = ["byte search", "fast search"]
 category = "crate"
 brief = "Fast byte searching"
-relations = []
 
 [topics.unicode-segmentation]
 name = "unicode-segmentation"
 aliases = ["grapheme", "word boundary", "unicode words"]
 category = "crate"
 brief = "Unicode grapheme and word segmentation"
-relations = []
 
 [topics.tera]
 name = "tera"
 aliases = ["template engine", "Jinja2", "templating"]
 category = "crate"
 brief = "Jinja2-inspired template engine"
-relations = []
 
 # Encoding
 
@@ -275,28 +239,24 @@ name = "base64"
 aliases = ["base64 encoding", "base64 decode"]
 category = "crate"
 brief = "Base64 encoding and decoding"
-relations = []
 
 [topics.hex-crate]
 name = "hex"
 aliases = ["hex encoding", "hexadecimal"]
 category = "crate"
 brief = "Hexadecimal encoding and decoding"
-relations = []
 
 [topics.flate2]
 name = "flate2"
 aliases = ["gzip", "deflate", "zlib", "compression"]
 category = "crate"
 brief = "Gzip/deflate compression and decompression"
-relations = []
 
 [topics.zip-crate]
 name = "zip"
 aliases = ["ZIP archive", "zip files"]
 category = "crate"
 brief = "ZIP archive reading and writing"
-relations = ["flate2"]
 
 # Filesystem
 
@@ -305,35 +265,30 @@ name = "walkdir"
 aliases = ["directory traversal", "recursive directory"]
 category = "crate"
 brief = "Recursive directory traversal"
-relations = ["std-fs"]
 
 [topics.ignore]
 name = "ignore"
 aliases = ["gitignore", "directory walker"]
 category = "crate"
 brief = "Directory walker respecting gitignore rules"
-relations = ["walkdir"]
 
 [topics.glob-crate]
 name = "glob"
 aliases = ["glob patterns", "file globbing"]
 category = "crate"
 brief = "Unix shell-style pattern matching"
-relations = []
 
 [topics.notify-crate]
 name = "notify"
 aliases = ["file watcher", "filesystem events", "inotify"]
 category = "crate"
 brief = "Cross-platform filesystem notification library"
-relations = []
 
 [topics.tempfile]
 name = "tempfile"
 aliases = ["temporary files", "temp directory"]
 category = "crate"
 brief = "Temporary file and directory management"
-relations = []
 
 # Logging
 
@@ -342,14 +297,12 @@ name = "log"
 aliases = ["logging facade", "log crate"]
 category = "crate"
 brief = "Lightweight logging facade"
-relations = ["env-logger"]
 
 [topics.env-logger]
 name = "env_logger"
 aliases = ["environment logger", "RUST_LOG"]
 category = "crate"
 brief = "Logger configured via environment variables"
-relations = ["log"]
 
 # Testing
 
@@ -358,7 +311,6 @@ name = "proptest"
 aliases = ["property testing", "quickcheck alternative"]
 category = "crate"
 brief = "Property-based testing framework"
-relations = []
 
 # Collections and utilities
 
@@ -367,49 +319,42 @@ name = "ahash"
 aliases = ["AHash", "fast hash"]
 category = "crate"
 brief = "Fast non-cryptographic hash function"
-relations = ["std-hash"]
 
 [topics.bytes]
 name = "bytes"
 aliases = ["byte buffers", "Bytes", "BytesMut"]
 category = "crate"
 brief = "Efficient byte buffer types"
-relations = []
 
 [topics.bitflags]
 name = "bitflags"
 aliases = ["bit flags", "bitfield"]
 category = "crate"
 brief = "Macro for bit flag types"
-relations = []
 
 [topics.itertools]
 name = "itertools"
 aliases = ["iterator extensions", "extra iterators"]
 category = "crate"
 brief = "Extra iterator methods and adaptors"
-relations = ["iterators", "std-iter"]
 
 [topics.num-bigint]
 name = "num-bigint"
 aliases = ["big integers", "arbitrary precision"]
 category = "crate"
 brief = "Arbitrary-precision integers"
-relations = []
 
 [topics.num-enum]
 name = "num_enum"
 aliases = ["enum from int", "integer enum"]
 category = "crate"
 brief = "Derive for converting between enums and integers"
-relations = []
 
 [topics.semver-crate]
 name = "semver"
 aliases = ["semantic versioning", "version parsing"]
 category = "crate"
 brief = "Semantic version parsing and comparison"
-relations = []
 
 # System and process
 
@@ -418,14 +363,12 @@ name = "xshell"
 aliases = ["shell commands", "scripting", "process execution"]
 category = "crate"
 brief = "Quick shell scripting in Rust"
-relations = ["std-process"]
 
 [topics.libc-crate]
 name = "libc"
 aliases = ["libc bindings", "C standard library"]
 category = "crate"
 brief = "Raw FFI bindings to platform C libraries"
-relations = ["std-ffi"]
 
 # Procedural macros
 
@@ -434,35 +377,30 @@ name = "syn"
 aliases = ["syntax parsing", "AST", "proc macro parsing"]
 category = "crate"
 brief = "Parser for Rust source code"
-relations = ["quote", "proc-macros"]
 
 [topics.quote]
 name = "quote"
 aliases = ["quasi-quoting", "code generation"]
 category = "crate"
 brief = "Quasi-quoting for generating Rust code"
-relations = ["syn", "proc-macros"]
 
 [topics.proc-macro2-crate]
 name = "proc-macro2"
 aliases = ["proc macro", "TokenStream"]
 category = "crate"
 brief = "Wrapper around proc_macro for better ergonomics"
-relations = ["syn", "quote"]
 
 [topics.derive-more]
 name = "derive_more"
 aliases = ["derive macros", "extra derives"]
 category = "crate"
 brief = "Additional derive macros"
-relations = []
 
 [topics.cfg-if-crate]
 name = "cfg-if"
 aliases = ["conditional compilation", "cfg macro"]
 category = "crate"
 brief = "Ergonomic conditional compilation"
-relations = []
 
 # Build and FFI
 
@@ -471,21 +409,18 @@ name = "bindgen"
 aliases = ["C bindings generator", "FFI generator"]
 category = "crate"
 brief = "Generate Rust bindings from C headers"
-relations = ["std-ffi"]
 
 [topics.cc-crate]
 name = "cc"
 aliases = ["C compiler", "build C code"]
 category = "crate"
 brief = "Compile C/C++ code in build scripts"
-relations = []
 
 [topics.cxx-crate]
 name = "cxx"
 aliases = ["C++ FFI", "C++ interop"]
 category = "crate"
 brief = "Safe C++ interop"
-relations = ["std-ffi"]
 
 # Image
 
@@ -494,4 +429,3 @@ name = "image"
 aliases = ["image processing", "PNG", "JPEG", "image formats"]
 category = "crate"
 brief = "Image encoding, decoding, and manipulation"
-relations = []

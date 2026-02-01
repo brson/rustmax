@@ -5,221 +5,189 @@ name = "std::collections"
 aliases = ["collections module", "data structures", "HashMap", "BTreeMap", "VecDeque"]
 category = "std"
 brief = "Collection types like HashMap, BTreeMap, VecDeque, and more"
-relations = ["iterators"]
 
 [topics.std-io]
 name = "std::io"
 aliases = ["io module", "Read trait", "Write trait", "BufReader", "BufWriter"]
 category = "std"
 brief = "Traits and types for input/output operations"
-relations = ["std-fs"]
 
 [topics.std-fs]
 name = "std::fs"
 aliases = ["fs module", "File", "read_to_string", "write", "metadata"]
 category = "std"
 brief = "Filesystem operations like reading, writing, and file metadata"
-relations = ["std-io", "std-path"]
 
 [topics.std-path]
 name = "std::path"
 aliases = ["path module", "Path", "PathBuf", "file paths"]
 category = "std"
 brief = "Cross-platform path manipulation"
-relations = ["std-fs"]
 
 [topics.std-net]
 name = "std::net"
 aliases = ["net module", "TcpStream", "TcpListener", "UdpSocket", "IpAddr"]
 category = "std"
 brief = "TCP/UDP networking primitives"
-relations = ["tokio"]
 
 [topics.std-sync]
 name = "std::sync"
 aliases = ["sync module", "Mutex", "RwLock", "Arc", "Barrier", "Condvar"]
 category = "std"
 brief = "Synchronization primitives for concurrent programming"
-relations = ["std-thread", "send-sync"]
 
 [topics.std-sync-atomic]
 name = "std::sync::atomic"
 aliases = ["atomic module", "AtomicBool", "AtomicUsize", "Ordering", "memory ordering"]
 category = "std"
 brief = "Atomic types for lock-free concurrent programming"
-relations = ["std-sync"]
 
 [topics.std-sync-mpsc]
 name = "std::sync::mpsc"
 aliases = ["mpsc module", "channel", "Sender", "Receiver", "sync_channel"]
 category = "std"
 brief = "Multi-producer single-consumer channels"
-relations = ["std-sync", "crossbeam"]
 
 [topics.std-thread]
 name = "std::thread"
 aliases = ["thread module", "spawn", "JoinHandle", "thread::sleep", "thread_local"]
 category = "std"
 brief = "Native thread creation and management"
-relations = ["std-sync"]
 
 [topics.std-process]
 name = "std::process"
 aliases = ["process module", "Command", "Child", "exit", "spawn process"]
 category = "std"
 brief = "Running and managing external processes"
-relations = ["std-env", "xshell"]
 
 [topics.std-env]
 name = "std::env"
 aliases = ["env module", "var", "args", "current_dir", "environment variables"]
 category = "std"
 brief = "Environment variables and process arguments"
-relations = ["std-process"]
 
 [topics.std-mem]
 name = "std::mem"
 aliases = ["mem module", "size_of", "align_of", "swap", "take", "replace", "transmute"]
 category = "std"
 brief = "Memory manipulation utilities"
-relations = ["std-ptr", "unsafe-rust"]
 
 [topics.std-ptr]
 name = "std::ptr"
 aliases = ["ptr module", "null", "read", "write", "copy", "pointer operations"]
 category = "std"
 brief = "Raw pointer operations"
-relations = ["raw-pointers", "unsafe-rust", "std-mem"]
 
 [topics.std-cell]
 name = "std::cell"
 aliases = ["cell module", "Cell", "RefCell", "UnsafeCell"]
 category = "std"
 brief = "Types providing interior mutability"
-relations = ["interior-mutability", "smart-pointers"]
 
 [topics.std-rc]
 name = "std::rc"
 aliases = ["rc module", "Rc", "Weak", "reference counting"]
 category = "std"
 brief = "Single-threaded reference counting"
-relations = ["smart-pointers", "std-sync"]
 
 [topics.std-fmt]
 name = "std::fmt"
 aliases = ["fmt module", "Display", "Debug", "format!", "write!", "Formatter"]
 category = "std"
 brief = "Formatting and display traits"
-relations = ["derive"]
 
 [topics.std-error]
 name = "std::error"
 aliases = ["error module", "Error trait", "source", "error chain"]
 category = "std"
 brief = "The Error trait for error types"
-relations = ["result", "anyhow"]
 
 [topics.std-time]
 name = "std::time"
 aliases = ["time module", "Duration", "Instant", "SystemTime", "elapsed"]
 category = "std"
 brief = "Time measurement and durations"
-relations = ["chrono", "jiff"]
 
 [topics.std-future]
 name = "std::future"
 aliases = ["future module", "Future trait", "poll"]
 category = "std"
 brief = "The Future trait for asynchronous computation"
-relations = ["futures", "async-await"]
 
 [topics.std-task]
 name = "std::task"
 aliases = ["task module", "Context", "Waker", "Poll", "wake"]
 category = "std"
 brief = "Types for building async executors"
-relations = ["std-future", "async-await"]
 
 [topics.std-pin]
 name = "std::pin"
 aliases = ["pin module", "Pin", "pin!"]
 category = "std"
 brief = "Pinning types in memory"
-relations = ["pinning", "async-await"]
 
 [topics.std-any]
 name = "std::any"
 aliases = ["any module", "Any trait", "TypeId", "type erasure", "downcast"]
 category = "std"
 brief = "Runtime type identification and reflection"
-relations = []
 
 [topics.std-marker]
 name = "std::marker"
 aliases = ["marker module", "PhantomData", "Send", "Sync", "Copy", "Sized"]
 category = "std"
 brief = "Marker traits and phantom types"
-relations = ["send-sync", "copy-trait"]
 
 [topics.std-ops]
 name = "std::ops"
 aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading"]
 category = "std"
 brief = "Overloadable operators and traits"
-relations = ["traits", "closures"]
 
 [topics.std-cmp]
 name = "std::cmp"
 aliases = ["cmp module", "Ord", "PartialOrd", "Eq", "PartialEq", "Ordering"]
 category = "std"
 brief = "Comparison traits for ordering and equality"
-relations = ["derive"]
 
 [topics.std-hash]
 name = "std::hash"
 aliases = ["hash module", "Hash trait", "Hasher", "BuildHasher"]
 category = "std"
 brief = "Hashing traits for HashMap keys"
-relations = ["std-collections", "derive", "ahash"]
 
 [topics.std-convert]
 name = "std::convert"
 aliases = ["convert module", "From", "Into", "TryFrom", "TryInto", "AsRef", "AsMut"]
 category = "std"
 brief = "Type conversion traits"
-relations = ["traits"]
 
 [topics.std-iter]
 name = "std::iter"
 aliases = ["iter module", "Iterator trait", "IntoIterator", "FromIterator", "iterator adapters"]
 category = "std"
 brief = "Iterator trait and combinators"
-relations = ["iterators", "itertools"]
 
 [topics.std-ffi]
 name = "std::ffi"
 aliases = ["ffi module", "CString", "CStr", "OsString", "OsStr"]
 category = "std"
 brief = "Foreign function interface utilities"
-relations = ["unsafe-rust", "libc-crate"]
 
 [topics.std-alloc]
 name = "std::alloc"
 aliases = ["alloc module", "GlobalAlloc", "allocator", "Layout"]
 category = "std"
 brief = "Memory allocation APIs"
-relations = ["unsafe-rust"]
 
 [topics.std-panic]
 name = "std::panic"
 aliases = ["panic module", "catch_unwind", "resume_unwind", "set_hook", "panic handler"]
 category = "std"
 brief = "Panic handling and recovery"
-relations = ["result"]
 
 [topics.std-backtrace]
 name = "std::backtrace"
 aliases = ["backtrace module", "Backtrace", "RUST_BACKTRACE"]
 category = "std"
 brief = "Capturing stack backtraces"
-relations = ["anyhow"]
