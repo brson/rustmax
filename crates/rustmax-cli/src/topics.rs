@@ -358,4 +358,57 @@ mod tests {
         assert!(!is_valid_id("foo_bar"));
         assert!(!is_valid_id("foo bar"));
     }
+
+    #[test]
+    fn test_search_index_contains_aliases() {
+        let mut index = TopicIndex::default();
+        index.topics.insert(
+            "trpl".to_string(),
+            Topic {
+                name: "The Rust Programming Language".to_string(),
+                aliases: vec![
+                    "TRPL".to_string(),
+                    "The Book".to_string(),
+                ],
+                category: "book".to_string(),
+                brief: "The official Rust book".to_string(),
+            },
+        );
+
+        let entries = index.export_search_index();
+        let trpl_entry = entries.iter().find(|e| e.id == "trpl").unwrap();
+
+        // Verify searchable text contains name and all aliases.
+        assert!(trpl_entry.searchable.contains("The Rust Programming Language"));
+        assert!(trpl_entry.searchable.contains("TRPL"));
+        assert!(trpl_entry.searchable.contains("The Book"));
+
+        // Verify path is generated correctly for books.
+        assert_eq!(trpl_entry.path, Some("/books/trpl/".to_string()));
+    }
+
+    #[test]
+    fn test_trpl_searchable_matches_trpl_query() {
+        let mut index = TopicIndex::default();
+        index.topics.insert(
+            "trpl".to_string(),
+            Topic {
+                name: "The Rust Programming Language".to_string(),
+                aliases: vec!["TRPL".to_string()],
+                category: "book".to_string(),
+                brief: "The official Rust book".to_string(),
+            },
+        );
+
+        let entries = index.export_search_index();
+        let trpl_entry = entries.iter().find(|e| e.id == "trpl").unwrap();
+
+        // The searchable text lowercased should contain "trpl".
+        let searchable_lower = trpl_entry.searchable.to_lowercase();
+        assert!(
+            searchable_lower.contains("trpl"),
+            "searchable '{}' should contain 'trpl'",
+            trpl_entry.searchable
+        );
+    }
 }
