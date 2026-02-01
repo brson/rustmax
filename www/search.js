@@ -7,10 +7,9 @@
     let searchResults = null;
     let isLoading = false;
 
-    // Match types in priority order.
+    // Match types.
     const MATCH_EXACT = 'exact';
     const MATCH_PREFIX = 'prefix';
-    const MATCH_WORD_START = 'initials';
     const MATCH_SUBSTRING = 'substring';
 
     // Check match type for a query against a target string.
@@ -21,17 +20,6 @@
 
         if (t === q) return { type: MATCH_EXACT, score: 1.0 };
         if (t.startsWith(q)) return { type: MATCH_PREFIX, score: 0.9 };
-
-        // Word-start match.
-        const words = t.split(/[\s\-_]+/);
-        const queryChars = q.split('');
-        let wordIdx = 0, charIdx = 0;
-        while (wordIdx < words.length && charIdx < queryChars.length) {
-            if (words[wordIdx].startsWith(queryChars[charIdx])) charIdx++;
-            wordIdx++;
-        }
-        if (charIdx === queryChars.length) return { type: MATCH_WORD_START, score: 0.8 };
-
         if (t.includes(q)) return { type: MATCH_SUBSTRING, score: 0.6 };
 
         return null;
@@ -140,13 +128,9 @@
     }
 
     // Format match explanation.
-    function formatMatchInfo(matchedText, matchType) {
+    function formatMatchInfo(matchedText) {
         if (matchedText) {
-            // Matched an alias.
             return `aka "${matchedText}"`;
-        }
-        if (matchType === MATCH_WORD_START) {
-            return 'initials';
         }
         return null;
     }
@@ -181,9 +165,9 @@
         for (const cat of sortedCats) {
             const items = groups[cat];
             html += `<div class="search-category">${cat}</div>`;
-            for (const { entry, matchedText, matchType } of items) {
+            for (const { entry, matchedText } of items) {
                 const href = entry.path || '#';
-                const matchInfo = formatMatchInfo(matchedText, matchType);
+                const matchInfo = formatMatchInfo(matchedText);
                 const matchHtml = matchInfo
                     ? `<span class="search-match-info">${matchInfo}</span>`
                     : '';
