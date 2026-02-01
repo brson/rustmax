@@ -12,7 +12,6 @@
     const MATCH_PREFIX = 'prefix';
     const MATCH_WORD_START = 'initials';
     const MATCH_SUBSTRING = 'substring';
-    const MATCH_SEQUENCE = 'fuzzy';
 
     // Check match type for a query against a target string.
     // Returns { type, score } or null if no match.
@@ -35,14 +34,7 @@
 
         if (t.includes(q)) return { type: MATCH_SUBSTRING, score: 0.6 };
 
-        // Character sequence match.
-        let ti = 0;
-        for (const c of q) {
-            ti = t.indexOf(c, ti);
-            if (ti === -1) return null;
-            ti++;
-        }
-        return { type: MATCH_SEQUENCE, score: 0.3 };
+        return null;
     }
 
     // Find best match for query against an entry.
