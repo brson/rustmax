@@ -4,346 +4,215 @@
 name = "Ownership"
 aliases = ["move semantics", "owned values", "ownership system"]
 category = "lang"
-tags = ["memory-safety", "core-concept"]
 brief = "Rust's system for managing memory through ownership rules"
-relations = [
-    { kind = "related", target = "borrowing" },
-    { kind = "related", target = "lifetimes" },
-    { kind = "related", target = "move-semantics" },
-]
+relations = ["borrowing", "lifetimes", "move-semantics", "trpl"]
 
 [topics.borrowing]
 name = "Borrowing"
 aliases = ["borrow", "references", "shared reference", "mutable reference"]
 category = "lang"
-tags = ["memory-safety", "core-concept"]
 brief = "Temporarily accessing data without taking ownership"
-relations = [
-    { kind = "related", target = "ownership" },
-    { kind = "related", target = "lifetimes" },
-]
+relations = ["ownership", "lifetimes"]
 
 [topics.lifetimes]
 name = "Lifetimes"
 aliases = ["lifetime", "'a", "'static", "lifetime elision", "lifetime annotations"]
 category = "lang"
-tags = ["memory-safety", "core-concept"]
 brief = "Annotations that tell the compiler how long references are valid"
-relations = [
-    { kind = "related", target = "borrowing" },
-    { kind = "related", target = "ownership" },
-]
+relations = ["borrowing", "ownership"]
 
 [topics.move-semantics]
 name = "Move Semantics"
 aliases = ["move", "moved value", "value moved"]
 category = "lang"
-tags = ["memory-safety", "core-concept"]
 brief = "Transferring ownership of a value from one binding to another"
-relations = [
-    { kind = "related", target = "ownership" },
-    { kind = "contrast", target = "copy-trait" },
-]
+relations = ["ownership", "copy-trait"]
 
 [topics.traits]
 name = "Traits"
 aliases = ["trait", "trait bounds", "impl trait", "dyn trait", "trait objects"]
 category = "lang"
-tags = ["core-concept", "polymorphism"]
 brief = "Shared behavior definitions, similar to interfaces"
-relations = [
-    { kind = "related", target = "generics" },
-    { kind = "related", target = "trait-objects" },
-]
+relations = ["generics", "trait-objects"]
 
 [topics.generics]
 name = "Generics"
 aliases = ["generic", "type parameters", "generic types", "parametric polymorphism"]
 category = "lang"
-tags = ["core-concept", "polymorphism"]
 brief = "Writing code that works with multiple types"
-relations = [
-    { kind = "related", target = "traits" },
-    { kind = "related", target = "monomorphization" },
-]
+relations = ["traits", "monomorphization"]
 
 [topics.monomorphization]
 name = "Monomorphization"
 aliases = ["monomorphize", "generic instantiation", "static dispatch"]
 category = "lang"
-tags = ["compilation", "polymorphism"]
 brief = "Generating specialized code for each concrete type at compile time"
-relations = [
-    { kind = "related", target = "generics" },
-    { kind = "contrast", target = "trait-objects" },
-]
+relations = ["generics", "trait-objects"]
 
 [topics.trait-objects]
 name = "Trait Objects"
 aliases = ["dyn", "dynamic dispatch", "dyn Trait", "vtable"]
 category = "lang"
-tags = ["polymorphism"]
 brief = "Runtime polymorphism through dynamic dispatch"
-relations = [
-    { kind = "related", target = "traits" },
-    { kind = "contrast", target = "impl-trait" },
-]
+relations = ["traits", "impl-trait"]
 
 [topics.impl-trait]
 name = "impl Trait"
 aliases = ["opaque types", "existential types"]
 category = "lang"
-tags = ["polymorphism"]
 brief = "Static dispatch with hidden concrete types"
-relations = [
-    { kind = "related", target = "traits" },
-    { kind = "contrast", target = "trait-objects" },
-]
+relations = ["traits", "trait-objects"]
 
 [topics.pattern-matching]
 name = "Pattern Matching"
 aliases = ["match", "if let", "let else", "patterns", "destructuring"]
 category = "lang"
-tags = ["core-concept"]
 brief = "Destructuring and branching on the shape of data"
-relations = [
-    { kind = "related", target = "enums" },
-    { kind = "related", target = "option" },
-    { kind = "related", target = "result" },
-]
+relations = ["enums", "option", "result"]
 
 [topics.enums]
 name = "Enums"
 aliases = ["enum", "algebraic data types", "ADT", "sum types", "variants"]
 category = "lang"
-tags = ["core-concept"]
 brief = "Types with a fixed set of variants, each potentially holding data"
-relations = [
-    { kind = "related", target = "pattern-matching" },
-    { kind = "related", target = "option" },
-    { kind = "related", target = "result" },
-]
+relations = ["pattern-matching", "option", "result"]
 
 [topics.option]
 name = "Option"
 aliases = ["Option<T>", "Some", "None", "nullable", "optional values"]
 category = "lang"
-tags = ["core-concept", "error-handling"]
 brief = "Representing optional values without null"
-relations = [
-    { kind = "related", target = "result" },
-    { kind = "related", target = "pattern-matching" },
-]
+relations = ["result", "pattern-matching"]
 
 [topics.result]
 name = "Result"
 aliases = ["Result<T, E>", "Ok", "Err", "error handling"]
 category = "lang"
-tags = ["core-concept", "error-handling"]
 brief = "Representing success or failure with error information"
-relations = [
-    { kind = "related", target = "option" },
-    { kind = "related", target = "question-mark-operator" },
-    { kind = "related", target = "error-handling" },
-]
+relations = ["option", "question-mark-operator", "anyhow", "thiserror"]
 
 [topics.question-mark-operator]
 name = "? Operator"
 aliases = ["question mark", "try operator", "error propagation", "?"]
 category = "lang"
-tags = ["error-handling"]
 brief = "Propagating errors up the call stack concisely"
-relations = [
-    { kind = "related", target = "result" },
-    { kind = "related", target = "option" },
-    { kind = "related", target = "error-handling" },
-]
+relations = ["result", "option"]
 
 [topics.closures]
 name = "Closures"
 aliases = ["closure", "lambda", "anonymous function", "Fn", "FnMut", "FnOnce"]
 category = "lang"
-tags = ["core-concept"]
 brief = "Anonymous functions that capture their environment"
-relations = [
-    { kind = "related", target = "iterators" },
-    { kind = "related", target = "traits" },
-]
+relations = ["iterators", "traits"]
 
 [topics.iterators]
 name = "Iterators"
 aliases = ["iterator", "Iterator trait", "IntoIterator", "iter", "into_iter"]
 category = "lang"
-tags = ["core-concept"]
 brief = "Lazy sequences with chainable transformation methods"
-relations = [
-    { kind = "related", target = "closures" },
-    { kind = "implements", target = "itertools" },
-]
+relations = ["closures", "itertools", "std-iter"]
 
 [topics.async-await]
 name = "Async/Await"
 aliases = ["async", "await", "async fn", ".await", "asynchronous"]
 category = "lang"
-tags = ["async", "core-concept"]
 brief = "Language support for asynchronous programming"
-relations = [
-    { kind = "related", target = "futures" },
-    { kind = "related", target = "pinning" },
-    { kind = "implements", target = "tokio" },
-]
+relations = ["futures", "pinning", "tokio"]
 
 [topics.futures]
 name = "Futures"
 aliases = ["Future", "future", "Poll", "async runtime"]
 category = "lang"
-tags = ["async"]
 brief = "Values representing asynchronous computations"
-relations = [
-    { kind = "related", target = "async-await" },
-    { kind = "related", target = "pinning" },
-    { kind = "implements", target = "futures-crate" },
-]
+relations = ["async-await", "pinning", "futures-crate"]
 
 [topics.pinning]
 name = "Pinning"
 aliases = ["Pin", "Unpin", "pin", "self-referential"]
 category = "lang"
-tags = ["async", "advanced"]
 brief = "Guaranteeing a value won't move in memory"
-relations = [
-    { kind = "related", target = "async-await" },
-    { kind = "related", target = "futures" },
-]
+relations = ["async-await", "futures"]
 
 [topics.unsafe-rust]
 name = "Unsafe Rust"
 aliases = ["unsafe", "raw pointers", "unsafe block", "unsafe fn"]
 category = "lang"
-tags = ["advanced", "systems"]
 brief = "Opting out of Rust's safety guarantees for low-level control"
-relations = [
-    { kind = "related", target = "ffi" },
-    { kind = "related", target = "raw-pointers" },
-]
+relations = ["raw-pointers", "nomicon"]
 
 [topics.macros]
 name = "Macros"
 aliases = ["macro", "macro_rules", "declarative macros", "macros by example"]
 category = "lang"
-tags = ["metaprogramming"]
 brief = "Code that generates code at compile time"
-relations = [
-    { kind = "related", target = "proc-macros" },
-    { kind = "related", target = "derive" },
-]
+relations = ["proc-macros", "derive"]
 
 [topics.proc-macros]
 name = "Procedural Macros"
 aliases = ["proc macro", "procedural macro", "derive macro", "attribute macro"]
 category = "lang"
-tags = ["metaprogramming", "advanced"]
 brief = "Rust code that manipulates the token stream at compile time"
-relations = [
-    { kind = "related", target = "macros" },
-    { kind = "related", target = "derive" },
-    { kind = "implements", target = "syn" },
-    { kind = "implements", target = "quote" },
-]
+relations = ["macros", "derive", "syn", "quote"]
 
 [topics.derive]
 name = "Derive"
 aliases = ["#[derive]", "derive macro", "auto-derive"]
 category = "lang"
-tags = ["metaprogramming"]
 brief = "Automatically implementing traits for types"
-relations = [
-    { kind = "related", target = "proc-macros" },
-    { kind = "related", target = "traits" },
-]
+relations = ["proc-macros", "traits"]
 
 [topics.modules]
 name = "Modules"
 aliases = ["mod", "module", "visibility", "pub", "use", "crate structure"]
 category = "lang"
-tags = ["organization"]
 brief = "Organizing code into namespaces and controlling visibility"
-relations = [
-    { kind = "related", target = "crates" },
-]
+relations = ["crates"]
 
 [topics.crates]
 name = "Crates"
 aliases = ["crate", "package", "library crate", "binary crate"]
 category = "lang"
-tags = ["organization"]
 brief = "Compilation units and packages in Rust"
-relations = [
-    { kind = "related", target = "modules" },
-    { kind = "related", target = "cargo" },
-]
+relations = ["modules", "cargo-book"]
 
 [topics.copy-trait]
 name = "Copy Trait"
 aliases = ["Copy", "copy semantics", "bitwise copy"]
 category = "lang"
-tags = ["core-concept"]
 brief = "Types that can be duplicated by simple bit copying"
-relations = [
-    { kind = "related", target = "clone-trait" },
-    { kind = "contrast", target = "move-semantics" },
-]
+relations = ["clone-trait", "move-semantics"]
 
 [topics.clone-trait]
 name = "Clone Trait"
 aliases = ["Clone", "clone", "deep copy"]
 category = "lang"
-tags = ["core-concept"]
 brief = "Explicitly duplicating values"
-relations = [
-    { kind = "related", target = "copy-trait" },
-]
+relations = ["copy-trait"]
 
 [topics.send-sync]
 name = "Send and Sync"
 aliases = ["Send", "Sync", "thread safety", "marker traits"]
 category = "lang"
-tags = ["concurrency", "core-concept"]
 brief = "Marker traits for thread-safe types"
-relations = [
-    { kind = "related", target = "concurrency" },
-    { kind = "related", target = "threads" },
-]
+relations = ["std-sync", "std-thread"]
 
 [topics.smart-pointers]
 name = "Smart Pointers"
 aliases = ["Box", "Rc", "Arc", "RefCell", "Cell"]
 category = "lang"
-tags = ["memory"]
 brief = "Types that act like pointers with additional capabilities"
-relations = [
-    { kind = "related", target = "ownership" },
-    { kind = "related", target = "interior-mutability" },
-]
+relations = ["ownership", "interior-mutability"]
 
 [topics.interior-mutability]
 name = "Interior Mutability"
 aliases = ["RefCell", "Cell", "UnsafeCell", "interior mutable"]
 category = "lang"
-tags = ["memory", "advanced"]
 brief = "Mutating data through shared references"
-relations = [
-    { kind = "related", target = "smart-pointers" },
-    { kind = "related", target = "borrowing" },
-]
+relations = ["smart-pointers", "borrowing"]
 
 [topics.raw-pointers]
 name = "Raw Pointers"
 aliases = ["*const T", "*mut T", "pointer", "raw pointer"]
 category = "lang"
-tags = ["unsafe", "systems"]
 brief = "Unmanaged pointers without safety guarantees"
-relations = [
-    { kind = "related", target = "unsafe-rust" },
-    { kind = "related", target = "ffi" },
-]
+relations = ["unsafe-rust", "std-ptr"]

@@ -44,8 +44,9 @@
     // Category weights for ranking.
     const categoryWeights = {
         'crate': 1.5,
-        'domain': 1.2,
-        'pattern': 1.1,
+        'book': 1.3,
+        'std': 1.1,
+        'lang': 1.0,
     };
 
     // Load search index on first focus.
@@ -80,16 +81,11 @@
 
             // Apply category weight.
             const categoryWeight = categoryWeights[entry.category] || 1.0;
-            // Apply depth bonus (direct matches score higher).
-            const depthBonus = entry.depth === 0 ? 1.0 : 0.8;
+            const finalScore = score * categoryWeight;
 
-            const finalScore = score * categoryWeight * depthBonus;
-
-            // Deduplicate by topic_id for direct matches.
-            if (entry.depth === 0) {
-                if (seen.has(entry.topic_id)) continue;
-                seen.add(entry.topic_id);
-            }
+            // Deduplicate by id.
+            if (seen.has(entry.id)) continue;
+            seen.add(entry.id);
 
             results.push({ entry, score: finalScore });
         }
@@ -118,8 +114,8 @@
             groups[cat].push({ entry, score });
         }
 
-        // Render order: crate, domain, then others.
-        const order = ['crate', 'domain', 'lang', 'std', 'pattern', 'culture', 'platform', 'tool', 'error'];
+        // Render order: crate, book, std, lang.
+        const order = ['crate', 'book', 'std', 'lang'];
         const sortedCats = Object.keys(groups).sort((a, b) => {
             const ai = order.indexOf(a);
             const bi = order.indexOf(b);
@@ -131,11 +127,9 @@
             const items = groups[cat];
             html += `<div class="search-category">${cat}</div>`;
             for (const { entry } of items) {
-                const href = entry.crate_path || '#';
-                const viaHtml = entry.via ? `<span class="search-via">${entry.via}</span>` : '';
+                const href = entry.path || '#';
                 html += `<a class="search-result" href="${href}">
                     <span class="search-result-name">${entry.name}</span>
-                    ${viaHtml}
                     <span class="search-result-brief">${entry.brief}</span>
                 </a>`;
             }

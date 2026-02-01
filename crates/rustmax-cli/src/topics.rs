@@ -10,26 +10,19 @@ use std::path::Path;
 /// A search index entry for client-side fuzzy search.
 #[derive(Debug, Clone, Serialize)]
 pub struct SearchEntry {
-    /// Unique identifier (topic_id or "topic_id::crate_id" for via entries).
+    /// Unique identifier.
     pub id: String,
-    /// The topic ID this entry is for.
-    pub topic_id: String,
     /// Display name.
     pub name: String,
     /// Searchable text (name + aliases joined).
     pub searchable: String,
-    /// Category (crate, domain, lang, etc.).
+    /// Category (crate, book, std, lang).
     pub category: String,
     /// Brief description.
     pub brief: String,
-    /// Relation chain display (e.g., "Web Framework -> axum").
+    /// Path for linking (API docs for crates, book path for books).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub via: Option<String>,
-    /// Depth: 0 = direct match, 1 = via implements relation.
-    pub depth: u8,
-    /// Crate path for API docs link (only for crate entries).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub crate_path: Option<String>,
+    pub path: Option<String>,
 }
 
 /// A complete topic index loaded from multiple TOML files.
@@ -53,36 +46,9 @@ pub struct Topic {
     #[serde(default)]
     pub aliases: Vec<String>,
     pub category: String,
-    #[serde(default)]
-    pub tags: Vec<String>,
     pub brief: String,
     #[serde(default)]
-    pub relations: Vec<Relation>,
-}
-
-/// A relation between topics.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Relation {
-    pub kind: RelationKind,
-    pub target: String,
-}
-
-/// The type of relationship between topics.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum RelationKind {
-    /// Loose association, bidirectional "see also".
-    Related,
-    /// Hierarchical: this topic is a subtopic of target.
-    Parent,
-    /// This crate/tool implements that concept.
-    Implements,
-    /// Understanding this requires understanding target.
-    Requires,
-    /// This replaces/deprecates target.
-    Supersedes,
-    /// Often confused with, but different from.
-    Contrast,
+    pub relations: Vec<String>,
 }
 
 /// Intermediate structure for deserializing categories.toml.
@@ -119,7 +85,6 @@ pub struct ValidationStats {
     pub category_count: usize,
     pub relation_count: usize,
     pub alias_count: usize,
-    pub tag_count: usize,
 }
 
 impl TopicIndex {
@@ -176,9 +141,6 @@ impl TopicIndex {
         // Track aliases for uniqueness checking.
         let mut seen_aliases: HashMap<&str, &str> = HashMap::new();
 
-        // Track all tags.
-        let mut all_tags: HashSet<&str> = HashSet::new();
-
         for (id, topic) in &self.topics {
             // Validate topic ID format (kebab-case).
             if !is_valid_id(id) {
@@ -197,20 +159,17 @@ impl TopicIndex {
             }
 
             // Validate relations.
-            for relation in &topic.relations {
+            for target in &topic.relations {
                 // Check target exists.
-                if !topic_ids.contains(relation.target.as_str()) {
+                if !topic_ids.contains(target.as_str()) {
                     result.errors.push(ValidationError {
                         topic_id: id.clone(),
-                        message: format!(
-                            "relation target '{}' does not exist",
-                            relation.target
-                        ),
+                        message: format!("relation target '{}' does not exist", target),
                     });
                 }
 
                 // Check for self-reference.
-                if relation.target == *id {
+                if target == id {
                     result.errors.push(ValidationError {
                         topic_id: id.clone(),
                         message: "topic cannot relate to itself".to_string(),
@@ -237,13 +196,6 @@ impl TopicIndex {
                 result.stats.alias_count += 1;
             }
 
-            // Record aliases (we can't insert &alias_lower due to lifetime, so skip dedup tracking for now).
-
-            // Collect tags.
-            for tag in &topic.tags {
-                all_tags.insert(tag.as_str());
-            }
-
             // Validate brief is not empty.
             if topic.brief.is_empty() {
                 result.errors.push(ValidationError {
@@ -264,7 +216,6 @@ impl TopicIndex {
         // Update stats.
         result.stats.topic_count = self.topics.len();
         result.stats.category_count = self.categories.len();
-        result.stats.tag_count = all_tags.len();
 
         result
     }
@@ -307,7 +258,6 @@ impl ValidationResult {
         println!("  Categories: {}", self.stats.category_count);
         println!("  Relations:  {}", self.stats.relation_count);
         println!("  Aliases:    {}", self.stats.alias_count);
-        println!("  Tags:       {}", self.stats.tag_count);
         println!();
 
         if self.errors.is_empty() && self.warnings.is_empty() {
@@ -355,16 +305,6 @@ impl TopicIndex {
             topics.sort_by_key(|(id, _)| *id);
         }
 
-        // Collect tags with counts.
-        let mut tag_counts: HashMap<&str, usize> = HashMap::new();
-        for topic in self.topics.values() {
-            for tag in &topic.tags {
-                *tag_counts.entry(tag.as_str()).or_default() += 1;
-            }
-        }
-        let mut tags: Vec<_> = tag_counts.into_iter().collect();
-        tags.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(b.0)));
-
         // Find hub topics (most relations).
         let mut relation_counts: Vec<(&str, usize)> = self
             .topics
@@ -378,7 +318,7 @@ impl TopicIndex {
         let referenced: HashSet<&str> = self
             .topics
             .values()
-            .flat_map(|t| t.relations.iter().map(|r| r.target.as_str()))
+            .flat_map(|t| t.relations.iter().map(|r| r.as_str()))
             .collect();
         let orphans: Vec<&str> = self
             .topics
@@ -406,22 +346,6 @@ impl TopicIndex {
                         println!("    - {} ({})", topic.name, id);
                     }
                 }
-            }
-        }
-        println!();
-
-        // Tags section.
-        println!("Tags ({} unique):", tags.len());
-        if verbose {
-            for (tag, count) in &tags {
-                println!("  {} ({})", tag, count);
-            }
-        } else {
-            for (tag, count) in tags.iter().take(10) {
-                println!("  {} ({})", tag, count);
-            }
-            if tags.len() > 10 {
-                println!("  ... and {} more", tags.len() - 10);
             }
         }
         println!();
@@ -460,25 +384,11 @@ impl TopicIndex {
         println!("  {} categories", self.categories.len());
         println!("  {} relations", total_relations);
         println!("  {} aliases", total_aliases);
-        println!("  {} unique tags", tags.len());
     }
 
     /// Export the topic index as a search index for client-side fuzzy search.
     pub fn export_search_index(&self) -> Vec<SearchEntry> {
         let mut entries = Vec::new();
-
-        // Build reverse lookup: domain_id -> crates that implement it.
-        let mut implementers: HashMap<&str, Vec<&str>> = HashMap::new();
-        for (id, topic) in &self.topics {
-            for relation in &topic.relations {
-                if relation.kind == RelationKind::Implements {
-                    implementers
-                        .entry(relation.target.as_str())
-                        .or_default()
-                        .push(id.as_str());
-                }
-            }
-        }
 
         for (id, topic) in &self.topics {
             // Build searchable text from name + aliases.
@@ -487,59 +397,34 @@ impl TopicIndex {
                 .collect::<Vec<_>>()
                 .join(" ");
 
-            // Crate path for API docs link.
-            let crate_path = if topic.category == "crate" {
-                // Convert topic id to crate name (e.g., "serde-json" -> "serde_json").
-                let crate_name = id.replace('-', "_");
-                Some(format!("/api/rustmax/{}/index.html", crate_name))
-            } else {
-                None
+            // Generate path based on category.
+            let path = match topic.category.as_str() {
+                "crate" => {
+                    // Convert topic id to crate name (e.g., "serde-json" -> "serde_json").
+                    let crate_name = id.replace('-', "_");
+                    Some(format!("/api/rustmax/{}/index.html", crate_name))
+                }
+                "book" => {
+                    // Book path (e.g., "trpl" -> "/books/trpl/").
+                    Some(format!("/books/{}/", id))
+                }
+                _ => None,
             };
 
-            // Direct entry (depth 0).
             entries.push(SearchEntry {
                 id: id.clone(),
-                topic_id: id.clone(),
                 name: topic.name.clone(),
-                searchable: searchable.clone(),
+                searchable,
                 category: topic.category.clone(),
                 brief: topic.brief.clone(),
-                via: None,
-                depth: 0,
-                crate_path: crate_path.clone(),
+                path,
             });
-
-            // For domains, create additional entries for crates that implement them.
-            // This allows searching for "web server" to surface axum.
-            if topic.category == "domain" {
-                if let Some(crates) = implementers.get(id.as_str()) {
-                    for crate_id in crates {
-                        if let Some(crate_topic) = self.topics.get(*crate_id) {
-                            let crate_name = crate_id.replace('-', "_");
-                            let via_display = format!("{} -> {}", topic.name, crate_topic.name);
-
-                            entries.push(SearchEntry {
-                                id: format!("{}::{}", id, crate_id),
-                                topic_id: crate_id.to_string(),
-                                name: crate_topic.name.clone(),
-                                searchable: searchable.clone(),
-                                category: "crate".to_string(),
-                                brief: crate_topic.brief.clone(),
-                                via: Some(via_display),
-                                depth: 1,
-                                crate_path: Some(format!("/api/rustmax/{}/index.html", crate_name)),
-                            });
-                        }
-                    }
-                }
-            }
         }
 
-        // Sort entries: direct matches first, then by category, then by name.
+        // Sort entries by category, then by name.
         entries.sort_by(|a, b| {
-            a.depth
-                .cmp(&b.depth)
-                .then_with(|| a.category.cmp(&b.category))
+            a.category
+                .cmp(&b.category)
                 .then_with(|| a.name.cmp(&b.name))
         });
 
