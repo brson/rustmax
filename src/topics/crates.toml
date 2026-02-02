@@ -4,13 +4,13 @@
 
 [topics.anyhow]
 name = "anyhow"
-aliases = ["error handling crate", "anyhow::Result", "anyhow::Error"]
+aliases = ["error handling crate", "anyhow::Result", "anyhow::Error", "bail", "ensure", "context", "with_context"]
 category = "crate"
 brief = "Flexible error handling with context and backtraces"
 
 [topics.thiserror]
 name = "thiserror"
-aliases = ["custom errors", "error derive"]
+aliases = ["custom errors", "error derive", "#[error]", "derive Error", "error enum"]
 category = "crate"
 brief = "Derive macro for custom error types"
 
@@ -18,19 +18,19 @@ brief = "Derive macro for custom error types"
 
 [topics.serde]
 name = "serde"
-aliases = ["serialization framework", "serialize", "deserialize", "Serialize", "Deserialize"]
+aliases = ["serialization framework", "serialize", "deserialize", "Serialize", "Deserialize", "serde_derive", "#[derive(Serialize)]", "#[derive(Deserialize)]", "#[serde]"]
 category = "crate"
 brief = "Framework for serializing and deserializing Rust data structures"
 
 [topics.serde-json]
 name = "serde_json"
-aliases = ["json crate", "JSON parsing", "json serialization"]
+aliases = ["json crate", "JSON parsing", "json serialization", "json!", "Value", "from_str json", "to_string json"]
 category = "crate"
 brief = "JSON serialization and deserialization with serde"
 
 [topics.toml-crate]
 name = "toml"
-aliases = ["toml crate", "TOML parsing"]
+aliases = ["toml crate", "TOML parsing", "config file", "configuration file", "Cargo.toml parsing"]
 category = "crate"
 brief = "TOML serialization and deserialization"
 
@@ -44,37 +44,37 @@ brief = "JSON5 format support"
 
 [topics.tokio]
 name = "tokio"
-aliases = ["tokio runtime", "async runtime", "tokio::spawn"]
+aliases = ["tokio runtime", "async runtime", "tokio::spawn", "#[tokio::main]", "async await", "async main", "select!", "tokio::select", "async executor"]
 category = "crate"
 brief = "Asynchronous runtime for Rust"
 
 [topics.futures-crate]
 name = "futures"
-aliases = ["futures crate", "futures-rs", "StreamExt", "FutureExt"]
+aliases = ["futures crate", "futures-rs", "StreamExt", "FutureExt", "async stream", "join!", "try_join!", "Stream", "Sink"]
 category = "crate"
 brief = "Abstractions for asynchronous programming"
 
 [topics.reqwest]
 name = "reqwest"
-aliases = ["http client", "HTTP requests"]
+aliases = ["http client", "HTTP requests", "GET request", "POST request", "fetch", "REST client", "API client", "download", "http get"]
 category = "crate"
 brief = "Ergonomic HTTP client for Rust"
 
 [topics.hyper]
 name = "hyper"
-aliases = ["http library", "HTTP implementation"]
+aliases = ["http library", "HTTP implementation", "http server", "http1", "http2"]
 category = "crate"
 brief = "Low-level HTTP implementation"
 
 [topics.axum]
 name = "axum"
-aliases = ["web framework", "axum framework"]
+aliases = ["web framework", "axum framework", "router", "handler", "REST API", "web server", "API server", "routing", "extractor"]
 category = "crate"
 brief = "Ergonomic web framework built on tokio and hyper"
 
 [topics.tower]
 name = "tower"
-aliases = ["tower service", "middleware", "Service trait"]
+aliases = ["tower service", "middleware", "Service trait", "layer", "service layer", "tower-http"]
 category = "crate"
 brief = "Modular components for building network clients and servers"
 
@@ -106,31 +106,31 @@ brief = "Low-level socket programming"
 
 [topics.clap]
 name = "clap"
-aliases = ["argument parsing", "CLI parser", "command line"]
+aliases = ["argument parsing", "CLI parser", "command line", "Args", "Parser", "#[derive(Parser)]", "#[command]", "subcommand", "cli arguments", "argparse"]
 category = "crate"
 brief = "Command line argument parser"
 
 [topics.termcolor]
 name = "termcolor"
-aliases = ["terminal colors", "colored terminal", "ANSI colors"]
+aliases = ["terminal colors", "colored terminal", "ANSI colors", "tui", "terminal ui", "terminal output", "console colors"]
 category = "crate"
 brief = "Cross-platform terminal colors"
 
 [topics.indicatif]
 name = "indicatif"
-aliases = ["progress bar", "spinner", "CLI progress"]
+aliases = ["progress bar", "spinner", "CLI progress", "loading indicator", "ProgressBar", "MultiProgress"]
 category = "crate"
 brief = "Progress bars and spinners for CLI"
 
 [topics.rustyline]
 name = "rustyline"
-aliases = ["readline", "line editor", "interactive input"]
+aliases = ["readline", "line editor", "interactive input", "REPL", "prompt", "command history", "tab completion"]
 category = "crate"
 brief = "Readline-style line editor"
 
 [topics.ctrlc]
 name = "ctrlc"
-aliases = ["Ctrl-C handler", "signal handling", "SIGINT"]
+aliases = ["Ctrl-C handler", "signal handling", "SIGINT", "interrupt handler", "graceful shutdown", "SIGTERM"]
 category = "crate"
 brief = "Cross-platform Ctrl-C handling"
 
@@ -138,13 +138,13 @@ brief = "Cross-platform Ctrl-C handling"
 
 [topics.rayon]
 name = "rayon"
-aliases = ["parallel iterators", "data parallelism", "par_iter"]
+aliases = ["parallel iterators", "data parallelism", "par_iter", "parallel for", "multithreaded iteration", "into_par_iter", "parallel map"]
 category = "crate"
 brief = "Data parallelism library with parallel iterators"
 
 [topics.crossbeam]
 name = "crossbeam"
-aliases = ["concurrent data structures", "crossbeam channels"]
+aliases = ["concurrent data structures", "crossbeam channels", "lock-free", "scoped threads", "crossbeam-channel", "unbounded channel", "bounded channel"]
 category = "crate"
 brief = "Tools for concurrent programming"
 
@@ -152,7 +152,7 @@ brief = "Tools for concurrent programming"
 
 [topics.rand]
 name = "rand"
-aliases = ["random numbers", "RNG", "random crate"]
+aliases = ["random numbers", "RNG", "random crate", "thread_rng", "Rng trait", "random number generator", "gen_range", "shuffle"]
 category = "crate"
 brief = "Random number generation"
 
@@ -184,13 +184,13 @@ brief = "SHA-2 family of hash functions"
 
 [topics.chrono]
 name = "chrono"
-aliases = ["date time", "chrono crate"]
+aliases = ["date time", "chrono crate", "DateTime", "NaiveDate", "NaiveDateTime", "timezone", "Utc", "Local", "parse date", "format date", "timestamp"]
 category = "crate"
 brief = "Date and time library (legacy)"
 
 [topics.jiff]
 name = "jiff"
-aliases = ["date time", "jiff crate", "temporal"]
+aliases = ["date time", "jiff crate", "temporal", "Zoned", "civil date", "time zone", "duration", "datetime"]
 category = "crate"
 brief = "Modern date and time library"
 
@@ -198,19 +198,19 @@ brief = "Modern date and time library"
 
 [topics.regex-crate]
 name = "regex"
-aliases = ["regular expressions", "regex crate", "pattern matching"]
+aliases = ["regular expressions", "regex crate", "pattern matching", "Regex", "captures", "find", "replace", "is_match", "regexp"]
 category = "crate"
 brief = "Regular expression library"
 
 [topics.nom]
 name = "nom"
-aliases = ["parser combinator", "nom parser"]
+aliases = ["parser combinator", "nom parser", "parsing", "binary parser", "text parser", "IResult"]
 category = "crate"
 brief = "Parser combinator library"
 
 [topics.comrak]
 name = "comrak"
-aliases = ["markdown parser", "CommonMark", "GFM"]
+aliases = ["markdown parser", "CommonMark", "GFM", "markdown", "md parser", "markdown to html"]
 category = "crate"
 brief = "CommonMark and GitHub Flavored Markdown parser"
 
@@ -228,7 +228,7 @@ brief = "Unicode grapheme and word segmentation"
 
 [topics.tera]
 name = "tera"
-aliases = ["template engine", "Jinja2", "templating"]
+aliases = ["template engine", "Jinja2", "templating", "html template", "web template", "render template", "template rendering"]
 category = "crate"
 brief = "Jinja2-inspired template engine"
 
@@ -248,13 +248,13 @@ brief = "Hexadecimal encoding and decoding"
 
 [topics.flate2]
 name = "flate2"
-aliases = ["gzip", "deflate", "zlib", "compression"]
+aliases = ["gzip", "deflate", "zlib", "compression", "GzEncoder", "GzDecoder", "compress", "decompress", "gz"]
 category = "crate"
 brief = "Gzip/deflate compression and decompression"
 
 [topics.zip-crate]
 name = "zip"
-aliases = ["ZIP archive", "zip files"]
+aliases = ["ZIP archive", "zip files", "unzip", "extract zip", "ZipArchive", "ZipWriter"]
 category = "crate"
 brief = "ZIP archive reading and writing"
 
@@ -262,31 +262,31 @@ brief = "ZIP archive reading and writing"
 
 [topics.walkdir]
 name = "walkdir"
-aliases = ["directory traversal", "recursive directory"]
+aliases = ["directory traversal", "recursive directory", "find files", "walk directory", "iterate files", "directory iterator"]
 category = "crate"
 brief = "Recursive directory traversal"
 
 [topics.ignore]
 name = "ignore"
-aliases = ["gitignore", "directory walker"]
+aliases = ["gitignore", "directory walker", "file filter", "ignore patterns", "WalkBuilder"]
 category = "crate"
 brief = "Directory walker respecting gitignore rules"
 
 [topics.glob-crate]
 name = "glob"
-aliases = ["glob patterns", "file globbing"]
+aliases = ["glob patterns", "file globbing", "wildcard", "file pattern", "*.rs", "pattern matching files"]
 category = "crate"
 brief = "Unix shell-style pattern matching"
 
 [topics.notify-crate]
 name = "notify"
-aliases = ["file watcher", "filesystem events", "inotify"]
+aliases = ["file watcher", "filesystem events", "inotify", "watch files", "file change", "fswatch", "file monitor"]
 category = "crate"
 brief = "Cross-platform filesystem notification library"
 
 [topics.tempfile]
 name = "tempfile"
-aliases = ["temporary files", "temp directory"]
+aliases = ["temporary files", "temp directory", "NamedTempFile", "TempDir", "tmp file", "temp file"]
 category = "crate"
 brief = "Temporary file and directory management"
 
@@ -294,13 +294,13 @@ brief = "Temporary file and directory management"
 
 [topics.log]
 name = "log"
-aliases = ["logging facade", "log crate"]
+aliases = ["logging facade", "log crate", "info!", "debug!", "warn!", "error!", "trace!", "logging macros", "log level"]
 category = "crate"
 brief = "Lightweight logging facade"
 
 [topics.env-logger]
 name = "env_logger"
-aliases = ["environment logger", "RUST_LOG"]
+aliases = ["environment logger", "RUST_LOG", "init logger", "env_logger::init", "Builder"]
 category = "crate"
 brief = "Logger configured via environment variables"
 
@@ -308,7 +308,7 @@ brief = "Logger configured via environment variables"
 
 [topics.proptest]
 name = "proptest"
-aliases = ["property testing", "quickcheck alternative"]
+aliases = ["property testing", "quickcheck alternative", "fuzzing", "arbitrary", "shrinking", "proptest!", "prop_compose"]
 category = "crate"
 brief = "Property-based testing framework"
 
@@ -322,25 +322,25 @@ brief = "Fast non-cryptographic hash function"
 
 [topics.bytes]
 name = "bytes"
-aliases = ["byte buffers", "Bytes", "BytesMut"]
+aliases = ["byte buffers", "Bytes", "BytesMut", "buffer", "zero-copy", "Buf", "BufMut"]
 category = "crate"
 brief = "Efficient byte buffer types"
 
 [topics.bitflags]
 name = "bitflags"
-aliases = ["bit flags", "bitfield"]
+aliases = ["bit flags", "bitfield", "flags", "bitmask", "bitflags!"]
 category = "crate"
 brief = "Macro for bit flag types"
 
 [topics.itertools]
 name = "itertools"
-aliases = ["iterator extensions", "extra iterators"]
+aliases = ["iterator extensions", "extra iterators", "combinations", "permutations", "group_by", "chunks", "cartesian_product", "Itertools trait"]
 category = "crate"
 brief = "Extra iterator methods and adaptors"
 
 [topics.num-bigint]
 name = "num-bigint"
-aliases = ["big integers", "arbitrary precision"]
+aliases = ["big integers", "arbitrary precision", "BigInt", "BigUint", "large numbers", "bignum"]
 category = "crate"
 brief = "Arbitrary-precision integers"
 
@@ -360,13 +360,13 @@ brief = "Semantic version parsing and comparison"
 
 [topics.xshell]
 name = "xshell"
-aliases = ["shell commands", "scripting", "process execution"]
+aliases = ["shell commands", "scripting", "process execution", "cmd!", "subprocess", "run command", "shell script"]
 category = "crate"
 brief = "Quick shell scripting in Rust"
 
 [topics.libc-crate]
 name = "libc"
-aliases = ["libc bindings", "C standard library"]
+aliases = ["libc bindings", "C standard library", "syscall", "system calls", "posix", "c_char", "c_int"]
 category = "crate"
 brief = "Raw FFI bindings to platform C libraries"
 
@@ -374,13 +374,13 @@ brief = "Raw FFI bindings to platform C libraries"
 
 [topics.syn]
 name = "syn"
-aliases = ["syntax parsing", "AST", "proc macro parsing"]
+aliases = ["syntax parsing", "AST", "proc macro parsing", "parse_macro_input", "DeriveInput", "procedural macro", "TokenStream parsing"]
 category = "crate"
 brief = "Parser for Rust source code"
 
 [topics.quote]
 name = "quote"
-aliases = ["quasi-quoting", "code generation"]
+aliases = ["quasi-quoting", "code generation", "quote!", "TokenStream", "macro codegen"]
 category = "crate"
 brief = "Quasi-quoting for generating Rust code"
 
@@ -392,7 +392,7 @@ brief = "Wrapper around proc_macro for better ergonomics"
 
 [topics.derive-more]
 name = "derive_more"
-aliases = ["derive macros", "extra derives"]
+aliases = ["derive macros", "extra derives", "From derive", "Display derive", "Into derive", "Deref derive", "derive From"]
 category = "crate"
 brief = "Additional derive macros"
 
@@ -406,19 +406,19 @@ brief = "Ergonomic conditional compilation"
 
 [topics.bindgen-crate]
 name = "bindgen"
-aliases = ["C bindings generator", "FFI generator"]
+aliases = ["C bindings generator", "FFI generator", "header file", "C header", "generate bindings", "cbindgen"]
 category = "crate"
 brief = "Generate Rust bindings from C headers"
 
 [topics.cc-crate]
 name = "cc"
-aliases = ["C compiler", "build C code"]
+aliases = ["C compiler", "build C code", "build.rs", "build script", "compile C", "native code"]
 category = "crate"
 brief = "Compile C/C++ code in build scripts"
 
 [topics.cxx-crate]
 name = "cxx"
-aliases = ["C++ FFI", "C++ interop"]
+aliases = ["C++ FFI", "C++ interop", "cpp", "cxxbridge", "C++ bindings"]
 category = "crate"
 brief = "Safe C++ interop"
 
@@ -426,6 +426,6 @@ brief = "Safe C++ interop"
 
 [topics.image-crate]
 name = "image"
-aliases = ["image processing", "PNG", "JPEG", "image formats"]
+aliases = ["image processing", "PNG", "JPEG", "image formats", "DynamicImage", "ImageBuffer", "GIF", "resize image", "image manipulation"]
 category = "crate"
 brief = "Image encoding, decoding, and manipulation"

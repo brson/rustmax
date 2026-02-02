@@ -2,37 +2,37 @@
 
 [topics.trpl]
 name = "The Rust Programming Language"
-aliases = ["TRPL", "The Book", "rust book", "rust programming book"]
+aliases = ["TRPL", "The Book", "rust book", "rust programming book", "learn rust", "rust tutorial", "beginner rust", "getting started"]
 category = "book"
 brief = "The official Rust book for learning the language"
 
 [topics.rust-by-example]
 name = "Rust by Example"
-aliases = ["RBE", "examples", "learn by example"]
+aliases = ["RBE", "examples", "learn by example", "rust examples", "code examples", "example code"]
 category = "book"
 brief = "Learn Rust through annotated example programs"
 
 [topics.reference]
 name = "The Rust Reference"
-aliases = ["language reference", "rust reference"]
+aliases = ["language reference", "rust reference", "language spec", "syntax reference", "grammar"]
 category = "book"
 brief = "Detailed reference for Rust language constructs"
 
 [topics.nomicon]
 name = "The Rustonomicon"
-aliases = ["nomicon", "unsafe book", "dark arts"]
+aliases = ["nomicon", "unsafe book", "dark arts", "unsafe rust", "raw pointers", "undefined behavior", "UB"]
 category = "book"
 brief = "The dark arts of unsafe Rust programming"
 
 [topics.cargo-book]
 name = "The Cargo Book"
-aliases = ["cargo documentation", "cargo guide"]
+aliases = ["cargo documentation", "cargo guide", "Cargo.toml", "dependencies", "workspace", "package manager", "cargo build"]
 category = "book"
 brief = "Guide to Cargo, Rust's package manager and build tool"
 
 [topics.rustdoc-book]
 name = "The rustdoc Book"
-aliases = ["rustdoc documentation", "documentation guide"]
+aliases = ["rustdoc documentation", "documentation guide", "doc comments", "///", "#[doc]", "cargo doc"]
 category = "book"
 brief = "Guide to writing and generating Rust documentation"
 
@@ -44,19 +44,19 @@ brief = "Guide to Rust edition differences and migration"
 
 [topics.api-guidelines]
 name = "Rust API Guidelines"
-aliases = ["API guidelines", "library guidelines", "API design"]
+aliases = ["API guidelines", "library guidelines", "API design", "naming conventions", "rust style", "best practices", "idiomatic rust"]
 category = "book"
 brief = "Best practices for Rust library API design"
 
 [topics.rust-cookbook]
 name = "Rust Cookbook"
-aliases = ["cookbook", "recipes", "examples"]
+aliases = ["cookbook", "recipes", "examples", "how to", "howto", "common tasks", "practical rust"]
 category = "book"
 brief = "Collection of practical Rust programming recipes"
 
 [topics.embedded-book]
 name = "The Embedded Rust Book"
-aliases = ["embedded book", "embedded rust", "no_std"]
+aliases = ["embedded book", "embedded rust", "no_std", "microcontroller", "bare metal", "ARM", "embedded systems", "MCU"]
 category = "book"
 brief = "Guide to embedded systems programming in Rust"
 

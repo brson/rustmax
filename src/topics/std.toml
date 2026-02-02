@@ -2,43 +2,43 @@
 
 [topics.std-collections]
 name = "std::collections"
-aliases = ["collections module", "data structures", "HashMap", "BTreeMap", "VecDeque"]
+aliases = ["collections module", "data structures", "HashMap", "BTreeMap", "VecDeque", "HashSet", "BTreeSet", "LinkedList", "BinaryHeap", "Vec"]
 category = "std"
 brief = "Collection types like HashMap, BTreeMap, VecDeque, and more"
 
 [topics.std-io]
 name = "std::io"
-aliases = ["io module", "Read trait", "Write trait", "BufReader", "BufWriter"]
+aliases = ["io module", "Read trait", "Write trait", "BufReader", "BufWriter", "stdin", "stdout", "stderr", "io::Result", "io::Error"]
 category = "std"
 brief = "Traits and types for input/output operations"
 
 [topics.std-fs]
 name = "std::fs"
-aliases = ["fs module", "File", "read_to_string", "write", "metadata"]
+aliases = ["fs module", "File", "read_to_string", "write", "metadata", "read file", "write file", "create file", "open file", "copy file", "remove_file"]
 category = "std"
 brief = "Filesystem operations like reading, writing, and file metadata"
 
 [topics.std-path]
 name = "std::path"
-aliases = ["path module", "Path", "PathBuf", "file paths"]
+aliases = ["path module", "Path", "PathBuf", "file paths", "join path", "extension", "file_name", "parent directory"]
 category = "std"
 brief = "Cross-platform path manipulation"
 
 [topics.std-net]
 name = "std::net"
-aliases = ["net module", "TcpStream", "TcpListener", "UdpSocket", "IpAddr"]
+aliases = ["net module", "TcpStream", "TcpListener", "UdpSocket", "IpAddr", "network", "socket", "TCP", "UDP", "SocketAddr"]
 category = "std"
 brief = "TCP/UDP networking primitives"
 
 [topics.std-sync]
 name = "std::sync"
-aliases = ["sync module", "Mutex", "RwLock", "Arc", "Barrier", "Condvar"]
+aliases = ["sync module", "Mutex", "RwLock", "Arc", "Barrier", "Condvar", "lock", "mutual exclusion", "synchronization", "Once", "OnceLock"]
 category = "std"
 brief = "Synchronization primitives for concurrent programming"
 
 [topics.std-sync-atomic]
 name = "std::sync::atomic"
-aliases = ["atomic module", "AtomicBool", "AtomicUsize", "Ordering", "memory ordering"]
+aliases = ["atomic module", "AtomicBool", "AtomicUsize", "Ordering", "memory ordering", "atomic operations", "fence", "compare_exchange", "lock-free", "AtomicPtr"]
 category = "std"
 brief = "Atomic types for lock-free concurrent programming"
 
@@ -50,25 +50,25 @@ brief = "Multi-producer single-consumer channels"
 
 [topics.std-thread]
 name = "std::thread"
-aliases = ["thread module", "spawn", "JoinHandle", "thread::sleep", "thread_local"]
+aliases = ["thread module", "spawn", "JoinHandle", "thread::sleep", "thread_local", "threading", "threads", "multithreading", "concurrent", "spawn thread"]
 category = "std"
 brief = "Native thread creation and management"
 
 [topics.std-process]
 name = "std::process"
-aliases = ["process module", "Command", "Child", "exit", "spawn process"]
+aliases = ["process module", "Command", "Child", "exit", "spawn process", "execute", "subprocess", "run program", "Stdio", "Output"]
 category = "std"
 brief = "Running and managing external processes"
 
 [topics.std-env]
 name = "std::env"
-aliases = ["env module", "var", "args", "current_dir", "environment variables"]
+aliases = ["env module", "var", "args", "current_dir", "environment variables", "env var", "getenv", "PATH", "set_var"]
 category = "std"
 brief = "Environment variables and process arguments"
 
 [topics.std-mem]
 name = "std::mem"
-aliases = ["mem module", "size_of", "align_of", "swap", "take", "replace", "transmute"]
+aliases = ["mem module", "size_of", "align_of", "swap", "take", "replace", "transmute", "memory", "drop", "forget", "ManuallyDrop", "MaybeUninit"]
 category = "std"
 brief = "Memory manipulation utilities"
 
@@ -80,25 +80,25 @@ brief = "Raw pointer operations"
 
 [topics.std-cell]
 name = "std::cell"
-aliases = ["cell module", "Cell", "RefCell", "UnsafeCell"]
+aliases = ["cell module", "Cell", "RefCell", "UnsafeCell", "interior mutability", "borrow_mut", "OnceCell", "LazyCell"]
 category = "std"
 brief = "Types providing interior mutability"
 
 [topics.std-rc]
 name = "std::rc"
-aliases = ["rc module", "Rc", "Weak", "reference counting"]
+aliases = ["rc module", "Rc", "Weak", "reference counting", "shared ownership", "reference count", "Rc::clone"]
 category = "std"
 brief = "Single-threaded reference counting"
 
 [topics.std-fmt]
 name = "std::fmt"
-aliases = ["fmt module", "Display", "Debug", "format!", "write!", "Formatter"]
+aliases = ["fmt module", "Display", "Debug", "format!", "write!", "Formatter", "formatting", "print", "println", "{:?}", "{:#?}"]
 category = "std"
 brief = "Formatting and display traits"
 
 [topics.std-error]
 name = "std::error"
-aliases = ["error module", "Error trait", "source", "error chain"]
+aliases = ["error module", "Error trait", "source", "error chain", "error handling", "Result", "dyn Error", "Box<dyn Error>"]
 category = "std"
 brief = "The Error trait for error types"
 
@@ -110,7 +110,7 @@ brief = "Time measurement and durations"
 
 [topics.std-future]
 name = "std::future"
-aliases = ["future module", "Future trait", "poll"]
+aliases = ["future module", "Future trait", "poll", "async", "await", "async fn", "IntoFuture"]
 category = "std"
 brief = "The Future trait for asynchronous computation"
 
@@ -122,25 +122,25 @@ brief = "Types for building async executors"
 
 [topics.std-pin]
 name = "std::pin"
-aliases = ["pin module", "Pin", "pin!"]
+aliases = ["pin module", "Pin", "pin!", "self-referential", "Unpin", "pin_mut!"]
 category = "std"
 brief = "Pinning types in memory"
 
 [topics.std-any]
 name = "std::any"
-aliases = ["any module", "Any trait", "TypeId", "type erasure", "downcast"]
+aliases = ["any module", "Any trait", "TypeId", "type erasure", "downcast", "dynamic typing", "runtime type", "downcast_ref"]
 category = "std"
 brief = "Runtime type identification and reflection"
 
 [topics.std-marker]
 name = "std::marker"
-aliases = ["marker module", "PhantomData", "Send", "Sync", "Copy", "Sized"]
+aliases = ["marker module", "PhantomData", "Send", "Sync", "Copy", "Sized", "auto traits", "thread safety", "Unpin"]
 category = "std"
 brief = "Marker traits and phantom types"
 
 [topics.std-ops]
 name = "std::ops"
-aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading"]
+aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading", "operators", "FnOnce", "FnMut", "Range", "Mul", "Div"]
 category = "std"
 brief = "Overloadable operators and traits"
 
@@ -164,19 +164,19 @@ brief = "Type conversion traits"
 
 [topics.std-iter]
 name = "std::iter"
-aliases = ["iter module", "Iterator trait", "IntoIterator", "FromIterator", "iterator adapters"]
+aliases = ["iter module", "Iterator trait", "IntoIterator", "FromIterator", "iterator adapters", "map", "filter", "collect", "for loop", "fold", "iter()"]
 category = "std"
 brief = "Iterator trait and combinators"
 
 [topics.std-ffi]
 name = "std::ffi"
-aliases = ["ffi module", "CString", "CStr", "OsString", "OsStr"]
+aliases = ["ffi module", "CString", "CStr", "OsString", "OsStr", "C interop", "foreign function", "c_char", "extern"]
 category = "std"
 brief = "Foreign function interface utilities"
 
 [topics.std-alloc]
 name = "std::alloc"
-aliases = ["alloc module", "GlobalAlloc", "allocator", "Layout"]
+aliases = ["alloc module", "GlobalAlloc", "allocator", "Layout", "heap", "allocation", "Box", "alloc_zeroed"]
 category = "std"
 brief = "Memory allocation APIs"
 
