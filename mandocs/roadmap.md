@@ -5,13 +5,16 @@
 
 ## In progress
 
-- search
+- cli search
+- search coverage
 
 
 
 
 ## On deck
 
+- simplify news banner
+- crate docs reorg
 - crate examples
 - rmxbook compatibility
 - library extension
