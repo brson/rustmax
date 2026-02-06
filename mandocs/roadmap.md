@@ -13,7 +13,6 @@
 
 ## On deck
 
-- simplify news banner
 - crate docs reorg
 - crate examples
 - rmxbook compatibility
