@@ -298,11 +298,13 @@ impl TopicIndex {
         let mut entries = Vec::new();
 
         for (id, topic) in &self.topics {
-            // Build searchable text from name + aliases.
+            // Build searchable text from name + aliases, pipe-separated.
+            // The pipe delimiter preserves multi-word alias boundaries
+            // so the search algorithm can match each alias individually.
             let searchable = std::iter::once(topic.name.as_str())
                 .chain(topic.aliases.iter().map(|s| s.as_str()))
                 .collect::<Vec<_>>()
-                .join(" ");
+                .join("|");
 
             // Generate path based on category (relative, no leading slash).
             let path = match topic.category.as_str() {

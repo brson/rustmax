@@ -13,53 +13,71 @@ var MATCH_SUBSTRING = 'substring';
 
 // Check match type for a query against a target string.
 // Returns { type, score } or null if no match.
+// Substring matches require a word boundary: the match position must
+// be at the start of the target or preceded by a non-alphanumeric character.
+// This prevents false positives like "time" matching inside "runtime".
 function getMatch(query, target) {
     var q = query.toLowerCase();
     var t = target.toLowerCase();
 
     if (t === q) return { type: MATCH_EXACT, score: 1.0 };
     if (t.startsWith(q)) return { type: MATCH_PREFIX, score: 0.9 };
-    if (t.includes(q)) return { type: MATCH_SUBSTRING, score: 0.6 };
+
+    // Word-boundary substring match.
+    var pos = 0;
+    while (pos < t.length) {
+        var idx = t.indexOf(q, pos);
+        if (idx === -1) break;
+        // Accept if at start of string or preceded by a non-alphanumeric char.
+        if (idx === 0 || !/[a-z0-9]/.test(t[idx - 1])) {
+            return { type: MATCH_SUBSTRING, score: 0.6 };
+        }
+        pos = idx + 1;
+    }
 
     return null;
 }
 
 // Find best match for query against an entry.
 // Returns { score, matchedText, matchType } or null.
+//
+// Aliases in the searchable field are pipe-separated:
+//   "name|alias one|alias two|..."
+// Each alias is matched individually so multi-word aliases work correctly
+// and cross-alias false positives are eliminated.
 function findMatch(query, entry) {
-    var name = entry.name;
-    var searchable = entry.searchable;
+    var parts = entry.searchable.split('|');
+    var name = parts[0];
 
-    // Try matching name first.
+    var bestScore = 0;
+    var bestText = null;
+    var bestType = null;
+
+    // Try matching name.
     var nameMatch = getMatch(query, name);
-    if (nameMatch && nameMatch.score >= 0.6) {
-        return { score: nameMatch.score, matchedText: null, matchType: nameMatch.type };
+    if (nameMatch) {
+        bestScore = nameMatch.score;
+        bestType = nameMatch.type;
+        // matchedText stays null for name matches since the name is already displayed.
     }
 
-    // Try matching the full searchable text.
-    var fullMatch = getMatch(query, searchable);
-    if (!fullMatch) return null;
-
-    // Find which alias matched (if not the name).
-    var aliasText = searchable.slice(name.length).trim();
-    if (aliasText) {
-        var aliases = aliasText.split(/\s+/);
-        var bestAlias = null;
-        var bestAliasScore = 0;
-        for (var i = 0; i < aliases.length; i++) {
-            var m = getMatch(query, aliases[i]);
-            if (m && m.score > bestAliasScore) {
-                bestAliasScore = m.score;
-                bestAlias = aliases[i];
-            }
-        }
-        if (bestAlias && bestAliasScore >= fullMatch.score * 0.8) {
-            return { score: fullMatch.score, matchedText: bestAlias, matchType: fullMatch.type };
+    // Try matching each alias, keep the best.
+    for (var i = 1; i < parts.length; i++) {
+        var alias = parts[i];
+        if (!alias) continue;
+        var m = getMatch(query, alias);
+        if (m && m.score > bestScore) {
+            bestScore = m.score;
+            bestText = alias;
+            bestType = m.type;
         }
     }
 
-    // Matched via combined text.
-    return { score: fullMatch.score, matchedText: null, matchType: fullMatch.type };
+    if (bestScore > 0) {
+        return { score: bestScore, matchedText: bestText, matchType: bestType };
+    }
+
+    return null;
 }
 
 // Category weights for ranking.

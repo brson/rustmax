@@ -2,7 +2,7 @@
 
 [topics.trpl]
 name = "The Rust Programming Language"
-aliases = ["TRPL", "The Book", "rust book", "rust programming book", "learn rust", "rust tutorial", "beginner rust", "getting started"]
+aliases = ["TRPL", "The Book", "rust book", "rust programming book", "learn rust", "rust tutorial", "beginner rust", "getting started", "ownership", "borrowing", "lifetimes", "traits", "generics", "closures", "enums", "structs", "modules", "concurrency", "smart pointers", "error handling"]
 category = "book"
 brief = "The official Rust book for learning the language"
 
@@ -14,19 +14,19 @@ brief = "Learn Rust through annotated example programs"
 
 [topics.reference]
 name = "The Rust Reference"
-aliases = ["language reference", "rust reference", "language spec", "syntax reference", "grammar"]
+aliases = ["language reference", "rust reference", "language spec", "syntax reference", "grammar", "ownership", "borrowing", "lifetimes", "traits", "generics", "types", "expressions", "statements", "attributes", "macros"]
 category = "book"
 brief = "Detailed reference for Rust language constructs"
 
 [topics.nomicon]
 name = "The Rustonomicon"
-aliases = ["nomicon", "unsafe book", "dark arts", "unsafe rust", "raw pointers", "undefined behavior", "UB"]
+aliases = ["nomicon", "unsafe book", "dark arts", "unsafe rust", "raw pointers", "undefined behavior", "UB", "transmute", "variance", "drop check", "unsafe code"]
 category = "book"
 brief = "The dark arts of unsafe Rust programming"
 
 [topics.cargo-book]
 name = "The Cargo Book"
-aliases = ["cargo documentation", "cargo guide", "Cargo.toml", "dependencies", "workspace", "package manager", "cargo build"]
+aliases = ["cargo documentation", "cargo guide", "Cargo.toml", "dependencies", "workspace", "package manager", "cargo build", "cargo publish", "features", "build profiles", "cargo test"]
 category = "book"
 brief = "Guide to Cargo, Rust's package manager and build tool"
 

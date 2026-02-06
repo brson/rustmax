@@ -44,7 +44,7 @@ brief = "JSON5 format support"
 
 [topics.tokio]
 name = "tokio"
-aliases = ["tokio runtime", "async runtime", "tokio::spawn", "#[tokio::main]", "async await", "async main", "select!", "tokio::select", "async executor"]
+aliases = ["tokio runtime", "async runtime", "tokio::spawn", "#[tokio::main]", "async await", "async main", "select!", "tokio::select", "async executor", "timer", "timeout", "sleep", "interval", "tokio::time", "concurrency", "websocket"]
 category = "crate"
 brief = "Asynchronous runtime for Rust"
 
@@ -138,13 +138,13 @@ brief = "Cross-platform Ctrl-C handling"
 
 [topics.rayon]
 name = "rayon"
-aliases = ["parallel iterators", "data parallelism", "par_iter", "parallel for", "multithreaded iteration", "into_par_iter", "parallel map"]
+aliases = ["parallel iterators", "data parallelism", "par_iter", "parallel for", "multithreaded iteration", "into_par_iter", "parallel map", "concurrency", "parallelism"]
 category = "crate"
 brief = "Data parallelism library with parallel iterators"
 
 [topics.crossbeam]
 name = "crossbeam"
-aliases = ["concurrent data structures", "crossbeam channels", "lock-free", "scoped threads", "crossbeam-channel", "unbounded channel", "bounded channel"]
+aliases = ["concurrent data structures", "crossbeam channels", "lock-free", "scoped threads", "crossbeam-channel", "unbounded channel", "bounded channel", "concurrency"]
 category = "crate"
 brief = "Tools for concurrent programming"
 
@@ -170,13 +170,13 @@ brief = "PCG fast non-cryptographic RNG"
 
 [topics.blake3]
 name = "blake3"
-aliases = ["BLAKE3 hash", "cryptographic hash"]
+aliases = ["BLAKE3 hash", "cryptographic hash", "hashing"]
 category = "crate"
 brief = "BLAKE3 cryptographic hash function"
 
 [topics.sha2]
 name = "sha2"
-aliases = ["SHA-256", "SHA-512", "SHA2 hash"]
+aliases = ["SHA-256", "SHA-512", "SHA2 hash", "hashing"]
 category = "crate"
 brief = "SHA-2 family of hash functions"
 
@@ -316,7 +316,7 @@ brief = "Property-based testing framework"
 
 [topics.ahash]
 name = "ahash"
-aliases = ["AHash", "fast hash"]
+aliases = ["AHash", "fast hash", "hashing"]
 category = "crate"
 brief = "Fast non-cryptographic hash function"
 

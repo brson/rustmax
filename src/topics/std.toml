@@ -6,6 +6,24 @@ aliases = ["collections module", "data structures", "HashMap", "BTreeMap", "VecD
 category = "std"
 brief = "Collection types like HashMap, BTreeMap, VecDeque, and more"
 
+[topics.std-string]
+name = "std::string"
+aliases = ["String", "&str", "string slice", "str type", "to_string", "ToString", "FromStr", "from_str", "string type", "text"]
+category = "std"
+brief = "The String type and string slicing"
+
+[topics.std-option]
+name = "std::option"
+aliases = ["Option", "Some", "None", "unwrap", "expect", "is_some", "is_none", "unwrap_or", "optional value", "nullable"]
+category = "std"
+brief = "The Option type for optional values"
+
+[topics.std-result]
+name = "std::result"
+aliases = ["Result", "Ok", "Err", "unwrap", "expect", "map_err", "error handling", "error propagation", "? operator"]
+category = "std"
+brief = "The Result type for error handling"
+
 [topics.std-io]
 name = "std::io"
 aliases = ["io module", "Read trait", "Write trait", "BufReader", "BufWriter", "stdin", "stdout", "stderr", "io::Result", "io::Error"]
@@ -32,7 +50,7 @@ brief = "TCP/UDP networking primitives"
 
 [topics.std-sync]
 name = "std::sync"
-aliases = ["sync module", "Mutex", "RwLock", "Arc", "Barrier", "Condvar", "lock", "mutual exclusion", "synchronization", "Once", "OnceLock"]
+aliases = ["sync module", "Mutex", "RwLock", "Arc", "Barrier", "Condvar", "lock", "mutual exclusion", "synchronization", "Once", "OnceLock", "concurrency", "shared state"]
 category = "std"
 brief = "Synchronization primitives for concurrent programming"
 
@@ -50,7 +68,7 @@ brief = "Multi-producer single-consumer channels"
 
 [topics.std-thread]
 name = "std::thread"
-aliases = ["thread module", "spawn", "JoinHandle", "thread::sleep", "thread_local", "threading", "threads", "multithreading", "concurrent", "spawn thread"]
+aliases = ["thread module", "spawn", "JoinHandle", "thread::sleep", "thread_local", "threading", "threads", "multithreading", "concurrent", "spawn thread", "concurrency"]
 category = "std"
 brief = "Native thread creation and management"
 
@@ -104,7 +122,7 @@ brief = "The Error trait for error types"
 
 [topics.std-time]
 name = "std::time"
-aliases = ["time module", "Duration", "Instant", "SystemTime", "elapsed"]
+aliases = ["time module", "Duration", "Instant", "SystemTime", "elapsed", "timer", "timeout", "stopwatch", "benchmark time", "measure time"]
 category = "std"
 brief = "Time measurement and durations"
 
@@ -140,19 +158,19 @@ brief = "Marker traits and phantom types"
 
 [topics.std-ops]
 name = "std::ops"
-aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading", "operators", "FnOnce", "FnMut", "Range", "Mul", "Div"]
+aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading", "operators", "FnOnce", "FnMut", "Range", "Mul", "Div", "closures", "closure traits"]
 category = "std"
 brief = "Overloadable operators and traits"
 
 [topics.std-cmp]
 name = "std::cmp"
-aliases = ["cmp module", "Ord", "PartialOrd", "Eq", "PartialEq", "Ordering"]
+aliases = ["cmp module", "Ord", "PartialOrd", "Eq", "PartialEq", "Ordering", "sort", "sorting", "min", "max", "compare"]
 category = "std"
 brief = "Comparison traits for ordering and equality"
 
 [topics.std-hash]
 name = "std::hash"
-aliases = ["hash module", "Hash trait", "Hasher", "BuildHasher"]
+aliases = ["hash module", "Hash trait", "Hasher", "BuildHasher", "hashing"]
 category = "std"
 brief = "Hashing traits for HashMap keys"
 
