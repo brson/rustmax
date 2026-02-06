@@ -181,9 +181,6 @@ pub fn generate_latest_post(
     let mut context = tera::Context::new();
     context.insert("title", &latest.title);
     context.insert("date", &latest.date);
-    context.insert("category", &latest.category);
-    context.insert("summary", &latest.summary);
-    context.insert("content", &latest.content_html);
     context.insert("slug", &latest.slug);
 
     let rendered = tera.render("latest-post.template.html", &context)?;
