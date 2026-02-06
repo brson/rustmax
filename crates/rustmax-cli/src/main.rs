@@ -91,6 +91,9 @@ enum CliCmd {
 
     /// Export topic search index as JSON for client-side search.
     ExportSearchIndex(CliCmdExportSearchIndex),
+
+    /// Search the topic index from the command line.
+    Search(CliCmdSearch),
 }
 
 #[derive(clap::Args)]
@@ -229,6 +232,20 @@ struct CliCmdExportSearchIndex {
 }
 
 #[derive(clap::Args)]
+struct CliCmdSearch {
+    /// Search query.
+    query: Vec<String>,
+
+    /// Path to search-index.json.
+    #[arg(short, long, default_value = "work/search-index.json")]
+    index: String,
+
+    /// Path to the search-cli.js script.
+    #[arg(long, default_value = "www/search-cli.js")]
+    script: String,
+}
+
+#[derive(clap::Args)]
 struct CliCmdRustdoc {
     #[command(subcommand)]
     action: RustdocAction,
@@ -287,6 +304,7 @@ impl CliOpts {
             CliCmd::ValidateTopics(cmd) => cmd.run(),
             CliCmd::SummarizeTopics(cmd) => cmd.run(),
             CliCmd::ExportSearchIndex(cmd) => cmd.run(),
+            CliCmd::Search(cmd) => cmd.run(),
         }
     }
 }
@@ -572,6 +590,115 @@ impl CliCmdExportSearchIndex {
         std::fs::write(output_path, json)?;
 
         println!("Wrote search index to {}", output_path.display());
+        Ok(())
+    }
+}
+
+/// A single search result deserialized from the Node.js search output.
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct JsSearchResult {
+    entry: JsSearchEntry,
+    score: f64,
+    matched_text: Option<String>,
+    match_type: String,
+}
+
+#[derive(serde::Deserialize)]
+struct JsSearchEntry {
+    id: String,
+    name: String,
+    category: String,
+    brief: String,
+    path: Option<String>,
+}
+
+/// A search result for TOML serialization.
+#[derive(serde::Serialize)]
+struct SearchResult {
+    name: String,
+    category: String,
+    brief: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    path: Option<String>,
+    score: f64,
+    match_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    match_info: Option<String>,
+}
+
+#[derive(serde::Serialize)]
+struct SearchOutput {
+    results: Vec<SearchResult>,
+}
+
+impl CliCmdSearch {
+    fn run(&self) -> AnyResult<()> {
+        let query = self.query.join(" ");
+        if query.is_empty() {
+            bail!("search query is required");
+        }
+
+        let index_path = Path::new(&self.index);
+        if !index_path.exists() {
+            bail!(
+                "search index not found at {}; run `rustmax export-search-index` first",
+                index_path.display()
+            );
+        }
+
+        let script_path = Path::new(&self.script);
+        if !script_path.exists() {
+            bail!("search script not found at {}", script_path.display());
+        }
+
+        // Spawn node to run the search.
+        let output = std::process::Command::new("node")
+            .arg(script_path)
+            .arg(index_path)
+            .arg(&query)
+            .output()
+            .context("failed to run node; is Node.js installed?")?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            bail!("node search failed: {}", stderr.trim());
+        }
+
+        let stdout = String::from_utf8(output.stdout)
+            .context("node output was not valid utf-8")?;
+
+        let js_results: Vec<JsSearchResult> = serde_json::from_str(&stdout)
+            .context("failed to parse search results from node")?;
+
+        if js_results.is_empty() {
+            println!("No results for \"{}\".", query);
+            return Ok(());
+        }
+
+        // Convert to TOML-friendly output.
+        let results: Vec<SearchResult> = js_results
+            .into_iter()
+            .map(|r| {
+                let match_info = r.matched_text.map(|t| format!("aka \"{}\"", t));
+                SearchResult {
+                    name: r.entry.name,
+                    category: r.entry.category,
+                    brief: r.entry.brief,
+                    path: r.entry.path,
+                    score: r.score,
+                    match_type: r.match_type,
+                    match_info,
+                }
+            })
+            .collect();
+
+        let output = SearchOutput { results };
+        let toml_str = toml::to_string_pretty(&output)
+            .context("failed to serialize results as toml")?;
+
+        print!("{}", toml_str);
+
         Ok(())
     }
 }

@@ -1,4 +1,7 @@
-// Topic search functionality
+// Topic search UI.
+//
+// Core search logic is in search-core.js,
+// loaded as a separate <script> before this file.
 (function() {
     'use strict';
 
@@ -6,74 +9,6 @@
     let searchInput = null;
     let searchResults = null;
     let isLoading = false;
-
-    // Match types.
-    const MATCH_EXACT = 'exact';
-    const MATCH_PREFIX = 'prefix';
-    const MATCH_SUBSTRING = 'substring';
-
-    // Check match type for a query against a target string.
-    // Returns { type, score } or null if no match.
-    function getMatch(query, target) {
-        const q = query.toLowerCase();
-        const t = target.toLowerCase();
-
-        if (t === q) return { type: MATCH_EXACT, score: 1.0 };
-        if (t.startsWith(q)) return { type: MATCH_PREFIX, score: 0.9 };
-        if (t.includes(q)) return { type: MATCH_SUBSTRING, score: 0.6 };
-
-        return null;
-    }
-
-    // Find best match for query against an entry.
-    // Returns { score, matchedText, matchType } or null.
-    function findMatch(query, entry) {
-        // Parse searchable into name and aliases.
-        // Format: "name alias1 alias2 ..." but we need to check each part.
-        // Since we don't have structured data, try name first, then search for alias matches.
-        const name = entry.name;
-        const searchable = entry.searchable;
-
-        // Try matching name first.
-        const nameMatch = getMatch(query, name);
-        if (nameMatch && nameMatch.score >= 0.6) {
-            return { score: nameMatch.score, matchedText: null, matchType: nameMatch.type };
-        }
-
-        // Try matching the full searchable text.
-        const fullMatch = getMatch(query, searchable);
-        if (!fullMatch) return null;
-
-        // Find which alias matched (if not the name).
-        // Extract aliases: everything after the name in searchable.
-        const aliasText = searchable.slice(name.length).trim();
-        if (aliasText) {
-            const aliases = aliasText.split(/\s+/);
-            // Find the best matching alias.
-            let bestAlias = null;
-            let bestAliasScore = 0;
-            for (const alias of aliases) {
-                const m = getMatch(query, alias);
-                if (m && m.score > bestAliasScore) {
-                    bestAliasScore = m.score;
-                    bestAlias = alias;
-                }
-            }
-            if (bestAlias && bestAliasScore >= fullMatch.score * 0.8) {
-                return { score: fullMatch.score, matchedText: bestAlias, matchType: fullMatch.type };
-            }
-        }
-
-        // Matched via combined text.
-        return { score: fullMatch.score, matchedText: null, matchType: fullMatch.type };
-    }
-
-    // Category weights for ranking.
-    const categoryWeights = {
-        'crate': 1.5,
-        'book': 1.3,
-        'std': 1.1,
-    };
 
     // Load search index on first focus.
     async function loadSearchIndex() {
@@ -92,47 +27,6 @@
         } finally {
             isLoading = false;
         }
-    }
-
-    // Perform search and return ranked results.
-    function performSearch(query) {
-        if (!searchIndex || !query.trim()) return [];
-
-        const results = [];
-        const seen = new Set();
-
-        for (const entry of searchIndex) {
-            const match = findMatch(query, entry);
-            if (!match || match.score < 0.2) continue;
-
-            // Apply category weight.
-            const categoryWeight = categoryWeights[entry.category] || 1.0;
-            const finalScore = match.score * categoryWeight;
-
-            // Deduplicate by id.
-            if (seen.has(entry.id)) continue;
-            seen.add(entry.id);
-
-            results.push({
-                entry,
-                score: finalScore,
-                matchedText: match.matchedText,
-                matchType: match.matchType,
-            });
-        }
-
-        // Sort by score descending.
-        results.sort((a, b) => b.score - a.score);
-
-        return results.slice(0, 20);
-    }
-
-    // Format match explanation.
-    function formatMatchInfo(matchedText) {
-        if (matchedText) {
-            return `aka "${matchedText}"`;
-        }
-        return null;
     }
 
     // Render search results grouped by category.
@@ -204,7 +98,7 @@
                     renderSearchResults([]);
                     return;
                 }
-                const results = performSearch(query);
+                const results = performSearch(searchIndex, query);
                 renderSearchResults(results);
             }, 100);
         });

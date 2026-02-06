@@ -97,6 +97,9 @@ doc-library: prebuild
 export-search-index:
     cargo run -p rustmax-cli -- export-search-index
 
+search query: export-search-index
+    cargo run -p rustmax-cli -- search {{query}}
+
 doc-www: doc-library export-search-index
     mkdir -p out/
     cp -r www/* out/
