@@ -81,10 +81,12 @@ function findMatch(query, entry) {
 }
 
 // Category weights for ranking.
+// Standard library modules rank highest since they are the foundational
+// building blocks. Crates extend them, and books explain them.
 var categoryWeights = {
-    'crate': 1.5,
-    'book': 1.3,
-    'std': 1.1,
+    'std': 1.5,
+    'crate': 1.3,
+    'book': 1.1,
 };
 
 // Perform search and return ranked results.
