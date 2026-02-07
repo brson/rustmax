@@ -100,7 +100,7 @@ nav.bookmarks {
     align-items: center;
     gap: 3em;
     margin-top: 3em;
-    margin-bottom: 3em;
+    margin-bottom: 1em;
 }
 
 nav.bookmarks a {
