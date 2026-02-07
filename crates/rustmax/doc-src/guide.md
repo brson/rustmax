@@ -336,10 +336,6 @@ All crates from [`rmx-profile-no-std`], plus:
 - [`walkdir`] - Efficient directory traversal.
 - [`zip`] - Read and write ZIP archives.
 
-Note: Some crates from [`rmx-profile-std`] are not included
-because they require native OS features or C dependencies:
-[`proptest`], [`tera`], [`xshell`].
-
 
 
 
