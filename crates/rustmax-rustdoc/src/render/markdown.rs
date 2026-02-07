@@ -10,13 +10,7 @@ use crate::{GlobalItemIndex, ItemLocation};
 
 /// Render markdown to HTML with syntax highlighting.
 pub fn render_markdown(md: &str, highlighter: &Highlighter) -> String {
-    let mut options = Options::default();
-    options.extension.strikethrough = true;
-    options.extension.table = true;
-    options.extension.autolink = true;
-    options.extension.tasklist = true;
-    options.extension.footnotes = true;
-    options.render.unsafe_ = true; // Allow raw HTML in docs.
+    let options = markdown_options();
 
     let adapter = HighlightAdapter { highlighter };
     let mut plugins = Plugins::default();
@@ -80,6 +74,7 @@ fn markdown_options() -> Options<'static> {
     options.extension.autolink = true;
     options.extension.tasklist = true;
     options.extension.footnotes = true;
+    options.extension.header_ids = Some("".to_string());
     options.render.unsafe_ = true;
     options
 }
@@ -621,6 +616,19 @@ mod tests {
         let index = test_index();
         let url = resolve_rust_path("NonExistent", &index, "mycrate", 0);
         assert_eq!(url, None);
+    }
+
+    #[test]
+    fn test_heading_ids() {
+        let highlighter = Highlighter::new();
+        let html = render_markdown("### Profile: `rmx-profile-no-std`", &highlighter);
+        assert!(html.contains("id=\"profile-rmx-profile-no-std\""), "got: {html}");
+
+        let html = render_markdown("### Feature: `rmx-feature-derive`", &highlighter);
+        assert!(html.contains("id=\"feature-rmx-feature-derive\""), "got: {html}");
+
+        let html = render_markdown("### Rustlib: `rmx-rustlib-core`", &highlighter);
+        assert!(html.contains("id=\"rustlib-rmx-rustlib-core\""), "got: {html}");
     }
 
     #[test]
