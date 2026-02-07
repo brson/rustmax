@@ -1,4 +1,51 @@
-A Guide to the `rustmax` crate.
+A Guide to the Rustmax crate.
+
+
+
+
+## Getting started
+
+Add `rustmax` to your `Cargo.toml` with a profile enabled:
+
+```toml
+[dependencies]
+rmx.package = "rustmax"
+rmx.version = "0.0.8"
+rmx.features = [
+  "rmx-profile-portable",
+]
+```
+
+Or if using a workspace, define the dependency in your workspace `Cargo.toml`:
+
+```toml
+[workspace.dependencies]
+rmx.package = "rustmax"
+rmx.version = "0.0.8"
+rmx.features = [
+  "rmx-profile-portable",
+]
+```
+
+Then in each crate's `Cargo.toml`:
+
+```toml
+[dependencies]
+rmx.workspace = true
+```
+
+In your own code then you can access
+common crates through the `rmx` path.
+
+```rust
+todo
+```
+
+
+
+
+## The crates of Rustmax
+
 
 | Category | Crates |
 | --- | --- |
@@ -24,22 +71,17 @@ A Guide to the `rustmax` crate.
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 
 
-<br>
-
-----
-
-<br>
 
 
-- [Using `rustmax` as a library](#using-rustmax-as-a-library)
-  - [Getting started](#getting-started)
-  - [Cargo features and profiles](#cargo-features-and-profiles)
-  - [Crate reexports](#crate-reexports)
-  - [Standard library reexports](#standard-library-reexports)
-  - [The `rustmax` prelude](#the-rustmax-prelude)
-  - [The `extras` module](#the-extras-module)
-  - [Starting from a template](#starting-from-a-template)
-  - [Known bugs](#known-bugs)
+## A Guide to the Rustmax crate
+
+- [Cargo features and profiles](#cargo-features-and-profiles)
+- [Crate reexports](#crate-reexports)
+- [Standard library reexports](#standard-library-reexports)
+- [The `rustmax` prelude](#the-rustmax-prelude)
+- [The `extras` module](#the-extras-module)
+- [Starting from a template](#starting-from-a-template)
+- [Known bugs](#known-bugs)
 - [Profiles](#profiles).
   `rustmax` organizes crates into _profiles_,
   which correspond to common target environments and application types.
@@ -75,48 +117,6 @@ A Guide to the `rustmax` crate.
   - [Modules](#modules)
 
 
-<br>
-
-----
-
-<br>
-
-
-
-
-# Using `rustmax` as a library
-
-
-## Getting started
-
-Add `rustmax` to your `Cargo.toml` with a profile feature enabled:
-
-```toml
-[dependencies]
-rmx.package = "rustmax"
-rmx.version = "0.0.7"
-rmx.features = [
-  "rmx-profile-portable",
-]
-```
-
-Or if using a workspace, define the dependency in your workspace `Cargo.toml`:
-
-```toml
-[workspace.dependencies]
-rmx.package = "rustmax"
-rmx.version = "0.0.7"
-rmx.features = [
-  "rmx-profile-portable",
-]
-```
-
-Then in each crate's `Cargo.toml`:
-
-```toml
-[dependencies]
-rmx.workspace = true
-```
 
 
 ## Cargo features and profiles
@@ -139,6 +139,8 @@ but they can also be toggled individually.
 See [Ecosystem features](#ecosystem-features) for details.
 
 
+
+
 ## Crate reexports
 
 All `rustmax` crates are reexported as modules:
@@ -157,11 +159,15 @@ Modules are only defined when their crate is enabled
 through a profile feature like [`rmx-profile-portable`].
 
 
+
+
 ## Standard library reexports
 
 `rustmax` also reexports the Rust standard libraries as modules,
 enabled automatically by profiles.
 See [Rust standard libraries](#rust-standard-libraries).
+
+
 
 
 ## The `rustmax` prelude
@@ -196,7 +202,7 @@ See [Rust standard libraries](#rust-standard-libraries).
 
 
 
-# Profiles
+## Profiles
 
 `rustmax` organizes crates into _profiles_,
 which correspond to common target environments and application types.
@@ -204,7 +210,7 @@ which correspond to common target environments and application types.
 By default no profile is enabled and no crates are exported.
 
 
-## 🌎 Profile: `rmx-profile-no-std`
+### 🌎 Profile: `rmx-profile-no-std`
 
 This profile includes crates that do not require Rust `std`.
 It allows use of the Rust allocator,
@@ -215,7 +221,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 💡 This profile also enables [`rmx-rustlib-core`] and [`rmx-rustlib-alloc`].
 
 
-### Crates in `rmx-profile-no-std`
+#### Crates in `rmx-profile-no-std`
 
 - [`ahash`] - A fast and DOS-resistent hash function, for use in `HashMap`s.
 - [`anyhow`] - Flexible error handling.
@@ -251,7 +257,7 @@ All crates in this profile are also in [`rmx-profile-std`].
 
 
 
-## 🌎 Profile: `rmx-profile-std`
+### 🌎 Profile: `rmx-profile-std`
 
 This profile depends on the Rust standard library,
 and includes crates that require the Rust standard library,
@@ -265,7 +271,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 💡 This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].
 
 
-### Crates in `rmx-profile-std`
+#### Crates in `rmx-profile-std`
 
 - [`clap`] - Command line parsing.
 - [`comrak`] - CommonMark and GitHub Flavored Markdown parser.
@@ -291,7 +297,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 
 
 
-## 🌎 Profile: `rmx-profile-portable`
+### 🌎 Profile: `rmx-profile-portable`
 
 This profile is designed for portable targets including WebAssembly (WASM)
 and cross-compiled environments like Linux musl.
@@ -312,7 +318,7 @@ and C library dependencies like zstd.
 💡 This profile also enables [`rmx-feature-serde`].
 
 
-### Crates in `rmx-profile-portable`
+#### Crates in `rmx-profile-portable`
 
 All crates from [`rmx-profile-no-std`], plus:
 
@@ -337,7 +343,7 @@ because they require native OS features or C dependencies:
 
 
 
-## 🌎 Profile: `rmx-profile-net`
+### 🌎 Profile: `rmx-profile-net`
 
 Adds networking crates,
 including the [`tokio`] async runtime.
@@ -349,7 +355,7 @@ apply the [`rmx-feature-tokio`] feature.
 💡 This profile also enables [`rmx-profile-std`].
 
 
-### Crates in `rmx-profile-net`
+#### Crates in `rmx-profile-net`
 
 - [`axum`] - Web application framework based on [`tokio`].
 - [`http`] - Shared definitions related to the HTTP protocol.
@@ -365,14 +371,14 @@ apply the [`rmx-feature-tokio`] feature.
 
 
 
-## 🌎 Profile: `rmx-profile-cli`
+### 🌎 Profile: `rmx-profile-cli`
 
 Crates for building commandline interfaces.
 
 💡 This profile also enables [`rmx-profile-std`].
 
 
-### Crates in `rmx-profile-cli`
+#### Crates in `rmx-profile-cli`
 
 - [`ctrlc`] - Simple handling of Ctrl-C for CLI programs.
 - [`termcolor`] - Cross-platform library for writing colored output to the terminal.
@@ -381,14 +387,14 @@ Crates for building commandline interfaces.
 
 
 
-## 🌎 Profile: `rmx-profile-build-script`
+### 🌎 Profile: `rmx-profile-build-script`
 
 Crates for writing [Rust build scripts](todo).
 
 💡 This profile also enables [`rmx-profile-std`].
 
 
-### Crates in `rmx-profile-build-script`
+#### Crates in `rmx-profile-build-script`
 
 - [`bindgen`] - Generate Rust bindings to C and C++ libraries.
 - [`cc`] - A basic cross-platform C/C++ compiler driver.
@@ -398,7 +404,7 @@ Crates for writing [Rust build scripts](todo).
 
 
 
-## 🌎 Profile: `rmx-profile-proc-macro`
+### 🌎 Profile: `rmx-profile-proc-macro`
 
 Crates for writing [Rust procedural macros](todo).
 
@@ -406,7 +412,7 @@ Crates for writing [Rust procedural macros](todo).
 💡 This profile also enables [`rmx-rustlib-proc_macro`].
 
 
-### Crates in `rmx-profile-proc-macro`
+#### Crates in `rmx-profile-proc-macro`
 
 - [`proc-macro2`](proc_macro2) - A preferred wrapper around the standard [`proc_macro`] crate.
 - [`quote`] - The `quote!` macro for turning code blocks into source tokens.
@@ -415,7 +421,7 @@ Crates for writing [Rust procedural macros](todo).
 
 
 
-## 🌎 Profile: `rmx-profile-full`
+### 🌎 Profile: `rmx-profile-full`
 
 This profile simply enables all previous profiles.
 
@@ -428,7 +434,7 @@ This profile simply enables all previous profiles.
 
 
 
-## 🌎 Profile: `rmx-profile-max`
+### 🌎 Profile: `rmx-profile-max`
 
 `rustmax` with all features (that don't require nightly).
 
@@ -441,7 +447,7 @@ This profile simply enables all previous profiles.
 
 
 
-## 🌎 Profile: `rmx-profile-max-nightly`
+### 🌎 Profile: `rmx-profile-max-nightly`
 
 `rustmax` with all features (including nightly).
 
@@ -451,12 +457,12 @@ This profile simply enables all previous profiles.
 
 
 
-# Ecosystem features
+## Ecosystem features
 
 `rustmax` identifies Cargo features common across many crates.
 
 
-## ⛲ Feature: `rmx-feature-no-std`
+### ⛲ Feature: `rmx-feature-no-std`
 
 This feature is enabled by [`rmx-profile-no-std`].
 It does not typically need to be set manually.
@@ -466,7 +472,7 @@ particularly enabling allocator support for no-std crates
 that can be compiled without.
 
 
-## ⛲ Feature: `rmx-feature-std`
+### ⛲ Feature: `rmx-feature-std`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
@@ -475,7 +481,7 @@ It enables the "std" feature of crates
 and other default features that require the standard library.
 
 
-## ⛲ Feature: `rmx-feature-std-portable`
+### ⛲ Feature: `rmx-feature-std-portable`
 
 This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
@@ -485,7 +491,7 @@ that are incompatible with portable targets (WASM, musl cross-compilation),
 such as those requiring threading or OS-specific APIs.
 
 
-## ⛲ Feature: `rmx-feature-default`
+### ⛲ Feature: `rmx-feature-default`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
@@ -493,7 +499,7 @@ It does not typically need to be set manually.
 It enables the "default" feature of crates.
 
 
-## ⛲ Feature: `rmx-feature-default-portable`
+### ⛲ Feature: `rmx-feature-default-portable`
 
 This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
@@ -502,7 +508,7 @@ Similar to [`rmx-feature-default`], but uses portable
 default features where necessary (e.g., excludes zstd from zip).
 
 
-## ⛲ Feature: `rmx-feature-more`
+### ⛲ Feature: `rmx-feature-more`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
@@ -511,7 +517,7 @@ This activates extra crate features for convenience
 that the crates themselves do not typically activate by default.
 
 
-## ⛲ Feature: `rmx-feature-more-portable`
+### ⛲ Feature: `rmx-feature-more-portable`
 
 This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
@@ -521,19 +527,19 @@ that are incompatible with portable targets,
 such as blocking I/O and threading.
 
 
-## ⛲ Feature: `rmx-feature-derive`
+### ⛲ Feature: `rmx-feature-derive`
 
 Enables derive macros of crates where it is optional,
 typically with a feature named "derive".
 
 
-## ⛲ Feature: `rmx-feature-serde`
+### ⛲ Feature: `rmx-feature-serde`
 
 Enables [`serde`] support for crates where it is optional,
 typically with a feature named "serde".
 
 
-## ⛲ Feature: `rmx-feature-backtrace`
+### ⛲ Feature: `rmx-feature-backtrace`
 
 Enables backtrace support for crates where it is optional,
 typically with a feature named "backtrace".
@@ -543,13 +549,13 @@ This feature is necessary for backtrace support in [`anyhow`].
 This feature also enables `rmx-feature-std`.
 
 
-## ⛲ Feature: `rmx-feature-tokio`
+### ⛲ Feature: `rmx-feature-tokio`
 
 Enables [`tokio`] support for crates where it is optional,
 typically with a feature named "tokio".
 
 
-## ⛲Feature: `rmx-feature-nightly`
+### ⛲Feature: `rmx-feature-nightly`
 
 Enables features that only compile with the Rust [nightly compiler],
 typically with a feature named "nightly".
@@ -557,32 +563,32 @@ typically with a feature named "nightly".
 
 
 
-# Rust standard libraries
+## Rust standard libraries
 
 `rustmax` re-exports the standard Rust libraries for convenience.
 These features enable reexports of the corresponding standard library crates
 as modules within `rustmax`.
 
 
-## 📙 Rustlib: `rmx-rustlib-core`
+### 📙 Rustlib: `rmx-rustlib-core`
 
 Reexports the [`core`] library.
 Enabled by [`rmx-profile-no-std`] and all profiles that include it.
 
 
-## 📙 Rustlib: `rmx-rustlib-alloc`
+### 📙 Rustlib: `rmx-rustlib-alloc`
 
 Reexports the [`alloc`] library.
 Enabled by [`rmx-profile-no-std`] and all profiles that include it.
 
 
-## 📙 Rustlib: `rmx-rustlib-std`
+### 📙 Rustlib: `rmx-rustlib-std`
 
 Reexports the [`std`] library.
 Enabled by [`rmx-profile-std`] and all profiles that include it.
 
 
-## 📙 Rustlib: `rmx-rustlib-proc_macro`
+### 📙 Rustlib: `rmx-rustlib-proc_macro`
 
 Reexports the [`proc_macro`] library.
 Enabled by [`rmx-profile-proc-macro`].
