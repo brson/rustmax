@@ -85,33 +85,33 @@ todo
 - [Profiles](#profiles).
   `rustmax` organizes crates into _profiles_,
   which correspond to common target environments and application types.
-  - [🌎 Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
-  - **[🌎 Profile: `rmx-profile-std`][`rmx-profile-std`]**
-  - [🌎 Profile: `rmx-profile-portable`][`rmx-profile-portable`]
-  - [🌎 Profile: `rmx-profile-net`][`rmx-profile-net`]
-  - [🌎 Profile: `rmx-profile-cli`][`rmx-profile-cli`]
-  - [🌎 Profile: `rmx-profile-build-script`][`rmx-profile-build-script`]
-  - [🌎 Profile: `rmx-profile-proc-macro`][`rmx-profile-proc-macro`]
-  - **[🌎 Profile: `rmx-profile-full`][`rmx-profile-full`]**
-  - **[🌎 Profile: `rmx-profile-max`][`rmx-profile-max`]**
-  - [🌎 Profile: `rmx-profile-max-nightly`][`rmx-profile-max-nightly`]
+  - [Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
+  - **[Profile: `rmx-profile-std`][`rmx-profile-std`]**
+  - [Profile: `rmx-profile-portable`][`rmx-profile-portable`]
+  - [Profile: `rmx-profile-net`][`rmx-profile-net`]
+  - [Profile: `rmx-profile-cli`][`rmx-profile-cli`]
+  - [Profile: `rmx-profile-build-script`][`rmx-profile-build-script`]
+  - [Profile: `rmx-profile-proc-macro`][`rmx-profile-proc-macro`]
+  - **[Profile: `rmx-profile-full`][`rmx-profile-full`]**
+  - **[Profile: `rmx-profile-max`][`rmx-profile-max`]**
+  - [Profile: `rmx-profile-max-nightly`][`rmx-profile-max-nightly`]
 - [Ecosystem features](#ecosystem-features).
   `rustmax` identifies Cargo features common across many crates.
-  - [⛲ Feature: `rmx-feature-no-std`][`rmx-feature-no-std`]
-  - [⛲ Feature: `rmx-feature-std`][`rmx-feature-std`]
-  - [⛲ Feature: `rmx-feature-default`][`rmx-feature-default`]
-  - [⛲ Feature: `rmx-feature-more`][`rmx-feature-more`]
-  - **[⛲ Feature: `rmx-feature-derive`][`rmx-feature-derive`]**
-  - **[⛲ Feature: `rmx-feature-serde`][`rmx-feature-serde`]**
-  - [⛲ Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
-  - **[⛲ Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
-  - [⛲ Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
+  - [Feature: `rmx-feature-no-std`][`rmx-feature-no-std`]
+  - [Feature: `rmx-feature-std`][`rmx-feature-std`]
+  - [Feature: `rmx-feature-default`][`rmx-feature-default`]
+  - [Feature: `rmx-feature-more`][`rmx-feature-more`]
+  - **[Feature: `rmx-feature-derive`][`rmx-feature-derive`]**
+  - **[Feature: `rmx-feature-serde`][`rmx-feature-serde`]**
+  - [Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
+  - **[Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
+  - [Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
 - [Rust standard libraries](#rust-standard-libraries).
   `rustmax` re-exports the standard Rust libraries for convenience.
-  - [📙 Rustlib: `rmx-rustlib-core`][`rmx-rustlib-core`]
-  - [📙 Rustlib: `rmx-rustlib-alloc`][`rmx-rustlib-alloc`]
-  - [📙 Rustlib: `rmx-rustlib-std`][`rmx-rustlib-std`]
-  - [📙 Rustlib: `rmx-rustlib-proc_macro`][`rmx-rustlib-proc_macro`]
+  - [Rustlib: `rmx-rustlib-core`][`rmx-rustlib-core`]
+  - [Rustlib: `rmx-rustlib-alloc`][`rmx-rustlib-alloc`]
+  - [Rustlib: `rmx-rustlib-std`][`rmx-rustlib-std`]
+  - [Rustlib: `rmx-rustlib-proc_macro`][`rmx-rustlib-proc_macro`]
 - `rustmax` crate API docs
   - [Re-exports](#reexports)
   - [Modules](#modules)
@@ -210,15 +210,15 @@ which correspond to common target environments and application types.
 By default no profile is enabled and no crates are exported.
 
 
-### 🌎 Profile: `rmx-profile-no-std`
+### Profile: `rmx-profile-no-std`
 
 This profile includes crates that do not require Rust `std`.
 It allows use of the Rust allocator,
 and enables allocator-related features of its crates.
 All crates in this profile are also in [`rmx-profile-std`].
 
-💡 This profile also enables [`rmx-feature-no-std`].\
-💡 This profile also enables [`rmx-rustlib-core`] and [`rmx-rustlib-alloc`].
+This profile also enables [`rmx-feature-no-std`].\
+This profile also enables [`rmx-rustlib-core`] and [`rmx-rustlib-alloc`].
 
 
 #### Crates in `rmx-profile-no-std`
@@ -257,18 +257,18 @@ All crates in this profile are also in [`rmx-profile-std`].
 
 
 
-### 🌎 Profile: `rmx-profile-std`
+### Profile: `rmx-profile-std`
 
 This profile depends on the Rust standard library,
 and includes crates that require the Rust standard library,
 in addition to the crates provided by [`rmx-profile-no-std`].
 
-💡 This profile also enables [`rmx-feature-std`].\
-💡 This profile also enables [`rmx-feature-default`].\
-💡 This profile also enables [`rmx-feature-more`].\
-💡 This profile also enables [`rmx-feature-derive`].\
-💡 This profile also enables [`rmx-feature-serde`].\
-💡 This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].
+This profile also enables [`rmx-feature-std`].\
+This profile also enables [`rmx-feature-default`].\
+This profile also enables [`rmx-feature-more`].\
+This profile also enables [`rmx-feature-derive`].\
+This profile also enables [`rmx-feature-serde`].\
+This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].
 
 
 #### Crates in `rmx-profile-std`
@@ -297,7 +297,7 @@ in addition to the crates provided by [`rmx-profile-no-std`].
 
 
 
-### 🌎 Profile: `rmx-profile-portable`
+### Profile: `rmx-profile-portable`
 
 This profile is designed for portable targets including WebAssembly (WASM)
 and cross-compiled environments like Linux musl.
@@ -310,12 +310,12 @@ a C cross-compiler toolchain, such as OS-specific threading APIs,
 file system operations that require native OS support,
 and C library dependencies like zstd.
 
-💡 This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].\
-💡 This profile also enables [`rmx-feature-std-portable`].\
-💡 This profile also enables [`rmx-feature-default-portable`].\
-💡 This profile also enables [`rmx-feature-more-portable`].\
-💡 This profile also enables [`rmx-feature-derive`].\
-💡 This profile also enables [`rmx-feature-serde`].
+This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx-rustlib-std`].\
+This profile also enables [`rmx-feature-std-portable`].\
+This profile also enables [`rmx-feature-default-portable`].\
+This profile also enables [`rmx-feature-more-portable`].\
+This profile also enables [`rmx-feature-derive`].\
+This profile also enables [`rmx-feature-serde`].
 
 
 #### Crates in `rmx-profile-portable`
@@ -343,7 +343,7 @@ because they require native OS features or C dependencies:
 
 
 
-### 🌎 Profile: `rmx-profile-net`
+### Profile: `rmx-profile-net`
 
 Adds networking crates,
 including the [`tokio`] async runtime.
@@ -352,7 +352,7 @@ Not that this profile does not enable `tokio` features
 for other crates; to enable `tokio` features
 apply the [`rmx-feature-tokio`] feature.
 
-💡 This profile also enables [`rmx-profile-std`].
+This profile also enables [`rmx-profile-std`].
 
 
 #### Crates in `rmx-profile-net`
@@ -371,11 +371,11 @@ apply the [`rmx-feature-tokio`] feature.
 
 
 
-### 🌎 Profile: `rmx-profile-cli`
+### Profile: `rmx-profile-cli`
 
 Crates for building commandline interfaces.
 
-💡 This profile also enables [`rmx-profile-std`].
+This profile also enables [`rmx-profile-std`].
 
 
 #### Crates in `rmx-profile-cli`
@@ -387,11 +387,11 @@ Crates for building commandline interfaces.
 
 
 
-### 🌎 Profile: `rmx-profile-build-script`
+### Profile: `rmx-profile-build-script`
 
 Crates for writing [Rust build scripts](todo).
 
-💡 This profile also enables [`rmx-profile-std`].
+This profile also enables [`rmx-profile-std`].
 
 
 #### Crates in `rmx-profile-build-script`
@@ -404,12 +404,12 @@ Crates for writing [Rust build scripts](todo).
 
 
 
-### 🌎 Profile: `rmx-profile-proc-macro`
+### Profile: `rmx-profile-proc-macro`
 
 Crates for writing [Rust procedural macros](todo).
 
-💡 This profile also enables [`rmx-profile-std`].\
-💡 This profile also enables [`rmx-rustlib-proc_macro`].
+This profile also enables [`rmx-profile-std`].\
+This profile also enables [`rmx-rustlib-proc_macro`].
 
 
 #### Crates in `rmx-profile-proc-macro`
@@ -421,38 +421,38 @@ Crates for writing [Rust procedural macros](todo).
 
 
 
-### 🌎 Profile: `rmx-profile-full`
+### Profile: `rmx-profile-full`
 
 This profile simply enables all previous profiles.
 
-💡 This profile also enables [`rmx-profile-std`].\
-💡 This profile also enables [`rmx-profile-net`].\
-💡 This profile also enables [`rmx-profile-cli`].\
-💡 This profile also enables [`rmx-profile-build-script`].\
-💡 This profile also enables [`rmx-profile-proc-macro`].
+This profile also enables [`rmx-profile-std`].\
+This profile also enables [`rmx-profile-net`].\
+This profile also enables [`rmx-profile-cli`].\
+This profile also enables [`rmx-profile-build-script`].\
+This profile also enables [`rmx-profile-proc-macro`].
 
 
 
 
-### 🌎 Profile: `rmx-profile-max`
+### Profile: `rmx-profile-max`
 
 `rustmax` with all features (that don't require nightly).
 
-💡 This profile also enables [`rmx-profile-full`].\
-💡 This profile also enables [`rmx-feature-derive`].\
-💡 This profile also enables [`rmx-feature-serde`].\
-💡 This profile also enables [`rmx-feature-backtrace`].\
-💡 This profile also enables [`rmx-feature-tokio`].
+This profile also enables [`rmx-profile-full`].\
+This profile also enables [`rmx-feature-derive`].\
+This profile also enables [`rmx-feature-serde`].\
+This profile also enables [`rmx-feature-backtrace`].\
+This profile also enables [`rmx-feature-tokio`].
 
 
 
 
-### 🌎 Profile: `rmx-profile-max-nightly`
+### Profile: `rmx-profile-max-nightly`
 
 `rustmax` with all features (including nightly).
 
-💡 This profile also enables [`rmx-profile-max`].\
-💡 This profile also enables [`rmx-feature-nightly`].
+This profile also enables [`rmx-profile-max`].\
+This profile also enables [`rmx-feature-nightly`].
 
 
 
@@ -462,7 +462,7 @@ This profile simply enables all previous profiles.
 `rustmax` identifies Cargo features common across many crates.
 
 
-### ⛲ Feature: `rmx-feature-no-std`
+### Feature: `rmx-feature-no-std`
 
 This feature is enabled by [`rmx-profile-no-std`].
 It does not typically need to be set manually.
@@ -472,7 +472,7 @@ particularly enabling allocator support for no-std crates
 that can be compiled without.
 
 
-### ⛲ Feature: `rmx-feature-std`
+### Feature: `rmx-feature-std`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
@@ -481,7 +481,7 @@ It enables the "std" feature of crates
 and other default features that require the standard library.
 
 
-### ⛲ Feature: `rmx-feature-std-portable`
+### Feature: `rmx-feature-std-portable`
 
 This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
@@ -491,7 +491,7 @@ that are incompatible with portable targets (WASM, musl cross-compilation),
 such as those requiring threading or OS-specific APIs.
 
 
-### ⛲ Feature: `rmx-feature-default`
+### Feature: `rmx-feature-default`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
@@ -499,7 +499,7 @@ It does not typically need to be set manually.
 It enables the "default" feature of crates.
 
 
-### ⛲ Feature: `rmx-feature-default-portable`
+### Feature: `rmx-feature-default-portable`
 
 This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
@@ -508,7 +508,7 @@ Similar to [`rmx-feature-default`], but uses portable
 default features where necessary (e.g., excludes zstd from zip).
 
 
-### ⛲ Feature: `rmx-feature-more`
+### Feature: `rmx-feature-more`
 
 This feature is enabled by [`rmx-profile-std`].
 It does not typically need to be set manually.
@@ -517,7 +517,7 @@ This activates extra crate features for convenience
 that the crates themselves do not typically activate by default.
 
 
-### ⛲ Feature: `rmx-feature-more-portable`
+### Feature: `rmx-feature-more-portable`
 
 This feature is enabled by [`rmx-profile-portable`].
 It does not typically need to be set manually.
@@ -527,19 +527,19 @@ that are incompatible with portable targets,
 such as blocking I/O and threading.
 
 
-### ⛲ Feature: `rmx-feature-derive`
+### Feature: `rmx-feature-derive`
 
 Enables derive macros of crates where it is optional,
 typically with a feature named "derive".
 
 
-### ⛲ Feature: `rmx-feature-serde`
+### Feature: `rmx-feature-serde`
 
 Enables [`serde`] support for crates where it is optional,
 typically with a feature named "serde".
 
 
-### ⛲ Feature: `rmx-feature-backtrace`
+### Feature: `rmx-feature-backtrace`
 
 Enables backtrace support for crates where it is optional,
 typically with a feature named "backtrace".
@@ -549,13 +549,13 @@ This feature is necessary for backtrace support in [`anyhow`].
 This feature also enables `rmx-feature-std`.
 
 
-### ⛲ Feature: `rmx-feature-tokio`
+### Feature: `rmx-feature-tokio`
 
 Enables [`tokio`] support for crates where it is optional,
 typically with a feature named "tokio".
 
 
-### ⛲Feature: `rmx-feature-nightly`
+### Feature: `rmx-feature-nightly`
 
 Enables features that only compile with the Rust [nightly compiler],
 typically with a feature named "nightly".
@@ -570,25 +570,25 @@ These features enable reexports of the corresponding standard library crates
 as modules within `rustmax`.
 
 
-### 📙 Rustlib: `rmx-rustlib-core`
+### Rustlib: `rmx-rustlib-core`
 
 Reexports the [`core`] library.
 Enabled by [`rmx-profile-no-std`] and all profiles that include it.
 
 
-### 📙 Rustlib: `rmx-rustlib-alloc`
+### Rustlib: `rmx-rustlib-alloc`
 
 Reexports the [`alloc`] library.
 Enabled by [`rmx-profile-no-std`] and all profiles that include it.
 
 
-### 📙 Rustlib: `rmx-rustlib-std`
+### Rustlib: `rmx-rustlib-std`
 
 Reexports the [`std`] library.
 Enabled by [`rmx-profile-std`] and all profiles that include it.
 
 
-### 📙 Rustlib: `rmx-rustlib-proc_macro`
+### Rustlib: `rmx-rustlib-proc_macro`
 
 Reexports the [`proc_macro`] library.
 Enabled by [`rmx-profile-proc-macro`].
@@ -598,29 +598,29 @@ Enabled by [`rmx-profile-proc-macro`].
 
 <!-- links -->
 
-[`rmx-profile-no-std`]: #-profile-rmx-profile-no-std
-[`rmx-profile-std`]: #-profile-rmx-profile-std
-[`rmx-profile-portable`]: #-profile-rmx-profile-portable
-[`rmx-profile-net`]: #-profile-rmx-profile-net
-[`rmx-profile-cli`]: #-profile-rmx-profile-cli
-[`rmx-profile-build-script`]: #-profile-rmx-profile-build-script
-[`rmx-profile-proc-macro`]: #-profile-rmx-profile-proc-macro
-[`rmx-profile-full`]: #-profile-rmx-profile-full
-[`rmx-profile-max`]: #-profile-rmx-profile-max
-[`rmx-profile-max-nightly`]: #-profile-rmx-profile-max-nightly
-[`rmx-feature-no-std`]: #-feature-rmx-feature-no-std
-[`rmx-feature-std`]: #-feature-rmx-feature-std
-[`rmx-feature-std-portable`]: #-feature-rmx-feature-std-portable
-[`rmx-feature-default`]: #-feature-rmx-feature-default
-[`rmx-feature-default-portable`]: #-feature-rmx-feature-default-portable
-[`rmx-feature-more`]: #-feature-rmx-feature-more
-[`rmx-feature-more-portable`]: #-feature-rmx-feature-more-portable
-[`rmx-feature-derive`]: #-feature-rmx-feature-derive
-[`rmx-feature-serde`]: #-feature-rmx-feature-serde
-[`rmx-feature-backtrace`]: #-feature-rmx-feature-backtrace
-[`rmx-feature-tokio`]: #-feature-rmx-feature-tokio
-[`rmx-feature-nightly`]: #-feature-rmx-feature-nightly
-[`rmx-rustlib-core`]: #-rustlib-rmx-rustlib-core
-[`rmx-rustlib-alloc`]: #-rustlib-rmx-rustlib-alloc
-[`rmx-rustlib-std`]: #-rustlib-rmx-rustlib-std
-[`rmx-rustlib-proc_macro`]: #-rustlib-rmx-rustlib-proc_macro
+[`rmx-profile-no-std`]: #profile-rmx-profile-no-std
+[`rmx-profile-std`]: #profile-rmx-profile-std
+[`rmx-profile-portable`]: #profile-rmx-profile-portable
+[`rmx-profile-net`]: #profile-rmx-profile-net
+[`rmx-profile-cli`]: #profile-rmx-profile-cli
+[`rmx-profile-build-script`]: #profile-rmx-profile-build-script
+[`rmx-profile-proc-macro`]: #profile-rmx-profile-proc-macro
+[`rmx-profile-full`]: #profile-rmx-profile-full
+[`rmx-profile-max`]: #profile-rmx-profile-max
+[`rmx-profile-max-nightly`]: #profile-rmx-profile-max-nightly
+[`rmx-feature-no-std`]: #feature-rmx-feature-no-std
+[`rmx-feature-std`]: #feature-rmx-feature-std
+[`rmx-feature-std-portable`]: #feature-rmx-feature-std-portable
+[`rmx-feature-default`]: #feature-rmx-feature-default
+[`rmx-feature-default-portable`]: #feature-rmx-feature-default-portable
+[`rmx-feature-more`]: #feature-rmx-feature-more
+[`rmx-feature-more-portable`]: #feature-rmx-feature-more-portable
+[`rmx-feature-derive`]: #feature-rmx-feature-derive
+[`rmx-feature-serde`]: #feature-rmx-feature-serde
+[`rmx-feature-backtrace`]: #feature-rmx-feature-backtrace
+[`rmx-feature-tokio`]: #feature-rmx-feature-tokio
+[`rmx-feature-nightly`]: #feature-rmx-feature-nightly
+[`rmx-rustlib-core`]: #rustlib-rmx-rustlib-core
+[`rmx-rustlib-alloc`]: #rustlib-rmx-rustlib-alloc
+[`rmx-rustlib-std`]: #rustlib-rmx-rustlib-std
+[`rmx-rustlib-proc_macro`]: #rustlib-rmx-rustlib-proc_macro
