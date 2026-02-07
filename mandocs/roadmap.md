@@ -5,16 +5,15 @@
 
 ## In progress
 
-- cli search
-- search coverage
+- crate examples
 
 
 
 
 ## On deck
 
-- crate docs reorg
-- crate examples
+- crate doc improvement
+- book chapter search
 - rmxbook compatibility
 - library extension
 
