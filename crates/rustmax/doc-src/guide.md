@@ -86,14 +86,14 @@ todo
   `rustmax` organizes crates into _profiles_,
   which correspond to common target environments and application types.
   - [Profile: `rmx-profile-no-std`][`rmx-profile-no-std`]
-  - **[Profile: `rmx-profile-std`][`rmx-profile-std`]**
+  - [Profile: `rmx-profile-std`][`rmx-profile-std`]
   - [Profile: `rmx-profile-portable`][`rmx-profile-portable`]
   - [Profile: `rmx-profile-net`][`rmx-profile-net`]
   - [Profile: `rmx-profile-cli`][`rmx-profile-cli`]
   - [Profile: `rmx-profile-build-script`][`rmx-profile-build-script`]
   - [Profile: `rmx-profile-proc-macro`][`rmx-profile-proc-macro`]
-  - **[Profile: `rmx-profile-full`][`rmx-profile-full`]**
-  - **[Profile: `rmx-profile-max`][`rmx-profile-max`]**
+  - [Profile: `rmx-profile-full`][`rmx-profile-full`]
+  - [Profile: `rmx-profile-max`][`rmx-profile-max`]
   - [Profile: `rmx-profile-max-nightly`][`rmx-profile-max-nightly`]
 - [Ecosystem features](#ecosystem-features).
   `rustmax` identifies Cargo features common across many crates.
@@ -101,10 +101,10 @@ todo
   - [Feature: `rmx-feature-std`][`rmx-feature-std`]
   - [Feature: `rmx-feature-default`][`rmx-feature-default`]
   - [Feature: `rmx-feature-more`][`rmx-feature-more`]
-  - **[Feature: `rmx-feature-derive`][`rmx-feature-derive`]**
-  - **[Feature: `rmx-feature-serde`][`rmx-feature-serde`]**
+  - [Feature: `rmx-feature-derive`][`rmx-feature-derive`]
+  - [Feature: `rmx-feature-serde`][`rmx-feature-serde`]
   - [Feature: `rmx-feature-backtrace`][`rmx-feature-backtrace`]
-  - **[Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]**
+  - [Feature: `rmx-feature-tokio`][`rmx-feature-tokio`]
   - [Feature: `rmx-feature-nightly`][`rmx-feature-nightly`]
 - [Rust standard libraries](#rust-standard-libraries).
   `rustmax` re-exports the standard Rust libraries for convenience.
