@@ -445,8 +445,13 @@ table#rmx-crate-table :not(tr.example-row-visible) > td:is(:nth-child(1)) {
     border-bottom: none;
 }
 
-.search-result:hover {
+.search-result:hover,
+.search-result-selected {
     background: var(--rmx-color-bg-alt);
+}
+
+.search-result-selected .search-result-name {
+    color: var(--rmx-color-accents);
 }
 
 .search-result-name {

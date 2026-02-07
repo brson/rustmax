@@ -9,6 +9,7 @@
     let searchInput = null;
     let searchResults = null;
     let isLoading = false;
+    let selectedIndex = -1;
 
     // Load search index on first focus.
     async function loadSearchIndex() {
@@ -74,6 +75,24 @@
 
         searchResults.innerHTML = html;
         searchResults.classList.add('visible');
+        selectedIndex = -1;
+    }
+
+    // Get all result links in the dropdown.
+    function getResultLinks() {
+        if (!searchResults) return [];
+        return searchResults.querySelectorAll('.search-result');
+    }
+
+    // Update the visual highlight on the selected result.
+    function updateSelection() {
+        const links = getResultLinks();
+        for (let i = 0; i < links.length; i++) {
+            links[i].classList.toggle('search-result-selected', i === selectedIndex);
+        }
+        if (selectedIndex >= 0 && selectedIndex < links.length) {
+            links[selectedIndex].scrollIntoView({ block: 'nearest' });
+        }
     }
 
     // Initialize search when DOM is ready.
@@ -103,9 +122,27 @@
             }, 100);
         });
 
-        // Close on escape.
+        // Keyboard navigation: up/down/enter/escape.
         searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+            const links = getResultLinks();
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (links.length > 0) {
+                    selectedIndex = Math.min(selectedIndex + 1, links.length - 1);
+                    updateSelection();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (links.length > 0) {
+                    selectedIndex = Math.max(selectedIndex - 1, -1);
+                    updateSelection();
+                }
+            } else if (e.key === 'Enter') {
+                if (selectedIndex >= 0 && selectedIndex < links.length) {
+                    e.preventDefault();
+                    links[selectedIndex].click();
+                }
+            } else if (e.key === 'Escape') {
                 searchInput.value = '';
                 renderSearchResults([]);
                 searchInput.blur();
