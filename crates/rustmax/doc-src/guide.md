@@ -19,7 +19,7 @@ A Guide to the `rustmax` crate.
 | graphics / images | [`image`] |
 | testing | [`proptest`] |
 | FFI / interop | [`libc`], [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build) |
-| build scripts | … |
+| build scripts | ... |
 | deployment and software lifecycle | [`semver`] |
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 
@@ -31,6 +31,15 @@ A Guide to the `rustmax` crate.
 <br>
 
 
+- [Using `rustmax` as a library](#using-rustmax-as-a-library)
+  - [Getting started](#getting-started)
+  - [Cargo features and profiles](#cargo-features-and-profiles)
+  - [Crate reexports](#crate-reexports)
+  - [Standard library reexports](#standard-library-reexports)
+  - [The `rustmax` prelude](#the-rustmax-prelude)
+  - [The `extras` module](#the-extras-module)
+  - [Starting from a template](#starting-from-a-template)
+  - [Known bugs](#known-bugs)
 - [Profiles](#profiles).
   `rustmax` organizes crates into _profiles_,
   which correspond to common target environments and application types.
@@ -61,18 +70,121 @@ A Guide to the `rustmax` crate.
   - [📙 Rustlib: `rmx-rustlib-alloc`][`rmx-rustlib-alloc`]
   - [📙 Rustlib: `rmx-rustlib-std`][`rmx-rustlib-std`]
   - [📙 Rustlib: `rmx-rustlib-proc_macro`][`rmx-rustlib-proc_macro`]
-- [Using `rustmax` as a library](#using-rustmax-as-a-library)
-  - [`rustmax` and cargo features](#rustmax-and-cargo-features)
-  - [Crate reexports](#crate-reexports)
-  - [Standard library reexports](#standard-library-reexports)
-  - [The `rustmax` prelude](#the-rustmax-prelude)
-  - [The `extras` module](#the-extras-module)
-  - [Starter examples](#starter-examples)
-  - [Starting from a template](#starting-from-a-template)
-  - [Known bugs](#known-bugs)
 - `rustmax` crate API docs
   - [Re-exports](#reexports)
   - [Modules](#modules)
+
+
+<br>
+
+----
+
+<br>
+
+
+
+
+# Using `rustmax` as a library
+
+
+## Getting started
+
+Add `rustmax` to your `Cargo.toml` with a profile feature enabled:
+
+```toml
+[dependencies]
+rmx.package = "rustmax"
+rmx.version = "0.0.7"
+rmx.features = [
+  "rmx-profile-portable",
+]
+```
+
+Or if using a workspace, define the dependency in your workspace `Cargo.toml`:
+
+```toml
+[workspace.dependencies]
+rmx.package = "rustmax"
+rmx.version = "0.0.7"
+rmx.features = [
+  "rmx-profile-portable",
+]
+```
+
+Then in each crate's `Cargo.toml`:
+
+```toml
+[dependencies]
+rmx.workspace = true
+```
+
+
+## Cargo features and profiles
+
+`rustmax` enables no features by default and reexports no crates.
+All configuration is done through Cargo features,
+primarily through _profile_ features.
+
+Profiles select sets of crates for common use cases:
+[`rmx-profile-portable`] is a good default for most applications,
+[`rmx-profile-std`] adds crates that require native OS features,
+and [`rmx-profile-net`] adds networking and async I/O.
+See [Profiles](#profiles) for the full list.
+
+In addition to profiles,
+_ecosystem features_ provide cross-cutting control
+over individual crate features like `derive`, `serde`, and `tokio` support.
+Profiles enable sensible defaults for these,
+but they can also be toggled individually.
+See [Ecosystem features](#ecosystem-features) for details.
+
+
+## Crate reexports
+
+All `rustmax` crates are reexported as modules:
+
+```rust,ignore
+# use rustmax as rmx;
+use rmx::rand::Rng;
+```
+
+These modules behave the same as the corresponding crates,
+with exceptions noted in [Known bugs](#known-bugs).
+Each module has `rustmax`-specific documentation
+with a description, example, and links to the original crate docs.
+
+Modules are only defined when their crate is enabled
+through a profile feature like [`rmx-profile-portable`].
+
+
+## Standard library reexports
+
+`rustmax` also reexports the Rust standard libraries as modules,
+enabled automatically by profiles.
+See [Rust standard libraries](#rust-standard-libraries).
+
+
+## The `rustmax` prelude
+
+
+
+
+## The `extras` module
+
+
+
+
+## Starting from a template
+
+
+
+
+## Known bugs
+
+- `serde` derive only works if the `serde` crate is an explicit dependency.
+- `derive_more` derives only works if the `derive_more` crate is an explicit dependency.
+
+
 
 
 <br>
@@ -474,104 +586,6 @@ Enabled by [`rmx-profile-std`] and all profiles that include it.
 
 Reexports the [`proc_macro`] library.
 Enabled by [`rmx-profile-proc-macro`].
-
-
-
-
-# Using `rustmax` as a library.
-
-In your manifest `Cargo.toml`:
-
-```toml
-[dependencies]
-rmx.package = "rustmax"
-rmx.version = "0.0.7"
-rmx.features = [
-  "rmx-profile-portable",
-]
-```
-
-Or if using a workspace, in your workspace `Cargo.toml`
-
-```toml
-[dependencies]
-rmx.version = "0.0.7"
-rmx.features = [
-  "rmx-profile-portable",
-]
-```
-
-And in your crate's `Cargo.toml`
-
-```toml
-[dependencies]
-rmx.workspace = true
-```
-
-
-
-
-## `rustmax` and cargo features
-
-todo
-
-The main way of configuring the `rustmax` crates is by enabling
-the appropriate _profile_ cargo features.
-
-`rustmax` enables no features by default,
-and reexports no crates;
-but for most uses people will want to enable [`rmx-profile-std`].
-This feature augments the Rust `std` library with crates
-that are widely used with a variety of Rust programs,
-as well as minor helpers missing from the standard library.
-
-```toml
-[dependencies]
-rmx.package = "rustmax"
-rmx.version = "0.0.7"
-rmx.features = [
-  "rmx-profile-portable",
-]
-```
-
-
-
-
-## Crate reexports
-
-The crates of `rustmax` are all reexported as modules from the `rustmax` crate.
-
-```rust,ignore
-# use rustmax as rmx;
-use rmx::rand::Rng;
-```
-
-These modules should generally behave the same as the corresponding crates,
-with exceptions noted in ["Known Bugs"](#known-bugs).
-These modules have have `rustmax`-specific module-level documentation,
-with a short description and motivation, an example,
-and relevant links, including to the original crate-level documentation.
-
-These modules are only defined when their crate is configured
-through cargo features like `rmx-profile-std`.
-
-
-
-
-## The `rustmax` prelude
-
-
-
-
-## The `extras` module
-
-
-
-
-## Known bugs
-
-- `serde` derive only works if the `serde` crate is an explicit dependency.
-- `derive_more` derives only works if the `derive_more` crate is an explicit dependency.
 
 
 
