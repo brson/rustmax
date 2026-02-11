@@ -9,12 +9,13 @@ pub mod sidebar;
 
 use rmx::prelude::*;
 use rmx::tera::Tera;
-use rustdoc_types::{Crate, Id, ItemKind, Visibility};
+use rustdoc_types::{Crate, Id, ItemEnum, ItemKind, Visibility};
 use std::collections::HashMap;
+use std::hash::BuildHasher;
 use std::path::PathBuf;
 
 use crate::{RenderConfig, ModuleTree, GlobalItemIndex};
-use crate::types::{build_module_tree, build_impl_index, ImplIndex};
+use crate::types::{build_module_tree, build_impl_index, get_type_id, ImplIndex};
 
 /// Where a re-export target's page exists.
 pub enum ReexportTarget {
@@ -177,6 +178,153 @@ impl<'a> RenderContext<'a> {
         Some(url)
     }
 
+    /// Pre-resolve an item's `links` field into a URL map.
+    ///
+    /// Takes the item's `links` field (mapping link text to item IDs) and resolves
+    /// each ID to an actual HTML URL. The keys are normalized to strip backtick
+    /// wrappers since the markdown preprocessor strips them.
+    pub fn resolve_item_links<S: BuildHasher>(
+        &self,
+        links: &std::collections::HashMap<String, Id, S>,
+        current_depth: usize,
+    ) -> HashMap<String, String> {
+        let mut resolved = HashMap::new();
+        for (text, id) in links {
+            if let Some(url) = self.resolve_reexport_url(id, current_depth) {
+                // The links field keys may have backtick wrappers (`` `Builder` ``).
+                // Strip them since preprocess_shortcut_links removes them from URLs.
+                let clean_key = text.trim_matches('`').to_string();
+                resolved.insert(clean_key, url);
+            }
+        }
+        resolved
+    }
+
+    /// Resolve an item ID to a URL, preferring the re-export location.
+    ///
+    /// Handles types, modules, methods, and enum variants.
+    fn resolve_reexport_url(&self, id: &Id, current_depth: usize) -> Option<String> {
+        // First check krate.paths (has types, modules, variants, but not methods).
+        if let Some(summary) = self.krate.paths.get(id) {
+            // Handle enum variants: link to parent enum page with #variant.Name anchor.
+            if summary.kind == ItemKind::Variant {
+                return self.resolve_variant_url(&summary.path, summary.crate_id, current_depth);
+            }
+
+            if summary.crate_id == 0 {
+                // Local item. Check if it's re-exported to a public-facing location.
+                if let Some(url) = self.find_reexport_url(id, summary.kind, current_depth) {
+                    return Some(url);
+                }
+                // Fall back to definition path.
+                return self.build_item_url(&summary.path, summary.kind, current_depth);
+            } else {
+                // Cross-crate item.
+                return self.resolve_cross_crate_url(&summary.path, current_depth);
+            }
+        }
+
+        // Not in paths - check if it's a method/associated item in the index.
+        if let Some(item) = self.krate.index.get(id) {
+            if matches!(item.inner, ItemEnum::Function(_)) {
+                return self.resolve_method_url(id, item, current_depth);
+            }
+        }
+
+        None
+    }
+
+    /// Resolve an enum variant to a URL with #variant.Name anchor.
+    fn resolve_variant_url(
+        &self,
+        variant_path: &[String],
+        crate_id: u32,
+        current_depth: usize,
+    ) -> Option<String> {
+        if variant_path.len() < 2 {
+            return None;
+        }
+        // Path is like ["core", "result", "Result", "Ok"].
+        // Parent enum path is everything except last segment.
+        let enum_path = &variant_path[..variant_path.len() - 1];
+        let variant_name = variant_path.last()?;
+
+        let enum_url = if crate_id == 0 {
+            self.build_item_url(enum_path, ItemKind::Enum, current_depth)?
+        } else {
+            self.resolve_cross_crate_url(enum_path, current_depth)
+                .or_else(|| self.build_item_url(enum_path, ItemKind::Enum, current_depth))?
+        };
+
+        Some(format!("{}#variant.{}", enum_url, variant_name))
+    }
+
+    /// Resolve a method/associated function to a URL with #method.name anchor.
+    fn resolve_method_url(
+        &self,
+        method_id: &Id,
+        method_item: &rustdoc_types::Item,
+        current_depth: usize,
+    ) -> Option<String> {
+        let method_name = method_item.name.as_deref()?;
+
+        // Find the parent type by searching impl blocks.
+        for (_impl_id, impl_item) in &self.krate.index {
+            let ItemEnum::Impl(impl_) = &impl_item.inner else {
+                continue;
+            };
+            if !impl_.items.contains(method_id) {
+                continue;
+            }
+            // Found the impl containing this method.
+            // Get the type ID from the impl's for_ type.
+            if let Some(type_id) = get_type_id(&impl_.for_) {
+                if let Some(type_url) = self.resolve_reexport_url(type_id, current_depth) {
+                    // Strip any existing fragment.
+                    let base_url = type_url.split('#').next().unwrap_or(&type_url);
+                    return Some(format!("{}#method.{}", base_url, method_name));
+                }
+            }
+            break;
+        }
+
+        None
+    }
+
+    /// Find a re-export URL for a local item by checking if it appears as a
+    /// Use target in the module tree.
+    fn find_reexport_url(
+        &self,
+        target_id: &Id,
+        kind: ItemKind,
+        current_depth: usize,
+    ) -> Option<String> {
+        // Walk the module tree looking for Use items targeting this ID.
+        self.find_reexport_in_tree(&self.module_tree, target_id, kind, current_depth)
+    }
+
+    fn find_reexport_in_tree(
+        &self,
+        tree: &crate::types::ModuleTree,
+        target_id: &Id,
+        kind: ItemKind,
+        current_depth: usize,
+    ) -> Option<String> {
+        for item in &tree.items {
+            if let ItemEnum::Use(use_item) = &item.item.inner {
+                if use_item.id.as_ref() == Some(target_id) {
+                    return self.build_item_url(&item.path, kind, current_depth);
+                }
+            }
+        }
+        for sub in &tree.submodules {
+            if let Some(url) = self.find_reexport_in_tree(sub, target_id, kind, current_depth) {
+                return Some(url);
+            }
+        }
+        None
+    }
+
     /// Render markdown to HTML.
     pub fn render_markdown(&self, md: &str) -> String {
         markdown::render_markdown(md, &self.highlighter)
@@ -184,23 +332,47 @@ impl<'a> RenderContext<'a> {
 
     /// Render markdown to HTML with intra-doc link resolution.
     pub fn render_markdown_with_links(&self, md: &str, current_depth: usize) -> String {
+        let empty = HashMap::new();
+        self.render_markdown_with_item_links(md, current_depth, &empty)
+    }
+
+    /// Render markdown to HTML with intra-doc link resolution and pre-resolved item links.
+    pub fn render_markdown_with_item_links(
+        &self,
+        md: &str,
+        current_depth: usize,
+        pre_resolved_links: &HashMap<String, String>,
+    ) -> String {
         markdown::render_markdown_with_links(
             md,
             &self.highlighter,
             self.global_index,
             self.crate_name(),
             current_depth,
+            pre_resolved_links,
         )
     }
 
     /// Render a short documentation string (first paragraph only) as inline HTML.
     pub fn render_short_doc(&self, full_docs: &str, current_depth: usize) -> String {
+        let empty = HashMap::new();
+        self.render_short_doc_with_item_links(full_docs, current_depth, &empty)
+    }
+
+    /// Render a short doc string with pre-resolved item links.
+    pub fn render_short_doc_with_item_links(
+        &self,
+        full_docs: &str,
+        current_depth: usize,
+        pre_resolved_links: &HashMap<String, String>,
+    ) -> String {
         markdown::render_short_doc(
             full_docs,
             &self.highlighter,
             self.global_index,
             self.crate_name(),
             current_depth,
+            pre_resolved_links,
         )
     }
 

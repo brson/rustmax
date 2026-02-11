@@ -1,5 +1,7 @@
 //! Markdown to HTML rendering with syntax highlighting and intra-doc link resolution.
 
+use std::collections::HashMap;
+
 use comrak::{markdown_to_html_with_plugins, Arena, Options, Plugins};
 use comrak::adapters::SyntaxHighlighterAdapter;
 use comrak::nodes::NodeValue;
@@ -23,12 +25,16 @@ pub fn render_markdown(md: &str, highlighter: &Highlighter) -> String {
 ///
 /// Resolves Rust path references like `` [`Vec`] `` or `[text](std::option::Option)`
 /// to actual HTML documentation URLs.
+///
+/// `pre_resolved_links` maps link text to pre-resolved URLs from the item's
+/// rustdoc JSON `links` field. These take priority over global index resolution.
 pub fn render_markdown_with_links(
     md: &str,
     highlighter: &Highlighter,
     global_index: Option<&GlobalItemIndex>,
     current_crate: &str,
     current_depth: usize,
+    pre_resolved_links: &HashMap<String, String>,
 ) -> String {
     let Some(index) = global_index else {
         return render_markdown(md, highlighter);
@@ -46,7 +52,10 @@ pub fn render_markdown_with_links(
     for node in root.descendants() {
         let mut data = node.data.borrow_mut();
         if let NodeValue::Link(ref mut link) = data.value {
-            if is_rust_path(&link.url) {
+            // Check pre-resolved links first (from rustdoc's links field).
+            if let Some(url) = pre_resolved_links.get(&link.url) {
+                link.url = url.clone();
+            } else if is_rust_path(&link.url) {
                 if let Some(resolved) = resolve_rust_path(&link.url, index, current_crate, current_depth) {
                     link.url = resolved;
                 } else {
@@ -459,6 +468,7 @@ pub fn render_short_doc(
     global_index: Option<&GlobalItemIndex>,
     current_crate: &str,
     current_depth: usize,
+    pre_resolved_links: &HashMap<String, String>,
 ) -> String {
     let ref_defs = extract_reference_definitions(full_docs);
     let first_para = extract_first_paragraph(full_docs);
@@ -475,6 +485,7 @@ pub fn render_short_doc(
         global_index,
         current_crate,
         current_depth,
+        pre_resolved_links,
     );
 
     strip_paragraph_wrapper(&html)

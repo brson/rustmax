@@ -42,10 +42,15 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     let depth = path.len();
     let path_to_root = if depth == 0 { String::new() } else { "../".repeat(depth) };
 
+    // Pre-resolve links from the module item's links field.
+    let item_links = tree.module_item.as_ref()
+        .map(|m| ctx.resolve_item_links(&m.item.links, depth))
+        .unwrap_or_default();
+
     // Module documentation.
     let docs = tree.module_item.as_ref()
         .and_then(|m| m.item.docs.as_ref())
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &item_links))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -84,24 +89,24 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
 
             // Determine link URL.
             let item_url = match ctx.reexport_target(target_id) {
-                ReexportTarget::LocalPublic { ref path, kind }
-                | ReexportTarget::External { ref path, kind } => {
-                    // Link to original.
+                ReexportTarget::External { ref path, kind } => {
+                    // Link to external crate's page.
                     ctx.build_item_url(path, kind, depth).unwrap_or_default()
                 }
-                ReexportTarget::NeedsPage => {
-                    // Link to re-export's page.
+                ReexportTarget::LocalPublic { .. } | ReexportTarget::NeedsPage => {
+                    // Link to re-export's page at re-export location.
                     format!("{}{}", path_to_root, item.html_path.display())
                 }
             };
 
             // Try to get target from index first, then fall back to paths.
             if let Some(target_item) = ctx.krate.index.get(target_id) {
+                let target_links = ctx.resolve_item_links(&target_item.links, depth);
                 let summary = ItemSummary {
                     name: use_item.name.clone(),
                     path: item_url,
                     short_doc: target_item.docs.as_ref()
-                        .map(|d| ctx.render_short_doc(d, depth))
+                        .map(|d| ctx.render_short_doc_with_item_links(d, depth, &target_links))
                         .unwrap_or_default(),
                 };
 

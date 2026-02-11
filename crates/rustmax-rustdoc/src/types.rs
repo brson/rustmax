@@ -145,8 +145,18 @@ fn build_tree_recursive<'a>(
                 submodules.push(subtree);
             }
             _ => {
-                // Regular item.
-                let html_path = path_to_html(&child_path, item_kind(&child_item.inner));
+                // Regular item. For re-exports, determine kind from target.
+                let kind = match &child_item.inner {
+                    ItemEnum::Use(use_item) => {
+                        use_item.id.as_ref().and_then(|target_id| {
+                            krate.index.get(target_id)
+                                .and_then(|t| item_kind(&t.inner))
+                                .or_else(|| krate.paths.get(target_id).map(|s| s.kind))
+                        })
+                    }
+                    other => item_kind(other),
+                };
+                let html_path = path_to_html(&child_path, kind);
                 items.push(RenderableItem {
                     id: child_id,
                     item: child_item,
@@ -336,7 +346,7 @@ pub fn build_impl_index<'a>(krate: &'a Crate) -> ImplIndex<'a> {
 }
 
 /// Try to extract the ID from a Type (works for resolved paths).
-fn get_type_id(ty: &Type) -> Option<&Id> {
+pub fn get_type_id(ty: &Type) -> Option<&Id> {
     match ty {
         Type::ResolvedPath(path) => Some(&path.id),
         _ => None,

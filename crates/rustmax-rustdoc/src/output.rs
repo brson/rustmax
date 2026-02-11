@@ -60,13 +60,15 @@ fn write_item(ctx: &RenderContext, item: &crate::types::RenderableItem) -> AnyRe
         }
         let target_id = use_item.id.as_ref().unwrap();
 
-        // Skip page creation if target has a public page elsewhere.
+        // Skip page creation only for external crates (they have their own pages).
+        // LocalPublic items may be defined in private modules with no rendered page,
+        // so we always create a page at the re-export location.
         match ctx.reexport_target(target_id) {
-            ReexportTarget::LocalPublic { .. } | ReexportTarget::External { .. } => {
+            ReexportTarget::External { .. } => {
                 return Ok(());
             }
-            ReexportTarget::NeedsPage => {
-                // Proceed with page creation.
+            ReexportTarget::LocalPublic { .. } | ReexportTarget::NeedsPage => {
+                // Proceed with page creation at the re-export location.
             }
         }
 
