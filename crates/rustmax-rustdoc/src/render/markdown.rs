@@ -684,4 +684,29 @@ mod tests {
         };
         assert_eq!(build_url(&fn_loc, 2), "../../foo/fn.func.html");
     }
+
+    #[test]
+    fn test_build_url_variant() {
+        // Enum variants should produce anchor URLs, not file paths.
+        let variant_loc = ItemLocation {
+            crate_name: "core".to_string(),
+            path: vec!["core".to_string(), "result".to_string(), "Result".to_string(), "Err".to_string()],
+            kind: ItemKind::Variant,
+        };
+        assert_eq!(
+            build_url(&variant_loc, 2),
+            "../../core/result/enum.Result.html#variant.Err"
+        );
+
+        // Variant at crate root.
+        let variant_loc = ItemLocation {
+            crate_name: "foo".to_string(),
+            path: vec!["foo".to_string(), "MyEnum".to_string(), "A".to_string()],
+            kind: ItemKind::Variant,
+        };
+        assert_eq!(
+            build_url(&variant_loc, 0),
+            "foo/enum.MyEnum.html#variant.A"
+        );
+    }
 }
