@@ -37,11 +37,11 @@
     <main>
         <header>
             <nav class="breadcrumbs">
-                {% for part in item_path %}
-                    {% if loop.last %}
-                        <span>{{ part }}</span>
+                {% for crumb in breadcrumbs %}
+                    {% if crumb.url %}
+                        <a href="{{ crumb.url }}">{{ crumb.name }}</a> ::
                     {% else %}
-                        <a href="#">{{ part }}</a> ::
+                        <span>{{ crumb.name }}</span>
                     {% endif %}
                 {% endfor %}
             </nav>

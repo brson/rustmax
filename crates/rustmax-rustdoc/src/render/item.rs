@@ -66,6 +66,7 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
     let impls = collect_impls(ctx, item.id, depth);
     tera_ctx.insert("impls", &impls);
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -131,6 +132,7 @@ pub fn render_union(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     let impls = collect_impls(ctx, item.id, depth);
     tera_ctx.insert("impls", &impls);
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -172,6 +174,7 @@ pub fn render_function(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
     tera_ctx.insert("docs", &docs);
 
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -264,6 +267,7 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
     let impls = collect_impls(ctx, item.id, depth);
     tera_ctx.insert("impls", &impls);
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -366,6 +370,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     tera_ctx.insert("implementors", &implementors);
 
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -407,6 +412,7 @@ pub fn render_type_alias(ctx: &RenderContext, item: &RenderableItem) -> AnyResul
     tera_ctx.insert("docs", &docs);
 
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -456,6 +462,7 @@ pub fn render_constant(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
     tera_ctx.insert("docs", &docs);
 
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
@@ -497,6 +504,7 @@ pub fn render_macro(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
     tera_ctx.insert("path_to_root", &path_to_root);
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&item.path, depth));
 
     // Sidebar HTML.
     let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;

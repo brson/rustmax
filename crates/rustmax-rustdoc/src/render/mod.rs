@@ -410,6 +410,37 @@ impl<'a> RenderContext<'a> {
     }
 }
 
+/// A breadcrumb navigation entry.
+#[derive(serde::Serialize)]
+pub struct Breadcrumb {
+    pub name: String,
+    pub url: Option<String>,
+}
+
+/// Build breadcrumb entries for an item page.
+///
+/// For an item at path `["std", "thread", "spawn"]`, item pages live at
+/// `std/thread/fn.spawn.html` (depth = path.len() - 1 = 2). Each ancestor
+/// component links to its module's `index.html`.
+pub fn build_breadcrumbs(path: &[String], depth: usize) -> Vec<Breadcrumb> {
+    path.iter().enumerate().map(|(i, name)| {
+        let url = if i == path.len() - 1 {
+            None
+        } else {
+            // Go up `depth` levels to root, then down to the ancestor module.
+            let ancestor_path = &path[..=i];
+            Some(format!(
+                "{}{}index.html",
+                "../".repeat(depth),
+                ancestor_path.iter()
+                    .map(|p| format!("{}/", p))
+                    .collect::<String>(),
+            ))
+        };
+        Breadcrumb { name: name.clone(), url }
+    }).collect()
+}
+
 fn load_templates() -> AnyResult<Tera> {
     let mut tera = Tera::default();
 
@@ -697,5 +728,47 @@ mod tests {
             resolved.get("super::JoinHandle"),
             Some(&"../../mycrate/thread/struct.JoinHandle.html".to_string()),
         );
+    }
+
+    #[test]
+    fn test_build_breadcrumbs_item_page() {
+        // Item at std::thread::spawn, depth=2 (file at std/thread/fn.spawn.html).
+        let path: Vec<String> = vec!["std", "thread", "spawn"]
+            .into_iter().map(String::from).collect();
+        let crumbs = build_breadcrumbs(&path, 2);
+
+        assert_eq!(crumbs.len(), 3);
+        assert_eq!(crumbs[0].name, "std");
+        assert_eq!(crumbs[0].url.as_deref(), Some("../../std/index.html"));
+        assert_eq!(crumbs[1].name, "thread");
+        assert_eq!(crumbs[1].url.as_deref(), Some("../../std/thread/index.html"));
+        assert_eq!(crumbs[2].name, "spawn");
+        assert_eq!(crumbs[2].url, None);
+    }
+
+    #[test]
+    fn test_build_breadcrumbs_module_page() {
+        // Module at std::thread, depth=2 (file at std/thread/index.html).
+        let path: Vec<String> = vec!["std", "thread"]
+            .into_iter().map(String::from).collect();
+        let crumbs = build_breadcrumbs(&path, 2);
+
+        assert_eq!(crumbs.len(), 2);
+        assert_eq!(crumbs[0].name, "std");
+        assert_eq!(crumbs[0].url.as_deref(), Some("../../std/index.html"));
+        assert_eq!(crumbs[1].name, "thread");
+        assert_eq!(crumbs[1].url, None);
+    }
+
+    #[test]
+    fn test_build_breadcrumbs_crate_root() {
+        // Crate root module, depth=1 (file at std/index.html).
+        let path: Vec<String> = vec!["std"]
+            .into_iter().map(String::from).collect();
+        let crumbs = build_breadcrumbs(&path, 1);
+
+        assert_eq!(crumbs.len(), 1);
+        assert_eq!(crumbs[0].name, "std");
+        assert_eq!(crumbs[0].url, None);
     }
 }

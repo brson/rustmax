@@ -20,18 +20,8 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         .unwrap_or_default();
 
     // Build breadcrumbs with URLs.
-    let breadcrumbs: Vec<Breadcrumb> = path.iter().enumerate().map(|(i, name)| {
-        let url = if i == path.len() - 1 {
-            // Current page, no link.
-            None
-        } else {
-            // Link to ancestor module: go up (path.len() - 1 - i) levels.
-            let ups = path.len() - 1 - i;
-            Some(format!("{}index.html", "../".repeat(ups)))
-        };
-        Breadcrumb { name: name.clone(), url }
-    }).collect();
-    tera_ctx.insert("breadcrumbs", &breadcrumbs);
+    // For modules, depth = path.len() (file is at <path>/index.html).
+    tera_ctx.insert("breadcrumbs", &super::build_breadcrumbs(&path, path.len()));
 
     // Determine if this is the crate root (path has just the crate name).
     let is_crate_root = path.len() == 1;
@@ -270,12 +260,6 @@ struct ItemSummary {
     name: String,
     path: String,
     short_doc: String,
-}
-
-#[derive(serde::Serialize)]
-struct Breadcrumb {
-    name: String,
-    url: Option<String>,
 }
 
 /// Build HTML path to an item in its original crate.
