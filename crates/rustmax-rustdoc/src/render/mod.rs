@@ -108,18 +108,10 @@ impl<'a> RenderContext<'a> {
     ///
     /// Returns the URL path to the item's documentation page, relative to the current page.
     /// The `current_depth` is how many path segments deep the current page is.
+    /// For local items, prefers re-export locations over internal definition paths.
     pub fn resolve_item_url(&self, id: &Id, current_depth: usize) -> Option<String> {
-        // Look up the path and kind from krate.paths.
-        let summary = self.krate.paths.get(id)?;
-
-        // Check if this is a local item or a cross-crate item.
-        if summary.crate_id == 0 {
-            // Local item - use the path directly.
-            self.build_item_url(&summary.path, summary.kind, current_depth)
-        } else {
-            // Cross-crate item - look up in global index.
-            self.resolve_cross_crate_url(&summary.path, current_depth)
-        }
+        // Delegate to resolve_reexport_url which handles re-exports, variants, and methods.
+        self.resolve_reexport_url(id, current_depth)
     }
 
     /// Resolve a cross-crate item path to a URL using the global index.

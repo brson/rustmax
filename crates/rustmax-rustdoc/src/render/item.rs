@@ -30,9 +30,12 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
     let signature = html_escape_sig(&render_struct_sig(s, name, generics));
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -45,11 +48,12 @@ pub fn render_struct(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<St
         for field_id in field_ids {
             if let Some(field_item) = ctx.krate.index.get(field_id) {
                 if let ItemEnum::StructField(ty) = &field_item.inner {
+                    let field_links = ctx.resolve_item_links(&field_item.links, depth);
                     fields.push(FieldInfo {
                         name: field_item.name.clone().unwrap_or_default(),
                         type_: linked.render_type(ty),
                         docs: field_item.docs.as_ref()
-                            .map(|d| ctx.render_markdown_with_links(d, depth))
+                            .map(|d| ctx.render_markdown_with_item_links(d, depth, &field_links))
                             .unwrap_or_default(),
                     });
                 }
@@ -93,9 +97,12 @@ pub fn render_union(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     let signature = html_escape_sig(&render_union_sig(u, name, generics));
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -107,11 +114,12 @@ pub fn render_union(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     for field_id in &u.fields {
         if let Some(field_item) = ctx.krate.index.get(field_id) {
             if let ItemEnum::StructField(ty) = &field_item.inner {
+                let field_links = ctx.resolve_item_links(&field_item.links, depth);
                 fields.push(FieldInfo {
                     name: field_item.name.clone().unwrap_or_default(),
                     type_: linked.render_type(ty),
                     docs: field_item.docs.as_ref()
-                        .map(|d| ctx.render_markdown_with_links(d, depth))
+                        .map(|d| ctx.render_markdown_with_item_links(d, depth, &field_links))
                         .unwrap_or_default(),
                 });
             }
@@ -154,9 +162,12 @@ pub fn render_function(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
     let signature = linked.render_function_sig(func, name);
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -190,9 +201,12 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
     let signature = html_escape_sig(&render_enum_sig(e, name, &e.generics));
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -233,11 +247,12 @@ pub fn render_enum(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Stri
                     }
                 };
 
+                let variant_links = ctx.resolve_item_links(&variant_item.links, depth);
                 variants.push(VariantInfo {
                     name: variant_item.name.clone().unwrap_or_default(),
                     fields: fields_str,
                     docs: variant_item.docs.as_ref()
-                        .map(|d| ctx.render_markdown_with_links(d, depth))
+                        .map(|d| ctx.render_markdown_with_item_links(d, depth, &variant_links))
                         .unwrap_or_default(),
                 });
             }
@@ -282,9 +297,12 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     let signature = html_escape_sig(&render_trait_sig(t, name, &t.generics));
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -302,21 +320,23 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
                     } else {
                         Some(bounds.iter().map(|b| format!("{:?}", b)).collect::<Vec<_>>().join(" + "))
                     };
+                    let assoc_links = ctx.resolve_item_links(&trait_item.links, depth);
                     associated_types.push(AssocTypeInfo {
                         name: trait_item.name.clone().unwrap_or_default(),
                         bounds: bounds_str,
                         docs: trait_item.docs.as_ref()
-                            .map(|d| ctx.render_markdown_with_links(d, depth))
+                            .map(|d| ctx.render_markdown_with_item_links(d, depth, &assoc_links))
                             .unwrap_or_default(),
                     });
                 }
                 ItemEnum::Function(f) => {
                     let method_name = trait_item.name.as_deref().unwrap_or("?");
                     let sig = linked.render_function_sig(f, method_name);
+                    let method_links = ctx.resolve_item_links(&trait_item.links, depth);
                     let info = MethodInfo {
                         signature: sig,
                         docs: trait_item.docs.as_ref()
-                            .map(|d| ctx.render_markdown_with_links(d, depth))
+                            .map(|d| ctx.render_markdown_with_item_links(d, depth, &method_links))
                             .unwrap_or_default(),
                     };
                     if f.has_body {
@@ -377,9 +397,12 @@ pub fn render_type_alias(ctx: &RenderContext, item: &RenderableItem) -> AnyResul
     let signature = format!("type {} = {}", html_escape_sig(name), linked.render_type(&ta.type_));
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -423,9 +446,12 @@ pub fn render_constant(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<
     };
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
@@ -462,9 +488,12 @@ pub fn render_macro(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
     );
     tera_ctx.insert("signature", &signature);
 
+    // Pre-resolve item links for doc markdown.
+    let pre_resolved = ctx.resolve_item_links(&item.item.links, depth);
+
     // Documentation.
     let docs = item.item.docs.as_ref()
-        .map(|d| ctx.render_markdown_with_links(d, depth))
+        .map(|d| ctx.render_markdown_with_item_links(d, depth, &pre_resolved))
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
     tera_ctx.insert("path_to_root", &path_to_root);
@@ -533,10 +562,11 @@ fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id, depth: usize)
                     if let ItemEnum::Function(f) = &method_item.inner {
                         let method_name = method_item.name.as_deref().unwrap_or("?");
                         let sig = linked.render_function_sig(f, method_name);
+                        let method_links = ctx.resolve_item_links(&method_item.links, depth);
                         methods.push(MethodInfo {
                             signature: sig,
                             docs: method_item.docs.as_ref()
-                                .map(|d| ctx.render_markdown_with_links(d, depth))
+                                .map(|d| ctx.render_markdown_with_item_links(d, depth, &method_links))
                                 .unwrap_or_default(),
                         });
                     }

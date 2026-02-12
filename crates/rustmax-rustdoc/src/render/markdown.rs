@@ -329,6 +329,25 @@ fn matches_kind_filter(location: &ItemLocation, filter: Option<ItemKind>) -> boo
 fn build_url(location: &ItemLocation, current_depth: usize) -> String {
     let prefix = "../".repeat(current_depth);
 
+    // Handle enum variants: link to parent enum with #variant.Name anchor.
+    if location.kind == ItemKind::Variant && location.path.len() >= 2 {
+        let variant_name = location.path.last().unwrap();
+        let enum_path = &location.path[..location.path.len() - 1];
+        let enum_name = enum_path.last().unwrap();
+        let module_path = &enum_path[..enum_path.len() - 1];
+        return format!(
+            "{}{}enum.{}.html#variant.{}",
+            prefix,
+            if module_path.is_empty() {
+                String::new()
+            } else {
+                format!("{}/", module_path.join("/"))
+            },
+            enum_name,
+            variant_name,
+        );
+    }
+
     let kind_prefix = match location.kind {
         ItemKind::Struct => "struct.",
         ItemKind::Enum => "enum.",
