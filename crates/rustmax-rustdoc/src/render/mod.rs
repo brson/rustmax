@@ -242,7 +242,16 @@ impl<'a> RenderContext<'a> {
         let variant_name = variant_path.last()?;
 
         let enum_url = if crate_id == 0 {
-            self.build_item_url(enum_path, ItemKind::Enum, current_depth)?
+            // Find the enum's ID from paths and resolve through re-exports.
+            let enum_id = self.krate.paths.iter()
+                .find(|(_, s)| s.path == enum_path && s.kind == ItemKind::Enum)
+                .map(|(id, _)| id);
+            if let Some(enum_id) = enum_id {
+                self.find_reexport_url(enum_id, ItemKind::Enum, current_depth)
+                    .or_else(|| self.build_item_url(enum_path, ItemKind::Enum, current_depth))?
+            } else {
+                self.build_item_url(enum_path, ItemKind::Enum, current_depth)?
+            }
         } else {
             self.resolve_cross_crate_url(enum_path, current_depth)
                 .or_else(|| self.build_item_url(enum_path, ItemKind::Enum, current_depth))?
@@ -443,4 +452,250 @@ fn path_to_html_file(path: &[String]) -> PathBuf {
         }
     }
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rustdoc_types::*;
+
+    // Numeric IDs for test items.
+    const ROOT: u32 = 0;
+    const THREAD_MOD: u32 = 1;
+    const JH_USE: u32 = 2;
+    const SPAWN_USE: u32 = 3;
+    const ENUM_USE: u32 = 4;
+    const JH_DEF: u32 = 5;
+    const SPAWN_DEF: u32 = 6;
+    const ENUM_DEF: u32 = 7;
+    const OK_VAR: u32 = 8;
+    const ERR_VAR: u32 = 9;
+
+    /// Helper to build a minimal Item.
+    fn item(id: u32, name: &str, vis: Visibility, inner: ItemEnum) -> (Id, Item) {
+        (Id(id), Item {
+            id: Id(id),
+            crate_id: 0,
+            name: Some(name.to_string()),
+            span: None,
+            visibility: vis,
+            docs: None,
+            links: Default::default(),
+            attrs: vec![],
+            deprecation: None,
+            inner,
+        })
+    }
+
+    fn module(is_crate: bool, items: Vec<u32>) -> ItemEnum {
+        ItemEnum::Module(Module {
+            is_crate,
+            items: items.into_iter().map(Id).collect(),
+            is_stripped: false,
+        })
+    }
+
+    fn use_item(source: &str, name: &str, target: u32) -> ItemEnum {
+        ItemEnum::Use(Use {
+            source: source.to_string(),
+            name: name.to_string(),
+            id: Some(Id(target)),
+            is_glob: false,
+        })
+    }
+
+    fn empty_struct() -> ItemEnum {
+        ItemEnum::Struct(Struct {
+            kind: StructKind::Unit,
+            generics: Generics { params: vec![], where_predicates: vec![] },
+            impls: vec![],
+        })
+    }
+
+    fn empty_fn() -> ItemEnum {
+        ItemEnum::Function(Function {
+            sig: FunctionSignature {
+                inputs: vec![], output: None, is_c_variadic: false,
+            },
+            generics: Generics { params: vec![], where_predicates: vec![] },
+            header: FunctionHeader {
+                is_const: false, is_unsafe: false, is_async: false, abi: Abi::Rust,
+            },
+            has_body: true,
+        })
+    }
+
+    fn empty_enum(variant_ids: Vec<u32>) -> ItemEnum {
+        ItemEnum::Enum(Enum {
+            generics: Generics { params: vec![], where_predicates: vec![] },
+            has_stripped_variants: false,
+            variants: variant_ids.into_iter().map(Id).collect(),
+            impls: vec![],
+        })
+    }
+
+    fn plain_variant() -> ItemEnum {
+        ItemEnum::Variant(Variant {
+            kind: VariantKind::Plain,
+            discriminant: None,
+        })
+    }
+
+    fn path_entry(crate_id: u32, path: &[&str], kind: ItemKind) -> ItemSummary {
+        ItemSummary {
+            crate_id,
+            path: path.iter().map(|s| s.to_string()).collect(),
+            kind,
+        }
+    }
+
+    /// Build a minimal crate with a re-export scenario:
+    ///
+    ///   mycrate
+    ///   +-- thread (module)
+    ///       +-- JoinHandle (re-export from _priv::JoinHandle)
+    ///       +-- spawn (re-export from _priv::spawn)
+    ///       +-- MyEnum (re-export from _priv::MyEnum)
+    ///   +-- _priv (private module, not in public tree)
+    ///       +-- JoinHandle (struct def)
+    ///       +-- spawn (fn def)
+    ///       +-- MyEnum (enum def)
+    ///           +-- Ok (variant)
+    ///           +-- Err (variant)
+    fn test_crate() -> Crate {
+        let mut krate = Crate {
+            root: Id(ROOT),
+            crate_version: None,
+            includes_private: false,
+            index: Default::default(),
+            paths: Default::default(),
+            external_crates: Default::default(),
+            target: Target { triple: String::new(), target_features: vec![] },
+            format_version: 0,
+        };
+        let index = &mut krate.index;
+        let paths = &mut krate.paths;
+
+        // Root module.
+        let (id, i) = item(ROOT, "mycrate", Visibility::Public,
+            module(true, vec![THREAD_MOD]));
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0, &["mycrate"], ItemKind::Module));
+
+        // thread module.
+        let (id, i) = item(THREAD_MOD, "thread", Visibility::Public,
+            module(false, vec![JH_USE, SPAWN_USE, ENUM_USE]));
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0, &["mycrate", "thread"], ItemKind::Module));
+
+        // Re-export: JoinHandle.
+        let (id, i) = item(JH_USE, "JoinHandle", Visibility::Public,
+            use_item("mycrate::_priv::JoinHandle", "JoinHandle", JH_DEF));
+        index.insert(id, i);
+
+        // Re-export: spawn.
+        let (id, i) = item(SPAWN_USE, "spawn", Visibility::Public,
+            use_item("mycrate::_priv::spawn", "spawn", SPAWN_DEF));
+        index.insert(id, i);
+
+        // Re-export: MyEnum.
+        let (id, i) = item(ENUM_USE, "MyEnum", Visibility::Public,
+            use_item("mycrate::_priv::MyEnum", "MyEnum", ENUM_DEF));
+        index.insert(id, i);
+
+        // JoinHandle definition (in private module).
+        let (id, i) = item(JH_DEF, "JoinHandle", Visibility::Public, empty_struct());
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0,
+            &["mycrate", "_priv", "JoinHandle"], ItemKind::Struct));
+
+        // spawn definition (in private module).
+        let (id, i) = item(SPAWN_DEF, "spawn", Visibility::Public, empty_fn());
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0,
+            &["mycrate", "_priv", "spawn"], ItemKind::Function));
+
+        // MyEnum definition (in private module).
+        let (id, i) = item(ENUM_DEF, "MyEnum", Visibility::Public,
+            empty_enum(vec![OK_VAR, ERR_VAR]));
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0,
+            &["mycrate", "_priv", "MyEnum"], ItemKind::Enum));
+
+        // Enum variants.
+        let (id, i) = item(OK_VAR, "Ok", Visibility::Public, plain_variant());
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0,
+            &["mycrate", "_priv", "MyEnum", "Ok"], ItemKind::Variant));
+
+        let (id, i) = item(ERR_VAR, "Err", Visibility::Public, plain_variant());
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0,
+            &["mycrate", "_priv", "MyEnum", "Err"], ItemKind::Variant));
+
+        krate
+    }
+
+    fn test_config() -> RenderConfig {
+        RenderConfig {
+            output_dir: PathBuf::from("/tmp/test"),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn test_resolve_item_url_prefers_reexport() {
+        let krate = test_crate();
+        let config = test_config();
+        let ctx = RenderContext::new(&krate, &config).unwrap();
+
+        // JoinHandle is defined at mycrate::_priv::JoinHandle but re-exported
+        // at mycrate::thread::JoinHandle. Should resolve to the re-export path.
+        let url = ctx.resolve_item_url(&Id(JH_DEF), 2);
+        assert_eq!(url, Some("../../mycrate/thread/struct.JoinHandle.html".to_string()));
+
+        // spawn is defined at mycrate::_priv::spawn but re-exported
+        // at mycrate::thread::spawn.
+        let url = ctx.resolve_item_url(&Id(SPAWN_DEF), 2);
+        assert_eq!(url, Some("../../mycrate/thread/fn.spawn.html".to_string()));
+    }
+
+    #[test]
+    fn test_resolve_item_url_variant() {
+        let krate = test_crate();
+        let config = test_config();
+        let ctx = RenderContext::new(&krate, &config).unwrap();
+
+        // Enum variants should get anchor URLs on the re-exported enum page.
+        let url = ctx.resolve_item_url(&Id(OK_VAR), 2);
+        assert_eq!(url, Some("../../mycrate/thread/enum.MyEnum.html#variant.Ok".to_string()));
+
+        let url = ctx.resolve_item_url(&Id(ERR_VAR), 0);
+        assert_eq!(url, Some("mycrate/thread/enum.MyEnum.html#variant.Err".to_string()));
+    }
+
+    #[test]
+    fn test_resolve_item_links() {
+        let krate = test_crate();
+        let config = test_config();
+        let ctx = RenderContext::new(&krate, &config).unwrap();
+
+        // Simulate an item's `links` field mapping "super::spawn" to the spawn ID.
+        // Use the same FxHashMap type as Item.links by getting one from a dummy item.
+        let (_, dummy) = item(99, "x", Visibility::Public, empty_struct());
+        let mut links = dummy.links;
+        links.insert("super::spawn".to_string(), Id(SPAWN_DEF));
+        links.insert("super::JoinHandle".to_string(), Id(JH_DEF));
+
+        let resolved = ctx.resolve_item_links(&links, 2);
+
+        assert_eq!(
+            resolved.get("super::spawn"),
+            Some(&"../../mycrate/thread/fn.spawn.html".to_string()),
+        );
+        assert_eq!(
+            resolved.get("super::JoinHandle"),
+            Some(&"../../mycrate/thread/struct.JoinHandle.html".to_string()),
+        );
+    }
 }
