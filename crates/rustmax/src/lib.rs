@@ -688,10 +688,7 @@ pub mod tempfile {
 
 #[cfg(feature = "tera")]
 pub mod tera {
-    //! A text template engine based on Jinja2.
-    //!
-    //! See crate [`::tera`].
-
+    #![doc = include_str!("../doc-src/crate-tera.md")]
     pub use ::tera::*;
 }
 

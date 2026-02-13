@@ -477,6 +477,14 @@
     "crate::hyper":
     "api/rustmax/hyper/index.html",
 
+    // tera
+    "crate::tera::Tera":
+    "api/rustmax/tera/struct.Tera.html",
+    "crate::tera::Tera::one_off":
+    "api/rustmax/tera/struct.Tera.html#method.one_off",
+    "crate::tera::Context":
+    "api/rustmax/tera/struct.Context.html",
+
     // zip
     "crate::zip::ZipArchive":
     "api/rustmax/zip/read/struct.ZipArchive.html",
