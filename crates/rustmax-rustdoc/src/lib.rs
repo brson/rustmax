@@ -327,11 +327,35 @@ impl RustDocSet {
                     };
 
                     // Only insert if not already present (prefer canonical paths).
-                    index.items.entry(path_str).or_insert_with(|| ItemLocation {
-                        crate_name: target_crate,
-                        path: target_path,
+                    index.items.entry(path_str.clone()).or_insert_with(|| ItemLocation {
+                        crate_name: target_crate.clone(),
+                        path: target_path.clone(),
                         kind,
                     });
+
+                    // For local re-exports, also update the canonical (definition)
+                    // path entry to point to the re-export location. This ensures
+                    // cross-crate lookups by definition path (e.g.,
+                    // "core::ops::function::FnOnce") resolve to the public re-export
+                    // location (e.g., "core::ops::FnOnce" → core/ops/trait.FnOnce.html).
+                    // Prefer shorter re-export paths to avoid prelude re-exports.
+                    if path_info.crate_id == 0 {
+                        let canonical_path_str = path_info.path.join("::");
+                        if canonical_path_str != path_str {
+                            let new_loc = ItemLocation {
+                                crate_name: target_crate,
+                                path: target_path,
+                                kind,
+                            };
+                            index.items.entry(canonical_path_str)
+                                .and_modify(|existing| {
+                                    if new_loc.path.len() < existing.path.len() {
+                                        *existing = new_loc.clone();
+                                    }
+                                })
+                                .or_insert(new_loc);
+                        }
+                    }
                 }
             }
         }

@@ -467,7 +467,11 @@ impl<'a, 'ctx> LinkedRenderer<'a, 'ctx> {
     }
 
     fn render_resolved_path(&self, path: &Path) -> String {
-        let name = html_escape(&path.path);
+        // Use only the last segment as the display name. Rustdoc JSON
+        // stores source-level paths like "super::join_handle::JoinHandle"
+        // but we want to show just "JoinHandle".
+        let simple_name = path.path.rsplit("::").next().unwrap_or(&path.path);
+        let name = html_escape(simple_name);
         let args = path.args.as_ref()
             .map(|a| self.render_generic_args(a))
             .unwrap_or_default();

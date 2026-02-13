@@ -135,6 +135,8 @@ impl<'a> RenderContext<'a> {
             ItemKind::Constant => "constant.",
             ItemKind::Static => "static.",
             ItemKind::Macro => "macro.",
+            ItemKind::ProcDerive => "derive.",
+            ItemKind::ProcAttribute => "attr.",
             ItemKind::Module => "",
             _ => return None, // Don't link to other kinds.
         };

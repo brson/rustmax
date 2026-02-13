@@ -208,6 +208,8 @@ fn path_to_html(path: &[String], kind: Option<ItemKind>) -> PathBuf {
         Some(ItemKind::Static) => "static.",
         Some(ItemKind::Macro) => "macro.",
         Some(ItemKind::Union) => "union.",
+        Some(ItemKind::ProcDerive) => "derive.",
+        Some(ItemKind::ProcAttribute) => "attr.",
         _ => "",
     };
 
@@ -240,6 +242,11 @@ fn item_kind(inner: &ItemEnum) -> Option<ItemKind> {
         ItemEnum::Constant { .. } => Some(ItemKind::Constant),
         ItemEnum::Static(_) => Some(ItemKind::Static),
         ItemEnum::Macro(_) => Some(ItemKind::Macro),
+        ItemEnum::ProcMacro(pm) => Some(match pm.kind {
+            rustdoc_types::MacroKind::Derive => ItemKind::ProcDerive,
+            rustdoc_types::MacroKind::Attr => ItemKind::ProcAttribute,
+            rustdoc_types::MacroKind::Bang => ItemKind::Macro,
+        }),
         ItemEnum::Union(_) => Some(ItemKind::Union),
         _ => None,
     }

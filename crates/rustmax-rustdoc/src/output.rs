@@ -120,6 +120,11 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
         ItemEnum::Constant { .. } => Some(ItemKind::Constant),
         ItemEnum::Static(_) => Some(ItemKind::Static),
         ItemEnum::Macro(_) => Some(ItemKind::Macro),
+        ItemEnum::ProcMacro(pm) => Some(match pm.kind {
+            rustdoc_types::MacroKind::Derive => ItemKind::ProcDerive,
+            rustdoc_types::MacroKind::Attr => ItemKind::ProcAttribute,
+            rustdoc_types::MacroKind::Bang => ItemKind::Macro,
+        }),
         ItemEnum::Union(_) => Some(ItemKind::Union),
         _ => None,
     };
@@ -133,6 +138,8 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
         Some(ItemKind::Constant) => "constant.",
         Some(ItemKind::Static) => "static.",
         Some(ItemKind::Macro) => "macro.",
+        Some(ItemKind::ProcDerive) => "derive.",
+        Some(ItemKind::ProcAttribute) => "attr.",
         Some(ItemKind::Union) => "union.",
         _ => "",
     };
