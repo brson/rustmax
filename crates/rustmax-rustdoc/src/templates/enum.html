@@ -83,7 +83,7 @@
                 {% if impl_block.methods | length > 0 %}
                 <dl>
                     {% for method in impl_block.methods %}
-                    <dt><pre><code>{{ method.signature | safe }}</code></pre></dt>
+                    <dt id="method.{{ method.name }}"><pre><code>{{ method.signature | safe }}</code></pre></dt>
                     {% if method.docs %}
                     <dd>{{ method.docs | safe }}</dd>
                     {% endif %}

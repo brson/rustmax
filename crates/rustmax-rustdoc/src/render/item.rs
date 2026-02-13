@@ -338,6 +338,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
                     let sig = linked.render_function_sig(f, method_name);
                     let method_links = ctx.resolve_item_links(&trait_item.links, depth);
                     let info = MethodInfo {
+                        name: method_name.to_string(),
                         signature: sig,
                         docs: trait_item.docs.as_ref()
                             .map(|d| ctx.render_markdown_with_item_links(d, depth, &method_links))
@@ -537,6 +538,7 @@ struct AssocTypeInfo {
 
 #[derive(serde::Serialize)]
 struct MethodInfo {
+    name: String,
     signature: String,
     docs: String,
 }
@@ -572,6 +574,7 @@ fn collect_impls(ctx: &RenderContext, type_id: &rustdoc_types::Id, depth: usize)
                         let sig = linked.render_function_sig(f, method_name);
                         let method_links = ctx.resolve_item_links(&method_item.links, depth);
                         methods.push(MethodInfo {
+                            name: method_name.to_string(),
                             signature: sig,
                             docs: method_item.docs.as_ref()
                                 .map(|d| ctx.render_markdown_with_item_links(d, depth, &method_links))

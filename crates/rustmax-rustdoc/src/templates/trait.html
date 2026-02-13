@@ -77,7 +77,7 @@
             <h2>Required Methods</h2>
             <dl>
                 {% for method in required_methods %}
-                <dt><pre><code>{{ method.signature | safe }}</code></pre></dt>
+                <dt id="method.{{ method.name }}"><pre><code>{{ method.signature | safe }}</code></pre></dt>
                 {% if method.docs %}
                 <dd>{{ method.docs | safe }}</dd>
                 {% endif %}
@@ -91,7 +91,7 @@
             <h2>Provided Methods</h2>
             <dl>
                 {% for method in provided_methods %}
-                <dt><pre><code>{{ method.signature | safe }}</code></pre></dt>
+                <dt id="method.{{ method.name }}"><pre><code>{{ method.signature | safe }}</code></pre></dt>
                 {% if method.docs %}
                 <dd>{{ method.docs | safe }}</dd>
                 {% endif %}

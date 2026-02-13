@@ -184,10 +184,14 @@ impl<'a> RenderContext<'a> {
     ) -> HashMap<String, String> {
         let mut resolved = HashMap::new();
         for (text, id) in links {
+            // The links field keys may have backtick wrappers (`` `Builder` ``).
+            // Strip them since preprocess_shortcut_links removes them from URLs.
+            let clean_key = text.trim_matches('`').to_string();
             if let Some(url) = self.resolve_reexport_url(id, current_depth) {
-                // The links field keys may have backtick wrappers (`` `Builder` ``).
-                // Strip them since preprocess_shortcut_links removes them from URLs.
-                let clean_key = text.trim_matches('`').to_string();
+                resolved.insert(clean_key, url);
+            } else if let Some(url) = self.resolve_method_from_link_text(&clean_key, current_depth) {
+                // Fallback: parse "Type::method" from the link text when the
+                // method ID isn't in our index (common for cross-crate methods).
                 resolved.insert(clean_key, url);
             }
         }
@@ -271,27 +275,81 @@ impl<'a> RenderContext<'a> {
     ) -> Option<String> {
         let method_name = method_item.name.as_deref()?;
 
-        // Find the parent type by searching impl blocks.
-        for (_impl_id, impl_item) in &self.krate.index {
-            let ItemEnum::Impl(impl_) = &impl_item.inner else {
-                continue;
-            };
-            if !impl_.items.contains(method_id) {
-                continue;
-            }
-            // Found the impl containing this method.
-            // Get the type ID from the impl's for_ type.
-            if let Some(type_id) = get_type_id(&impl_.for_) {
-                if let Some(type_url) = self.resolve_reexport_url(type_id, current_depth) {
-                    // Strip any existing fragment.
-                    let base_url = type_url.split('#').next().unwrap_or(&type_url);
-                    return Some(format!("{}#method.{}", base_url, method_name));
+        // Find the parent by searching impl blocks and trait definitions.
+        for (parent_id, parent_item) in &self.krate.index {
+            match &parent_item.inner {
+                ItemEnum::Impl(impl_) => {
+                    if !impl_.items.contains(method_id) {
+                        continue;
+                    }
+                    // Found the impl containing this method.
+                    if let Some(type_id) = get_type_id(&impl_.for_) {
+                        if let Some(type_url) = self.resolve_reexport_url(type_id, current_depth) {
+                            let base_url = type_url.split('#').next().unwrap_or(&type_url);
+                            return Some(format!("{}#method.{}", base_url, method_name));
+                        }
+                    }
+                    return None;
                 }
+                ItemEnum::Trait(trait_) => {
+                    if !trait_.items.contains(method_id) {
+                        continue;
+                    }
+                    // Found the trait containing this method.
+                    if let Some(trait_url) = self.resolve_reexport_url(parent_id, current_depth) {
+                        let base_url = trait_url.split('#').next().unwrap_or(&trait_url);
+                        return Some(format!("{}#method.{}", base_url, method_name));
+                    }
+                    return None;
+                }
+                _ => continue,
             }
-            break;
         }
 
         None
+    }
+
+    /// Resolve a "Type::method" pattern from link text.
+    ///
+    /// Fallback when the method ID isn't in our index (cross-crate methods).
+    /// Parses the link text to find the parent type, resolves it, and appends
+    /// a `#method.name` anchor.
+    fn resolve_method_from_link_text(
+        &self,
+        text: &str,
+        current_depth: usize,
+    ) -> Option<String> {
+        // Split "Type::method" or "mod::Type::method" on last "::".
+        let (type_part, method_name) = text.rsplit_once("::")?;
+
+        // Search krate.paths for the type by matching the last path segment,
+        // preferring types/traits over modules.
+        let type_name = type_part.rsplit("::").next().unwrap_or(type_part);
+        let mut best: Option<(String, usize)> = None;
+
+        for (id, summary) in &self.krate.paths {
+            let is_type = matches!(
+                summary.kind,
+                ItemKind::Struct | ItemKind::Enum | ItemKind::Trait | ItemKind::Union
+            );
+            if !is_type {
+                continue;
+            }
+            if summary.path.last().map(|s| s.as_str()) != Some(type_name) {
+                continue;
+            }
+            if let Some(type_url) = self.resolve_reexport_url(id, current_depth) {
+                let base_url = type_url.split('#').next().unwrap_or(&type_url);
+                let url = format!("{}#method.{}", base_url, method_name);
+                let path_len = summary.path.len();
+                // Prefer shorter paths (more likely the canonical public location).
+                if best.as_ref().map_or(true, |(_, len)| path_len < *len) {
+                    best = Some((url, path_len));
+                }
+            }
+        }
+
+        best.map(|(url, _)| url)
     }
 
     /// Find a re-export URL for a local item by checking if it appears as a
@@ -503,6 +561,9 @@ mod tests {
     const ENUM_DEF: u32 = 7;
     const OK_VAR: u32 = 8;
     const ERR_VAR: u32 = 9;
+    const TRAIT_DEF: u32 = 10;
+    const TRAIT_METHOD: u32 = 11;
+    const TRAIT_USE: u32 = 12;
 
     /// Helper to build a minimal Item.
     fn item(id: u32, name: &str, vis: Visibility, inner: ItemEnum) -> (Id, Item) {
@@ -574,6 +635,18 @@ mod tests {
         })
     }
 
+    fn empty_trait(method_ids: Vec<u32>) -> ItemEnum {
+        ItemEnum::Trait(Trait {
+            is_auto: false,
+            is_unsafe: false,
+            is_dyn_compatible: true,
+            items: method_ids.into_iter().map(Id).collect(),
+            generics: Generics { params: vec![], where_predicates: vec![] },
+            bounds: vec![],
+            implementations: vec![],
+        })
+    }
+
     fn path_entry(crate_id: u32, path: &[&str], kind: ItemKind) -> ItemSummary {
         ItemSummary {
             crate_id,
@@ -617,7 +690,7 @@ mod tests {
 
         // thread module.
         let (id, i) = item(THREAD_MOD, "thread", Visibility::Public,
-            module(false, vec![JH_USE, SPAWN_USE, ENUM_USE]));
+            module(false, vec![JH_USE, SPAWN_USE, ENUM_USE, TRAIT_USE]));
         index.insert(id.clone(), i);
         paths.insert(id, path_entry(0, &["mycrate", "thread"], ItemKind::Module));
 
@@ -665,6 +738,22 @@ mod tests {
         index.insert(id.clone(), i);
         paths.insert(id, path_entry(0,
             &["mycrate", "_priv", "MyEnum", "Err"], ItemKind::Variant));
+
+        // MyTrait definition (in private module) with one method.
+        let (id, i) = item(TRAIT_DEF, "MyTrait", Visibility::Public,
+            empty_trait(vec![TRAIT_METHOD]));
+        index.insert(id.clone(), i);
+        paths.insert(id, path_entry(0,
+            &["mycrate", "_priv", "MyTrait"], ItemKind::Trait));
+
+        // Trait method.
+        let (id, i) = item(TRAIT_METHOD, "do_stuff", Visibility::Public, empty_fn());
+        index.insert(id, i);
+
+        // Re-export: MyTrait.
+        let (id, i) = item(TRAIT_USE, "MyTrait", Visibility::Public,
+            use_item("mycrate::_priv::MyTrait", "MyTrait", TRAIT_DEF));
+        index.insert(id, i);
 
         krate
     }
@@ -729,6 +818,21 @@ mod tests {
         assert_eq!(
             resolved.get("super::JoinHandle"),
             Some(&"../../mycrate/thread/struct.JoinHandle.html".to_string()),
+        );
+    }
+
+    #[test]
+    fn test_resolve_trait_method_url() {
+        let krate = test_crate();
+        let config = test_config();
+        let ctx = RenderContext::new(&krate, &config).unwrap();
+
+        // Trait method do_stuff is defined inside MyTrait. It should resolve
+        // to the trait page at the re-export location with a #method anchor.
+        let url = ctx.resolve_reexport_url(&Id(TRAIT_METHOD), 2);
+        assert_eq!(
+            url,
+            Some("../../mycrate/thread/trait.MyTrait.html#method.do_stuff".to_string()),
         );
     }
 
