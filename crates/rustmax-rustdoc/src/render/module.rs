@@ -80,8 +80,10 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
             // Determine link URL.
             let item_url = match ctx.reexport_target(target_id) {
                 ReexportTarget::External { ref path, kind } => {
-                    // Link to external crate's page.
-                    ctx.build_item_url(path, kind, depth).unwrap_or_default()
+                    // Resolve through global index to get re-export-aware URL,
+                    // falling back to raw path construction.
+                    ctx.resolve_item_url(target_id, depth)
+                        .unwrap_or_else(|| ctx.build_item_url(path, kind, depth).unwrap_or_default())
                 }
                 ReexportTarget::LocalPublic { .. } | ReexportTarget::NeedsPage => {
                     // Link to re-export's page at re-export location.
