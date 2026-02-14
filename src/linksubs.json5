@@ -5,63 +5,63 @@
     "crate::std::collections::HashSet":
     "api/std/collections/struct.HashSet.html",
     "crate::std::hash::Hasher":
-    "api/std/hash/trait.Hasher.html",
+    "api/core/hash/trait.Hasher.html",
     "crate::ahash::AHasher":
-    "api/rustmax/ahash/struct.AHasher.html",
+    "api/ahash/struct.AHasher.html",
     "crate::ahash::AHashMap":
-    "api/rustmax/ahash/struct.AHashMap.html",
+    "api/ahash/struct.AHashMap.html",
 
     // anyhow
     "crate::thiserror":
     "api/rustmax/thiserror/index.html",
     "crate::anyhow::anyhow":
-    "api/rustmax/anyhow/macro.anyhow.html",
+    "api/anyhow/macro.anyhow.html",
     "crate::anyhow::bail":
-    "api/rustmax/anyhow/macro.bail.html",
+    "api/anyhow/macro.bail.html",
     "crate::anyhow::Error":
-    "api/rustmax/anyhow/struct.Error.html",
+    "api/anyhow/struct.Error.html",
     "crate::anyhow::Result":
-    "api/rustmax/anyhow/type.Result.html",
+    "api/anyhow/type.Result.html",
     "crate::anyhow::Context":
-    "api/rustmax/anyhow/trait.Context.html",
+    "api/anyhow/trait.Context.html",
     "crate::anyhow::Context::context":
-    "api/rustmax/anyhow/trait.Context.html#tymethod.context",
+    "api/anyhow/trait.Context.html#tymethod.context",
     "crate::std::error::Error":
-    "api/std/error/trait.Error.html",
+    "api/core/error/trait.Error.html",
 
     // blake3
     "crate::blake3::hash":
-    "api/rustmax/blake3/fn.hash.html",
+    "api/blake3/fn.hash.html",
     "crate::blake3::Hasher":
-    "api/rustmax/blake3/struct.Hasher.html",
+    "api/blake3/struct.Hasher.html",
     "crate::blake3::keyed_hash":
-    "api/rustmax/blake3/fn.keyed_hash.html",
+    "api/blake3/fn.keyed_hash.html",
     "crate::blake3::derive_key":
-    "api/rustmax/blake3/fn.derive_key.html",
+    "api/blake3/fn.derive_key.html",
     "crate::blake3::Hasher::finalize_xof":
-    "api/rustmax/blake3/struct.Hasher.html#method.finalize_xof",
+    "api/blake3/struct.Hasher.html#method.finalize_xof",
     "crate::blake3::OutputReader":
-    "api/rustmax/blake3/struct.OutputReader.html",
+    "api/blake3/struct.OutputReader.html",
 
     // bytes
     "crate::bytes::Bytes":
-    "api/rustmax/bytes/struct.Bytes.html",
+    "api/bytes/struct.Bytes.html",
     "crate::bytes::BytesMut":
-    "api/rustmax/bytes/struct.BytesMut.html",
+    "api/bytes/struct.BytesMut.html",
     "crate::bytes::Buf":
-    "api/rustmax/bytes/trait.Buf.html",
+    "api/bytes/trait.Buf.html",
     "crate::bytes::BufMut":
-    "api/rustmax/bytes/trait.BufMut.html",
+    "api/bytes/trait.BufMut.html",
 
     // crossbeam
     "crate::crossbeam::channel":
-    "api/rustmax/crossbeam/channel/index.html",
+    "api/crossbeam_channel/index.html",
     "crate::crossbeam::scope":
-    "api/rustmax/crossbeam/fn.scope.html",
+    "api/crossbeam_utils/thread/fn.scope.html",
     "crate::crossbeam::select":
-    "api/rustmax/crossbeam/macro.select.html",
+    "api/crossbeam_channel/macro.select.html",
     "crate::crossbeam::utils::Backoff":
-    "api/rustmax/crossbeam/utils/struct.Backoff.html",
+    "api/crossbeam_utils/struct.Backoff.html",
     "crate::std::sync":
     "api/std/sync/index.html",
     "crate::std::thread":
@@ -73,145 +73,149 @@
 
     // futures
     "crate::futures::Future":
-    "api/rustmax/futures/future/trait.Future.html",
+    "api/core/future/trait.Future.html",
     "crate::futures::Stream":
-    "api/rustmax/futures/stream/trait.Stream.html",
+    "api/futures_core/stream/trait.Stream.html",
     "crate::futures::Sink":
-    "api/rustmax/futures/sink/trait.Sink.html",
+    "api/futures_sink/trait.Sink.html",
     "crate::futures::future":
-    "api/rustmax/futures/future/index.html",
+    "api/futures_util/future/index.html",
     "crate::futures::stream":
-    "api/rustmax/futures/stream/index.html",
+    "api/futures_util/stream/index.html",
     "crate::futures::sink":
-    "api/rustmax/futures/sink/index.html",
+    "api/futures_util/sink/index.html",
     "crate::futures::executor":
-    "api/rustmax/futures/executor/index.html",
+    "api/futures/executor/index.html",
     "crate::futures::channel":
-    "api/rustmax/futures/channel/index.html",
+    "api/futures_channel/index.html",
     "crate::futures::channel::mpsc":
-    "api/rustmax/futures/channel/mpsc/index.html",
+    "api/futures_channel/mpsc/index.html",
     "crate::futures::channel::oneshot":
-    "api/rustmax/futures/channel/oneshot/index.html",
+    "api/futures_channel/oneshot/index.html",
 
     // flate2
     "crate::flate2::write::DeflateEncoder":
-    "api/rustmax/flate2/write/struct.DeflateEncoder.html",
+    "api/flate2/write/struct.DeflateEncoder.html",
     "crate::flate2::read::DeflateDecoder":
-    "api/rustmax/flate2/read/struct.DeflateDecoder.html",
+    "api/flate2/read/struct.DeflateDecoder.html",
     "crate::flate2::write::GzEncoder":
-    "api/rustmax/flate2/write/struct.GzEncoder.html",
+    "api/flate2/write/struct.GzEncoder.html",
     "crate::flate2::read::GzDecoder":
-    "api/rustmax/flate2/read/struct.GzDecoder.html",
+    "api/flate2/read/struct.GzDecoder.html",
     "crate::flate2::write::ZlibEncoder":
-    "api/rustmax/flate2/write/struct.ZlibEncoder.html",
+    "api/flate2/write/struct.ZlibEncoder.html",
     "crate::flate2::read::ZlibDecoder":
-    "api/rustmax/flate2/read/struct.ZlibDecoder.html",
+    "api/flate2/read/struct.ZlibDecoder.html",
 
     // glob
     "crate::glob::glob":
-    "api/rustmax/glob/fn.glob.html",
+    "api/glob/fn.glob.html",
     "crate::glob::glob_with":
-    "api/rustmax/glob/fn.glob_with.html",
+    "api/glob/fn.glob_with.html",
     "crate::glob::Pattern":
-    "api/rustmax/glob/struct.Pattern.html",
+    "api/glob/struct.Pattern.html",
 
     // chrono
     "crate::chrono::NaiveDate":
-    "api/rustmax/chrono/naive/struct.NaiveDate.html",
+    "api/chrono/naive/struct.NaiveDate.html",
     "crate::chrono::NaiveTime":
-    "api/rustmax/chrono/naive/struct.NaiveTime.html",
+    "api/chrono/naive/struct.NaiveTime.html",
     "crate::chrono::NaiveDateTime":
-    "api/rustmax/chrono/naive/struct.NaiveDateTime.html",
+    "api/chrono/naive/struct.NaiveDateTime.html",
     "crate::chrono::DateTime":
-    "api/rustmax/chrono/struct.DateTime.html",
+    "api/chrono/struct.DateTime.html",
     "crate::chrono::TimeZone":
-    "api/rustmax/chrono/trait.TimeZone.html",
+    "api/chrono/trait.TimeZone.html",
     "crate::jiff":
     "api/rustmax/jiff/index.html",
 
     // jiff
     "crate::jiff::Timestamp":
-    "api/rustmax/jiff/struct.Timestamp.html",
+    "api/jiff/struct.Timestamp.html",
     "crate::jiff::Zoned":
-    "api/rustmax/jiff/struct.Zoned.html",
+    "api/jiff/struct.Zoned.html",
     "crate::jiff::civil::DateTime":
-    "api/rustmax/jiff/civil/struct.DateTime.html",
+    "api/jiff/civil/struct.DateTime.html",
     "crate::jiff::civil::Date":
-    "api/rustmax/jiff/civil/struct.Date.html",
+    "api/jiff/civil/struct.Date.html",
     "crate::jiff::civil::Time":
-    "api/rustmax/jiff/civil/struct.Time.html",
+    "api/jiff/civil/struct.Time.html",
 
     // serde
     "crate::serde":
     "api/rustmax/serde/index.html",
     "crate::serde::Serialize":
-    "api/rustmax/serde/trait.Serialize.html",
+    "api/serde_core/trait.Serialize.html",
     "crate::serde::Deserialize":
-    "api/rustmax/serde/trait.Deserialize.html",
+    "api/serde_core/trait.Deserialize.html",
     "crate::serde_json":
     "api/rustmax/serde_json/index.html",
 
     // tokio
     "crate::tokio::runtime::Runtime":
-    "api/rustmax/tokio/runtime/struct.Runtime.html",
+    "api/tokio/runtime/struct.Runtime.html",
     "crate::tokio::main":
-    "api/rustmax/tokio/attr.main.html",
+    "api/tokio_macros/attr.main.html",
     "crate::tokio::net::TcpListener":
-    "api/rustmax/tokio/net/struct.TcpListener.html",
+    "api/tokio/net/struct.TcpListener.html",
     "crate::tokio::net::TcpStream":
-    "api/rustmax/tokio/net/struct.TcpStream.html",
+    "api/tokio/net/struct.TcpStream.html",
 
     // regex
     "crate::regex::Regex":
-    "api/rustmax/regex/struct.Regex.html",
+    "api/regex_automata/meta/struct.Regex.html",
     "crate::regex::Regex::new":
-    "api/rustmax/regex/struct.Regex.html#method.new",
+    "api/regex_automata/meta/struct.Regex.html#method.new",
     "crate::regex::Regex::is_match":
-    "api/rustmax/regex/struct.Regex.html#method.is_match",
+    "api/regex_automata/meta/struct.Regex.html#method.is_match",
 
     // itertools
     "crate::itertools::Itertools":
-    "api/rustmax/itertools/trait.Itertools.html",
+    "api/itertools/trait.Itertools.html",
     "crate::itertools::Itertools::group_by":
-    "api/rustmax/itertools/trait.Itertools.html#method.group_by",
+    "api/itertools/trait.Itertools.html#method.group_by",
     "crate::itertools::Itertools::chunks":
-    "api/rustmax/itertools/trait.Itertools.html#method.chunks",
+    "api/itertools/trait.Itertools.html#method.chunks",
     "crate::itertools::Itertools::sorted":
-    "api/rustmax/itertools/trait.Itertools.html#method.sorted",
+    "api/itertools/trait.Itertools.html#method.sorted",
     "crate::itertools::Itertools::dedup":
-    "api/rustmax/itertools/trait.Itertools.html#method.dedup",
+    "api/itertools/trait.Itertools.html#method.dedup",
     "crate::itertools::Itertools::intersperse":
-    "api/rustmax/itertools/trait.Itertools.html#method.intersperse",
+    "api/itertools/trait.Itertools.html#method.intersperse",
     "crate::itertools::Itertools::cartesian_product":
-    "api/rustmax/itertools/trait.Itertools.html#method.cartesian_product",
+    "api/itertools/trait.Itertools.html#method.cartesian_product",
+    "crate::itertools::Itertools::chunk_by":
+    "api/itertools/trait.Itertools.html#method.chunk_by",
     "crate::itertools::zip_eq":
-    "api/rustmax/itertools/fn.zip_eq.html",
+    "api/rustmax/itertools/index.html",
     "crate::itertools::repeat_n":
-    "api/rustmax/itertools/fn.repeat_n.html",
+    "api/itertools/fn.repeat_n.html",
 
     // memchr
     "crate::memchr::memchr":
-    "api/rustmax/memchr/fn.memchr.html",
+    "api/memchr/fn.memchr.html",
     "crate::memchr::memchr2":
-    "api/rustmax/memchr/fn.memchr2.html",
+    "api/memchr/fn.memchr2.html",
     "crate::memchr::memchr3":
-    "api/rustmax/memchr/fn.memchr3.html",
+    "api/memchr/fn.memchr3.html",
     "crate::memchr::memmem":
-    "api/rustmax/memchr/memmem/index.html",
+    "api/memchr/memmem/index.html",
     "crate::regex":
     "api/rustmax/regex/index.html",
 
     // log
     "crate::log::error":
-    "api/rustmax/log/macro.error.html",
+    "api/log/macro.error.html",
     "crate::log::warn":
-    "api/rustmax/log/macro.warn.html",
+    "api/log/macro.warn.html",
     "crate::log::info":
-    "api/rustmax/log/macro.info.html",
+    "api/log/macro.info.html",
     "crate::log::debug":
-    "api/rustmax/log/macro.debug.html",
+    "api/log/macro.debug.html",
     "crate::log::trace":
-    "api/rustmax/log/macro.trace.html",
+    "api/log/macro.trace.html",
+    "crate::log":
+    "api/rustmax/log/index.html",
     "crate::env_logger":
     "api/rustmax/env_logger/index.html",
     "crate::simplelog":
@@ -223,191 +227,201 @@
 
     // thiserror
     "crate::thiserror::Error":
-    "api/rustmax/thiserror/derive.Error.html",
+    "api/rustmax/thiserror/index.html",
     "crate::std::fmt::Display":
-    "api/std/fmt/trait.Display.html",
+    "api/core/fmt/trait.Display.html",
     "crate::std::convert::From":
-    "api/std/convert/trait.From.html",
+    "api/core/convert/trait.From.html",
     "crate::anyhow":
     "api/rustmax/anyhow/index.html",
 
     // derive_more
     "crate::std::ops::Add":
-    "api/std/ops/trait.Add.html",
+    "api/core/ops/trait.Add.html",
     "crate::std::ops::Mul":
-    "api/std/ops/trait.Mul.html",
+    "api/core/ops/trait.Mul.html",
     "crate::std::ops::Deref":
-    "api/std/ops/trait.Deref.html",
+    "api/core/ops/trait.Deref.html",
     "crate::std::convert::Into":
-    "api/std/convert/trait.Into.html",
+    "api/core/convert/trait.Into.html",
     "crate::std::convert::TryFrom":
-    "api/std/convert/trait.TryFrom.html",
+    "api/core/convert/trait.TryFrom.html",
     "crate::std::iter::IntoIterator":
-    "api/std/iter/trait.IntoIterator.html",
+    "api/core/iter/trait.IntoIterator.html",
 
     // comrak
     "crate::comrak::markdown_to_html":
-    "api/rustmax/comrak/fn.markdown_to_html.html",
+    "api/comrak/fn.markdown_to_html.html",
     "crate::comrak::parse_document":
-    "api/rustmax/comrak/fn.parse_document.html",
+    "api/comrak/fn.parse_document.html",
     "crate::comrak::Options":
-    "api/rustmax/comrak/struct.Options.html",
+    "api/comrak/struct.Options.html",
 
     // clap
     "crate::clap::Parser":
-    "api/rustmax/clap/trait.Parser.html",
+    "api/clap_builder/trait.Parser.html",
     "crate::clap::Subcommand":
-    "api/rustmax/clap/trait.Subcommand.html",
+    "api/clap_builder/trait.Subcommand.html",
     "crate::clap::Command":
-    "api/rustmax/clap/struct.Command.html",
+    "api/clap_builder/struct.Command.html",
     "crate::clap::Arg":
-    "api/rustmax/clap/struct.Arg.html",
+    "api/clap_builder/struct.Arg.html",
 
     // rayon
     "crate::rayon::iter::ParallelIterator":
-    "api/rustmax/rayon/iter/trait.ParallelIterator.html",
+    "api/rayon/iter/trait.ParallelIterator.html",
     "crate::rayon::slice::ParallelSlice":
-    "api/rustmax/rayon/slice/trait.ParallelSlice.html",
+    "api/rayon/slice/trait.ParallelSlice.html",
     "crate::rayon::iter::ParallelIterator::map":
-    "api/rustmax/rayon/iter/trait.ParallelIterator.html#method.map",
+    "api/rayon/iter/trait.ParallelIterator.html#method.map",
     "crate::rayon::iter::ParallelIterator::filter":
-    "api/rustmax/rayon/iter/trait.ParallelIterator.html#method.filter",
+    "api/rayon/iter/trait.ParallelIterator.html#method.filter",
     "crate::rayon::iter::ParallelIterator::reduce":
-    "api/rustmax/rayon/iter/trait.ParallelIterator.html#method.reduce",
+    "api/rayon/iter/trait.ParallelIterator.html#method.reduce",
     "crate::rayon::slice::ParallelSliceMut::par_sort":
-    "api/rustmax/rayon/slice/trait.ParallelSliceMut.html#method.par_sort",
+    "api/rayon/slice/trait.ParallelSliceMut.html#method.par_sort",
     "crate::rayon::join":
-    "api/rustmax/rayon/fn.join.html",
+    "api/rayon_core/fn.join.html",
     "crate::rayon::scope":
-    "api/rustmax/rayon/fn.scope.html",
+    "api/rayon_core/fn.scope.html",
     "crate::rayon::ThreadPool":
-    "api/rustmax/rayon/struct.ThreadPool.html",
+    "api/rayon_core/struct.ThreadPool.html",
 
     // num-bigint
     "crate::num_bigint::BigInt":
-    "api/rustmax/num_bigint/struct.BigInt.html",
+    "api/num_bigint/struct.BigInt.html",
     "crate::num_bigint::BigUint":
-    "api/rustmax/num_bigint/struct.BigUint.html",
+    "api/num_bigint/struct.BigUint.html",
 
     // sha2
     "crate::sha2::Digest":
-    "api/rustmax/sha2/trait.Digest.html",
+    "api/digest/trait.Digest.html",
     "crate::sha2::Digest::digest":
-    "api/rustmax/sha2/trait.Digest.html#method.digest",
+    "api/digest/trait.Digest.html#method.digest",
     "crate::sha2::Digest::new":
-    "api/rustmax/sha2/trait.Digest.html#method.new",
+    "api/digest/trait.Digest.html#method.new",
     "crate::sha2::Digest::update":
-    "api/rustmax/sha2/trait.Digest.html#method.update",
+    "api/digest/trait.Digest.html#method.update",
     "crate::sha2::Digest::finalize":
-    "api/rustmax/sha2/trait.Digest.html#method.finalize",
+    "api/digest/trait.Digest.html#method.finalize",
 
     // base64
     "crate::base64::encode":
-    "api/rustmax/base64/fn.encode.html",
+    "api/base64/fn.encode.html",
     "crate::base64::decode":
-    "api/rustmax/base64/fn.decode.html",
+    "api/base64/fn.decode.html",
     "crate::base64::Engine":
-    "api/rustmax/base64/trait.Engine.html",
+    "api/base64/trait.Engine.html",
 
     // serde_json
     "crate::serde_json::to_string":
-    "api/rustmax/serde_json/fn.to_string.html",
+    "api/serde_json/fn.to_string.html",
     "crate::serde_json::from_str":
-    "api/rustmax/serde_json/fn.from_str.html",
+    "api/serde_json/fn.from_str.html",
     "crate::serde_json::to_writer":
-    "api/rustmax/serde_json/fn.to_writer.html",
+    "api/serde_json/fn.to_writer.html",
     "crate::serde_json::from_reader":
-    "api/rustmax/serde_json/fn.from_reader.html",
+    "api/serde_json/fn.from_reader.html",
     "crate::serde_json::to_value":
-    "api/rustmax/serde_json/fn.to_value.html",
+    "api/serde_json/fn.to_value.html",
     "crate::serde_json::from_value":
-    "api/rustmax/serde_json/fn.from_value.html",
+    "api/serde_json/fn.from_value.html",
     "crate::serde_json::Value":
-    "api/rustmax/serde_json/enum.Value.html",
+    "api/serde_json/enum.Value.html",
 
     // rand
     "crate::rand::rng":
-    "api/rustmax/rand/fn.rng.html",
+    "api/rand/fn.rng.html",
     "crate::rand::Rng":
-    "api/rustmax/rand/trait.Rng.html",
+    "api/rand/trait.Rng.html",
     "crate::rand::random":
-    "api/rustmax/rand/fn.random.html",
+    "api/rand/fn.random.html",
     "crate::rand::RngCore":
-    "api/rustmax/rand/trait.RngCore.html",
+    "api/rand_core/trait.RngCore.html",
     "crate::rand::SeedableRng":
-    "api/rustmax/rand/trait.SeedableRng.html",
+    "api/rand_core/trait.SeedableRng.html",
     "crate::rand::rngs::StdRng":
-    "api/rustmax/rand/rngs/struct.StdRng.html",
+    "api/rand/rngs/struct.StdRng.html",
     "crate::rand::rngs::SmallRng":
-    "api/rustmax/rand/rngs/struct.SmallRng.html",
+    "api/rand/rngs/struct.SmallRng.html",
     "crate::rand_chacha":
     "api/rustmax/rand_chacha/index.html",
     "crate::rand_pcg":
     "api/rustmax/rand_pcg/index.html",
     "crate::rand_chacha::ChaCha12Rng":
-    "api/rustmax/rand_chacha/struct.ChaCha12Rng.html",
+    "api/rand_chacha/struct.ChaCha12Rng.html",
     "crate::rand_pcg::Pcg64":
-    "api/rustmax/rand_pcg/type.Pcg64.html",
+    "api/rand_pcg/type.Pcg64.html",
 
     // ignore
     "crate::ignore::WalkBuilder":
-    "api/rustmax/ignore/struct.WalkBuilder.html",
+    "api/ignore/struct.WalkBuilder.html",
     "crate::ignore::Walk":
-    "api/rustmax/ignore/struct.Walk.html",
+    "api/ignore/struct.Walk.html",
     "crate::ignore::WalkParallel":
-    "api/rustmax/ignore/struct.WalkParallel.html",
+    "api/ignore/struct.WalkParallel.html",
 
     // image
     "crate::image::DynamicImage":
-    "api/rustmax/image/enum.DynamicImage.html",
+    "api/image/enum.DynamicImage.html",
     "crate::image::ImageBuffer":
-    "api/rustmax/image/struct.ImageBuffer.html",
+    "api/image/struct.ImageBuffer.html",
     "crate::image::open":
-    "api/rustmax/image/fn.open.html",
+    "api/image/fn.open.html",
 
     // indicatif
     "crate::indicatif::ProgressBar":
-    "api/rustmax/indicatif/struct.ProgressBar.html",
+    "api/indicatif/struct.ProgressBar.html",
     "crate::indicatif::MultiProgress":
-    "api/rustmax/indicatif/struct.MultiProgress.html",
+    "api/indicatif/struct.MultiProgress.html",
     "crate::indicatif::ProgressStyle":
-    "api/rustmax/indicatif/struct.ProgressStyle.html",
+    "api/indicatif/struct.ProgressStyle.html",
 
     // notify
     "crate::notify::recommended_watcher":
-    "api/rustmax/notify/fn.recommended_watcher.html",
+    "api/notify/fn.recommended_watcher.html",
     "crate::notify::Watcher":
-    "api/rustmax/notify/trait.Watcher.html",
+    "api/notify/trait.Watcher.html",
     "crate::notify::RecursiveMode":
-    "api/rustmax/notify/enum.RecursiveMode.html",
+    "api/notify/enum.RecursiveMode.html",
 
     // hex
     "crate::hex::encode":
-    "api/rustmax/hex/fn.encode.html",
+    "api/hex/fn.encode.html",
     "crate::hex::decode":
-    "api/rustmax/hex/fn.decode.html",
+    "api/hex/fn.decode.html",
     "crate::hex::encode_upper":
-    "api/rustmax/hex/fn.encode_upper.html",
+    "api/hex/fn.encode_upper.html",
 
     // mime
     "crate::mime::Mime":
-    "api/rustmax/mime/struct.Mime.html",
+    "api/mime/struct.Mime.html",
     "crate::mime::TEXT_PLAIN":
-    "api/rustmax/mime/constant.TEXT_PLAIN.html",
+    "api/mime/constant.TEXT_PLAIN.html",
     "crate::mime::APPLICATION_JSON":
-    "api/rustmax/mime/constant.APPLICATION_JSON.html",
+    "api/mime/constant.APPLICATION_JSON.html",
 
     // nom
     "crate::nom::IResult":
-    "api/rustmax/nom/type.IResult.html",
+    "api/rustmax/nom/index.html",
+
+    // num_enum (docs.rs URL keys, substituted before substitute_versions rewrites them)
+    "https://docs.rs/num_enum/latest/num_enum/derive.IntoPrimitive.html":
+    "api/num_enum_derive/derive.IntoPrimitive.html",
+    "https://docs.rs/num_enum/latest/num_enum/derive.TryFromPrimitive.html":
+    "api/num_enum_derive/derive.TryFromPrimitive.html",
+    "https://docs.rs/num_enum/latest/num_enum/derive.FromPrimitive.html":
+    "api/num_enum_derive/derive.FromPrimitive.html",
+    "https://docs.rs/num_enum/latest/num_enum/derive.UnsafeFromPrimitive.html":
+    "api/num_enum_derive/derive.UnsafeFromPrimitive.html",
 
     // semver
     "crate::semver::Version":
-    "api/rustmax/semver/struct.Version.html",
+    "api/semver/struct.Version.html",
     "crate::semver::VersionReq":
-    "api/rustmax/semver/struct.VersionReq.html",
+    "api/semver/struct.VersionReq.html",
     "crate::semver::Version::parse":
-    "api/rustmax/semver/struct.Version.html#method.parse",
+    "api/semver/struct.Version.html#method.parse",
     "https://semver.org/":
     "https://semver.org/",
     "https://doc.rust-lang.org/cargo/reference/semver.html":
@@ -415,82 +429,82 @@
 
     // tempfile
     "crate::tempfile::tempfile":
-    "api/rustmax/tempfile/fn.tempfile.html",
+    "api/tempfile/fn.tempfile.html",
     "crate::tempfile::NamedTempFile":
-    "api/rustmax/tempfile/struct.NamedTempFile.html",
+    "api/tempfile/struct.NamedTempFile.html",
     "crate::tempfile::TempDir":
-    "api/rustmax/tempfile/struct.TempDir.html",
+    "api/tempfile/struct.TempDir.html",
     "crate::tempfile::spooled_tempfile":
-    "api/rustmax/tempfile/fn.spooled_tempfile.html",
+    "api/tempfile/fn.spooled_tempfile.html",
 
     // toml
     "crate::toml::Value":
-    "api/rustmax/toml/enum.Value.html",
+    "api/toml/enum.Value.html",
     "crate::toml::from_str":
-    "api/rustmax/toml/fn.from_str.html",
+    "api/toml/fn.from_str.html",
     "crate::toml::to_string":
-    "api/rustmax/toml/fn.to_string.html",
+    "api/toml/fn.to_string.html",
 
     // url
     "crate::url::Url":
-    "api/rustmax/url/struct.Url.html",
+    "api/url/struct.Url.html",
     "crate::url::Url::parse":
-    "api/rustmax/url/struct.Url.html#method.parse",
+    "api/url/struct.Url.html#method.parse",
     "crate::url::Url::join":
-    "api/rustmax/url/struct.Url.html#method.join",
+    "api/url/struct.Url.html#method.join",
 
     // walkdir
     "crate::walkdir::WalkDir":
-    "api/rustmax/walkdir/struct.WalkDir.html",
+    "api/walkdir/struct.WalkDir.html",
     "crate::walkdir::WalkDir::new":
-    "api/rustmax/walkdir/struct.WalkDir.html#method.new",
+    "api/walkdir/struct.WalkDir.html#method.new",
     "crate::walkdir::WalkDir::max_depth":
-    "api/rustmax/walkdir/struct.WalkDir.html#method.max_depth",
+    "api/walkdir/struct.WalkDir.html#method.max_depth",
 
     // proptest
     "crate::proptest::strategy::Strategy":
-    "api/rustmax/proptest/strategy/trait.Strategy.html",
+    "api/proptest/prelude/trait.Strategy.html",
     "crate::proptest::proptest":
-    "api/rustmax/proptest/macro.proptest.html",
+    "api/proptest/macro.proptest.html",
     "crate::proptest::prop_assert":
-    "api/rustmax/proptest/macro.prop_assert.html",
+    "api/proptest/macro.prop_assert.html",
 
     // powerletters
     "crate::powerletters::C":
-    "api/rustmax/powerletters/trait.C.html",
+    "api/powerletters/fn.C.html",
     "crate::powerletters::O":
-    "api/rustmax/powerletters/trait.O.html",
+    "api/powerletters/fn.O.html",
     "crate::powerletters::S":
-    "api/rustmax/powerletters/trait.S.html",
+    "api/powerletters/fn.S.html",
     "crate::powerletters::I":
-    "api/rustmax/powerletters/trait.I.html",
+    "api/powerletters/fn.I.html",
     "crate::powerletters::X":
-    "api/rustmax/powerletters/trait.X.html",
+    "api/powerletters/fn.X.html",
 
     // reqwest
     "crate::reqwest::Client":
-    "api/rustmax/reqwest/struct.Client.html",
+    "api/reqwest/struct.Client.html",
     "crate::reqwest::get":
-    "api/rustmax/reqwest/fn.get.html",
+    "api/reqwest/fn.get.html",
     "crate::reqwest::blocking":
-    "api/rustmax/reqwest/blocking/index.html",
+    "api/reqwest/blocking/index.html",
     "crate::hyper":
     "api/rustmax/hyper/index.html",
 
     // tera
     "crate::tera::Tera":
-    "api/rustmax/tera/struct.Tera.html",
+    "api/tera/struct.Tera.html",
     "crate::tera::Tera::one_off":
-    "api/rustmax/tera/struct.Tera.html#method.one_off",
+    "api/tera/struct.Tera.html#method.one_off",
     "crate::tera::Context":
-    "api/rustmax/tera/struct.Context.html",
+    "api/tera/struct.Context.html",
 
     // zip
     "crate::zip::ZipArchive":
-    "api/rustmax/zip/read/struct.ZipArchive.html",
+    "api/zip/read/struct.ZipArchive.html",
     "crate::zip::ZipWriter":
-    "api/rustmax/zip/write/struct.ZipWriter.html",
+    "api/zip/write/struct.ZipWriter.html",
     "crate::zip::ZipArchive::new":
-    "api/rustmax/zip/read/struct.ZipArchive.html#method.new",
+    "api/zip/read/struct.ZipArchive.html#method.new",
 
 }
