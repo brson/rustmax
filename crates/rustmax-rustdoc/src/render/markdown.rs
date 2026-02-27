@@ -445,18 +445,6 @@ fn html_escape(s: &str) -> String {
         .replace('"', "&quot;")
 }
 
-/// Extract reference-style link definitions from markdown.
-fn extract_reference_definitions(md: &str) -> String {
-    let mut defs = Vec::new();
-    for line in md.lines() {
-        let trimmed = line.trim();
-        if trimmed.starts_with('[') && trimmed.contains("]:") {
-            defs.push(trimmed);
-        }
-    }
-    defs.join("\n")
-}
-
 /// Extract first paragraph from markdown.
 fn extract_first_paragraph(md: &str) -> String {
     let trimmed = md.trim();
@@ -479,8 +467,11 @@ fn strip_paragraph_wrapper(html: &str) -> String {
 
 /// Render the first paragraph of documentation as inline HTML.
 ///
-/// Handles reference-style links by extracting definitions from the full doc,
-/// then rendering only the first paragraph with those definitions available.
+/// Only the first paragraph is rendered. Rustdoc-style shortcut links
+/// within it are resolved via the global index and pre-resolved links,
+/// so appending reference definitions from the full doc is unnecessary
+/// (and harmful, since many rustdoc ref-def lines are not valid
+/// CommonMark and get rendered as visible text).
 pub fn render_short_doc(
     full_docs: &str,
     highlighter: &Highlighter,
@@ -489,17 +480,10 @@ pub fn render_short_doc(
     current_depth: usize,
     pre_resolved_links: &HashMap<String, String>,
 ) -> String {
-    let ref_defs = extract_reference_definitions(full_docs);
     let first_para = extract_first_paragraph(full_docs);
 
-    let combined = if ref_defs.is_empty() {
-        first_para
-    } else {
-        format!("{}\n\n{}", first_para, ref_defs)
-    };
-
     let html = render_markdown_with_links(
-        &combined,
+        &first_para,
         highlighter,
         global_index,
         current_crate,
