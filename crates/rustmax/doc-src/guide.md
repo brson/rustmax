@@ -28,6 +28,8 @@ But there are significant downside still:
    without their parent crate being directly imported. `serde` at least
    is affected by this. Requires explicitly importing `serde` anyway.
    Should be solvable with effort.
+3. Disk usage. Lots of deps to download and upgrade and build and rebuild
+   even for tiny projects. I run `cargo clean` and `cargo clean-all` a lot.
 
 [`mostly-unused`]: https://doc.rust-lang.org/beta/unstable-book/compiler-flags/hint-mostly-unused.html
 
