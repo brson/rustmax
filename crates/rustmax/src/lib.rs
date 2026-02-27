@@ -460,9 +460,7 @@ pub mod indicatif {
 
 #[cfg(feature = "http")]
 pub mod http {
-    //! Shared definitions related to the HTTP protocol.
-    //!
-    //! See crate [`::http`].
+    #![doc = include_str!("../doc-src/crate-http.md")]
 
     pub use ::http::*;
 }

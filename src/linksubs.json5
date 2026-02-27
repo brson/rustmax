@@ -521,9 +521,27 @@
     "crate::powerletters::X":
     "api/powerletters/fn.X.html",
 
-    // hyper
+    // http
     "crate::http":
     "api/rustmax/http/index.html",
+    "crate::http::Request":
+    "api/http/request/struct.Request.html",
+    "crate::http::Response":
+    "api/http/response/struct.Response.html",
+    "crate::http::Method":
+    "api/http/method/struct.Method.html",
+    "crate::http::StatusCode":
+    "api/http/status/struct.StatusCode.html",
+    "crate::http::Uri":
+    "api/http/uri/struct.Uri.html",
+    "crate::http::HeaderMap":
+    "api/http/header/struct.HeaderMap.html",
+    "crate::http::HeaderName":
+    "api/http/header/struct.HeaderName.html",
+    "crate::http::HeaderValue":
+    "api/http/header/struct.HeaderValue.html",
+
+    // hyper
     "crate::reqwest":
     "api/rustmax/reqwest/index.html",
     "crate::hyper::Request":
