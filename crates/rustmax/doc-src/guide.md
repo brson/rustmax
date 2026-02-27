@@ -3,6 +3,37 @@ A Guide to the Rustmax crate.
 
 
 
+## Should you use `rustmax` as a crate?
+
+Probably not.
+
+I dogfood Rustmax in many projects,
+and I have found the benefits of using Rustmax directly somewhat minimal.
+The primary benefit is simply having the crate names for common solutions directly available
+without re-searching crates.io.
+
+To that end I do find it convenient to start a new project by initing
+the rustmax template with the portable profile and going from there &mdash;
+all my crates are in one place.
+
+But there are significant downside still:
+
+1. Build and link time. They aren't unusual for a large Rust project,
+   but you do pay to build a lot of code you definitely aren't using.
+   Even after the initial build you continue to pay the linkage cost.
+   The obvious solution, the experimental [`mostly-unused`] hint
+   that is applied to the rustmax crate (on nightly), so far
+   hasn't produced significant speedups.
+2. Some reexported macros do not resolve their internal paths correctly
+   without their parent crate being directly imported. `serde` at least
+   is affected by this. Requires explicitly importing `serde` anyway.
+   Should be solvable with effort.
+
+[`mostly-unused`]: https://doc.rust-lang.org/beta/unstable-book/compiler-flags/hint-mostly-unused.html
+
+
+
+
 ## Getting started
 
 Add `rustmax` to your `Cargo.toml` with a profile enabled:
