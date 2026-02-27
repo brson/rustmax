@@ -729,10 +729,7 @@ pub mod tokio {
 
 #[cfg(feature = "tower")]
 pub mod tower {
-    //! Service request/response abstraction (HTTP middleware)
-    //! for [`tokio`](super::tokio) and [`axum`](super::axum).
-    //!
-    //! See crate [`::tower`].
+    #![doc = include_str!("../doc-src/crate-tower.md")]
 
     pub use ::tower::*;
 }

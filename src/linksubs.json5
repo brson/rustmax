@@ -12,6 +12,30 @@
     "api/axum/response/trait.IntoResponse.html",
     "crate::tower":
     "api/rustmax/tower/index.html",
+    "crate::tower::Service":
+    "api/tower_service/trait.Service.html",
+    "crate::tower::Layer":
+    "api/tower_layer/trait.Layer.html",
+    "crate::tower::ServiceExt":
+    "api/tower/trait.ServiceExt.html",
+    "crate::tower::ServiceBuilder":
+    "api/tower/struct.ServiceBuilder.html",
+    "crate::tower::service_fn":
+    "api/tower/fn.service_fn.html",
+    "crate::tower::timeout":
+    "api/tower/timeout/index.html",
+    "crate::tower::limit":
+    "api/tower/limit/index.html",
+    "crate::tower::retry":
+    "api/tower/retry/index.html",
+    "crate::tower::buffer":
+    "api/tower/buffer/index.html",
+    "crate::tower::load_shed":
+    "api/tower/load_shed/index.html",
+    "crate::axum":
+    "api/rustmax/axum/index.html",
+    "crate::axum::Router::layer":
+    "api/axum/struct.Router.html#method.layer",
     "crate::tokio":
     "api/rustmax/tokio/index.html",
 
