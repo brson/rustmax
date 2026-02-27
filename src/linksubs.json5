@@ -1,4 +1,20 @@
 {
+    // axum
+    "crate::axum::extract::Path":
+    "api/axum/extract/struct.Path.html",
+    "crate::axum::extract::Query":
+    "api/axum/extract/struct.Query.html",
+    "crate::axum::extract::State":
+    "api/axum/extract/struct.State.html",
+    "crate::axum::Json":
+    "api/axum/struct.Json.html",
+    "crate::axum::response::IntoResponse":
+    "api/axum/response/trait.IntoResponse.html",
+    "crate::tower":
+    "api/rustmax/tower/index.html",
+    "crate::tokio":
+    "api/rustmax/tokio/index.html",
+
     // ahash
     "crate::std::collections::HashMap":
     "api/std/collections/struct.HashMap.html",

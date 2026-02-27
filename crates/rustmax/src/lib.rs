@@ -271,9 +271,7 @@ pub mod anyhow {
 
 #[cfg(feature = "axum")]
 pub mod axum {
-    //! Web application framework based on [`tokio`](super::tokio).
-    //!
-    //! See crate [`::axum`].
+    #![doc = include_str!("../doc-src/crate-axum.md")]
 
     pub use ::axum::*;
 }
