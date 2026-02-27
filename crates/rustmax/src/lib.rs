@@ -469,9 +469,7 @@ pub mod http {
 
 #[cfg(feature = "hyper")]
 pub mod hyper {
-    //! HTTP, versions 1 and 2.
-    //!
-    //! See crate [`::hyper`].
+    #![doc = include_str!("../doc-src/crate-hyper.md")]
 
     pub use ::hyper::*;
 }
