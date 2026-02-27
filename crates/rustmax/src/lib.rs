@@ -354,9 +354,7 @@ pub mod comrak {
 
 #[cfg(feature = "ctrlc")]
 pub mod ctrlc {
-    //! Simple handling of CTRL-C for CLI programs.
-    //!
-    //! See crate [`::ctrlc`].
+    #![doc = include_str!("../doc-src/crate-ctrlc.md")]
 
     pub use ::ctrlc::*;
 }

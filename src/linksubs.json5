@@ -104,6 +104,8 @@
     "api/crossbeam_utils/struct.Backoff.html",
     "crate::std::sync":
     "api/std/sync/index.html",
+    "std::sync::atomic::AtomicBool":
+    "api/std/sync/atomic/struct.AtomicBool.html",
     "crate::std::thread":
     "api/std/thread/index.html",
     "crate::std::sync::mpsc":
