@@ -1,3 +1,12 @@
+# Task: task-prepare-news-post
+
+Review the commmits since the prior news post
+and compose a succinct new news post describing progress.
+Use prior posts as style reference.
+
+
+
+
 # Task: task-prepare-release
 
 Bump the version numbers of all rustmax crates,
