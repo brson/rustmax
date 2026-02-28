@@ -700,9 +700,7 @@ pub mod tera {
 
 #[cfg(feature = "termcolor")]
 pub mod termcolor {
-    //! Cross-platform library for writing colored output to the terminal.
-    //!
-    //! See crate [`::termcolor`].
+    #![doc = include_str!("../doc-src/crate-termcolor.md")]
 
     pub use ::termcolor::*;
 }

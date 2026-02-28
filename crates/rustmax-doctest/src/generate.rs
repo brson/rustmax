@@ -195,7 +195,7 @@ fn rewrite_imports(code: &str) -> String {
         "base64", "chrono", "uuid", "url", "log", "tracing", "thiserror",
         "clap", "json5", "toml", "tempfile", "xshell", "walkdir", "glob",
         "nom", "memchr", "comrak", "ignore", "bstr", "once_cell", "lazy_static",
-        "ctrlc", "rustyline", "jiff", "hex", "http", "hyper", "axum", "tera",
+        "ctrlc", "rustyline", "jiff", "hex", "http", "hyper", "axum", "tera", "termcolor",
         "futures", "tower", "tungstenite", "rav1e", "ravif",
         "unicode_segmentation", "num_bigint", "semver", "mime", "crossbeam",
         "blake3", "sha2", "powerletters", "flate2", "env_logger",

@@ -577,6 +577,22 @@
     "crate::tera::Context":
     "api/tera/struct.Context.html",
 
+    // termcolor
+    "crate::termcolor::StandardStream":
+    "api/termcolor/struct.StandardStream.html",
+    "crate::termcolor::ColorSpec":
+    "api/termcolor/struct.ColorSpec.html",
+    "crate::termcolor::WriteColor":
+    "api/termcolor/trait.WriteColor.html",
+    "crate::termcolor::WriteColor::reset":
+    "api/termcolor/trait.WriteColor.html#tymethod.reset",
+    "crate::termcolor::ColorChoice":
+    "api/termcolor/enum.ColorChoice.html",
+    "crate::termcolor::BufferWriter":
+    "api/termcolor/struct.BufferWriter.html",
+    "crate::termcolor::Buffer":
+    "api/termcolor/struct.Buffer.html",
+
     // zip
     "crate::zip::ZipArchive":
     "api/zip/read/struct.ZipArchive.html",
