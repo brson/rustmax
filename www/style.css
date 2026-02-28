@@ -77,7 +77,7 @@ h2 {
     font: var(--rmx-font-em);
 }
 
-h1 > span {
+h1 span {
     color: var(--rmx-color-accents);
 }
 
