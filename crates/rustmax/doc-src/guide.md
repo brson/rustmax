@@ -8,13 +8,13 @@ A Guide to the Rustmax crate.
 Probably not.
 
 I dogfood Rustmax in many projects,
-and I have found the benefits of using Rustmax directly somewhat minimal.
+and I have found the benefits of using Rustmax directly minimal.
 The primary benefit is simply having the crate names for common solutions directly available
 without re-searching crates.io.
-
 To that end I do find it convenient to start a new project by initing
 the rustmax template with the portable profile and going from there &mdash;
-all my crates are in one place.
+all my crates are in one place, and I know they will at least build on WASM,
+a decent proxy for "portable".
 
 But there are significant downside still:
 
