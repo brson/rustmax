@@ -630,9 +630,7 @@ pub mod reqwest {
 
 #[cfg(feature = "rustyline")]
 pub mod rustyline {
-    //! Command-line input reading with history.
-    //!
-    //! See crate [`::rustyline`].
+    #![doc = include_str!("../doc-src/crate-rustyline.md")]
 
     pub use ::rustyline::*;
 }

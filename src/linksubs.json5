@@ -575,6 +575,10 @@
     "crate::hyper":
     "api/rustmax/hyper/index.html",
 
+    // rustyline
+    "crate::rustyline::DefaultEditor":
+    "api/rustyline/type.DefaultEditor.html",
+
     // tera
     "crate::tera::Tera":
     "api/tera/struct.Tera.html",
