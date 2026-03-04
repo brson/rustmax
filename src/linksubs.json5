@@ -233,6 +233,12 @@
     "crate::itertools::repeat_n":
     "api/itertools/fn.repeat_n.html",
 
+    // json5
+    "crate::json5::from_str":
+    "api/json5/fn.from_str.html",
+    "crate::json5::to_string":
+    "api/json5/fn.to_string.html",
+
     // memchr
     "crate::memchr::memchr":
     "api/memchr/fn.memchr.html",

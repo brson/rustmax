@@ -486,9 +486,7 @@ pub mod jiff {
 
 #[cfg(feature = "json5")]
 pub mod json5 {
-    //! JSON5, a superset of JSON with expanded syntax.
-    //!
-    //! See crate [`::json5`].
+    #![doc = include_str!("../doc-src/crate-json5.md")]
 
     pub use ::json5::*;
 }
