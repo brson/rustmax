@@ -609,6 +609,36 @@
     "crate::termcolor::Buffer":
     "api/termcolor/struct.Buffer.html",
 
+    // libc
+    "crate::libc::open":
+    "api/libc/fn.open.html",
+    "crate::libc::read":
+    "api/libc/fn.read.html",
+    "crate::libc::write":
+    "api/libc/fn.write.html",
+    "crate::libc::mmap":
+    "api/libc/fn.mmap.html",
+    "crate::libc::EINVAL":
+    "api/libc/constant.EINVAL.html",
+    "crate::libc::O_RDONLY":
+    "api/libc/constant.O_RDONLY.html",
+    "crate::libc::SIGTERM":
+    "api/libc/constant.SIGTERM.html",
+    "crate::libc::c_int":
+    "api/libc/type.c_int.html",
+    "crate::libc::c_char":
+    "api/libc/type.c_char.html",
+    "crate::libc::size_t":
+    "api/libc/type.size_t.html",
+    "crate::libc::malloc":
+    "api/libc/fn.malloc.html",
+    "crate::libc::free":
+    "api/libc/fn.free.html",
+    "crate::std":
+    "api/std/index.html",
+    "crate::std::ffi":
+    "api/std/ffi/index.html",
+
     // zip
     "crate::zip::ZipArchive":
     "api/zip/read/struct.ZipArchive.html",

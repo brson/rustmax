@@ -493,9 +493,7 @@ pub mod json5 {
 
 #[cfg(feature = "libc")]
 pub mod libc {
-    //! Bindings to the C standard library.
-    //!
-    //! See crate [`::libc`].
+    #![doc = include_str!("../doc-src/crate-libc.md")]
 
     pub use ::libc::*;
 }

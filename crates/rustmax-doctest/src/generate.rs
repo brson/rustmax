@@ -200,6 +200,7 @@ fn rewrite_imports(code: &str) -> String {
         "unicode_segmentation", "num_bigint", "semver", "mime", "crossbeam",
         "blake3", "sha2", "powerletters", "flate2", "env_logger",
         "derive_more", "num_enum", "rand", "bytes", "proptest", "socket2",
+        "libc",
     ];
 
     let mut result = code.to_string();
