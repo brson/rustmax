@@ -665,9 +665,7 @@ pub mod sha2 {
 
 #[cfg(feature = "socket2")]
 pub mod socket2 {
-    //! Low-level network socket programming beyond [`std::net`].
-    //!
-    //! See crate [`::socket2`].
+    #![doc = include_str!("../doc-src/crate-socket2.md")]
 
     pub use ::socket2::*;
 }

@@ -341,6 +341,12 @@
     "crate::num_bigint::BigUint":
     "api/num_bigint/struct.BigUint.html",
 
+    // socket2
+    "std::net":
+    "api/std/net/index.html",
+    "std::net::TcpListener":
+    "api/std/net/struct.TcpListener.html",
+
     // sha2
     "crate::sha2::Digest":
     "api/digest/trait.Digest.html",
