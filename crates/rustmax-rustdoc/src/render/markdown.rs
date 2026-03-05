@@ -446,13 +446,38 @@ fn html_escape(s: &str) -> String {
 }
 
 /// Extract first paragraph from markdown.
+///
+/// Stops at a blank line or at the start of a new block element
+/// (list item, heading, code fence, blockquote) even without
+/// a preceding blank line.
 fn extract_first_paragraph(md: &str) -> String {
     let trimmed = md.trim();
-    if let Some(pos) = trimmed.find("\n\n") {
-        trimmed[..pos].to_string()
-    } else {
-        trimmed.to_string()
+    let mut offset = 0;
+
+    for (i, line) in trimmed.split('\n').enumerate() {
+        if i > 0 {
+            let stripped = line.trim_start();
+
+            let is_break = stripped.is_empty()
+                || stripped.starts_with("* ")
+                || stripped.starts_with("- ")
+                || stripped.starts_with("+ ")
+                || stripped.starts_with("> ")
+                || stripped.starts_with("# ")
+                || stripped.starts_with("```")
+                || stripped.chars().next().map_or(false, |c| {
+                    c.is_ascii_digit() && stripped.contains(". ")
+                });
+
+            if is_break {
+                return trimmed[..offset].to_string();
+            }
+        }
+        // Advance past this line (including the '\n').
+        offset += line.len() + 1;
     }
+
+    trimmed.to_string()
 }
 
 /// Strip wrapping `<p>...</p>` tags from HTML for inline display.
