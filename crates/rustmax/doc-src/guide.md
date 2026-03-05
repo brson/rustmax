@@ -5,9 +5,11 @@ A Guide to the Rustmax crate.
 
 ## Should you use `rustmax` as a crate?
 
-Probably not.
+Definitely not.
 
-I dogfood Rustmax in many projects,
+Firstly, it's completely unstable and unsupported and always has breaking changes.
+
+I dogfood the `rustmax` crate in many projects,
 and I have found the benefits of using Rustmax directly minimal.
 The primary benefit is simply having the crate names for common solutions directly available
 without re-searching crates.io.
@@ -15,6 +17,9 @@ To that end I do find it convenient to start a new project by initing
 the rustmax template with the portable profile and going from there &mdash;
 all my crates are in one place, and I know they will at least build on WASM,
 a decent proxy for "portable".
+
+It's also a single place to handle common crate upgrades and `cargo audit` resolutions,
+which is a nice benefit when you have multiple projects using `rustmax`.
 
 But there are significant downside still:
 
