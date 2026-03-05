@@ -22,5 +22,5 @@ rmx.features = [
 
 serde.version = "1"
 clap.version = "4"
-scraper.version = "0.22"
+scraper.version = "0.25"
 html2md.version = "0.2"
