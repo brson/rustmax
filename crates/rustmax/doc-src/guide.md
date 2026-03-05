@@ -10,7 +10,8 @@ Definitely not.
 Firstly, it's completely unstable and unsupported and always has breaking changes.
 
 I dogfood the `rustmax` crate in many projects,
-and I have found the benefits of using Rustmax directly minimal.
+and I have found the benefits of using it directly minimal,
+though I do prefer using it to starting from scratch every project.
 The primary benefit is simply having the crate names for common solutions directly available
 without re-searching crates.io.
 To that end I do find it convenient to start a new project by initing
