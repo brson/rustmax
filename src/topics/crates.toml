@@ -98,7 +98,7 @@ brief = "MIME media type parsing"
 
 [topics.socket2]
 name = "socket2"
-aliases = ["socket programming", "low-level sockets"]
+aliases = ["socket programming", "low-level sockets", "network", "TCP", "UDP", "socket options", "SO_REUSEADDR"]
 category = "crate"
 brief = "Low-level socket programming"
 
