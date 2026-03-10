@@ -12,9 +12,8 @@ Added doc pages for axum, tower, hyper, http, ctrlc, termcolor, and tera.
 
 **API doc generator fixes** -
 Getting the custom rustdoc renderer to behave as expected
-and/or similar to rustdoc is a slog -
-what rustdoc actually does to Rust's ASTs in a sensible way is pretty grungy.
-And our implementation has grown organically;
+and/or similar to rustdoc is a slog.
+And our implementation has grown organically:
 fix one link, break another.
 Complicated by my insistence on rendering fewer duplicate pages that rustdoc,
 so deciding where the "real" docs live and routing links correctly is tough.
