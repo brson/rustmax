@@ -6,6 +6,12 @@ but that are not yet part of Rustmax.
 
 ## Crates
 
+- [`sha3`](https://docs.rs/sha3).
+- [`k256`](https://docs.rs/k256).
+- [`zeroize`](https://docs.rs/zeroize).
+  Secret-zeroing cells.
+- [`rpassword`](https://docs.rs/rpassword).
+  Password input.
 - [`backtrace-on-stack-overflow`](https://docs.rs/backtrace-on-stack-overflow).
   Nice missing feature, but code looks underdeveloped.
 - [`bitvec`](https://docs.rs/bitvec).
