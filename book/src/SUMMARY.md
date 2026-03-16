@@ -12,6 +12,7 @@
 - [The Rust Ecosystem](ecosystem.md)
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
+- [Rust Concept Index](concept-index.md) (aka "glossary")
 - [The Rustmax Radar](radar.md)
 - [Trusted Maintainers](maintainers.md)
 - [External Rust Resources](resources.md)
