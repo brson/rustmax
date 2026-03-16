@@ -398,9 +398,7 @@ pub mod env_logger {
 
 #[cfg(feature = "extension-trait")]
 pub mod extension_trait {
-    //! A macro for defining extension methods to external types.
-    //!
-    //! See crate [`::extension_trait`].
+    #![doc = include_str!("../doc-src/crate-extension-trait.md")]
 
     pub use ::extension_trait::*;
 }
