@@ -402,6 +402,12 @@ aliases = ["conditional compilation", "cfg macro"]
 category = "crate"
 brief = "Ergonomic conditional compilation"
 
+[topics.extension-trait-crate]
+name = "extension-trait"
+aliases = ["extension methods", "extension trait", "add methods to external types", "impl for foreign type"]
+category = "crate"
+brief = "Macro for defining extension methods on external types"
+
 # Build and FFI
 
 [topics.bindgen-crate]
