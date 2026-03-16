@@ -593,9 +593,7 @@ pub mod rand_chacha {
 
 #[cfg(feature = "rand_pcg")]
 pub mod rand_pcg {
-    //! The PCG non-cryptographically-secure random number generators.
-    //!
-    //! See crate [`::rand_pcg`].
+    #![doc = include_str!("../doc-src/crate-rand_pcg.md")]
 
     pub use ::rand_pcg::*;
 }
