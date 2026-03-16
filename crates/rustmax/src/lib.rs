@@ -586,9 +586,7 @@ pub mod rand {
 
 #[cfg(feature = "rand_chacha")]
 pub mod rand_chacha {
-    //! The ChaCha cryptographically-secure random number generators.
-    //!
-    //! See crate [`::rand_chacha`].
+    #![doc = include_str!("../doc-src/crate-rand_chacha.md")]
 
     pub use ::rand_chacha::*;
 }
