@@ -324,9 +324,7 @@ pub mod cc {
 
 #[cfg(feature = "cfg-if")]
 pub mod cfg_if {
-    //! A macro for writing conditional compilation as `if` / `else` blocks.
-    //!
-    //! See crate [`::cfg_if`].
+    #![doc = include_str!("../doc-src/crate-cfg-if.md")]
 
     pub use ::cfg_if::*;
 }
