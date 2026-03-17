@@ -647,4 +647,48 @@
     "crate::zip::ZipArchive::new":
     "api/zip/read/struct.ZipArchive.html#method.new",
 
+    // cfg-if
+    "crate::cfg_if::cfg_if":
+    "api/cfg_if/macro.cfg_if.html",
+
+    // extension-trait
+    "crate::extension_trait::extension_trait":
+    "api/extension_trait/attr.extension_trait.html",
+
+    // rand_chacha (additional variants)
+    "crate::rand_chacha::ChaCha20Rng":
+    "api/rand_chacha/struct.ChaCha20Rng.html",
+    "crate::rand_chacha::ChaCha8Rng":
+    "api/rand_chacha/struct.ChaCha8Rng.html",
+
+    // rand_pcg (additional variants)
+    "crate::rand_pcg::Pcg32":
+    "api/rand_pcg/type.Pcg32.html",
+
+    // unicode-segmentation
+    "https://www.unicode.org/reports/tr29/":
+    "https://www.unicode.org/reports/tr29/",
+    "https://manishearth.github.io/blog/2017/01/14/stop-ascribing-meaning-to-unicode-code-points/":
+    "https://manishearth.github.io/blog/2017/01/14/stop-ascribing-meaning-to-unicode-code-points/",
+    "https://docs.rs/unicode-segmentation/latest/unicode_segmentation/trait.UnicodeSegmentation.html":
+    "api/unicode_segmentation/trait.UnicodeSegmentation.html",
+
+    // ahash (external links)
+    "https://en.wikipedia.org/wiki/SipHash":
+    "https://en.wikipedia.org/wiki/SipHash",
+    "https://lwn.net/Articles/474912/":
+    "https://lwn.net/Articles/474912/",
+    "https://en.wikipedia.org/wiki/AES_instruction_set":
+    "https://en.wikipedia.org/wiki/AES_instruction_set",
+    "https://docs.rs/hashbrown":
+    "https://docs.rs/hashbrown",
+
+    // log (external links)
+    "https://docs.rs/simplelog":
+    "https://docs.rs/simplelog",
+    "https://docs.rs/fern":
+    "https://docs.rs/fern",
+    "https://docs.rs/tracing-subscriber":
+    "https://docs.rs/tracing-subscriber",
+
 }
