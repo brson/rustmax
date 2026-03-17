@@ -639,6 +639,34 @@
     "crate::std::ffi":
     "api/std/ffi/index.html",
 
+    // cfg-if
+    "crate::cfg_if::cfg_if":
+    "api/cfg_if/macro.cfg_if.html",
+
+    // extension-trait
+    "crate::extension_trait::extension_trait":
+    "api/extension_trait/attr.extension_trait.html",
+
+    // rand_chacha
+    "crate::rand_chacha::ChaCha20Rng":
+    "api/rand_chacha/struct.ChaCha20Rng.html",
+    "crate::rand_chacha::ChaCha8Rng":
+    "api/rand_chacha/struct.ChaCha8Rng.html",
+
+    // rand_pcg
+    "crate::rand_pcg::Pcg32":
+    "api/rand_pcg/type.Pcg32.html",
+
+    // quote
+    "crate::quote::quote":
+    "api/quote/macro.quote.html",
+    "crate::proc_macro2::TokenStream":
+    "api/proc_macro2/struct.TokenStream.html",
+    "crate::syn":
+    "api/rustmax/syn/index.html",
+    "crate::proc_macro2":
+    "api/rustmax/proc_macro2/index.html",
+
     // zip
     "crate::zip::ZipArchive":
     "api/zip/read/struct.ZipArchive.html",

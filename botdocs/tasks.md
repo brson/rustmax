@@ -141,8 +141,15 @@ not documented and document it. Include the docs via lib.rs per previous crates.
 3. **Create documentation file:** `crates/rustmax/doc-src/crate-NAME.md`
   - follow existing conventions to create content
 4. **Update lib.rs:** replace module contents per other crates
-5. **Update linksubs.json5:** Add entries for any cross-references in your documentation
-6. **Test with `just doc-crates`:** Run and check for "unreplaced link" warnings
+5. **Update linksubs.json5:** The crate docs are rendered in two contexts:
+   as rustdoc module docs (where `crate::` links resolve automatically),
+   and as standalone HTML on the crates.html page (where they don't).
+   `src/linksubs.json5` maps `crate::` rustdoc link targets to actual HTML paths
+   so they work on crates.html. Every `crate::` link reference definition
+   in your doc file (the `[`Foo`]: crate::bar::Foo` lines at the bottom)
+   needs a corresponding entry in linksubs.json5 unless one already exists.
+   The value is the relative HTML path, e.g. `"api/some_crate/struct.Foo.html"`.
+6. **Test with `just doc-api`:** Run and check for warnings
 7. **Verify crates.json5:** Usually already has the crate entry, but check it has appropriate metadata
 
 Examples should be runnable. Test with

@@ -568,9 +568,7 @@ pub mod proptest {
 
 #[cfg(feature = "quote")]
 pub mod quote {
-    //! The `quote!` macro for turning code blocks into source tokens.
-    //!
-    //! See crate [`::quote`].
+    #![doc = include_str!("../doc-src/crate-quote.md")]
 
     pub use ::quote::*;
 }
