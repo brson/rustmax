@@ -11,6 +11,8 @@ Use prior posts as style reference.
 
 Bump the version numbers of all rustmax crates,
 including the demoapp.
+Update the rustmax version in the project template
+(`template/Cargo.toml.liquid` and `crates/rustmax-cli/assets/template/Cargo.toml.liquid`).
 Run `just test` to verify.
 Run the demoapp test suite to verify.
 Add release notes to src/posts.
