@@ -112,6 +112,8 @@ but that are not yet part of Rustmax.
 - [`wasmtime-cli`](https://crates.io/crates/wasmtime-cli)
 - [`delta`](https://crates.io/crates/git-delta).
   Improved `git diff` plugin.
+- [`skim`](https://crates.io/crates/skim).
+  Fuzzy finder (`sk`), like fzf but in Rust.
 
 
 ## Wanted
