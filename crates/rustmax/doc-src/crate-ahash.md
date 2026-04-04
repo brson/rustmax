@@ -8,7 +8,7 @@ A fast and DOS-resistent hash function, for use in `HashMap`s.
 ---
 
 The Rust standard [`HashMap`] (and [`HashSet`])
-use a pluggable hash function defined by the standard [`Hasher`] trait.
+uses a pluggable hash function defined by the standard [`Hasher`] trait.
 The default hasher used by Rust's `HashMap` is [SipHash 1-3],
 which provides strong resistance to
 [denial-of-service (DOS) attacks against hash maps][dos].
