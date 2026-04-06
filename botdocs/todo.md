@@ -1,8 +1,10 @@
 ## TODO
 
 - rename to `max` - crates are reserved
-- known bugs
-  - serde derive requires adding a serde dependency
+- derive macro limitations (documented in guide)
+  - serde, thiserror, derive_more, clap derives need direct dependency
+  - root cause: proc macro extern prelude resolution, not fixable from library side
+  - possible future fix: Cargo public-dependency extern prelude propagation
 - why
   - feature management
 - xtask

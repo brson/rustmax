@@ -30,10 +30,9 @@ But there are significant downside still:
    The obvious solution, the experimental [`mostly-unused`] hint
    that is applied to the rustmax crate (on nightly), so far
    hasn't produced significant speedups.
-2. Some reexported macros do not resolve their internal paths correctly
-   without their parent crate being directly imported. `serde` at least
-   is affected by this. Requires explicitly importing `serde` anyway.
-   Should be solvable with effort.
+2. Some reexported derive macros do not work unless their origin crate is
+   a direct dependency. Affects `serde`, `thiserror`, `derive_more`, and `clap`.
+   See [Derive macro limitations](#derive-macro-limitations).
 3. Disk usage. Lots of deps to download and upgrade and build and rebuild
    even for tiny projects. I run `cargo clean` and `cargo clean-all` a lot.
 
@@ -120,6 +119,7 @@ todo
 - [The `rustmax` prelude](#the-rustmax-prelude)
 - [The `extras` module](#the-extras-module)
 - [Starting from a template](#starting-from-a-template)
+- [Derive macro limitations](#derive-macro-limitations)
 - [Known bugs](#known-bugs)
 - [Profiles](#profiles).
   `rustmax` organizes crates into _profiles_,
@@ -190,7 +190,7 @@ use rmx::rand::Rng;
 ```
 
 These modules behave the same as the corresponding crates,
-with exceptions noted in [Known bugs](#known-bugs).
+with exceptions noted in [Derive macro limitations](#derive-macro-limitations).
 Each module has `rustmax`-specific documentation
 with a description, example, and links to the original crate docs.
 
@@ -224,10 +224,94 @@ See [Rust standard libraries](#rust-standard-libraries).
 
 
 
+## Derive macro limitations
+
+Several crates re-exported by `rustmax` provide derive macros
+that do not work through the re-export.
+The affected crates are `serde`, `thiserror`, `derive_more`, and `clap`.
+
+Derive proc macros generate code containing absolute paths to their origin crate
+(e.g. `::serde::Serialize`), and in Rust 2018+
+those paths resolve from the _extern prelude_,
+which only contains direct Cargo dependencies.
+Since the user depends on `rustmax` and not `serde` directly,
+`::serde` is not in their extern prelude
+and the expanded code fails to compile.
+
+Function-like macros (like `serde_json::json!`)
+and regular trait re-exports are not affected --
+only derive macros that hardcode their crate path in generated code.
+
+### Workaround: add the crate as a direct dependency
+
+The simplest workaround is to add the affected crate
+alongside `rustmax` in your `Cargo.toml`.
+Because Cargo deduplicates, this does not add any extra compilation
+-- the crate is already being built as a transitive dependency of `rustmax`.
+It only makes the crate name available in the extern prelude.
+
+```toml
+[dependencies]
+rmx.package = "rustmax"
+rmx.version = "0.0.9"
+rmx.features = ["rmx-profile-portable"]
+
+# Only needed for crates whose derive macros you use.
+serde = "1"
+thiserror = "2"
+derive_more = { version = "2", features = ["full"] }
+clap = { version = "4", features = ["derive"] }
+```
+
+Note that you do not need to enable the `derive` feature on `serde`
+as `rustmax` already enables it via `rmx-feature-derive`.
+You can import the derive macros from either path:
+
+```rust,ignore
+# use rustmax as rmx;
+// Both work equivalently:
+use rmx::serde::{Serialize, Deserialize};
+use serde::{Serialize, Deserialize};
+```
+
+### Workaround for `serde` only: the `crate` attribute
+
+Serde's derive macros support a `crate` attribute
+that overrides the path used in generated code.
+This avoids needing a direct `serde` dependency
+but requires annotating every derived type:
+
+```rust,ignore
+# use rustmax as rmx;
+use rmx::serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rmx::serde")]
+struct Point {
+    x: f64,
+    y: f64,
+}
+```
+
+The other affected crates (`thiserror`, `derive_more`, `clap`)
+do not support a `crate` path override attribute.
+
+### Why this is hard to fix
+
+Proc macro functions cannot be called from other proc macros,
+so `rustmax` cannot provide wrapper derives that delegate to the originals.
+Cargo provides no mechanism for a library crate
+to inject dependencies into its dependents' extern prelude.
+The unstable Cargo `public-dependency` feature does not yet
+propagate extern prelude entries.
+
+Until Rust gains a mechanism for transitive extern prelude visibility,
+the direct-dependency workaround is the recommended approach.
+
+
 ## Known bugs
 
-- `serde` derive only works if the `serde` crate is an explicit dependency.
-- `derive_more` derives only works if the `derive_more` crate is an explicit dependency.
+(None currently.)
 
 
 
