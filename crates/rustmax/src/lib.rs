@@ -81,9 +81,9 @@ pub mod prelude {
     pub use ::itertools::Itertools as _;
 
     #[cfg(feature = "rand")]
-    pub use ::rand::RngCore as _;
-    #[cfg(feature = "rand")]
     pub use ::rand::Rng as _;
+    #[cfg(feature = "rand")]
+    pub use ::rand::RngExt as _;
     #[cfg(feature = "rand")]
     pub use ::rand::SeedableRng as _;
     #[cfg(feature = "rand")]

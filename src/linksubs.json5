@@ -387,11 +387,11 @@
     "crate::rand::rng":
     "api/rand/fn.rng.html",
     "crate::rand::Rng":
-    "api/rand/trait.Rng.html",
+    "api/rand_core/trait.Rng.html",
     "crate::rand::random":
     "api/rand/fn.random.html",
-    "crate::rand::RngCore":
-    "api/rand_core/trait.RngCore.html",
+    "crate::rand::RngExt":
+    "api/rand/trait.RngExt.html",
     "crate::rand::SeedableRng":
     "api/rand_core/trait.SeedableRng.html",
     "crate::rand::rngs::StdRng":
@@ -440,6 +440,8 @@
     "api/notify/enum.RecursiveMode.html",
 
     // hex
+    "crate::hex":
+    "api/rustmax/hex/index.html",
     "crate::hex::encode":
     "api/hex/fn.encode.html",
     "crate::hex::decode":

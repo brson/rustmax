@@ -30,7 +30,7 @@ though its algorithm is not specified to be stable).
 
 ```rust
 use rand::SeedableRng;
-use rand::Rng;
+use rand::RngExt;
 use rand_chacha::ChaCha12Rng;
 
 let mut rng = ChaCha12Rng::seed_from_u64(42);

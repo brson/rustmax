@@ -13,14 +13,14 @@ and working with random number generators.
 It is the core random number generation library for the Rust ecosystem.
 
 The main entry points are [`rng`] for a thread-local random number generator,
-and the [`Rng`] trait which provides methods for generating random values.
+and the [`RngExt`] trait which provides methods for generating random values.
 The [`random`] function provides a convenient way to generate
 a single random value using the thread-local generator.
 
 The crate provides different random number generators:
 [`StdRng`] is a cryptographically secure generator suitable for most applications,
 while [`SmallRng`] is optimized for speed when security is not required.
-All generators implement the [`RngCore`] trait and can be seeded
+All generators implement the [`Rng`] trait and can be seeded
 through the [`SeedableRng`] trait for reproducible results,
 though their specific algorithm is not guaranteed.
 
@@ -35,7 +35,7 @@ When a specific RNG algorithm is needed prefer:
 Generating basic random values:
 
 ```
-use rand::{random, rng, Rng};
+use rand::{random, rng, RngExt};
 
 // Generate a random boolean
 let coin_flip: bool = random();
@@ -67,14 +67,14 @@ if let Some(&chosen) = numbers.choose(&mut rng) {
 }
 
 // Sample multiple elements without replacement
-let samples: Vec<&i32> = numbers.choose_multiple(&mut rng, 3).collect();
+let samples: Vec<&i32> = numbers.sample(&mut rng, 3).collect();
 println!("Random sample: {:?}", samples);
 ```
 
 Using different generators and seeding for reproducible results:
 
 ```
-use rand::{Rng, SeedableRng, rngs::{StdRng, SmallRng}};
+use rand::{RngExt, SeedableRng, rngs::{StdRng, SmallRng}};
 
 // Seed generators for reproducible results
 let mut std_rng = StdRng::seed_from_u64(42);
@@ -99,7 +99,7 @@ let unpredictable: f64 = entropy_rng.random();
 [`rng`]: crate::rand::rng
 [`Rng`]: crate::rand::Rng
 [`random`]: crate::rand::random
-[`RngCore`]: crate::rand::RngCore
+[`RngExt`]: crate::rand::RngExt
 [`SeedableRng`]: crate::rand::SeedableRng
 [`StdRng`]: crate::rand::rngs::StdRng
 [`SmallRng`]: crate::rand::rngs::SmallRng

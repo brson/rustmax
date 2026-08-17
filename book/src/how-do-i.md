@@ -235,9 +235,9 @@ let y: f64 = rand::random(); // 0.0..1.0
 Use [`rand::rngs::StdRng`] when you need reproducible cryptographically secure randomness. This uses the platform's secure RNG algorithm.
 
 ```rust
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 let mut rng = rand::rngs::StdRng::seed_from_u64(42);
-let x: u32 = rng.gen();
+let x: u32 = rng.random();
 ```
 
 ### … generate a fast random number from a seed?
@@ -245,9 +245,9 @@ let x: u32 = rng.gen();
 Use [`rand::rngs::SmallRng`] for performance-critical code where cryptographic security isn't required. This automatically selects a fast algorithm.
 
 ```rust
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 let mut rng = rand::rngs::SmallRng::seed_from_u64(42);
-let x: u32 = rng.gen();
+let x: u32 = rng.random();
 ```
 
 ### … generate a strong random number from a seed with stable algorithm?
@@ -255,9 +255,9 @@ let x: u32 = rng.gen();
 Use [`rand_chacha::ChaCha12Rng`] when you need reproducible results across Rust versions and platforms with cryptographic security.
 
 ```rust
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 let mut rng = rand_chacha::ChaCha12Rng::seed_from_u64(42);
-let x: u32 = rng.gen();
+let x: u32 = rng.random();
 ```
 
 ### … generate a fast random number from a seed with stable algorithm?
@@ -265,9 +265,9 @@ let x: u32 = rng.gen();
 Use [`rand_pcg::Pcg64`] for deterministic, fast random numbers that remain consistent across platforms and Rust versions.
 
 ```rust
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 let mut rng = rand_pcg::Pcg64::seed_from_u64(42);
-let x: u32 = rng.gen();
+let x: u32 = rng.random();
 ```
 
 [`rand::random`]: https://docs.rs/rand/latest/rand/fn.random.html

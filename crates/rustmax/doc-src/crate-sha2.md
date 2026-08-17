@@ -18,38 +18,45 @@ The crate implements the [`Digest`] trait,
 providing both one-shot hashing via [`Digest::digest`]
 and incremental hashing via [`Digest::new`], [`Digest::update`], and [`Digest::finalize`].
 
+A digest is a fixed-size byte array, not a string.
+Use the [`hex`] crate to render one for display or storage.
+
 ## Examples
 
-Basic SHA-256 hashing:
+One-shot SHA-256 hashing:
 
 ```rust
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 
-let result = Sha256::digest(b"hello world");
-println!("SHA-256: {:x}", result);
+let digest = Sha256::digest(b"hello world");
+
+assert_eq!(
+    hex::encode(digest),
+    "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
+);
 ```
 
-Incremental hashing:
+Incremental hashing, for data that does not arrive all at once:
 
 ```rust
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 
 let mut hasher = Sha256::new();
 hasher.update(b"hello ");
 hasher.update(b"world");
-let result = hasher.finalize();
+let digest = hasher.finalize();
 
-// Verify it matches one-shot hashing
-assert_eq!(result[..], Sha256::digest(b"hello world")[..]);
+assert_eq!(digest, Sha256::digest(b"hello world"));
 ```
 
-Using different SHA-2 variants:
+The variants differ only in digest length and internal state size:
 
 ```rust
-use sha2::{Sha512, Digest};
+use sha2::{Digest, Sha256, Sha384, Sha512};
 
-let sha512_result = Sha512::digest(b"hello world");
-println!("SHA-512: {:x}", sha512_result);
+assert_eq!(Sha256::digest(b"hello world").len(), 32);
+assert_eq!(Sha384::digest(b"hello world").len(), 48);
+assert_eq!(Sha512::digest(b"hello world").len(), 64);
 ```
 
 [`Digest`]: crate::sha2::Digest
@@ -57,3 +64,4 @@ println!("SHA-512: {:x}", sha512_result);
 [`Digest::new`]: crate::sha2::Digest::new
 [`Digest::update`]: crate::sha2::Digest::update
 [`Digest::finalize`]: crate::sha2::Digest::finalize
+[`hex`]: crate::hex

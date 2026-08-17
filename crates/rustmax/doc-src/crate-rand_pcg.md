@@ -24,7 +24,7 @@ The main types are:
 
 ```rust
 use rand::SeedableRng;
-use rand::Rng;
+use rand::RngExt;
 use rand_pcg::Pcg32;
 
 let mut rng = Pcg32::seed_from_u64(42);

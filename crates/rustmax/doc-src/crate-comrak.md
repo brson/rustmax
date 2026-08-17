@@ -34,7 +34,7 @@ assert!(html.contains("<em>italic</em>"));
 Enabling GitHub Flavored Markdown extensions:
 
 ```rust
-use comrak::{markdown_to_html, Options, ExtensionOptions};
+use comrak::{markdown_to_html, Options};
 
 let mut options = Options::default();
 options.extension.strikethrough = true;
