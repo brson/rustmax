@@ -5,9 +5,10 @@
 //! mdbook SUMMARY.md format and renders markdown to HTML.
 
 use rmx::prelude::*;
+use std::borrow::Cow;
 use std::collections::HashMap;
+use std::fmt::{self, Write};
 use std::fs;
-use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use comrak::adapters::SyntaxHighlighterAdapter;
@@ -382,8 +383,8 @@ fn markdown_to_html(markdown: &str) -> String {
     options.extension.footnotes = true;
 
     // Use syntax highlighting plugin.
-    let plugins = comrak::Plugins {
-        render: comrak::RenderPlugins {
+    let plugins = comrak::options::Plugins {
+        render: comrak::options::RenderPlugins {
             codefence_syntax_highlighter: Some(&adapter),
             ..Default::default()
         },
@@ -434,7 +435,7 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
         output: &mut dyn Write,
         lang: Option<&str>,
         code: &str,
-    ) -> std::io::Result<()> {
+    ) -> fmt::Result {
         // Default to rust for unlabeled code blocks, strip modifiers like ",ignore".
         let base_lang = lang
             .map(|l| l.split(',').next().unwrap_or(l).trim())
@@ -452,8 +453,8 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
     fn write_pre_tag(
         &self,
         output: &mut dyn Write,
-        attributes: HashMap<String, String>,
-    ) -> std::io::Result<()> {
+        attributes: HashMap<&'static str, Cow<'_, str>>,
+    ) -> fmt::Result {
         let mut attrs = String::new();
         for (key, value) in &attributes {
             attrs.push_str(&format!(" {}=\"{}\"", key, html_escape(value)));
@@ -464,8 +465,8 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
     fn write_code_tag(
         &self,
         output: &mut dyn Write,
-        attributes: HashMap<String, String>,
-    ) -> std::io::Result<()> {
+        attributes: HashMap<&'static str, Cow<'_, str>>,
+    ) -> fmt::Result {
         let lang = attributes.get("class")
             .and_then(|c| c.strip_prefix("language-"))
             .unwrap_or("rust");
