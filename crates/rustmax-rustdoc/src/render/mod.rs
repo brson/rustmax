@@ -47,6 +47,13 @@ pub struct RenderContext<'a> {
     pub global_index: Option<&'a GlobalItemIndex>,
     /// All crates for resolving glob re-exports (optional, for multi-crate mode).
     pub all_crates: Option<&'a BTreeMap<String, Crate>>,
+    /// Map from a re-exported item's ID to the path it is re-exported at.
+    reexport_paths: HashMap<Id, Vec<String>>,
+    /// Map from an associated item's ID to the ID its page lives on: the
+    /// implementing type for an impl member, or the trait itself.
+    assoc_item_parents: HashMap<Id, Id>,
+    /// Pre-rendered sidebars, one per distinct page shape.
+    sidebars: sidebar::Sidebars,
 }
 
 impl<'a> RenderContext<'a> {
@@ -76,6 +83,9 @@ impl<'a> RenderContext<'a> {
         let module_tree = build_module_tree(krate, config.include_private)?;
         let highlighter = highlight::Highlighter::new();
         let impl_index = build_impl_index(krate);
+        let reexport_paths = build_reexport_paths(&module_tree);
+        let assoc_item_parents = build_assoc_item_parents(krate);
+        let sidebars = sidebar::Sidebars::build(&module_tree, &tera)?;
 
         Ok(Self {
             krate,
@@ -87,7 +97,15 @@ impl<'a> RenderContext<'a> {
             impl_index,
             global_index: global_index.into(),
             all_crates: all_crates.into(),
+            reexport_paths,
+            assoc_item_parents,
+            sidebars,
         })
+    }
+
+    /// The sidebar for a page at `current_path`, `depth` levels below the root.
+    pub fn sidebar(&self, current_path: &[String], depth: usize) -> String {
+        self.sidebars.get(current_path, depth)
     }
 
     /// Get the crate name.
@@ -274,39 +292,10 @@ impl<'a> RenderContext<'a> {
         current_depth: usize,
     ) -> Option<String> {
         let method_name = method_item.name.as_deref()?;
-
-        // Find the parent by searching impl blocks and trait definitions.
-        for (parent_id, parent_item) in &self.krate.index {
-            match &parent_item.inner {
-                ItemEnum::Impl(impl_) => {
-                    if !impl_.items.contains(method_id) {
-                        continue;
-                    }
-                    // Found the impl containing this method.
-                    if let Some(type_id) = get_type_id(&impl_.for_) {
-                        if let Some(type_url) = self.resolve_reexport_url(type_id, current_depth) {
-                            let base_url = type_url.split('#').next().unwrap_or(&type_url);
-                            return Some(format!("{}#method.{}", base_url, method_name));
-                        }
-                    }
-                    return None;
-                }
-                ItemEnum::Trait(trait_) => {
-                    if !trait_.items.contains(method_id) {
-                        continue;
-                    }
-                    // Found the trait containing this method.
-                    if let Some(trait_url) = self.resolve_reexport_url(parent_id, current_depth) {
-                        let base_url = trait_url.split('#').next().unwrap_or(&trait_url);
-                        return Some(format!("{}#method.{}", base_url, method_name));
-                    }
-                    return None;
-                }
-                _ => continue,
-            }
-        }
-
-        None
+        let parent_id = self.assoc_item_parents.get(method_id)?;
+        let parent_url = self.resolve_reexport_url(parent_id, current_depth)?;
+        let base_url = parent_url.split('#').next().unwrap_or(&parent_url);
+        Some(format!("{}#method.{}", base_url, method_name))
     }
 
     /// Resolve a "Type::method" pattern from link text.
@@ -324,7 +313,7 @@ impl<'a> RenderContext<'a> {
 
         // Search krate.paths for the type by matching the last path segment,
         // preferring types/traits over modules.
-        let type_name = type_part.rsplit("::").next().unwrap_or(type_part);
+        let type_name = signature::last_path_segment(type_part);
         let mut best: Option<(String, usize)> = None;
 
         for (id, summary) in &self.krate.paths {
@@ -352,38 +341,15 @@ impl<'a> RenderContext<'a> {
         best.map(|(url, _)| url)
     }
 
-    /// Find a re-export URL for a local item by checking if it appears as a
-    /// Use target in the module tree.
+    /// Find a re-export URL for a local item.
     fn find_reexport_url(
         &self,
         target_id: &Id,
         kind: ItemKind,
         current_depth: usize,
     ) -> Option<String> {
-        // Walk the module tree looking for Use items targeting this ID.
-        self.find_reexport_in_tree(&self.module_tree, target_id, kind, current_depth)
-    }
-
-    fn find_reexport_in_tree(
-        &self,
-        tree: &crate::types::ModuleTree,
-        target_id: &Id,
-        kind: ItemKind,
-        current_depth: usize,
-    ) -> Option<String> {
-        for item in &tree.items {
-            if let ItemEnum::Use(use_item) = &item.item.inner {
-                if use_item.id.as_ref() == Some(target_id) {
-                    return self.build_item_url(&item.path, kind, current_depth);
-                }
-            }
-        }
-        for sub in &tree.submodules {
-            if let Some(url) = self.find_reexport_in_tree(sub, target_id, kind, current_depth) {
-                return Some(url);
-            }
-        }
-        None
+        let path = self.reexport_paths.get(target_id)?;
+        self.build_item_url(path, kind, current_depth)
     }
 
     /// Render markdown to HTML.
@@ -518,6 +484,55 @@ fn load_templates() -> AnyResult<Tera> {
     tera.add_raw_template("sidebar.html", include_str!("../templates/sidebar.html"))?;
 
     Ok(tera)
+}
+
+/// Map each re-exported item to the path it is re-exported at.
+///
+/// An item can be re-exported more than once; the first one reached in a
+/// pre-order walk of the module tree wins, which is the shallowest, earliest
+/// re-export and so the one most likely to be the intended public location.
+fn build_reexport_paths(tree: &ModuleTree) -> HashMap<Id, Vec<String>> {
+    let mut paths = HashMap::new();
+    collect_reexport_paths(tree, &mut paths);
+    paths
+}
+
+fn collect_reexport_paths(tree: &ModuleTree, paths: &mut HashMap<Id, Vec<String>>) {
+    for item in &tree.items {
+        if let ItemEnum::Use(use_item) = &item.item.inner
+            && let Some(target_id) = &use_item.id
+        {
+            paths.entry(*target_id).or_insert_with(|| item.path.clone());
+        }
+    }
+    for sub in &tree.submodules {
+        collect_reexport_paths(sub, paths);
+    }
+}
+
+/// Map each associated item to the item whose page it is documented on.
+///
+/// For a method in an impl block that is the type being implemented; for a
+/// trait member it is the trait.
+fn build_assoc_item_parents(krate: &Crate) -> HashMap<Id, Id> {
+    let mut parents = HashMap::new();
+    for (id, item) in &krate.index {
+        match &item.inner {
+            ItemEnum::Impl(impl_) => {
+                let Some(type_id) = get_type_id(&impl_.for_) else { continue };
+                for member_id in &impl_.items {
+                    parents.insert(*member_id, *type_id);
+                }
+            }
+            ItemEnum::Trait(trait_) => {
+                for member_id in &trait_.items {
+                    parents.insert(*member_id, *id);
+                }
+            }
+            _ => {}
+        }
+    }
+    parents
 }
 
 fn build_id_to_path<'a>(krate: &'a Crate) -> HashMap<&'a Id, Vec<String>> {

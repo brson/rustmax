@@ -97,7 +97,7 @@ impl<'a, 'ctx> LinkedRenderer<'a, 'ctx> {
         // Use only the last segment as the display name. Rustdoc JSON
         // stores source-level paths like "super::join_handle::JoinHandle"
         // but we want to show just "JoinHandle".
-        let simple_name = path.path.rsplit("::").next().unwrap_or(&path.path);
+        let simple_name = last_path_segment(&path.path);
         let name = html_escape(simple_name);
         let args = path.args.as_ref()
             .map(|a| self.render_generic_args(a))
@@ -761,12 +761,35 @@ fn constant_value(c: &Constant) -> String {
     c.value.clone().unwrap_or_else(|| c.expr.clone())
 }
 
+/// The final segment of a `::`-separated path.
+///
+/// This runs for every type reference in every signature, so it scans bytes
+/// backwards for a colon rather than paying for a substring search over `"::"`.
+pub fn last_path_segment(path: &str) -> &str {
+    match path.as_bytes().iter().rposition(|&b| b == b':') {
+        Some(i) => &path[i + 1..],
+        None => path,
+    }
+}
+
 /// HTML-escape a string.
 pub fn html_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
+    // Most strings have nothing to escape, and this runs on every identifier
+    // in every signature, so take one pass to check before doing any work.
+    if !s.contains(['&', '<', '>', '"']) {
+        return s.to_string();
+    }
+    let mut escaped = String::with_capacity(s.len() + 16);
+    for c in s.chars() {
+        match c {
+            '&' => escaped.push_str("&amp;"),
+            '<' => escaped.push_str("&lt;"),
+            '>' => escaped.push_str("&gt;"),
+            '"' => escaped.push_str("&quot;"),
+            _ => escaped.push(c),
+        }
+    }
+    escaped
 }
 
 #[cfg(test)]

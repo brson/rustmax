@@ -3,6 +3,9 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt::{self, Write};
+use std::sync::LazyLock;
+
+use rmx::regex::Regex;
 
 use comrak::{markdown_to_html_with_plugins, Arena, Options};
 use comrak::adapters::SyntaxHighlighterAdapter;
@@ -11,6 +14,7 @@ use comrak::options::Plugins;
 use rustdoc_types::ItemKind;
 
 use super::highlight::Highlighter;
+use super::signature::html_escape;
 use crate::{GlobalItemIndex, ItemLocation};
 
 /// Render markdown to HTML with syntax highlighting.
@@ -91,32 +95,39 @@ fn markdown_options() -> Options<'static> {
     options
 }
 
+/// Reference definitions at the start of a line: ``[`Label`]: url``.
+///
+/// Backticked and plain labels are matched separately because the regex crate
+/// has no backreferences.
+static REF_DEF_BACKTICK: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"(?m)^\s*\[`([^`]+)`\]:\s*"#).unwrap());
+
+static REF_DEF_PLAIN: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"(?m)^\s*\[([^\]`]+)\]:\s*"#).unwrap());
+
+/// A rustdoc shortcut link such as ``[`path::to::Item`]``.
+///
+/// A trailing `(` or `[` is checked by the caller rather than here.
+static SHORTCUT_LINK: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"\[`((?:::)?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\]"#).unwrap()
+});
+
 /// Preprocess markdown to convert rustdoc shortcut links to explicit links.
 ///
 /// Converts `` [`path::Item`] `` to `` [`path::Item`](path::Item) ``
 /// but only if there's no reference definition for that label in the document.
 fn preprocess_shortcut_links(md: &str) -> String {
-    use rmx::regex::Regex;
     use std::collections::HashSet;
 
-    // First, find all reference definitions in the document.
-    // These look like: [`Label`]: url or [Label]: url at the start of a line.
-    // Match both forms separately since regex doesn't support backreferences.
-    let ref_def_backtick = Regex::new(r#"(?m)^\s*\[`([^`]+)`\]:\s*"#).unwrap();
-    let ref_def_plain = Regex::new(r#"(?m)^\s*\[([^\]`]+)\]:\s*"#).unwrap();
-
-    let mut defined_refs: HashSet<String> = HashSet::new();
-    for cap in ref_def_backtick.captures_iter(md) {
-        defined_refs.insert(cap.get(1).unwrap().as_str().to_string());
+    let mut defined_refs: HashSet<&str> = HashSet::new();
+    for cap in REF_DEF_BACKTICK.captures_iter(md) {
+        defined_refs.insert(cap.get(1).unwrap().as_str());
     }
-    for cap in ref_def_plain.captures_iter(md) {
-        defined_refs.insert(cap.get(1).unwrap().as_str().to_string());
+    for cap in REF_DEF_PLAIN.captures_iter(md) {
+        defined_refs.insert(cap.get(1).unwrap().as_str());
     }
 
-    // Match [`path::to::Item`] or [`::crate::Item`] - we'll check for trailing ( or [ manually.
-    let re = Regex::new(
-        r#"\[`((?:::)?[a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)`\]"#
-    ).unwrap();
+    let re = &*SHORTCUT_LINK;
 
     let mut result = String::with_capacity(md.len());
     let mut last_end = 0;
@@ -307,11 +318,12 @@ fn resolve_rust_path(
         }
     }
 
-    // For single-segment paths, search all items as last resort.
+    // For single-segment paths, fall back to any item with that name. The
+    // candidates come back ordered by full path, so the choice is stable.
     if !lookup_path.contains("::") {
-        for (full_path, location) in &index.items {
-            let name = full_path.rsplit("::").next().unwrap_or(full_path);
-            if name == lookup_path && matches_kind_filter(location, kind_filter) {
+        for full_path in index.paths_named(&lookup_path) {
+            let Some(location) = index.items.get(full_path) else { continue };
+            if matches_kind_filter(location, kind_filter) {
                 return Some(build_url(location, current_depth));
             }
         }
@@ -439,13 +451,6 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
             .unwrap_or("rust");
         write!(output, "<code class=\"language-{}\">", html_escape(lang))
     }
-}
-
-fn html_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
 }
 
 /// Extract first paragraph from markdown.

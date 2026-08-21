@@ -35,8 +35,7 @@ fn page_base(ctx: &RenderContext, item: &RenderableItem, tera_ctx: &mut Context)
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
-    let sidebar_html = super::sidebar::render_sidebar(ctx, &item.path, &path_to_root)?;
-    tera_ctx.insert("sidebar", &sidebar_html);
+    tera_ctx.insert("sidebar", &ctx.sidebar(&item.path, depth));
 
     Ok(PageBase { depth })
 }
@@ -252,7 +251,7 @@ pub fn render_trait(ctx: &RenderContext, item: &RenderableItem) -> AnyResult<Str
         .flatten()
         .map(|impl_info| linked.render_impl_header(impl_info.impl_))
         .collect();
-    implementors.sort_by_key(|header| strip_tags(header));
+    implementors.sort_by_cached_key(|header| strip_tags(header));
     tera_ctx.insert("implementors", &implementors);
 
     ctx.tera.render("trait.html", &tera_ctx)
@@ -453,7 +452,7 @@ fn insert_impls(ctx: &RenderContext, type_id: &Id, depth: usize, tera_ctx: &mut 
     ];
     let groups: Vec<ImplGroup> = groups.into_iter()
         .map(|(title, css_class, mut blocks)| {
-            blocks.sort_by_key(|block| strip_tags(&block.header));
+            blocks.sort_by_cached_key(|block| strip_tags(&block.header));
             ImplGroup { title, css_class, blocks }
         })
         .collect();

@@ -257,8 +257,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     tera_ctx.insert("path_to_root", &path_to_root);
 
     // Sidebar HTML.
-    let sidebar_html = super::sidebar::render_sidebar(ctx, &path, &path_to_root)?;
-    tera_ctx.insert("sidebar", &sidebar_html);
+    tera_ctx.insert("sidebar", &ctx.sidebar(&path, depth));
 
     ctx.tera.render("module.html", &tera_ctx)
         .context("Failed to render module template")

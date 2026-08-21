@@ -402,6 +402,27 @@ impl RustDocSet {
 pub struct GlobalItemIndex {
     /// Map from full path (like "serde::Serialize") to item location.
     pub items: BTreeMap<String, ItemLocation>,
+    /// Full paths grouped by their last segment, built on first use.
+    by_last_segment: std::sync::OnceLock<BTreeMap<String, Vec<String>>>,
+}
+
+impl GlobalItemIndex {
+    /// The full paths of every item whose last segment is `name`, in order.
+    ///
+    /// Resolving a bare name like `Duration` otherwise means scanning the
+    /// whole index, which for a documentation set spanning hundreds of crates
+    /// is the single most expensive thing the renderer does.
+    pub fn paths_named(&self, name: &str) -> &[String] {
+        let by_name = self.by_last_segment.get_or_init(|| {
+            let mut by_name: BTreeMap<String, Vec<String>> = BTreeMap::new();
+            for full_path in self.items.keys() {
+                let last = full_path.rsplit("::").next().unwrap_or(full_path);
+                by_name.entry(last.to_string()).or_default().push(full_path.clone());
+            }
+            by_name
+        });
+        by_name.get(name).map(Vec::as_slice).unwrap_or_default()
+    }
 }
 
 /// Location of an item in the documentation.
