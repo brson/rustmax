@@ -3,8 +3,9 @@
 use comrak::adapters::SyntaxHighlighterAdapter;
 use syntect::html::{ClassStyle, ClassedHTMLGenerator};
 use syntect::parsing::SyntaxSet;
+use std::borrow::Cow;
 use std::collections::HashMap;
-use std::io::Write;
+use std::fmt::{self, Write};
 
 /// Syntax highlighter for code blocks.
 pub struct Highlighter {
@@ -50,7 +51,7 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
         output: &mut dyn Write,
         lang: Option<&str>,
         code: &str,
-    ) -> std::io::Result<()> {
+    ) -> fmt::Result {
         // Extract base language, stripping modifiers like ",ignore", ",no_run".
         // Default to rust for unlabeled code blocks.
         let base_lang = lang
@@ -70,8 +71,8 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
     fn write_pre_tag(
         &self,
         output: &mut dyn Write,
-        attributes: HashMap<String, String>,
-    ) -> std::io::Result<()> {
+        attributes: HashMap<&'static str, Cow<'_, str>>,
+    ) -> fmt::Result {
         let mut attrs = String::new();
         for (key, value) in &attributes {
             attrs.push_str(&format!(" {}=\"{}\"", key, html_escape(value)));
@@ -82,8 +83,8 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
     fn write_code_tag(
         &self,
         output: &mut dyn Write,
-        attributes: HashMap<String, String>,
-    ) -> std::io::Result<()> {
+        attributes: HashMap<&'static str, Cow<'_, str>>,
+    ) -> fmt::Result {
         let lang = attributes.get("class")
             .and_then(|c| c.strip_prefix("language-"))
             .unwrap_or("rust");

@@ -1,10 +1,13 @@
 //! Markdown to HTML rendering with syntax highlighting and intra-doc link resolution.
 
+use std::borrow::Cow;
 use std::collections::HashMap;
+use std::fmt::{self, Write};
 
-use comrak::{markdown_to_html_with_plugins, Arena, Options, Plugins};
+use comrak::{markdown_to_html_with_plugins, Arena, Options};
 use comrak::adapters::SyntaxHighlighterAdapter;
 use comrak::nodes::NodeValue;
+use comrak::options::Plugins;
 use rustdoc_types::ItemKind;
 
 use super::highlight::Highlighter;
@@ -70,9 +73,9 @@ pub fn render_markdown_with_links(
     let mut plugins = Plugins::default();
     plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
-    let mut html = Vec::new();
+    let mut html = String::new();
     comrak::format_html_with_plugins(root, &options, &mut html, &plugins).unwrap();
-    String::from_utf8_lossy(&html).into_owned()
+    html
 }
 
 /// Create standard markdown options.
@@ -83,8 +86,8 @@ fn markdown_options() -> Options<'static> {
     options.extension.autolink = true;
     options.extension.tasklist = true;
     options.extension.footnotes = true;
-    options.extension.header_ids = Some("".to_string());
-    options.render.unsafe_ = true;
+    options.extension.header_id_prefix = Some("".to_string());
+    options.render.r#unsafe = true;
     options
 }
 
@@ -393,10 +396,10 @@ struct HighlightAdapter<'a> {
 impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
     fn write_highlighted(
         &self,
-        output: &mut dyn std::io::Write,
+        output: &mut dyn Write,
         lang: Option<&str>,
         code: &str,
-    ) -> std::io::Result<()> {
+    ) -> fmt::Result {
         // Extract base language, stripping modifiers like ",ignore", ",no_run", etc.
         // Rustdoc assumes unlabeled code blocks are Rust.
         // "text" means plain text (no highlighting).
@@ -416,9 +419,9 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
 
     fn write_pre_tag(
         &self,
-        output: &mut dyn std::io::Write,
-        attributes: std::collections::HashMap<String, String>,
-    ) -> std::io::Result<()> {
+        output: &mut dyn Write,
+        attributes: HashMap<&'static str, Cow<'_, str>>,
+    ) -> fmt::Result {
         let mut attrs = String::new();
         for (key, value) in &attributes {
             attrs.push_str(&format!(" {}=\"{}\"", key, html_escape(value)));
@@ -428,9 +431,9 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
 
     fn write_code_tag(
         &self,
-        output: &mut dyn std::io::Write,
-        attributes: std::collections::HashMap<String, String>,
-    ) -> std::io::Result<()> {
+        output: &mut dyn Write,
+        attributes: HashMap<&'static str, Cow<'_, str>>,
+    ) -> fmt::Result {
         let lang = attributes.get("class")
             .and_then(|c| c.strip_prefix("language-"))
             .unwrap_or("rust");

@@ -25,7 +25,7 @@ rustdoc-types.features = ["rustc-hash"]
 serde.version = "1"
 serde.features = ["derive"]
 
-comrak.version = "0.35"
+comrak.version = "0.54"
 comrak.default-features = false
 syntect.version = "5.3"
 syntect.default-features = false

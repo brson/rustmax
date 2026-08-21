@@ -156,7 +156,8 @@ fn main() -> AnyResult<()> {
     let posts_dir = workspace_dir.join(POSTS_DIR);
     let posts = feed::parse_posts(&posts_dir)?;
 
-    let mut tera = tera::Tera::new("src/*.template.*")?;
+    let mut tera = tera::Tera::new();
+    tera.load_from_glob("src/*.template.*")?;
     let out_dir = workspace_dir.join(OUT_DIR);
 
     feed::generate_feed_page(&posts, &tera, &out_dir)?;
@@ -419,8 +420,8 @@ fn render_example(
 
         // Use comrak with syntax highlighting.
         let adapter = highlight::HighlightAdapter { highlighter };
-        let plugins = comrak::Plugins {
-            render: comrak::RenderPlugins {
+        let plugins = comrak::options::Plugins {
+            render: comrak::options::RenderPlugins {
                 codefence_syntax_highlighter: Some(&adapter),
                 ..Default::default()
             },
