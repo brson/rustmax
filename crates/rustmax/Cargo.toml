@@ -376,8 +376,6 @@ rmx-feature-more = [
   "reqwest?/json",
   "reqwest?/stream",
   "serde?/rc",
-  # tera 2 has an empty default feature set; glob loading is opt-in.
-  "tera?/glob_fs",
   "tokio?/full",
   "tower?/full",
 ]
