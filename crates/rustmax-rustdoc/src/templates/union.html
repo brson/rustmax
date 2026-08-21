@@ -1,53 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ item_name }} - {{ crate_name }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Zilla+Slab:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ path_to_root }}rustmax-themes.css">
-    <link rel="stylesheet" href="{{ path_to_root }}rustdoc.css">
-    <link rel="stylesheet" href="{{ path_to_root }}rustmax-syntax.css">
-    <script>
-    (function() {
-        var k = 'rustdoc-nav';
-        var stored = localStorage.getItem(k);
-        var mobile = window.matchMedia('(max-width: 768px)');
-        var collapsed = stored ? stored === 'collapsed' : mobile.matches;
-        if (collapsed) document.documentElement.classList.add('nav-collapsed');
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('nav-toggle')) {
-                var c = document.documentElement.classList.toggle('nav-collapsed');
-                localStorage.setItem(k, c ? 'collapsed' : 'expanded');
-            }
-        });
-    })();
-    </script>
-</head>
-<body>
-    <button class="nav-toggle" aria-label="Toggle navigation"></button>
-    <nav class="sidebar">
-        <div class="sidebar-title">
-            <a href="{{ path_to_root }}index.html">{{ crate_name }}</a>
-        </div>
-        {{ sidebar | safe }}
-    </nav>
-    <main>
-        <header>
-            <nav class="breadcrumbs">
-                {% for crumb in breadcrumbs %}
-                    {% if crumb.url %}
-                        <a href="{{ crumb.url }}">{{ crumb.name }}</a> ::
-                    {% else %}
-                        <span>{{ crumb.name }}</span>
-                    {% endif %}
-                {% endfor %}
-            </nav>
-            <h1>Union <code>{{ item_name }}</code></h1>
-        </header>
-
+{% extends "base.html" %}
+{% block title %}{{ item_name }}{% endblock %}
+{% block heading %}Union <code>{{ item_name }}</code>{% endblock %}
+{% block content %}
         {% if deprecation %}
         <div class="deprecated">{{ deprecation }}</div>
         {% endif %}
@@ -77,10 +31,11 @@
         </section>
         {% endif %}
 
-        {% if impls | length > 0 %}
-        <section class="implementations">
-            <h2>Implementations</h2>
-            {% for impl_block in impls %}
+        {% for group in impl_groups %}
+        {% if group.blocks | length > 0 %}
+        <section class="{{ group.css_class }}">
+            <h2>{{ group.title }}</h2>
+            {% for impl_block in group.blocks %}
             <section class="impl-block">
                 <h3><code>{{ impl_block.header | safe }}</code></h3>
                 {% if impl_block.members | length > 0 %}
@@ -97,66 +52,5 @@
             {% endfor %}
         </section>
         {% endif %}
-        {% if trait_impls | length > 0 %}
-        <section class="trait-implementations">
-            <h2>Trait Implementations</h2>
-            {% for impl_block in trait_impls %}
-            <section class="impl-block">
-                <h3><code>{{ impl_block.header | safe }}</code></h3>
-                {% if impl_block.members | length > 0 %}
-                <dl>
-                    {% for member in impl_block.members %}
-                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
-                    {% if member.docs %}
-                    <dd>{{ member.docs | safe }}</dd>
-                    {% endif %}
-                    {% endfor %}
-                </dl>
-                {% endif %}
-            </section>
-            {% endfor %}
-        </section>
-        {% endif %}
-        {% if auto_impls | length > 0 %}
-        <section class="auto-implementations">
-            <h2>Auto Trait Implementations</h2>
-            {% for impl_block in auto_impls %}
-            <section class="impl-block">
-                <h3><code>{{ impl_block.header | safe }}</code></h3>
-                {% if impl_block.members | length > 0 %}
-                <dl>
-                    {% for member in impl_block.members %}
-                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
-                    {% if member.docs %}
-                    <dd>{{ member.docs | safe }}</dd>
-                    {% endif %}
-                    {% endfor %}
-                </dl>
-                {% endif %}
-            </section>
-            {% endfor %}
-        </section>
-        {% endif %}
-        {% if blanket_impls | length > 0 %}
-        <section class="blanket-implementations">
-            <h2>Blanket Implementations</h2>
-            {% for impl_block in blanket_impls %}
-            <section class="impl-block">
-                <h3><code>{{ impl_block.header | safe }}</code></h3>
-                {% if impl_block.members | length > 0 %}
-                <dl>
-                    {% for member in impl_block.members %}
-                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
-                    {% if member.docs %}
-                    <dd>{{ member.docs | safe }}</dd>
-                    {% endif %}
-                    {% endfor %}
-                </dl>
-                {% endif %}
-            </section>
-            {% endfor %}
-        </section>
-        {% endif %}
-    </main>
-</body>
-</html>
+        {% endfor %}
+{% endblock %}

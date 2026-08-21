@@ -345,6 +345,14 @@ struct ImplBlockInfo {
     members: Vec<MemberInfo>,
 }
 
+/// One heading's worth of impl blocks on a type page.
+#[derive(serde::Serialize)]
+struct ImplGroup {
+    title: &'static str,
+    css_class: &'static str,
+    blocks: Vec<ImplBlockInfo>,
+}
+
 /// Drop HTML tags from a rendered fragment.
 ///
 /// Rendered headers carry `<a>` links, so ordering them by their raw HTML puts
@@ -437,14 +445,20 @@ fn insert_impls(ctx: &RenderContext, type_id: &Id, depth: usize, tera_ctx: &mut 
         }
     }
 
-    for group in [&mut inherent, &mut trait_impls, &mut auto_impls, &mut blanket_impls] {
-        group.sort_by_key(|block| strip_tags(&block.header));
-    }
+    let groups = [
+        ("Implementations", "implementations", inherent),
+        ("Trait Implementations", "trait-implementations", trait_impls),
+        ("Auto Trait Implementations", "auto-implementations", auto_impls),
+        ("Blanket Implementations", "blanket-implementations", blanket_impls),
+    ];
+    let groups: Vec<ImplGroup> = groups.into_iter()
+        .map(|(title, css_class, mut blocks)| {
+            blocks.sort_by_key(|block| strip_tags(&block.header));
+            ImplGroup { title, css_class, blocks }
+        })
+        .collect();
 
-    tera_ctx.insert("impls", &inherent);
-    tera_ctx.insert("trait_impls", &trait_impls);
-    tera_ctx.insert("auto_impls", &auto_impls);
-    tera_ctx.insert("blanket_impls", &blanket_impls);
+    tera_ctx.insert("impl_groups", &groups);
 }
 
 /// Collect the methods, associated types and associated consts of an impl block.
