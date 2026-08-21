@@ -1,7 +1,7 @@
 //! JSON parsing for rustdoc output.
 
 use rmx::prelude::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
@@ -23,8 +23,8 @@ pub fn load_bytes(json: &[u8]) -> AnyResult<rustdoc_types::Crate> {
 ///
 /// Returns a map from crate name to parsed crate data.
 /// Files that fail to parse are skipped with a warning.
-pub fn load_json_dir(dir: &Path) -> AnyResult<HashMap<String, rustdoc_types::Crate>> {
-    let mut crates = HashMap::new();
+pub fn load_json_dir(dir: &Path) -> AnyResult<BTreeMap<String, rustdoc_types::Crate>> {
+    let mut crates = BTreeMap::new();
     let mut skipped = 0;
 
     for entry in fs::read_dir(dir)

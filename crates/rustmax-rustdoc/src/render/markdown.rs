@@ -484,12 +484,17 @@ fn extract_first_paragraph(md: &str) -> String {
 }
 
 /// Strip wrapping `<p>...</p>` tags from HTML for inline display.
+///
+/// Only a single wrapping paragraph is stripped. Input holding more than one
+/// paragraph is returned unchanged, since removing the outermost tags there
+/// would leave the inner `</p>` and `<p>` behind.
 fn strip_paragraph_wrapper(html: &str) -> String {
     let trimmed = html.trim();
-    if trimmed.starts_with("<p>") && trimmed.ends_with("</p>") {
-        trimmed[3..trimmed.len()-4].to_string()
-    } else {
-        trimmed.to_string()
+    let inner = trimmed.strip_prefix("<p>").and_then(|s| s.strip_suffix("</p>"));
+
+    match inner {
+        Some(inner) if !inner.contains("</p>") => inner.to_string(),
+        _ => trimmed.to_string(),
     }
 }
 
@@ -661,6 +666,23 @@ mod tests {
     }
 
     #[test]
+    fn test_resolve_rust_path_last_resort_is_deterministic() {
+        // Several crates export an item of the same name. The index is ordered,
+        // so the lexicographically first path always wins.
+        let mut index = GlobalItemIndex::default();
+        for krate in ["zcrate", "mcrate", "acrate"] {
+            index.items.insert(format!("{krate}::Duration"), ItemLocation {
+                crate_name: krate.to_string(),
+                path: vec![krate.to_string(), "Duration".to_string()],
+                kind: ItemKind::Struct,
+            });
+        }
+
+        let url = resolve_rust_path("Duration", &index, "mycrate", 0);
+        assert_eq!(url, Some("acrate/struct.Duration.html".to_string()));
+    }
+
+    #[test]
     fn test_render_markdown_with_links() {
         let index = test_index();
         let highlighter = Highlighter::new();
@@ -750,6 +772,13 @@ mod tests {
         assert_eq!(strip_paragraph_wrapper("<p>hello</p>"), "hello");
         assert_eq!(strip_paragraph_wrapper("\n<p>hello</p>\n"), "hello");
         assert_eq!(strip_paragraph_wrapper("<div>hello</div>"), "<div>hello</div>");
+        // Nested markup within the one paragraph is preserved.
+        assert_eq!(strip_paragraph_wrapper("<p>a <code>b</code></p>"), "a <code>b</code>");
+        // More than one paragraph is left alone.
+        assert_eq!(
+            strip_paragraph_wrapper("<p>one</p>\n<p>two</p>"),
+            "<p>one</p>\n<p>two</p>"
+        );
     }
 
     #[test]

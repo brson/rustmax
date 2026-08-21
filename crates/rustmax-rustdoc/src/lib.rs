@@ -15,7 +15,7 @@ pub use output::write_docs;
 
 use rayon::prelude::*;
 use rmx::prelude::*;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
 
 /// Configuration for documentation rendering.
@@ -130,7 +130,7 @@ impl RustDoc {
 /// with cross-crate links working correctly.
 pub struct RustDocSet {
     /// Map from crate name to parsed crate data.
-    pub crates: HashMap<String, rustdoc_types::Crate>,
+    pub crates: BTreeMap<String, rustdoc_types::Crate>,
     /// Rendering configuration.
     pub config: RenderConfig,
 }
@@ -401,7 +401,7 @@ impl RustDocSet {
 #[derive(Debug, Default)]
 pub struct GlobalItemIndex {
     /// Map from full path (like "serde::Serialize") to item location.
-    pub items: HashMap<String, ItemLocation>,
+    pub items: BTreeMap<String, ItemLocation>,
 }
 
 /// Location of an item in the documentation.

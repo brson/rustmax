@@ -10,7 +10,7 @@ pub mod sidebar;
 use rmx::prelude::*;
 use rmx::tera::Tera;
 use rustdoc_types::{Crate, Id, ItemEnum, ItemKind, Visibility};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::hash::BuildHasher;
 use std::path::PathBuf;
 
@@ -46,7 +46,7 @@ pub struct RenderContext<'a> {
     /// Global item index for cross-crate linking (optional).
     pub global_index: Option<&'a GlobalItemIndex>,
     /// All crates for resolving glob re-exports (optional, for multi-crate mode).
-    pub all_crates: Option<&'a HashMap<String, Crate>>,
+    pub all_crates: Option<&'a BTreeMap<String, Crate>>,
 }
 
 impl<'a> RenderContext<'a> {
@@ -69,7 +69,7 @@ impl<'a> RenderContext<'a> {
         krate: &'a Crate,
         config: &'a RenderConfig,
         global_index: impl Into<Option<&'a GlobalItemIndex>>,
-        all_crates: impl Into<Option<&'a HashMap<String, Crate>>>,
+        all_crates: impl Into<Option<&'a BTreeMap<String, Crate>>>,
     ) -> AnyResult<Self> {
         let tera = load_templates()?;
         let id_to_path = build_id_to_path(krate);
