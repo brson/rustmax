@@ -48,8 +48,13 @@
             <h1>Union <code>{{ item_name }}</code></h1>
         </header>
 
+        {% if deprecation %}
+        <div class="deprecated">{{ deprecation }}</div>
+        {% endif %}
+
         <section class="signature">
-            <pre><code>{{ signature | safe }}</code></pre>
+            <pre><code>{% if attrs %}{{ attrs | safe }}
+{% endif %}{{ signature | safe }}</code></pre>
         </section>
 
         {% if docs %}
@@ -78,12 +83,72 @@
             {% for impl_block in impls %}
             <section class="impl-block">
                 <h3><code>{{ impl_block.header | safe }}</code></h3>
-                {% if impl_block.methods | length > 0 %}
+                {% if impl_block.members | length > 0 %}
                 <dl>
-                    {% for method in impl_block.methods %}
-                    <dt id="method.{{ method.name }}"><pre><code>{{ method.signature | safe }}</code></pre></dt>
-                    {% if method.docs %}
-                    <dd>{{ method.docs | safe }}</dd>
+                    {% for member in impl_block.members %}
+                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
+                    {% if member.docs %}
+                    <dd>{{ member.docs | safe }}</dd>
+                    {% endif %}
+                    {% endfor %}
+                </dl>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </section>
+        {% endif %}
+        {% if trait_impls | length > 0 %}
+        <section class="trait-implementations">
+            <h2>Trait Implementations</h2>
+            {% for impl_block in trait_impls %}
+            <section class="impl-block">
+                <h3><code>{{ impl_block.header | safe }}</code></h3>
+                {% if impl_block.members | length > 0 %}
+                <dl>
+                    {% for member in impl_block.members %}
+                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
+                    {% if member.docs %}
+                    <dd>{{ member.docs | safe }}</dd>
+                    {% endif %}
+                    {% endfor %}
+                </dl>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </section>
+        {% endif %}
+        {% if auto_impls | length > 0 %}
+        <section class="auto-implementations">
+            <h2>Auto Trait Implementations</h2>
+            {% for impl_block in auto_impls %}
+            <section class="impl-block">
+                <h3><code>{{ impl_block.header | safe }}</code></h3>
+                {% if impl_block.members | length > 0 %}
+                <dl>
+                    {% for member in impl_block.members %}
+                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
+                    {% if member.docs %}
+                    <dd>{{ member.docs | safe }}</dd>
+                    {% endif %}
+                    {% endfor %}
+                </dl>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </section>
+        {% endif %}
+        {% if blanket_impls | length > 0 %}
+        <section class="blanket-implementations">
+            <h2>Blanket Implementations</h2>
+            {% for impl_block in blanket_impls %}
+            <section class="impl-block">
+                <h3><code>{{ impl_block.header | safe }}</code></h3>
+                {% if impl_block.members | length > 0 %}
+                <dl>
+                    {% for member in impl_block.members %}
+                    <dt id="method.{{ member.name }}"><pre><code>{{ member.signature | safe }}</code></pre></dt>
+                    {% if member.docs %}
+                    <dd>{{ member.docs | safe }}</dd>
                     {% endif %}
                     {% endfor %}
                 </dl>

@@ -48,8 +48,13 @@
             <h1>Type Alias <code>{{ item_name }}</code></h1>
         </header>
 
+        {% if deprecation %}
+        <div class="deprecated">{{ deprecation }}</div>
+        {% endif %}
+
         <section class="signature">
-            <pre><code>{{ signature | safe }}</code></pre>
+            <pre><code>{% if attrs %}{{ attrs | safe }}
+{% endif %}{{ signature | safe }}</code></pre>
         </section>
 
         {% if docs %}

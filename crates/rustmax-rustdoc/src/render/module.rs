@@ -54,6 +54,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     let mut functions = Vec::new();
     let mut types = Vec::new();
     let mut constants = Vec::new();
+    let mut statics = Vec::new();
     let mut macros = Vec::new();
 
     for submodule in &tree.submodules {
@@ -110,7 +111,8 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                     ItemEnum::Trait(_) => traits.push(summary),
                     ItemEnum::Function(_) => functions.push(summary),
                     ItemEnum::TypeAlias(_) => types.push(summary),
-                    ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
+                    ItemEnum::Constant { .. } => constants.push(summary),
+                    ItemEnum::Static(_) => statics.push(summary),
                     ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
                     _ => {}
                 }
@@ -130,7 +132,8 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                     ItemKind::Trait => traits.push(summary),
                     ItemKind::Function => functions.push(summary),
                     ItemKind::TypeAlias => types.push(summary),
-                    ItemKind::Constant | ItemKind::Static => constants.push(summary),
+                    ItemKind::Constant => constants.push(summary),
+                    ItemKind::Static => statics.push(summary),
                     ItemKind::Macro => macros.push(summary),
                     ItemKind::Module => modules.push(summary),
                     _ => {}
@@ -155,7 +158,8 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
             ItemEnum::Trait(_) => traits.push(summary),
             ItemEnum::Function(_) => functions.push(summary),
             ItemEnum::TypeAlias(_) => types.push(summary),
-            ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
+            ItemEnum::Constant { .. } => constants.push(summary),
+            ItemEnum::Static(_) => statics.push(summary),
             ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
             ItemEnum::ExternCrate { name, rename } => {
                 // Extern crate appears as a module linking to the external crate.
@@ -215,7 +219,8 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
                                     ItemEnum::Trait(_) => traits.push(summary),
                                     ItemEnum::Function(_) => functions.push(summary),
                                     ItemEnum::TypeAlias(_) => types.push(summary),
-                                    ItemEnum::Constant { .. } | ItemEnum::Static(_) => constants.push(summary),
+                                    ItemEnum::Constant { .. } => constants.push(summary),
+                                    ItemEnum::Static(_) => statics.push(summary),
                                     ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
                                     _ => {}
                                 }
@@ -236,6 +241,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     functions.sort_by(|a, b| a.name.cmp(&b.name));
     types.sort_by(|a, b| a.name.cmp(&b.name));
     constants.sort_by(|a, b| a.name.cmp(&b.name));
+    statics.sort_by(|a, b| a.name.cmp(&b.name));
     macros.sort_by(|a, b| a.name.cmp(&b.name));
 
     tera_ctx.insert("modules", &modules);
@@ -246,6 +252,7 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
     tera_ctx.insert("functions", &functions);
     tera_ctx.insert("types", &types);
     tera_ctx.insert("constants", &constants);
+    tera_ctx.insert("statics", &statics);
     tera_ctx.insert("macros", &macros);
     tera_ctx.insert("path_to_root", &path_to_root);
 

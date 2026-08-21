@@ -359,6 +359,13 @@ pre code {
     margin: 0;
 }
 
+.deprecated {
+    border-left: 3px solid var(--rmx-color-accent, currentColor);
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
 /* Item lists */
 .item-list ul {
     list-style: none;

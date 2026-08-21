@@ -48,8 +48,13 @@
             <h1>Trait <code>{{ item_name }}</code></h1>
         </header>
 
+        {% if deprecation %}
+        <div class="deprecated">{{ deprecation }}</div>
+        {% endif %}
+
         <section class="signature">
-            <pre><code>{{ signature | safe }}</code></pre>
+            <pre><code>{% if attrs %}{{ attrs | safe }}
+{% endif %}{{ signature | safe }}</code></pre>
         </section>
 
         {% if docs %}
@@ -63,7 +68,21 @@
             <h2>Associated Types</h2>
             <dl>
                 {% for item in associated_types %}
-                <dt><code>type {{ item.name }}{% if item.bounds %}: {{ item.bounds }}{% endif %}</code></dt>
+                <dt id="associatedtype.{{ item.name }}"><code>{{ item.signature | safe }}</code></dt>
+                {% if item.docs %}
+                <dd>{{ item.docs | safe }}</dd>
+                {% endif %}
+                {% endfor %}
+            </dl>
+        </section>
+        {% endif %}
+
+        {% if associated_consts | length > 0 %}
+        <section class="associated-consts">
+            <h2>Associated Constants</h2>
+            <dl>
+                {% for item in associated_consts %}
+                <dt id="associatedconstant.{{ item.name }}"><code>{{ item.signature | safe }}</code></dt>
                 {% if item.docs %}
                 <dd>{{ item.docs | safe }}</dd>
                 {% endif %}
@@ -105,7 +124,7 @@
             <h2>Implementors</h2>
             <ul>
                 {% for impl in implementors %}
-                <li><code>{{ impl.impl_header | safe }}</code></li>
+                <li><code>{{ impl | safe }}</code></li>
                 {% endfor %}
             </ul>
         </section>

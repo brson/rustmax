@@ -166,6 +166,20 @@
         </section>
         {% endif %}
 
+        {% if statics | length > 0 %}
+        <section class="item-list">
+            <h2>Statics</h2>
+            <ul>
+                {% for item in statics %}
+                <li>
+                    <a href="{{ item.path }}">{{ item.name }}</a>
+                    {% if item.short_doc %}<span class="short-doc">{{ item.short_doc | safe }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
         {% if macros | length > 0 %}
         <section class="item-list">
             <h2>Macros</h2>
