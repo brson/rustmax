@@ -661,6 +661,98 @@ mod tests {
     }
 
     #[test]
+    fn test_render_markdown_with_links() {
+        let index = test_index();
+        let highlighter = Highlighter::new();
+        let md = "See [`mycrate::MyStruct`].\n\n```rust\nfn main() {}\n```\n";
+
+        let html = render_markdown_with_links(
+            md,
+            &highlighter,
+            Some(&index),
+            "mycrate",
+            1,
+            &HashMap::new(),
+        );
+
+        assert!(html.contains(r#"href="../mycrate/struct.MyStruct.html""#), "got: {html}");
+        assert!(html.contains(r#"<pre class="highlight""#), "got: {html}");
+        assert!(html.contains(r#"<span class="source rust">"#), "got: {html}");
+    }
+
+    #[test]
+    fn test_render_markdown_with_links_prefers_pre_resolved() {
+        let index = test_index();
+        let highlighter = Highlighter::new();
+        let mut pre_resolved = HashMap::new();
+        pre_resolved.insert(
+            "mycrate::MyStruct".to_string(),
+            "../elsewhere/struct.MyStruct.html".to_string(),
+        );
+
+        let html = render_markdown_with_links(
+            "See [`mycrate::MyStruct`].",
+            &highlighter,
+            Some(&index),
+            "mycrate",
+            1,
+            &pre_resolved,
+        );
+
+        assert!(html.contains(r#"href="../elsewhere/struct.MyStruct.html""#), "got: {html}");
+    }
+
+    #[test]
+    fn test_render_markdown_with_links_without_index() {
+        // With no global index, links are left as written.
+        let highlighter = Highlighter::new();
+        let html = render_markdown_with_links(
+            "See [`mycrate::MyStruct`].",
+            &highlighter,
+            None,
+            "mycrate",
+            1,
+            &HashMap::new(),
+        );
+
+        assert!(html.contains("MyStruct"), "got: {html}");
+        assert!(!html.contains("struct.MyStruct.html"), "got: {html}");
+    }
+
+    #[test]
+    fn test_render_short_doc() {
+        let index = test_index();
+        let highlighter = Highlighter::new();
+        let docs = "Does a thing with [`mycrate::MyStruct`].\n\nMore detail here.";
+
+        let html = render_short_doc(docs, &highlighter, Some(&index), "mycrate", 0, &HashMap::new());
+
+        assert!(!html.contains("More detail"), "got: {html}");
+        assert!(!html.starts_with("<p>"), "got: {html}");
+        assert!(html.contains(r#"href="mycrate/struct.MyStruct.html""#), "got: {html}");
+    }
+
+    #[test]
+    fn test_extract_first_paragraph() {
+        assert_eq!(extract_first_paragraph("Only one."), "Only one.");
+        assert_eq!(
+            extract_first_paragraph("One.\nStill one.\n\nTwo."),
+            "One.\nStill one.\n"
+        );
+        // A new block element ends the paragraph even without a blank line.
+        assert_eq!(extract_first_paragraph("Lead in.\n- item\n- item"), "Lead in.\n");
+        assert_eq!(extract_first_paragraph("Lead in.\n# Heading"), "Lead in.\n");
+        assert_eq!(extract_first_paragraph("Lead in.\n```\ncode\n```"), "Lead in.\n");
+    }
+
+    #[test]
+    fn test_strip_paragraph_wrapper() {
+        assert_eq!(strip_paragraph_wrapper("<p>hello</p>"), "hello");
+        assert_eq!(strip_paragraph_wrapper("\n<p>hello</p>\n"), "hello");
+        assert_eq!(strip_paragraph_wrapper("<div>hello</div>"), "<div>hello</div>");
+    }
+
+    #[test]
     fn test_heading_ids() {
         let highlighter = Highlighter::new();
         let html = render_markdown("### Profile: `rmx-profile-no-std`", &highlighter);

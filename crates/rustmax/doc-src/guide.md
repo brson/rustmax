@@ -76,7 +76,15 @@ In your own code then you can access
 common crates through the `rmx` path.
 
 ```rust
-todo
+# use rustmax as rmx;
+use rmx::prelude::*;
+
+let config: rmx::serde_json::Value =
+    rmx::serde_json::from_str(r#"{ "port": 8080 }"#)?;
+let port = config["port"].as_u64().ok_or(A!("expected a port"))?;
+
+assert_eq!(port, 8080);
+# Ok::<(), AnyError>(())
 ```
 
 
