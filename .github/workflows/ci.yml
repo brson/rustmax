@@ -21,6 +21,11 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+        with:
+          # The demoapp is its own workspace with its own target directory.
+          workspaces: |
+            .
+            demoapp
 
       - name: Install just
         uses: taiki-e/install-action@just

@@ -37,7 +37,11 @@ test-wasm:
 test-min-version-build: maint-lock-minimum-versions
     cargo test -p rustmax --features rmx-profile-std
 
-test-ci-linux: test test-musl
+# The demoapp is its own workspace, so `just test` does not reach it.
+test-demoapp:
+    cd demoapp && cargo test
+
+test-ci-linux: test test-musl test-demoapp
 
 test-ci-win: test
 
