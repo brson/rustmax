@@ -2,7 +2,7 @@ use rmx::json5;
 use rmx::prelude::*;
 use rmx::serde::{Deserialize, Serialize};
 use rmx::xshell::{Shell, cmd};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::fs;
 
 #[derive(Serialize, Deserialize)]
@@ -274,15 +274,97 @@ fn prepare_book(book: &Book) -> AnyResult<()> {
     }
 }
 
+/// Build the RFC book's `src` directory and `SUMMARY.md` from its `text` directory.
+///
+/// This reimplements upstream's `generate-book.py`. We can't just run that
+/// script because it ends by invoking the `mdbook` binary, which isn't
+/// installed on the doc build machine and whose output `build_book` throws
+/// away anyway. Upstream symlinks `text` into `src`; we copy instead so the
+/// build doesn't depend on symlink support.
 fn prepare_rfcs_book(book: &Book) -> AnyResult<()> {
-    let ref src_dir = book_src_dir(book);
+    use std::fmt::Write as _;
+
     println!("  Preparing RFCs book - generating SUMMARY.md");
 
-    let sh = Shell::new()?;
-    sh.change_dir(src_dir);
+    let book_dir = PathBuf::from(book_src_dir(book));
+    let ref text_dir = book_dir.join("text");
+    let ref src_dir = book_dir.join("src");
 
-    cmd!(sh, "python3 generate-book.py").run()?;
+    // Clear out src to remove stale entries in case the checkout moved.
+    if fs::exists(src_dir)? {
+        fs::remove_dir_all(src_dir)?;
+    }
+    fs::create_dir_all(src_dir)?;
+
+    copy_dir_contents(text_dir, src_dir)?;
+
+    for (from, to) in [
+        ("compiler_changes.md", "compiler_changes.md"),
+        ("lang_changes.md", "lang_changes.md"),
+        ("libs_changes.md", "libs_changes.md"),
+        ("README.md", "introduction.md"),
+    ] {
+        fs::copy(book_dir.join(from), src_dir.join(to))?;
+    }
+
+    let mut summary = String::new();
+    writeln!(summary, "[Introduction](introduction.md)\n")?;
+    writeln!(summary, "- [Guidelines for compiler changes](compiler_changes.md)")?;
+    writeln!(summary, "- [Guidelines for language changes](lang_changes.md)")?;
+    writeln!(summary, "- [Guidelines for library changes](libs_changes.md)")?;
+    collect_summary(&mut summary, text_dir, "", 0)?;
+    fs::write(src_dir.join("SUMMARY.md"), summary)?;
+
     println!("  RFCs book preparation complete");
+    Ok(())
+}
+
+/// Append a sorted `SUMMARY.md` chapter list for one directory of RFCs.
+///
+/// An RFC that spreads across several pages keeps them in a subdirectory named
+/// after the RFC, and those become nested chapters. `link_prefix` is the path
+/// of `dir` relative to the book's `src` directory, with a trailing slash.
+fn collect_summary(
+    summary: &mut String,
+    dir: &Path,
+    link_prefix: &str,
+    depth: usize,
+) -> AnyResult<()> {
+    use std::fmt::Write as _;
+
+    let mut entries = fs::read_dir(dir)?.collect::<Result<Vec<_>, _>>()?;
+    entries.retain(|entry| entry.file_name().to_string_lossy().ends_with(".md"));
+    entries.sort_by_key(|entry| entry.file_name());
+
+    for entry in entries {
+        let file_name = entry.file_name();
+        let file_name = file_name.to_string_lossy();
+        let name = file_name.strip_suffix(".md").expect("filtered above");
+        let indent = "    ".repeat(depth);
+
+        writeln!(summary, "{indent}- [{name}]({link_prefix}{file_name})")?;
+
+        let ref subdir = dir.join(name);
+        if subdir.is_dir() {
+            collect_summary(summary, subdir, &format!("{link_prefix}{name}/"), depth + 1)?;
+        }
+    }
+
+    Ok(())
+}
+
+fn copy_dir_contents(from: &Path, to: &Path) -> AnyResult<()> {
+    for entry in fs::read_dir(from)? {
+        let entry = entry?;
+        let ref dest = to.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            fs::create_dir_all(dest)?;
+            copy_dir_contents(&entry.path(), dest)?;
+        } else {
+            fs::copy(entry.path(), dest)?;
+        }
+    }
+
     Ok(())
 }
 
