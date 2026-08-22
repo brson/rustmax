@@ -3446,7 +3446,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3523,7 +3523,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-anthology"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "clap",
  "html2md",
@@ -3534,7 +3534,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-cli"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "comrak",
  "enum-iterator",
@@ -3550,7 +3550,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-doctest"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "pulldown-cmark",
  "rustmax",
@@ -3558,7 +3558,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-prebuild"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3575,7 +3575,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-rustdoc"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "comrak",
  "include_dir",

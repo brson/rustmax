@@ -10,7 +10,7 @@ include = ["src/**/*", "assets/**/*", "Cargo.toml", "build.rs"]
 
 [dependencies]
 rmx.path = "../rustmax"
-rmx.version = "0.0.9"
+rmx.version = "0.0.10"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
