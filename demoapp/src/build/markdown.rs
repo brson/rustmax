@@ -1,8 +1,6 @@
 //! Markdown rendering with comrak and syntax highlighting.
 
-use rustmax::comrak::{
-    markdown_to_html, Options, ExtensionOptions, ParseOptions, RenderOptions,
-};
+use rustmax::comrak::{markdown_to_html, Options};
 use rustmax::regex::Regex;
 use std::sync::LazyLock;
 
@@ -32,44 +30,27 @@ fn render_markdown_internal(content: &str, _base_options: &Options) -> String {
     let mut options = Options::default();
 
     // Enable common extensions.
-    options.extension = ExtensionOptions {
-        strikethrough: true,
-        tagfilter: true,
-        table: true,
-        autolink: true,
-        tasklist: true,
-        superscript: true,
-        header_ids: Some("heading-".to_string()),
-        footnotes: true,
-        description_lists: true,
-        front_matter_delimiter: None,
-        multiline_block_quotes: true,
-        math_dollars: false,
-        math_code: false,
-        wikilinks_title_after_pipe: false,
-        wikilinks_title_before_pipe: false,
-        underline: true,
-        subscript: true,
-        spoiler: true,
-        greentext: false,
-        ..Default::default()
-    };
+    options.extension.strikethrough = true;
+    options.extension.tagfilter = true;
+    options.extension.table = true;
+    options.extension.autolink = true;
+    options.extension.tasklist = true;
+    options.extension.superscript = true;
+    options.extension.header_id_prefix = Some("heading-".to_string());
+    options.extension.footnotes = true;
+    options.extension.description_lists = true;
+    options.extension.multiline_block_quotes = true;
+    options.extension.underline = true;
+    options.extension.subscript = true;
+    options.extension.spoiler = true;
 
-    options.parse = ParseOptions {
-        smart: true,
-        default_info_string: None,
-        relaxed_tasklist_matching: true,
-        relaxed_autolinks: true,
-        ..Default::default()
-    };
+    options.parse.smart = true;
+    options.parse.relaxed_tasklist_matching = true;
+    options.parse.relaxed_autolinks = true;
 
-    options.render = RenderOptions {
-        hardbreaks: false,
-        github_pre_lang: true,
-        escape: false,
-        unsafe_: true, // Allow raw HTML.
-        ..Default::default()
-    };
+    options.render.github_pre_lang = true;
+    // Allow raw HTML.
+    options.render.r#unsafe = true;
 
     markdown_to_html(content, &options)
 }

@@ -18,7 +18,7 @@ pub fn blake3_hash_str(s: &str) -> String {
 pub fn sha256_hash(data: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(data);
-    format!("{:x}", hasher.finalize())
+    rustmax::hex::encode(hasher.finalize())
 }
 
 /// Hash a string using SHA-256.
@@ -30,7 +30,7 @@ pub fn sha256_hash_str(s: &str) -> String {
 pub fn sha512_hash(data: &[u8]) -> String {
     let mut hasher = Sha512::new();
     hasher.update(data);
-    format!("{:x}", hasher.finalize())
+    rustmax::hex::encode(hasher.finalize())
 }
 
 /// Hash a string using SHA-512.

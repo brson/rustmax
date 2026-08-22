@@ -371,7 +371,7 @@ fn xml_escape(s: &str) -> String {
 
 /// Generate a simple UUID v4.
 fn generate_uuid() -> String {
-    use rustmax::rand::Rng;
+    use rustmax::rand::RngExt;
     let mut rng = rustmax::rand::rng();
 
     let mut bytes = [0u8; 16];

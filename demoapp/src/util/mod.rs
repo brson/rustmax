@@ -1,7 +1,7 @@
 //! Utility functions.
 
 use rustmax::prelude::*;
-use rustmax::rand::{Rng, rng, distr::Alphanumeric};
+use rustmax::rand::{rng, distr::Alphanumeric};
 
 /// Generate a random alphanumeric ID.
 pub fn random_id(len: usize) -> String {

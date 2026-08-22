@@ -1,10 +1,11 @@
 //! Template rendering with Tera.
 
 use rustmax::prelude::*;
-use rustmax::tera::{self, Tera, Context, Value};
+use rustmax::tera::{self, Tera, Context, Kwargs, State};
 use rustmax::jiff::Zoned;
+use rustmax::serde::Serialize;
+use rustmax::walkdir::WalkDir;
 use std::path::Path;
-use std::collections::HashMap;
 
 use crate::collection::{Config, Document};
 use crate::build::{extract_headings_html, TableOfContents, TocOptions};
@@ -17,11 +18,17 @@ pub struct TemplateEngine {
 
 impl TemplateEngine {
     /// Create a new template engine loading templates from the given directory.
+    ///
+    /// Templates are named by their path relative to `templates_dir`,
+    /// so `templates/partials/head.html` is `partials/head.html`.
     pub fn new(templates_dir: &Path) -> Result<Self> {
-        let pattern = templates_dir.join("**/*.html");
-        let pattern_str = pattern.to_string_lossy();
+        let mut tera = Tera::new();
 
-        let mut tera = Tera::new(&pattern_str)?;
+        // A collection need not have a templates directory;
+        // it then renders with the built-in template below.
+        if templates_dir.exists() {
+            load_templates(&mut tera, templates_dir)?;
+        }
 
         // Register custom filters.
         tera.register_filter("date_format", filter_date_format);
@@ -85,7 +92,7 @@ impl TemplateEngine {
 
         // Extra frontmatter fields.
         for (key, value) in &doc.frontmatter.extra {
-            ctx.insert(key, &toml_to_tera_value(value));
+            ctx.insert(key.clone(), value);
         }
 
         // Generate table of contents.
@@ -114,28 +121,15 @@ impl TemplateEngine {
         ctx.insert("base_url", &config.collection.base_url);
         ctx.insert("title", &config.collection.title);
 
-        let docs: Vec<HashMap<&str, Value>> = documents
+        let docs: Vec<DocumentSummary> = documents
             .iter()
-            .map(|doc| {
-                let mut map = HashMap::new();
-                map.insert("title", Value::String(doc.frontmatter.title.clone()));
-                map.insert("slug", Value::String(doc.slug()));
-                map.insert("url", Value::String(doc.url_path()));
-                map.insert("draft", Value::Bool(doc.frontmatter.draft));
-                map.insert(
-                    "tags",
-                    Value::Array(
-                        doc.frontmatter
-                            .tags
-                            .iter()
-                            .map(|t| Value::String(t.clone()))
-                            .collect(),
-                    ),
-                );
-                if let Some(date) = doc.frontmatter.date {
-                    map.insert("date", Value::String(date.to_string()));
-                }
-                map
+            .map(|doc| DocumentSummary {
+                title: doc.frontmatter.title.clone(),
+                slug: doc.slug(),
+                url: doc.url_path(),
+                draft: doc.frontmatter.draft,
+                tags: doc.frontmatter.tags.clone(),
+                date: doc.frontmatter.date.map(|date| date.to_string()),
             })
             .collect();
 
@@ -160,97 +154,85 @@ impl TemplateEngine {
     }
 }
 
-/// Convert TOML value to Tera value.
-fn toml_to_tera_value(value: &rustmax::toml::Value) -> Value {
-    match value {
-        rustmax::toml::Value::String(s) => Value::String(s.clone()),
-        rustmax::toml::Value::Integer(i) => Value::Number((*i).into()),
-        rustmax::toml::Value::Float(f) => {
-            // from_f64 returns None for NaN/Infinity, fall back to 0.
-            match tera::Number::from_f64(*f) {
-                Some(n) => Value::Number(n),
-                None => Value::Number(0.into()),
-            }
+/// Add every `.html` file under `templates_dir` to `tera`.
+fn load_templates(tera: &mut Tera, templates_dir: &Path) -> Result<()> {
+    for entry in WalkDir::new(templates_dir) {
+        let entry = entry?;
+        let path = entry.path();
+
+        if !entry.file_type().is_file() {
+            continue;
         }
-        rustmax::toml::Value::Boolean(b) => Value::Bool(*b),
-        rustmax::toml::Value::Array(arr) => {
-            Value::Array(arr.iter().map(toml_to_tera_value).collect())
+        if path.extension().is_none_or(|ext| ext != "html") {
+            continue;
         }
-        rustmax::toml::Value::Table(tbl) => {
-            let map: tera::Map<String, Value> = tbl
-                .iter()
-                .map(|(k, v)| (k.clone(), toml_to_tera_value(v)))
-                .collect();
-            Value::Object(map)
-        }
-        rustmax::toml::Value::Datetime(dt) => Value::String(dt.to_string()),
+
+        let name = path
+            .strip_prefix(templates_dir)
+            .expect("walkdir entry is under the templates directory")
+            .components()
+            .map(|c| c.as_os_str().to_string_lossy())
+            .collect::<Vec<_>>()
+            .join("/");
+
+        tera.add_template_file(path, Some(&name))?;
     }
+
+    Ok(())
+}
+
+/// A document as seen by index and tag templates.
+#[derive(Serialize)]
+struct DocumentSummary {
+    title: String,
+    slug: String,
+    url: String,
+    draft: bool,
+    tags: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    date: Option<String>,
 }
 
 /// Filter: format a date string.
-fn filter_date_format(value: &Value, args: &HashMap<String, Value>) -> tera::Result<Value> {
-    let date_str = value
-        .as_str()
-        .ok_or_else(|| tera::Error::msg("date_format expects a string"))?;
-
-    let format = args
-        .get("format")
-        .and_then(|v| v.as_str())
-        .unwrap_or("%B %d, %Y");
+fn filter_date_format(value: &str, kwargs: Kwargs, _state: &State) -> tera::TeraResult<String> {
+    let format = kwargs.get::<&str>("format")?.unwrap_or("%B %d, %Y");
 
     // Parse as jiff Date.
-    let date: rustmax::jiff::civil::Date = date_str
+    let date: rustmax::jiff::civil::Date = value
         .parse()
-        .map_err(|e| tera::Error::msg(format!("invalid date: {}", e)))?;
+        .map_err(|e| tera::Error::message(format!("invalid date: {}", e)))?;
 
-    Ok(Value::String(date.strftime(format).to_string()))
+    Ok(date.strftime(format).to_string())
 }
 
 /// Filter: count words in text.
-fn filter_word_count(value: &Value, _args: &HashMap<String, Value>) -> tera::Result<Value> {
+fn filter_word_count(value: &str, _kwargs: Kwargs, _state: &State) -> usize {
     use rustmax::unicode_segmentation::UnicodeSegmentation;
 
-    let text = value
-        .as_str()
-        .ok_or_else(|| tera::Error::msg("word_count expects a string"))?;
-
-    let count = text.unicode_words().count();
-    Ok(Value::Number(count.into()))
+    value.unicode_words().count()
 }
 
 /// Filter: estimate reading time.
-fn filter_reading_time(value: &Value, _args: &HashMap<String, Value>) -> tera::Result<Value> {
+fn filter_reading_time(value: &str, _kwargs: Kwargs, _state: &State) -> usize {
     use rustmax::unicode_segmentation::UnicodeSegmentation;
 
-    let text = value
-        .as_str()
-        .ok_or_else(|| tera::Error::msg("reading_time expects a string"))?;
-
-    let words = text.unicode_words().count();
-    let minutes = (words / 200).max(1);
-    Ok(Value::Number(minutes.into()))
+    let words = value.unicode_words().count();
+    (words / 200).max(1)
 }
 
 /// Filter: truncate to N words.
-fn filter_truncate_words(value: &Value, args: &HashMap<String, Value>) -> tera::Result<Value> {
+fn filter_truncate_words(value: &str, kwargs: Kwargs, _state: &State) -> tera::TeraResult<String> {
     use rustmax::unicode_segmentation::UnicodeSegmentation;
 
-    let text = value
-        .as_str()
-        .ok_or_else(|| tera::Error::msg("truncate_words expects a string"))?;
+    let count = kwargs.get::<usize>("count")?.unwrap_or(50);
 
-    let count = args
-        .get("count")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(50) as usize;
-
-    let words: Vec<&str> = text.unicode_words().take(count).collect();
+    let words: Vec<&str> = value.unicode_words().take(count).collect();
     let truncated = words.join(" ");
 
-    if text.unicode_words().count() > count {
-        Ok(Value::String(format!("{}...", truncated)))
+    if value.unicode_words().count() > count {
+        Ok(format!("{}...", truncated))
     } else {
-        Ok(Value::String(truncated))
+        Ok(truncated)
     }
 }
 
@@ -324,3 +306,46 @@ const BUILTIN_DEFAULT_TEMPLATE: &str = r#"<!DOCTYPE html>
 </body>
 </html>
 "#;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rustmax::tempfile::tempdir;
+    use std::fs;
+
+    #[test]
+    fn templates_are_named_relative_to_the_templates_dir() {
+        let dir = tempdir().unwrap();
+        let templates = dir.path().join("templates");
+        fs::create_dir_all(templates.join("partials")).unwrap();
+        fs::write(templates.join("page.html"), "<p>{{ title }}</p>").unwrap();
+        fs::write(templates.join("partials/head.html"), "<title>{{ title }}</title>").unwrap();
+        fs::write(templates.join("notes.txt"), "not a template").unwrap();
+
+        let engine = TemplateEngine::new(&templates).unwrap();
+
+        let mut ctx = Context::new();
+        ctx.insert("title", "Hello");
+
+        assert_eq!(engine.render("page.html", &ctx).unwrap(), "<p>Hello</p>");
+        assert_eq!(
+            engine.render("partials/head.html", &ctx).unwrap(),
+            "<title>Hello</title>"
+        );
+    }
+
+    #[test]
+    fn a_missing_templates_dir_falls_back_to_the_builtin_template() {
+        let dir = tempdir().unwrap();
+        let engine = TemplateEngine::new(&dir.path().join("templates")).unwrap();
+
+        let mut ctx = Context::new();
+        ctx.insert("site_title", "Demo");
+        ctx.insert("title", "Hello");
+        ctx.insert("content", "<p>Body</p>");
+
+        let html = engine.render("page.html", &ctx).unwrap();
+        assert!(html.contains("<h1>Hello</h1>"));
+        assert!(html.contains("<p>Body</p>"));
+    }
+}
