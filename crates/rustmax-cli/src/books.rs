@@ -38,12 +38,12 @@ pub fn list_library(root: &Path) -> AnyResult<()> {
 
 pub fn build_library(root: &Path, no_fetch: bool, generate_library: bool) -> AnyResult<()> {
     let books = load(root)?.books;
-    let build_results = build_books(&books, no_fetch);
+    let results = build_books(&books, no_fetch);
     copy_books_to_library(&books)?;
     if generate_library {
         crate::library_gen::generate_library_page()?;
     }
-    build_results
+    check_results(&results)
 }
 
 pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> {
@@ -55,9 +55,9 @@ pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> 
     if book.is_empty() {
         return Err(anyhow!("unknown book '{slug}'"));
     }
-    let build_result = build_books(&book, no_fetch);
+    let results = build_books(&book, no_fetch);
     copy_books_to_library(&book)?;
-    build_result
+    check_results(&results)
 }
 
 pub fn refresh_library(root: &Path) -> AnyResult<()> {
@@ -87,7 +87,7 @@ pub fn refresh_one_book(root: &Path, slug: &str) -> AnyResult<()> {
     Ok(())
 }
 
-fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
+fn build_books(books: &[Book], no_fetch: bool) -> Vec<BookBuildResult> {
     let mut results: Vec<BookBuildResult> = Vec::new();
 
     // Step 1: Clone/update repos (unless skipped).
@@ -145,6 +145,21 @@ fn build_books(books: &[Book], no_fetch: bool) -> AnyResult<()> {
     }
 
     print_build_summary(&results);
+    results
+}
+
+/// Turn any book build failure into an error so callers don't report success.
+fn check_results(results: &[BookBuildResult]) -> AnyResult<()> {
+    let failed: Vec<&str> = results
+        .iter()
+        .filter(|r| !r.success)
+        .map(|r| r.book.slug.as_str())
+        .collect();
+
+    if !failed.is_empty() {
+        bail!("failed to build books: {}", failed.join(", "));
+    }
+
     Ok(())
 }
 
