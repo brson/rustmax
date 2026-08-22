@@ -34,15 +34,21 @@ provide bindings to the Win32 API.
 
 ## Examples
 
-Querying system configuration not exposed by `std`:
+Querying system configuration not exposed by `std`.
+Note that most of `libc` is platform-specific,
+so code calling it needs to be gated on the platforms it supports:
 
 ```rust
-let page_size = unsafe { libc::sysconf(libc::_SC_PAGESIZE) };
-assert!(page_size > 0);
-
-let uid = unsafe { libc::getuid() };
 let pid = unsafe { libc::getpid() };
 assert!(pid > 0);
+
+#[cfg(unix)]
+{
+    let page_size = unsafe { libc::sysconf(libc::_SC_PAGESIZE) };
+    assert!(page_size > 0);
+
+    let uid = unsafe { libc::getuid() };
+}
 ```
 
 [`open`]: crate::libc::open
