@@ -381,6 +381,10 @@ fn markdown_to_html(markdown: &str) -> String {
     options.extension.autolink = true;
     options.extension.tasklist = true;
     options.extension.footnotes = true;
+    // Book sources are trusted and hand-write HTML for things markdown can't
+    // express. Without this comrak replaces each block with a comment saying
+    // the raw HTML was omitted. mdbook passes it through too.
+    options.render.r#unsafe = true;
 
     // Use syntax highlighting plugin.
     let plugins = comrak::options::Plugins {
@@ -390,7 +394,58 @@ fn markdown_to_html(markdown: &str) -> String {
         },
     };
 
-    comrak::markdown_to_html_with_plugins(markdown, &options, &plugins)
+    let arena = comrak::Arena::new();
+    let root = comrak::parse_document(&arena, markdown, &options);
+    rewrite_md_links(root);
+
+    let mut html = String::new();
+    comrak::format_html_with_plugins(root, &options, &mut html, &plugins)
+        .expect("writing to a String never fails");
+    html
+}
+
+/// Point links at the rendered HTML pages instead of the markdown sources.
+///
+/// Books link between their chapters by `.md` path, but we render each chapter
+/// to a `.html` file of the same name, so those links all need rewriting.
+fn rewrite_md_links(root: comrak::Node<'_>) {
+    for node in root.descendants() {
+        let mut ast = node.data.borrow_mut();
+        let url = match &mut ast.value {
+            comrak::nodes::NodeValue::Link(link) | comrak::nodes::NodeValue::Image(link) => {
+                &mut link.url
+            }
+            _ => continue,
+        };
+        if let Some(rewritten) = md_link_to_html(url) {
+            *url = rewritten;
+        }
+    }
+}
+
+/// Rewrite one relative link to a markdown file, preserving any fragment.
+///
+/// Returns `None` for links that don't name a markdown file within the book,
+/// which are left alone.
+fn md_link_to_html(url: &str) -> Option<String> {
+    // Skip same-page fragments, protocol-relative URLs, and anything with a
+    // scheme (`https:`, `mailto:`).
+    if url.starts_with('#') || url.starts_with("//") || url.contains(':') {
+        return None;
+    }
+
+    let (path, fragment) = match url.split_once('#') {
+        Some((path, fragment)) => (path, Some(fragment)),
+        None => (url, None),
+    };
+    // Some books carry mdbook's `?highlight=` query, which we have no use for.
+    let path = path.split('?').next().expect("split always yields one part");
+    let stem = path.strip_suffix(".md")?;
+
+    Some(match fragment {
+        Some(fragment) => format!("{stem}.html#{fragment}"),
+        None => format!("{stem}.html"),
+    })
 }
 
 /// Syntax highlighter using syntect.
@@ -737,4 +792,65 @@ th { background: var(--rmx-color-bg-alt); border-bottom-width: 2px; }
     main { padding: 1rem; }
 }
 "#.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_md_links_become_html_links() {
+        assert_eq!(md_link_to_html("types/array.md").unwrap(), "types/array.html");
+        assert_eq!(md_link_to_html("../types/array.md").unwrap(), "../types/array.html");
+        assert_eq!(md_link_to_html("./array.md").unwrap(), "./array.html");
+        assert_eq!(
+            md_link_to_html("../const_eval.md#constant-expressions").unwrap(),
+            "../const_eval.html#constant-expressions"
+        );
+        assert_eq!(md_link_to_html("a b.md").unwrap(), "a b.html");
+        assert_eq!(
+            md_link_to_html("build.md?highlight=rustup#creating").unwrap(),
+            "build.html#creating"
+        );
+    }
+
+    #[test]
+    fn test_non_md_links_are_left_alone() {
+        assert_eq!(md_link_to_html("#anchor"), None);
+        assert_eq!(md_link_to_html("index.html"), None);
+        assert_eq!(md_link_to_html("img/diagram.svg"), None);
+        assert_eq!(md_link_to_html(""), None);
+        // A markdown file on another site is somebody else's source, not a
+        // page we render.
+        assert_eq!(md_link_to_html("https://example.com/README.md"), None);
+        assert_eq!(md_link_to_html("//example.com/README.md"), None);
+        assert_eq!(md_link_to_html("mailto:nobody@example.com"), None);
+    }
+
+    #[test]
+    fn test_markdown_links_are_rewritten_in_output() {
+        let html = markdown_to_html("See [arrays](types/array.md#len) and [the web](https://example.com/x.md).");
+        assert!(html.contains(r#"href="types/array.html#len""#), "{html}");
+        assert!(html.contains(r#"href="https://example.com/x.md""#), "{html}");
+    }
+
+    #[test]
+    fn test_image_links_are_rewritten() {
+        let html = markdown_to_html("![alt](sub/page.md)");
+        assert!(html.contains(r#"src="sub/page.html""#), "{html}");
+    }
+
+    #[test]
+    fn test_raw_html_passes_through() {
+        let html = markdown_to_html("Rust<sup>1</sup>\n\n<div class=\"note\">\n\nhi\n\n</div>\n");
+        assert!(html.contains("<sup>1</sup>"), "{html}");
+        assert!(html.contains(r#"<div class="note">"#), "{html}");
+        assert!(!html.contains("raw HTML omitted"), "{html}");
+    }
+
+    #[test]
+    fn test_md_links_in_code_are_left_alone() {
+        let html = markdown_to_html("```text\n<a href=\"foo.md\">x</a>\n```\n");
+        assert!(html.contains("foo.md"), "{html}");
+    }
 }
