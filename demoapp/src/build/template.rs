@@ -11,6 +11,9 @@ use crate::collection::{Config, Document};
 use crate::build::{extract_headings_html, TableOfContents, TocOptions};
 use crate::Result;
 
+/// Name of the template used when the collection defines none.
+const BUILTIN_TEMPLATE_NAME: &str = "_builtin/default.html";
+
 /// Template engine wrapping Tera.
 pub struct TemplateEngine {
     tera: Tera,
@@ -38,18 +41,30 @@ impl TemplateEngine {
         }
 
         // Add built-in templates as fallback.
-        tera.add_raw_template("_builtin/default.html", BUILTIN_DEFAULT_TEMPLATE)?;
+        tera.add_raw_template(BUILTIN_TEMPLATE_NAME, BUILTIN_DEFAULT_TEMPLATE)?;
 
         Ok(Self { tera })
     }
 
-    /// Render a template with the given context.
+    /// Render `template_name`, or the built-in template if the collection
+    /// does not define it.
     pub fn render(&self, template_name: &str, context: &Context) -> Result<String> {
-        // Try the requested template, fall back to builtin.
-        let result = self.tera.render(template_name, context).or_else(|_| {
-            self.tera.render("_builtin/default.html", context)
-        })?;
-        Ok(result)
+        self.render_first(&[template_name], context)
+    }
+
+    /// Render the first of `candidates` that the collection defines,
+    /// or the built-in template if it defines none of them.
+    ///
+    /// A template that exists but fails to render is an error;
+    /// falling back to the built-in template would hide the failure.
+    pub fn render_first(&self, candidates: &[&str], context: &Context) -> Result<String> {
+        let name = candidates
+            .iter()
+            .copied()
+            .find(|name| self.tera.contains_template(name))
+            .unwrap_or(BUILTIN_TEMPLATE_NAME);
+
+        Ok(self.tera.render(name, context)?)
     }
 
     /// Build template context for a document.

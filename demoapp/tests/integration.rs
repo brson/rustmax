@@ -21,21 +21,22 @@ output_dir = "output"
 "#;
     fs::write(root.join("anthology.toml"), config).unwrap();
 
-    // Write default template.
+    // Write default template. The variables here have to match what
+    // TemplateEngine puts in the context, or the pages render empty.
     let template = r#"<!DOCTYPE html>
 <html>
 <head><title>{{ title }}</title></head>
 <body>
-{% if document %}
-<h1>{{ document.title }}</h1>
-{{ content | safe }}
-{% else %}
-<h1>{{ collection.title }}</h1>
+{% if is_index or is_tag_page %}
+<h1>{{ site_title }}</h1>
 <ul>
 {% for doc in documents %}
 <li><a href="{{ doc.url }}">{{ doc.title }}</a></li>
 {% endfor %}
 </ul>
+{% else %}
+<h1>{{ title }}</h1>
+{{ content | safe }}
 {% endif %}
 </body>
 </html>"#;
@@ -428,4 +429,56 @@ fn test_nested_documents() {
     let titles: Vec<_> = collection.documents.iter().map(|d| &d.frontmatter.title).collect();
     assert!(titles.contains(&&"Top Level".to_string()));
     assert!(titles.contains(&&"Deep Post".to_string()));
+}
+
+/// Run `anthology init` then `anthology build` the way a user would,
+/// against the templates that `init` writes.
+///
+/// The other tests here use a stub template, so they miss anything the real
+/// templates rely on, like the custom `date_format` filter.
+#[test]
+fn init_then_build_renders_with_the_generated_templates() {
+    use std::process::Command;
+
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    let anthology = env!("CARGO_BIN_EXE_anthology");
+
+    let init = Command::new(anthology)
+        .args(["init", "."])
+        .current_dir(root)
+        .output()
+        .unwrap();
+    assert!(
+        init.status.success(),
+        "init failed: {}",
+        String::from_utf8_lossy(&init.stderr)
+    );
+
+    let build = Command::new(anthology)
+        .arg("build")
+        .current_dir(root)
+        .output()
+        .unwrap();
+    assert!(
+        build.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&build.stderr)
+    );
+
+    let document = fs::read_to_string(root.join("output/welcome/index.html")).unwrap();
+    let index = fs::read_to_string(root.join("output/index.html")).unwrap();
+    let tag = fs::read_to_string(root.join("output/tags/welcome/index.html")).unwrap();
+
+    // The generated template links these stylesheets; the built-in one does not,
+    // so this catches pages that silently fall back to the built-in template.
+    for (name, page) in [("document", &document), ("index", &index), ("tag", &tag)] {
+        assert!(
+            page.contains("/highlight.css"),
+            "{name} page did not use the collection's template"
+        );
+    }
+
+    // The document date went through the custom `date_format` filter.
+    assert!(document.contains("January 01, 2024"), "date filter did not run");
 }

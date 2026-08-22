@@ -508,10 +508,7 @@ fn build_index(
     output_dir: &Path,
 ) -> Result<()> {
     let context = engine.index_context(documents, config);
-    let rendered = engine.render("index.html", &context).or_else(|_| {
-        // Fall back to default template with listing.
-        engine.render("default.html", &context)
-    })?;
+    let rendered = engine.render_first(&["index.html", "default.html"], &context)?;
 
     fs::write(output_dir.join("index.html"), rendered)?;
     Ok(())
@@ -540,9 +537,7 @@ fn build_tag_pages(
         }
 
         let context = engine.tag_context(&tag, &documents, config);
-        let rendered = engine.render("tag.html", &context).or_else(|_| {
-            engine.render("default.html", &context)
-        })?;
+        let rendered = engine.render_first(&["tag.html", "default.html"], &context)?;
 
         let tag_dir = tags_dir.join(&tag);
         fs::create_dir_all(&tag_dir)?;

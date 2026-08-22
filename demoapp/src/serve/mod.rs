@@ -154,7 +154,7 @@ async fn handle_index(State(state): State<Arc<AppState>>) -> Response {
     };
 
     let ctx = state.engine.index_context(&documents, &state.config);
-    match state.engine.render("index.html", &ctx) {
+    match state.engine.render_first(&["index.html", "default.html"], &ctx) {
         Ok(html) => {
             let html = inject_script(&html, state.port);
             Html(html).into_response()
@@ -226,7 +226,7 @@ async fn handle_tag(
     }
 
     let ctx = state.engine.tag_context(&tag, &documents, &state.config);
-    match state.engine.render("tag.html", &ctx) {
+    match state.engine.render_first(&["tag.html", "default.html"], &ctx) {
         Ok(html) => {
             let html = inject_script(&html, state.port);
             Html(html).into_response()
