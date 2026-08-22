@@ -24,17 +24,18 @@ impl TemplateEngine {
     pub fn new(templates_dir: &Path) -> Result<Self> {
         let mut tera = Tera::new();
 
+        // Register custom filters. Tera resolves filter names while parsing a
+        // template, so this has to happen before any template is added.
+        tera.register_filter("date_format", filter_date_format);
+        tera.register_filter("word_count", filter_word_count);
+        tera.register_filter("reading_time", filter_reading_time);
+        tera.register_filter("truncate_words", filter_truncate_words);
+
         // A collection need not have a templates directory;
         // it then renders with the built-in template below.
         if templates_dir.exists() {
             load_templates(&mut tera, templates_dir)?;
         }
-
-        // Register custom filters.
-        tera.register_filter("date_format", filter_date_format);
-        tera.register_filter("word_count", filter_word_count);
-        tera.register_filter("reading_time", filter_reading_time);
-        tera.register_filter("truncate_words", filter_truncate_words);
 
         // Add built-in templates as fallback.
         tera.add_raw_template("_builtin/default.html", BUILTIN_DEFAULT_TEMPLATE)?;
@@ -332,6 +333,26 @@ mod tests {
             engine.render("partials/head.html", &ctx).unwrap(),
             "<title>Hello</title>"
         );
+    }
+
+    #[test]
+    fn custom_filters_are_available_to_loaded_templates() {
+        let dir = tempdir().unwrap();
+        let templates = dir.path().join("templates");
+        fs::create_dir_all(&templates).unwrap();
+        fs::write(
+            templates.join("page.html"),
+            r#"{{ date | date_format(format="%Y") }} {{ text | word_count }}"#,
+        )
+        .unwrap();
+
+        let engine = TemplateEngine::new(&templates).unwrap();
+
+        let mut ctx = Context::new();
+        ctx.insert("date", "2026-08-22");
+        ctx.insert("text", "one two three");
+
+        assert_eq!(engine.render("page.html", &ctx).unwrap(), "2026 3");
     }
 
     #[test]
