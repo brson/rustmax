@@ -10,10 +10,15 @@ use std::collections::HashMap;
 use std::fmt::{self, Write};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use comrak::adapters::SyntaxHighlighterAdapter;
 use syntect::html::{ClassStyle, ClassedHTMLGenerator};
 use syntect::parsing::SyntaxSet;
+
+mod spec;
+
+use spec::Spec;
 
 /// A chapter in the book.
 #[derive(Debug, Clone)]
@@ -48,6 +53,15 @@ pub fn build(input: &Path, output: &Path) -> AnyResult<()> {
 
     let book = Book { title, chapters };
 
+    // Collect the Rust Reference's rule identifiers, which can be linked to
+    // from any page and so have to be known before rendering starts.
+    let spec = uses_spec_syntax(input)?.then(|| {
+        Spec::collect(&book, |chapter| {
+            let path = chapter.path.as_ref()?;
+            fs::read_to_string(src_dir.join(path)).ok()
+        })
+    });
+
     // Create output directory.
     fs::create_dir_all(output)?;
 
@@ -60,11 +74,11 @@ pub fn build(input: &Path, output: &Path) -> AnyResult<()> {
     fs::write(output.join("rustmax-syntax.css"), syntax_css)?;
 
     // Generate book-specific CSS.
-    let css = generate_css();
+    let css = generate_css(spec.is_some());
     fs::write(output.join("rmxbook.css"), &css)?;
 
     // Render each chapter.
-    render_book(&book, &src_dir, output)?;
+    render_book(&book, &src_dir, output, spec.as_ref())?;
 
     // Generate index.html redirect to first chapter.
     generate_index(&book, output)?;
@@ -88,6 +102,16 @@ fn parse_book_title(input: &Path) -> AnyResult<String> {
     }
     // Default title if book.toml not found or doesn't have title.
     Ok("Book".to_string())
+}
+
+/// Whether the book is written against the Rust Reference's `spec`
+/// preprocessor, which adds syntax that plain markdown doesn't understand.
+fn uses_spec_syntax(input: &Path) -> AnyResult<bool> {
+    let book_toml = input.join("book.toml");
+    if !book_toml.exists() {
+        return Ok(false);
+    }
+    Ok(spec::is_spec_book(&fs::read_to_string(&book_toml)?))
 }
 
 fn find_src_dir(input: &Path) -> AnyResult<PathBuf> {
@@ -203,7 +227,7 @@ fn parse_chapter_link(line: &str) -> Option<Chapter> {
     })
 }
 
-fn render_book(book: &Book, src_dir: &Path, output: &Path) -> AnyResult<()> {
+fn render_book(book: &Book, src_dir: &Path, output: &Path, spec: Option<&Spec>) -> AnyResult<()> {
     // Flatten chapters for navigation.
     let flat_chapters = flatten_chapters(&book.chapters);
 
@@ -212,7 +236,7 @@ fn render_book(book: &Book, src_dir: &Path, output: &Path) -> AnyResult<()> {
             let prev = if i > 0 { flat_chapters.get(i - 1) } else { None };
             let next = flat_chapters.get(i + 1);
 
-            render_chapter(book, chapter, prev.copied(), next.copied(), &book.chapters, src_dir, output)?;
+            render_chapter(book, chapter, prev.copied(), next.copied(), src_dir, output, spec)?;
         }
     }
 
@@ -233,9 +257,9 @@ fn render_chapter(
     chapter: &Chapter,
     prev: Option<&Chapter>,
     next: Option<&Chapter>,
-    all_chapters: &[Chapter],
     src_dir: &Path,
     output: &Path,
+    spec: Option<&Spec>,
 ) -> AnyResult<()> {
     let Some(ref rel_path) = chapter.path else {
         return Ok(());
@@ -246,9 +270,6 @@ fn render_chapter(
         eprintln!("  Warning: {} not found", md_path.display());
         return Ok(());
     }
-
-    let content = fs::read_to_string(&md_path)?;
-    let html_content = markdown_to_html(&content);
 
     // Calculate relative path to root for CSS.
     // Filter out CurDir (.) components when counting depth.
@@ -263,8 +284,15 @@ fn render_chapter(
         "../".repeat(depth)
     };
 
+    let content = fs::read_to_string(&md_path)?;
+    let content = match spec {
+        Some(spec) => spec.preprocess(&content, &path_to_root),
+        None => content,
+    };
+    let html_content = markdown_to_html(&content, spec.map(|spec| (spec, path_to_root.as_str())));
+
     // Build navigation.
-    let nav_html = build_nav(all_chapters, Some(rel_path), &path_to_root);
+    let nav_html = build_nav(&book.chapters, Some(rel_path), &path_to_root);
 
     // Build prev/next links.
     let prev_link = prev
@@ -369,7 +397,13 @@ fn build_nav(chapters: &[Chapter], current: Option<&PathBuf>, path_to_root: &str
     html
 }
 
-fn markdown_to_html(markdown: &str) -> String {
+/// Render one chapter's markdown.
+///
+/// `rule_links` carries the book's rule identifiers and the current page's
+/// path back to the book root, and is set only for books using the Rust
+/// Reference's syntax. It lets a bare `[expr.array]` anywhere in the book
+/// resolve to the rule of that name.
+fn markdown_to_html(markdown: &str, rule_links: Option<(&Spec, &str)>) -> String {
     // Create highlighter for syntax highlighting.
     let highlighter = Highlighter::new();
     let adapter = HighlightAdapter { highlighter: &highlighter };
@@ -385,6 +419,17 @@ fn markdown_to_html(markdown: &str) -> String {
     // express. Without this comrak replaces each block with a comment saying
     // the raw HTML was omitted. mdbook passes it through too.
     options.render.r#unsafe = true;
+
+    if let Some((spec, path_to_root)) = rule_links {
+        options.parse.broken_link_callback = Some(Arc::new(
+            move |link: comrak::options::BrokenLinkReference<'_>| {
+                Some(comrak::ResolvedReference {
+                    url: spec.rule_link(path_to_root, link.original)?,
+                    title: link.original.to_string(),
+                })
+            },
+        ));
+    }
 
     // Use syntax highlighting plugin.
     let plugins = comrak::options::Plugins {
@@ -522,8 +567,13 @@ impl SyntaxHighlighterAdapter for HighlightAdapter<'_> {
         output: &mut dyn Write,
         attributes: HashMap<&'static str, Cow<'_, str>>,
     ) -> fmt::Result {
+        // Fence info strings carry modifiers after the language, as in
+        // `rust,ignore` or `grammar,expressions`. Only the language belongs in
+        // the class.
         let lang = attributes.get("class")
             .and_then(|c| c.strip_prefix("language-"))
+            .and_then(|c| c.split(',').next())
+            .filter(|c| !c.is_empty())
             .unwrap_or("rust");
         write!(output, "<code class=\"language-{}\">", html_escape(lang))
     }
@@ -589,7 +639,15 @@ fn generate_script() -> &'static str {
 })();"#
 }
 
-fn generate_css() -> String {
+fn generate_css(spec: bool) -> String {
+    let mut css = base_css();
+    if spec {
+        css.push_str(spec::CSS);
+    }
+    css
+}
+
+fn base_css() -> String {
     r#"/* rmxbook - uses shared rustmax-themes.css variables */
 :root {
     --rmx-sidebar-width: 280px;
@@ -829,20 +887,20 @@ mod tests {
 
     #[test]
     fn test_markdown_links_are_rewritten_in_output() {
-        let html = markdown_to_html("See [arrays](types/array.md#len) and [the web](https://example.com/x.md).");
+        let html = markdown_to_html("See [arrays](types/array.md#len) and [the web](https://example.com/x.md).", None);
         assert!(html.contains(r#"href="types/array.html#len""#), "{html}");
         assert!(html.contains(r#"href="https://example.com/x.md""#), "{html}");
     }
 
     #[test]
     fn test_image_links_are_rewritten() {
-        let html = markdown_to_html("![alt](sub/page.md)");
+        let html = markdown_to_html("![alt](sub/page.md)", None);
         assert!(html.contains(r#"src="sub/page.html""#), "{html}");
     }
 
     #[test]
     fn test_raw_html_passes_through() {
-        let html = markdown_to_html("Rust<sup>1</sup>\n\n<div class=\"note\">\n\nhi\n\n</div>\n");
+        let html = markdown_to_html("Rust<sup>1</sup>\n\n<div class=\"note\">\n\nhi\n\n</div>\n", None);
         assert!(html.contains("<sup>1</sup>"), "{html}");
         assert!(html.contains(r#"<div class="note">"#), "{html}");
         assert!(!html.contains("raw HTML omitted"), "{html}");
@@ -850,7 +908,7 @@ mod tests {
 
     #[test]
     fn test_md_links_in_code_are_left_alone() {
-        let html = markdown_to_html("```text\n<a href=\"foo.md\">x</a>\n```\n");
+        let html = markdown_to_html("```text\n<a href=\"foo.md\">x</a>\n```\n", None);
         assert!(html.contains("foo.md"), "{html}");
     }
 }
