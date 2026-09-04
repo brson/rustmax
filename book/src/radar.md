@@ -59,8 +59,6 @@ but that are not yet part of Rustmax.
 - [`home`](https://docs.rs/home)
 - [`include_dir`](https://docs.rs/include_dir).
 - [`indexmap`](https://docs.rs/indexmap)
-- [`libm`](https://docs.rs/libm).
-  Useful for no-std.
 - [`memmap`](hthtps://docs.rs/memmap)
 - [`ndarray`](https://docs.rs/ndarray)
 - [`nix`](https://docs.rs/nix)

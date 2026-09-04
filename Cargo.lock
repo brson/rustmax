@@ -3508,6 +3508,7 @@ dependencies = [
  "jiff",
  "json5",
  "libc",
+ "libm",
  "log",
  "memchr",
  "mime",

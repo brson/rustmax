@@ -338,6 +338,12 @@ aliases = ["iterator extensions", "extra iterators", "combinations", "permutatio
 category = "crate"
 brief = "Extra iterator methods and adaptors"
 
+[topics.libm]
+name = "libm"
+aliases = ["math functions", "floating point math", "sin", "cos", "sqrt", "no_std math", "transcendental functions", "float math"]
+category = "crate"
+brief = "Floating-point math functions for no_std"
+
 [topics.num-bigint]
 name = "num-bigint"
 aliases = ["big integers", "arbitrary precision", "BigInt", "BigUint", "large numbers", "bignum"]

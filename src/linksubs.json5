@@ -641,6 +641,20 @@
     "crate::std::ffi":
     "api/std/ffi/index.html",
 
+    // libm
+    "crate::libm::sin":
+    "api/libm/fn.sin.html",
+    "crate::libm::exp":
+    "api/libm/fn.exp.html",
+    "crate::libm::pow":
+    "api/libm/fn.pow.html",
+    "crate::libm::sqrt":
+    "api/libm/fn.sqrt.html",
+    "crate::libm::sqrtf":
+    "api/libm/fn.sqrtf.html",
+    "crate::libm::Libm":
+    "api/libm/struct.Libm.html",
+
     // cfg-if
     "crate::cfg_if::cfg_if":
     "api/cfg_if/macro.cfg_if.html",

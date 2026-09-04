@@ -494,6 +494,13 @@ pub mod libc {
     pub use ::libc::*;
 }
 
+#[cfg(feature = "libm")]
+pub mod libm {
+    #![doc = include_str!("../doc-src/crate-libm.md")]
+
+    pub use ::libm::*;
+}
+
 #[cfg(feature = "log")]
 pub mod log {
     #![doc = include_str!("../doc-src/crate-log.md")]

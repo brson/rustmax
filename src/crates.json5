@@ -181,6 +181,12 @@
             maintainer: "rust-lang",
         },
         {
+            name: "libm",
+            category: "numbers",
+            short_desc: "Floating-point math for no_std",
+            maintainer: "rust-lang",
+        },
+        {
             name: "log",
             category: "errors",
             short_desc: "Logging facade",
