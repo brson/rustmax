@@ -28,13 +28,11 @@ path, size, mode, timestamps, and [`EntryType`],
 which distinguishes regular files from directories,
 symlinks, and hard links.
 
-Unpacking an untrusted archive is the part to be careful with.
+Unpacking an untrusted archive can be insecure.
 Entries can name absolute paths, paths containing `..`,
 and symlinks or hard links pointing anywhere on the filesystem.
 [`Archive::unpack`] and [`Entry::unpack_in`] exist to contain that,
-refusing to write outside the destination directory,
-but this is also where the crate's security fixes have concentrated —
-keep the dependency current rather than pinning an old patch version.
+refusing to write outside the destination directory.
 
 ## Examples
 
