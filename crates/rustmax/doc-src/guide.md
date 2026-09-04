@@ -98,7 +98,7 @@ assert_eq!(port, 8080);
 | error handling and debugging | [`anyhow`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
 | numerics | [`libm`], [`num_bigint`] |
-| encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`], [`zip`] |
+| encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`tar`], [`toml`], [`zip`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | cryptography | [`blake3`], [`sha2`] |
@@ -418,6 +418,7 @@ This profile also enables [`rmx-rustlib-core`], [`rmx-rustlib-alloc`], and [`rmx
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.
+- [`tar`] - Read and write tar archives; pair with [`flate2`] for `.tar.gz`.
 - [`tempfile`] - Temporary files and directories.
 - [`tera`] - A text template engine based on Jinja2.
 - [`thiserror`] - Tools for defining custom error types.
@@ -462,6 +463,7 @@ All crates from [`rmx-profile-no-std`], plus:
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.
+- [`tar`] - Read and write tar archives; pair with [`flate2`] for `.tar.gz`.
 - [`tempfile`] - Temporary files and directories.
 - [`thiserror`] - Tools for defining custom error types.
 - [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.

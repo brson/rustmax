@@ -321,6 +321,11 @@
             maintainer: "dtolnay",
         },
         {
+            name: "tar",
+            category: "encoding",
+            short_desc: "Read and write tar archives",
+        },
+        {
             name: "tempfile",
             category: "system",
             short_desc: "Temporary files and directories",

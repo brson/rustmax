@@ -258,6 +258,12 @@ aliases = ["ZIP archive", "zip files", "unzip", "extract zip", "ZipArchive", "Zi
 category = "crate"
 brief = "ZIP archive reading and writing"
 
+[topics.tar]
+name = "tar"
+aliases = ["tar archive", "tarball", "tar.gz", "untar", "unpack archive", "Archive", "Builder", "EntryType"]
+category = "crate"
+brief = "Read and write tar archives"
+
 # Filesystem
 
 [topics.walkdir]

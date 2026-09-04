@@ -674,6 +674,13 @@ pub mod syn {
     pub use ::syn::*;
 }
 
+#[cfg(feature = "tar")]
+pub mod tar {
+    #![doc = include_str!("../doc-src/crate-tar.md")]
+
+    pub use ::tar::*;
+}
+
 #[cfg(feature = "tempfile")]
 pub mod tempfile {
     #![doc = include_str!("../doc-src/crate-tempfile.md")]

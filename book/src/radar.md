@@ -84,7 +84,6 @@ but that are not yet part of Rustmax.
   The "small vector" optimization.
   There may be better / newer options.
 - [`sqlx`](https://docs.rs/sqlx).
-- [`tar`](https://docs.rs/tar).
 - [`tungstenite`](https://docs.rs/tungstenite). WebSockets.
 - [`stacker`](https://docs.rs/stacker).
   Manually-growable call stacks.

@@ -683,6 +683,29 @@
     "crate::proc_macro2":
     "api/rustmax/proc_macro2/index.html",
 
+    // tar
+    "crate::tar::Archive":
+    "api/tar/struct.Archive.html",
+    "crate::tar::Archive::unpack":
+    "api/tar/struct.Archive.html#method.unpack",
+    "crate::tar::Builder":
+    "api/tar/struct.Builder.html",
+    "crate::tar::Entry":
+    "api/tar/struct.Entry.html",
+    "crate::tar::Entry::unpack_in":
+    "api/tar/struct.Entry.html#method.unpack_in",
+    "crate::tar::EntryType":
+    "api/tar/enum.EntryType.html",
+    "crate::tar::Header":
+    "api/tar/struct.Header.html",
+    "crate::flate2":
+    "api/rustmax/flate2/index.html",
+    // std::io re-exports these; Read comes from alloc, Write from core.
+    "std::io::Read":
+    "api/alloc/io/trait.Read.html",
+    "std::io::Write":
+    "api/core/io/trait.Write.html",
+
     // zip
     "crate::zip::ZipArchive":
     "api/zip/read/struct.ZipArchive.html",
