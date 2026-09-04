@@ -100,11 +100,13 @@ with categories and lists and descriptions.
 It's easy to fall out of sync with the actual state of the rustmax
 crate dependencies and their descriptions and docs.
 
-These docs live in `root-docs.md`.
+These docs live in `crates/rustmax/doc-src/guide.md`.
 The crate descriptions live in `crate-XYZ.md` next to it,
 with metadata in the `rustmax/Cargo.toml` file as well as `crates.json5`.
 
-Do a pass over `root-docs.md` and fix any inconsistencies.
+Do a pass over `guide.md` and fix any inconsistencies.
+The category table and the per-profile crate lists are the parts
+that most often fall out of sync with `Cargo.toml`.
 
 
 # Task: task-improve-one-book-section
@@ -174,12 +176,21 @@ Run `just test` to test in all profiles.
 # Task task-add-crate: Add a crate to rustmax
 
 **Files to update:**
-1. `crates/rustmax/Cargo.toml` - Add dependencies and feature groups
-2. `crates/rustmax/src/lib.rs` - Add module reexports with `#![doc = include_str!("../doc-src/crate-NAME.md")]`
-3. `crates/rustmax/doc-src/root-docs.md` - Update category table and profile sections
-4. `src/crates.json5` - Add crate metadata (category, descriptions)
-5. `README.md` - Add to documentation table
-6. `crates/rustmax/doc-src/crate-NAME.md` - Create detailed documentation
+1. `crates/rustmax/Cargo.toml` - Add the dependency and put it in the right
+   `rmx-crates-*` group and `rmx-feature-*` groups
+2. `crates/rustmax/src/lib.rs` - Add the module reexport with
+   `#![doc = include_str!("../doc-src/crate-NAME.md")]`
+3. `crates/rustmax/doc-src/crate-NAME.md` - Create detailed documentation
+4. `crates/rustmax/doc-src/guide.md` - Add to the "The crates of Rustmax"
+   category table and to the crate list of the profile that first includes it
+   (the `std` and `portable` lists do not repeat the `no-std` crates)
+5. `src/crates.json5` - Add crate metadata (category, short_desc, maintainer)
+6. `src/linksubs.json5` - Add an entry for every `crate::` link definition
+   in your doc file
+7. `src/topics/crates.toml` - Add a topic entry with search aliases
+8. `www/sitemap.html` - Add the crate to the api module list
+9. `crates/rustmax-doctest/src/generate.rs` - Add the crate to the
+   `crates_to_rewrite` list
 
 **Key steps:**
 - Add crate to appropriate feature group (usually `rmx-crates-std`)
@@ -188,7 +199,6 @@ Run `just test` to test in all profiles.
 - Run `cargo check` to verify no feature conflicts
 - Use proper descriptions: "Low-level" vs "High-level", match existing patterns
 - If it's by a "trusted maintainer", make sure we add that metadata as appropriate.
-- Update linksubs.json5 as appropriate
 - If it is listed in radar.md remove it.
 
 **Common gotchas:**
@@ -197,12 +207,19 @@ Run `just test` to test in all profiles.
 - Some crates have important features to add to `rmx-feature-more`,
   ask the user.
 - Keep alphabetical order in all files
+- `src/crates.json5` is sorted by crate name, not grouped by category
+- `src/crates.json5` `short_desc` is plain text, not markdown - no backticks
 - If the crate is maintained by a trusted maintainer in src/maintainers.json5,
   remember to add it to the crates.json5 meta.
+- The doctest generator in `crates/rustmax-doctest` rewrites `crate_name::`
+  in doc examples to `rmx::crate_name::` from the hardcoded `crates_to_rewrite`
+  list in `generate.rs`. If the new crate is missing from that list,
+  `just test` fails at the `rustmax-cli doctest` step with
+  "use of unresolved module or unlinked crate".
 - Test with `cargo check --all-features`
 - Test with `just test`
-
-See also processes.md.
+- Test with `just doc-api` and `just doc-www`; `doc-www` prints
+  "unreplaced link" lines for `crate::` links missing from linksubs.json5
 
 
 # Task task-add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli

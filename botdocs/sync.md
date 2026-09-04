@@ -2,20 +2,24 @@ Lots of things need to be kept in sync.
 
 - pitch in
   www/index.html,
-  book/src/what-is-rmx.html,
-  README
+  book/src/what-is-rustmax.md,
+  README.md
 - crate names, features in
-  crates/rmx/Cargo.toml
-  crates/rmx/src/lib.rs,
-  crates/rmx/doc-src/root-docs.md,
-  www/mixins/mixin-rustdoc-script.js
+  crates/rustmax/Cargo.toml,
+  crates/rustmax/src/lib.rs,
+  crates/rustmax/doc-src/guide.md,
+  src/crates.json5,
+  src/topics/crates.toml,
+  www/sitemap.html,
+  crates/rustmax-doctest/src/generate.rs
+  (see task-add-crate in tasks.md for the full checklist)
 - categories in
-  crates/rmx/doc-src/root-docs.md,
+  crates/rustmax/doc-src/guide.md,
   book/src/how-do-i.md
-- CSS styles in
-  www/rustmax-themes.css
-  www/mixins/mixin-rustdoc-themes.css
-  book/theme/??
 - examples in
-  crates/rmx/doc-src/*.md,
+  crates/rustmax/doc-src/*.md,
   book/src/how-do-i.md
+- CSS styles are no longer duplicated:
+  www/rustmax-themes.css and www/rustmax-syntax.css are the sources,
+  and crates/rustmax-rustdoc/build.rs copies them into the renderer's
+  assets so the api docs match the website.
