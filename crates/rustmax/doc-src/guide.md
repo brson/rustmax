@@ -97,7 +97,7 @@ assert_eq!(port, 8080);
 | --- | --- |
 | error handling and debugging | [`anyhow`], [`env_logger`], [`log`], [`thiserror`] |
 | collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
-| numerics | [`num_bigint`] |
+| numerics | [`libm`], [`num_bigint`] |
 | encoding, serialization, parsing | [`base64`], [`comrak`], [`flate2`], [`hex`], [`json5`], [`memchr`], [`nom`], [`regex`], [`serde`], [`serde_json`], [`toml`], [`zip`] |
 | time | [`chrono`], [`jiff`] |
 | random numbers | [`rand`], [`rand_chacha`], [`rand_pcg`] |
@@ -370,6 +370,7 @@ This profile also enables [`rmx-rustlib-core`] and [`rmx-rustlib-alloc`].
 - [`itertools`] - Additional methods for iterators.
 - [`jiff`] - Dates and time.
 - [`libc`] - Bindings to the C standard library.
+- [`libm`] - Floating-point math functions, which `core` does not provide.
 - [`log`] - A simple logging framework.
 - [`memchr`] - Fast byte search with SIMD acceleration.
 - [`nom`] - An efficient parser combinator.
