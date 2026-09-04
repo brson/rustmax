@@ -2,7 +2,7 @@
 
 use rmx::prelude::*;
 use rustdoc_types::{Crate, Id, Impl, Item, ItemEnum, ItemKind, Type};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 /// A renderable documentation item with computed paths.
@@ -61,12 +61,14 @@ pub fn build_module_tree<'a>(
     let crate_name = root_item.name.clone().unwrap_or_else(|| "crate".to_string());
 
     // Build tree starting from root.
+    let mut expanding = HashSet::new();
     build_tree_recursive(
         krate,
         &krate.root,
         vec![crate_name.clone()],
         include_private,
         &id_to_path,
+        &mut expanding,
     )
 }
 
@@ -76,8 +78,9 @@ fn build_tree_recursive<'a>(
     current_path: Vec<String>,
     include_private: bool,
     id_to_path: &HashMap<&Id, Vec<String>>,
+    expanding: &mut HashSet<&'a Id>,
 ) -> AnyResult<ModuleTree<'a>> {
-    let module_item = krate.index.get(module_id)
+    let (module_id, module_item) = krate.index.get_key_value(module_id)
         .ok_or_else(|| anyhow!("Module {} not found in index", module_id.0))?;
 
     let module_name = module_item.name.clone()
@@ -91,7 +94,108 @@ fn build_tree_recursive<'a>(
     let mut submodules = Vec::new();
     let mut glob_reexports = Vec::new();
 
-    for child_id in &module.items {
+    let newly_expanding = expanding.insert(module_id);
+
+    collect_module_children(
+        krate,
+        &module.items,
+        &current_path,
+        include_private,
+        id_to_path,
+        &mut items,
+        &mut submodules,
+        &mut glob_reexports,
+        expanding,
+    )?;
+
+    if newly_expanding {
+        expanding.remove(module_id);
+    }
+
+    // Inlining globs can reach the same item along more than one path,
+    // as `libc` does with its per-platform modules,
+    // so drop repeats of an item already collected under the same name.
+    // Distinct items that share a name are kept:
+    // `libc` has both a `flock` struct and a `flock` function.
+    let mut seen = HashSet::new();
+    items.retain(|item| seen.insert((item_name(item.item), item_target_id(item))));
+    let mut seen_submodules = HashSet::new();
+    submodules.retain(|submodule| seen_submodules.insert(submodule.name.clone()));
+
+    // Sort items by name for consistent ordering.
+    items.sort_by(|a, b| {
+        a.item.name.as_deref().unwrap_or("")
+            .cmp(b.item.name.as_deref().unwrap_or(""))
+    });
+    submodules.sort_by(|a, b| a.name.cmp(&b.name));
+
+    let module_html_path = path_to_html(&current_path, Some(ItemKind::Module));
+    let module_renderable = RenderableItem {
+        id: module_id,
+        item: module_item,
+        path: current_path,
+        html_path: module_html_path,
+    };
+
+    Ok(ModuleTree {
+        name: module_name,
+        module_item: Some(module_renderable),
+        items,
+        submodules,
+        glob_reexports,
+    })
+}
+
+/// The name an item is known by in its containing module.
+///
+/// Re-exports carry their name in the `use`, not in the item.
+fn item_name(item: &Item) -> String {
+    if let ItemEnum::Use(use_item) = &item.inner {
+        use_item.name.clone()
+    } else {
+        item.name.clone().unwrap_or_default()
+    }
+}
+
+/// The id identifying what an item actually refers to.
+///
+/// For a re-export that is the target's id, so that the same target
+/// reached by two different paths compares equal.
+fn item_target_id<'a>(item: &RenderableItem<'a>) -> &'a Id {
+    match &item.item.inner {
+        ItemEnum::Use(use_item) => use_item.id.as_ref().unwrap_or(item.id),
+        _ => item.id,
+    }
+}
+
+/// Collect a module's children into the tree being built for it.
+///
+/// A glob re-export of a module in the same crate is spliced in place,
+/// so its items appear as the re-exporting module's own,
+/// which is how rustdoc presents them.
+/// Crates that define their whole API in private modules and
+/// re-export it from the crate root — `libm`'s `pub use self::math::*`,
+/// for instance — document nothing at all without this.
+///
+/// Only globs that leave the crate become [`GlobReexport`]s,
+/// which the renderer links to the original crate rather than inlining.
+///
+/// `expanding` holds the modules on the current traversal chain.
+/// Globbing a module that is already being expanded — `use super::*`
+/// in a submodule, for instance — would otherwise recurse forever.
+#[allow(clippy::too_many_arguments)]
+fn collect_module_children<'a>(
+    krate: &'a Crate,
+    child_ids: &'a [Id],
+    current_path: &[String],
+    include_private: bool,
+    id_to_path: &HashMap<&Id, Vec<String>>,
+    items: &mut Vec<RenderableItem<'a>>,
+    submodules: &mut Vec<ModuleTree<'a>>,
+    glob_reexports: &mut Vec<GlobReexport>,
+    expanding: &mut HashSet<&'a Id>,
+) -> AnyResult<()> {
+    for child_id in child_ids {
         let Some(child_item) = krate.index.get(child_id) else {
             continue;
         };
@@ -105,6 +209,31 @@ fn build_tree_recursive<'a>(
         // Handle glob re-exports specially.
         if let ItemEnum::Use(use_item) = &child_item.inner {
             if use_item.is_glob {
+                let local_module = use_item.id.as_ref()
+                    .and_then(|target_id| krate.index.get_key_value(target_id))
+                    .and_then(|(target_id, target_item)| match &target_item.inner {
+                        ItemEnum::Module(target_module) => Some((target_id, target_module)),
+                        _ => None,
+                    });
+
+                if let Some((target_id, target_module)) = local_module {
+                    if expanding.insert(target_id) {
+                        collect_module_children(
+                            krate,
+                            &target_module.items,
+                            current_path,
+                            include_private,
+                            id_to_path,
+                            items,
+                            submodules,
+                            glob_reexports,
+                            expanding,
+                        )?;
+                        expanding.remove(target_id);
+                    }
+                    continue;
+                }
+
                 // Extract crate name from source (e.g., "::tokio" -> "tokio").
                 let target_crate = use_item.source
                     .trim_start_matches("::")
@@ -123,14 +252,8 @@ fn build_tree_recursive<'a>(
             }
         }
 
-        // Get child name - Use items store name in inner.use.name, not item.name.
-        let child_name = if let ItemEnum::Use(use_item) = &child_item.inner {
-            use_item.name.clone()
-        } else {
-            child_item.name.clone().unwrap_or_default()
-        };
-        let mut child_path = current_path.clone();
-        child_path.push(child_name.clone());
+        let mut child_path = current_path.to_vec();
+        child_path.push(item_name(child_item));
 
         match &child_item.inner {
             ItemEnum::Module(_) => {
@@ -141,6 +264,7 @@ fn build_tree_recursive<'a>(
                     child_path,
                     include_private,
                     id_to_path,
+                    expanding,
                 )?;
                 submodules.push(subtree);
             }
@@ -167,28 +291,7 @@ fn build_tree_recursive<'a>(
         }
     }
 
-    // Sort items by name for consistent ordering.
-    items.sort_by(|a, b| {
-        a.item.name.as_deref().unwrap_or("")
-            .cmp(b.item.name.as_deref().unwrap_or(""))
-    });
-    submodules.sort_by(|a, b| a.name.cmp(&b.name));
-
-    let module_html_path = path_to_html(&current_path, Some(ItemKind::Module));
-    let module_renderable = RenderableItem {
-        id: module_id,
-        item: module_item,
-        path: current_path,
-        html_path: module_html_path,
-    };
-
-    Ok(ModuleTree {
-        name: module_name,
-        module_item: Some(module_renderable),
-        items,
-        submodules,
-        glob_reexports,
-    })
+    Ok(())
 }
 
 /// Convert a module path to an HTML file path.
@@ -357,5 +460,221 @@ pub fn get_type_id(ty: &Type) -> Option<&Id> {
     match ty {
         Type::ResolvedPath(path) => Some(&path.id),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rustdoc_types::*;
+
+    fn item(id: u32, name: &str, inner: ItemEnum) -> (Id, Item) {
+        (Id(id), Item {
+            id: Id(id),
+            crate_id: 0,
+            name: Some(name.to_string()),
+            span: None,
+            visibility: Visibility::Public,
+            docs: None,
+            links: Default::default(),
+            attrs: vec![],
+            deprecation: None,
+            inner,
+        })
+    }
+
+    fn module(is_crate: bool, items: Vec<u32>) -> ItemEnum {
+        ItemEnum::Module(Module {
+            is_crate,
+            items: items.into_iter().map(Id).collect(),
+            is_stripped: false,
+        })
+    }
+
+    fn glob(source: &str, target: u32) -> ItemEnum {
+        ItemEnum::Use(Use {
+            source: source.to_string(),
+            name: source.rsplit("::").next().unwrap().to_string(),
+            id: Some(Id(target)),
+            is_glob: true,
+        })
+    }
+
+    fn external_glob(source: &str) -> ItemEnum {
+        ItemEnum::Use(Use {
+            source: source.to_string(),
+            name: source.to_string(),
+            id: None,
+            is_glob: true,
+        })
+    }
+
+    fn empty_struct() -> ItemEnum {
+        ItemEnum::Struct(Struct {
+            kind: StructKind::Unit,
+            generics: Generics { params: vec![], where_predicates: vec![] },
+            impls: vec![],
+        })
+    }
+
+    fn empty_fn() -> ItemEnum {
+        ItemEnum::Function(Function {
+            sig: FunctionSignature { inputs: vec![], output: None, is_c_variadic: false },
+            generics: Generics { params: vec![], where_predicates: vec![] },
+            header: FunctionHeader {
+                is_const: false, is_unsafe: false, is_async: false, abi: Abi::Rust,
+            },
+            has_body: true,
+        })
+    }
+
+    fn empty_crate(root: u32) -> Crate {
+        Crate {
+            root: Id(root),
+            crate_version: None,
+            includes_private: false,
+            index: Default::default(),
+            paths: Default::default(),
+            external_crates: Default::default(),
+            target: Target { triple: String::new(), target_features: vec![] },
+            format_version: 0,
+        }
+    }
+
+    fn item_names(tree: &ModuleTree) -> Vec<String> {
+        tree.items.iter().map(|i| item_name(i.item)).collect()
+    }
+
+    /// The `libm` shape: the whole API lives in a private module
+    /// that the crate root re-exports with a glob.
+    #[test]
+    fn glob_of_private_module_is_inlined() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1]));
+        index.insert(id, i);
+        let (id, i) = item(1, "math", glob("self::math", 2));
+        index.insert(id, i);
+        let (id, i) = item(2, "math", module(false, vec![3, 4]));
+        index.insert(id, i);
+        let (id, i) = item(3, "sqrt", empty_fn());
+        index.insert(id, i);
+        let (id, i) = item(4, "Libm", empty_struct());
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        let mut names = item_names(&tree);
+        names.sort();
+        assert_eq!(names, ["Libm", "sqrt"]);
+        assert!(tree.glob_reexports.is_empty());
+        // Items are presented at the re-exporting module, not the private one.
+        assert_eq!(tree.items[0].path, ["mycrate", "Libm"]);
+    }
+
+    /// The `libc` shape: two platform modules glob-export the same item.
+    #[test]
+    fn item_reached_by_two_globs_is_listed_once() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1, 2]));
+        index.insert(id, i);
+        let (id, i) = item(1, "unix", glob("self::unix", 3));
+        index.insert(id, i);
+        let (id, i) = item(2, "linux", glob("self::linux", 4));
+        index.insert(id, i);
+        let (id, i) = item(3, "unix", module(false, vec![5]));
+        index.insert(id, i);
+        let (id, i) = item(4, "linux", module(false, vec![6]));
+        index.insert(id, i);
+        // Both modules re-export the same underlying struct.
+        let (id, i) = item(5, "can_frame", ItemEnum::Use(Use {
+            source: "crate::defs::can_frame".to_string(),
+            name: "can_frame".to_string(),
+            id: Some(Id(7)),
+            is_glob: false,
+        }));
+        index.insert(id, i);
+        let (id, i) = item(6, "can_frame", ItemEnum::Use(Use {
+            source: "crate::defs::can_frame".to_string(),
+            name: "can_frame".to_string(),
+            id: Some(Id(7)),
+            is_glob: false,
+        }));
+        index.insert(id, i);
+        let (id, i) = item(7, "can_frame", empty_struct());
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        assert_eq!(item_names(&tree), ["can_frame"]);
+    }
+
+    /// `libc` has both a `flock` struct and a `flock` function.
+    #[test]
+    fn distinct_items_sharing_a_name_are_both_kept() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1]));
+        index.insert(id, i);
+        let (id, i) = item(1, "defs", glob("self::defs", 2));
+        index.insert(id, i);
+        let (id, i) = item(2, "defs", module(false, vec![3, 4]));
+        index.insert(id, i);
+        let (id, i) = item(3, "flock", empty_struct());
+        index.insert(id, i);
+        let (id, i) = item(4, "flock", empty_fn());
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        assert_eq!(item_names(&tree), ["flock", "flock"]);
+    }
+
+    /// A submodule globbing its parent must not recurse forever.
+    #[test]
+    fn glob_cycle_terminates() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1, 2]));
+        index.insert(id, i);
+        let (id, i) = item(1, "thing", empty_struct());
+        index.insert(id, i);
+        let (id, i) = item(2, "inner", module(false, vec![3]));
+        index.insert(id, i);
+        // `inner` globs its parent, which contains `inner`.
+        let (id, i) = item(3, "mycrate", glob("super", 0));
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        assert_eq!(item_names(&tree), ["thing"]);
+        // The glob back into the parent is dropped rather than followed.
+        let inner = &tree.submodules[0];
+        assert_eq!(inner.name, "inner");
+        assert!(item_names(inner).is_empty());
+    }
+
+    /// A glob leaving the crate is recorded for the renderer to link,
+    /// not inlined.
+    #[test]
+    fn glob_of_external_crate_is_not_inlined() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1]));
+        index.insert(id, i);
+        let (id, i) = item(1, "clap_builder", external_glob("clap_builder"));
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        assert!(tree.items.is_empty());
+        assert_eq!(tree.glob_reexports.len(), 1);
+        assert_eq!(tree.glob_reexports[0].target_crate, "clap_builder");
     }
 }
