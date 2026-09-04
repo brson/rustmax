@@ -9,7 +9,7 @@
     "crate::axum::Json":
     "api/axum/struct.Json.html",
     "crate::axum::response::IntoResponse":
-    "api/axum/response/trait.IntoResponse.html",
+    "api/axum_core/response/trait.IntoResponse.html",
     "crate::tower":
     "api/rustmax/tower/index.html",
     "crate::tower::Service":
@@ -65,7 +65,7 @@
     "crate::anyhow::Context":
     "api/anyhow/trait.Context.html",
     "crate::anyhow::Context::context":
-    "api/anyhow/trait.Context.html#tymethod.context",
+    "api/anyhow/trait.Context.html#method.context",
     "crate::std::error::Error":
     "api/core/error/trait.Error.html",
 
@@ -105,7 +105,7 @@
     "crate::std::sync":
     "api/std/sync/index.html",
     "std::sync::atomic::AtomicBool":
-    "api/core/sync/atomic/struct.AtomicBool.html",
+    "api/core/sync/atomic/type.AtomicBool.html",
     "crate::std::thread":
     "api/std/thread/index.html",
     "crate::std::sync::mpsc":
@@ -603,7 +603,7 @@
     "crate::termcolor::WriteColor":
     "api/termcolor/trait.WriteColor.html",
     "crate::termcolor::WriteColor::reset":
-    "api/termcolor/trait.WriteColor.html#tymethod.reset",
+    "api/termcolor/trait.WriteColor.html#method.reset",
     "crate::termcolor::ColorChoice":
     "api/termcolor/enum.ColorChoice.html",
     "crate::termcolor::BufferWriter":
@@ -627,9 +627,9 @@
     "crate::libc::SIGTERM":
     "api/libc/constant.SIGTERM.html",
     "crate::libc::c_int":
-    "api/libc/type.c_int.html",
+    "api/core/ffi/type.c_int.html",
     "crate::libc::c_char":
-    "api/libc/type.c_char.html",
+    "api/core/ffi/type.c_char.html",
     "crate::libc::size_t":
     "api/libc/type.size_t.html",
     "crate::libc::malloc":

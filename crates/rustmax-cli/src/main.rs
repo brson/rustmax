@@ -3,6 +3,7 @@
 mod books;
 mod impls;
 mod library_gen;
+mod linkcheck;
 mod moldman;
 mod rmxbook;
 mod tools;
@@ -85,6 +86,9 @@ enum CliCmd {
 
     /// Validate the topic index.
     ValidateTopics(CliCmdValidateTopics),
+
+    /// Validate that link substitutions resolve in the built site.
+    ValidateLinks(CliCmdValidateLinks),
 
     /// Summarize the topic index.
     SummarizeTopics(CliCmdSummarizeTopics),
@@ -210,6 +214,17 @@ struct CliCmdValidateTopics {
 }
 
 #[derive(clap::Args)]
+struct CliCmdValidateLinks {
+    /// Path to the link substitution file.
+    #[arg(long, default_value = "src/linksubs.json5")]
+    linksubs: String,
+
+    /// Path to the built site.
+    #[arg(long, default_value = "out")]
+    site: String,
+}
+
+#[derive(clap::Args)]
 struct CliCmdSummarizeTopics {
     /// Path to the topics directory.
     #[arg(default_value = "src/topics")]
@@ -302,6 +317,7 @@ impl CliOpts {
             CliCmd::RunAllChecks(cmd) => cmd.run(),
             CliCmd::Rustdoc(cmd) => cmd.run(),
             CliCmd::ValidateTopics(cmd) => cmd.run(),
+            CliCmd::ValidateLinks(cmd) => cmd.run(),
             CliCmd::SummarizeTopics(cmd) => cmd.run(),
             CliCmd::ExportSearchIndex(cmd) => cmd.run(),
             CliCmd::Search(cmd) => cmd.run(),
@@ -550,6 +566,28 @@ impl CliCmdValidateTopics {
             Ok(())
         } else {
             bail!("topic index validation failed")
+        }
+    }
+}
+
+impl CliCmdValidateLinks {
+    fn run(&self) -> AnyResult<()> {
+        let linksubs = Path::new(&self.linksubs);
+        let site = Path::new(&self.site);
+
+        if !site.is_dir() {
+            bail!("no site at {}; run `just doc-build` first", site.display());
+        }
+
+        println!("Checking {} against {}...", linksubs.display(), site.display());
+
+        let report = linkcheck::check(linksubs, site)?;
+        report.print();
+
+        if report.is_ok() {
+            Ok(())
+        } else {
+            bail!("link substitution validation failed")
         }
     }
 }

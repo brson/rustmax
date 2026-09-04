@@ -220,6 +220,11 @@ Run `just test` to test in all profiles.
 - Test with `just test`
 - Test with `just doc-api` and `just doc-www`; `doc-www` prints
   "unreplaced link" lines for `crate::` links missing from linksubs.json5
+- Then `just doc-check-links`, which catches the opposite problem:
+  a linksubs entry pointing at a page that was never generated.
+  Getting the item kind wrong is the usual cause -
+  an enum is `enum.Foo.html`, not `struct.Foo.html`.
+  It needs `out/api`, so run `just doc-api` first.
 
 
 # Task task-add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli

@@ -114,11 +114,16 @@ doc-www: doc-library export-search-index
     cp work/news.xml out/ || true
     cp work/search-index.json out/
 
+# Requires a built site; run after doc-api.
+doc-check-links:
+    cargo run -p rustmax-cli -- validate-links
+
 doc-build: doc-www doc-api doc-book doc-library
     mkdir -p out/book
     cp -r book/book/* out/book/
     mkdir -p out/library
     cp -r work/library/* out/library/
+    just doc-check-links
 
 publish-dry:
     cargo publish -p rustmax --dry-run
