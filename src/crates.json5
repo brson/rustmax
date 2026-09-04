@@ -26,6 +26,7 @@
             name: "bindgen",
             category: "ffi",
             short_desc: "C/C++ interop",
+            maintainer: "rust-lang",
         },
         {
             name: "bitflags",
@@ -84,11 +85,13 @@
             name: "cxx",
             category: "ffi",
             short_desc: "Bridging to/from C++",
+            maintainer: "dtolnay",
         },
         {
             name: "cxx-build",
             category: "ffi",
             short_desc: "Bridging to/from C++",
+            maintainer: "dtolnay",
         },
         {
             name: "derive_more",
@@ -138,18 +141,17 @@
             name: "image",
             category: "graphics",
             short_desc: "Image processing and manipulation",
-            maintainer: "image-rs",
         },
         {
             name: "indicatif",
             category: "cli",
             short_desc: "Progress bars and spinners",
-            maintainer: "console-rs",
         },
         {
             name: "http",
             category: "web",
             short_desc: "Shared HTTP definitions",
+            maintainer: "seanmonstar",
         },
         {
             name: "hyper",
@@ -213,7 +215,6 @@
             name: "notify",
             category: "system",
             short_desc: "Cross-platform filesystem notifications",
-            maintainer: "notify-rs",
         },
         {
             name: "num-bigint",
@@ -339,6 +340,7 @@
             name: "termcolor",
             category: "cli",
             short_desc: "Terminal colors",
+            maintainer: "burntsushi",
         },
         {
             name: "thiserror",
@@ -390,7 +392,6 @@
             name: "zip",
             category: "encoding",
             short_desc: "Read and write ZIP archives",
-            maintainer: "zip-rs",
         },
     ]
 }
