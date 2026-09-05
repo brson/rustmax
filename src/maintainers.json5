@@ -13,12 +13,6 @@
             url: "https://github.com/BurntSushi",
         },
         {
-            id: "alexcrichton",
-            display_name: "Alex Crichton",
-            description: "Former Rust core team member and prolific contributor. Maintainer of tokio ecosystem, wasm-bindgen, and many foundational async and FFI crates.",
-            url: "https://github.com/alexcrichton",
-        },
-        {
             id: "rust-lang",
             display_name: "The Rust Project",
             description: "The official Rust project organization. Maintains the Rust compiler, standard library, and core tooling including cargo, rustup, and rustfmt.",

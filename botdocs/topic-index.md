@@ -471,7 +471,7 @@ Rust community concepts and history.
 - AWS Rust team
 - Google Rust team
 - Microsoft Rust team
-- dtolnay, BurntSushi, alexcrichton, etc. (trusted maintainers)
+- dtolnay, BurntSushi, seanmonstar, etc. (trusted maintainers)
 
 **Events:**
 - RustConf

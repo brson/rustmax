@@ -44,20 +44,6 @@ Creator of ripgrep and author of numerous widely-used libraries.
 
 ---
 
-## <a id="alexcrichton"></a> Alex Crichton
-
-**GitHub:** [alexcrichton](https://github.com/alexcrichton)
-
-Former Rust core team member and prolific contributor to foundational crates.
-
-**Notable crates:**
-- [`toml`](https://docs.rs/toml) — TOML parser
-- [`wasm-bindgen`](https://docs.rs/wasm-bindgen) — Facilitating WebAssembly and JavaScript interop
-- Many foundational async and FFI crates in the ecosystem
-
-
----
-
 ## <a id="seanmonstar"></a> Sean McArthur
 
 **GitHub:** [seanmonstar](https://github.com/seanmonstar)
