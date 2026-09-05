@@ -30,9 +30,9 @@ But there are significant downside still:
    The obvious solution, the experimental [`mostly-unused`] hint
    that is applied to the rustmax crate (on nightly), so far
    hasn't produced significant speedups.
-2. Some reexported derive macros do not work unless their origin crate is
-   a direct dependency. Affects `serde`, `thiserror`, `derive_more`, and `clap`.
-   See [Derive macro limitations](#derive-macro-limitations).
+2. Re-exported proc macros need help. Most are handled by writing
+   `#[rmx::derive(..)]` instead of `#[derive(..)]`, but `thiserror` and
+   `cxx` still require a direct dependency. See [Macros](#macros).
 3. Disk usage. Lots of deps to download and upgrade and build and rebuild
    even for tiny projects. I run `cargo clean` and `cargo clean-all` a lot.
 
@@ -127,7 +127,7 @@ assert_eq!(port, 8080);
 - [The `rustmax` prelude](#the-rustmax-prelude)
 - [The `extras` module](#the-extras-module)
 - [Starting from a template](#starting-from-a-template)
-- [Derive macro limitations](#derive-macro-limitations)
+- [Macros](#macros)
 - [Known bugs](#known-bugs)
 - [Profiles](#profiles).
   `rustmax` organizes crates into _profiles_,
@@ -198,7 +198,7 @@ use rmx::rand::Rng;
 ```
 
 These modules behave the same as the corresponding crates,
-with exceptions noted in [Derive macro limitations](#derive-macro-limitations).
+with exceptions noted in [Macros](#macros).
 Each module has `rustmax`-specific documentation
 with a description, example, and links to the original crate docs.
 
@@ -232,31 +232,195 @@ See [Rust standard libraries](#rust-standard-libraries).
 
 
 
-## Derive macro limitations
+## Macros
 
-Several crates re-exported by `rustmax` provide derive macros
-that do not work through the re-export.
-The affected crates are `serde`, `thiserror`, `derive_more`, and `clap`.
+Macros are the one part of `rustmax` that does not
+simply work the way the original crate's documentation says it does.
+This section explains why, and what to write instead.
 
-Derive proc macros generate code containing absolute paths to their origin crate
-(e.g. `::serde::Serialize`), and in Rust 2018+
-those paths resolve from the _extern prelude_,
-which only contains direct Cargo dependencies.
-Since the user depends on `rustmax` and not `serde` directly,
-`::serde` is not in their extern prelude
-and the expanded code fails to compile.
+The short version: use [`rmx::derive`](crate::derive)
+in place of `#[derive(..)]`.
 
-Function-like macros (like `serde_json::json!`)
-and regular trait re-exports are not affected --
-only derive macros that hardcode their crate path in generated code.
+```rust
+# use rustmax as rmx;
+#[rmx::derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+struct Config {
+    some_field: u32,
+}
+```
 
-### Workaround: add the crate as a direct dependency
 
-The simplest workaround is to add the affected crate
-alongside `rustmax` in your `Cargo.toml`.
-Because Cargo deduplicates, this does not add any extra compilation
--- the crate is already being built as a transitive dependency of `rustmax`.
-It only makes the crate name available in the extern prelude.
+### Why re-exported macros are different
+
+A derive macro has to generate code that refers back to its own crate.
+`serde`'s derive generates calls into `serde`,
+`clap`'s derive generates calls into `clap`.
+The macro cannot know what the user calls that crate,
+so it hardcodes the crate's real name into its output.
+
+That name is resolved in the crate the macro was used in,
+where it usually resolves against the _extern prelude_ --
+the set of direct Cargo dependencies.
+A crate that depends on `rustmax` has `rustmax` in its extern prelude,
+not `serde`, so the generated code does not compile.
+
+Nothing about this affects ordinary re-exported items.
+Types, traits, functions and `macro_rules!` macros
+all work through `rustmax` exactly as they do directly,
+because `macro_rules!` macros refer to their own crate
+through `$crate`, which survives re-export.
+Only proc macros -- derive macros and attribute macros -- are affected.
+
+The affected crates behave in three distinct ways,
+which is why there is no single workaround:
+
+| Crate | What its generated code names | Reachable through `rustmax`? |
+| --- | --- | --- |
+| [`serde`] | `extern crate serde` | yes, via `#[serde(crate = "..")]` |
+| [`num_enum`] | `::num_enum` | yes, via `#[num_enum(crate = ..)]` |
+| [`clap`] | `clap`, relative to the use site | yes, by binding the name in scope |
+| [`derive_more`] | `derive_more`, relative to the use site | yes, by binding the name in scope |
+| [`thiserror`] | `::thiserror` | no |
+| [`cxx`] | `::cxx` | no |
+
+A leading `::` resolves only against the extern prelude,
+so for `thiserror` and `cxx` no re-export, import, or macro
+can make the generated code resolve.
+Those two need a direct dependency.
+
+
+### `#[rmx::derive(..)]`
+
+[`rmx::derive`](crate::derive) is an attribute macro
+that stands in for `#[derive(..)]`.
+It rewrites each derive to its path within `rustmax`
+and adds whatever that particular derive crate needs
+in order to find its runtime.
+
+```rust
+# use rustmax as rmx;
+#[rmx::derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+struct Config {
+    some_field: u32,
+    #[serde(default)]
+    other: String,
+}
+
+let json = rmx::serde_json::to_string(&Config {
+    some_field: 7,
+    other: "hi".to_owned(),
+})?;
+assert_eq!(json, r#"{"someField":7,"other":"hi"}"#);
+# Ok::<(), rmx::extras::AnyError>(())
+```
+
+Container and field attributes work unchanged,
+and names it does not recognize are passed straight through,
+so built-in derives can be listed alongside re-exported ones.
+It knows the derives of
+[`clap`], [`derive_more`], [`num_enum`], [`serde`] and [`thiserror`].
+
+Where a derive name is also a built-in derive --
+`Debug`, `Eq` and `PartialEq` all exist in `derive_more` --
+the built-in one wins.
+Qualify the name to ask for the other:
+
+```rust
+# use rustmax as rmx;
+#[rmx::derive(derive_more::Debug)]
+struct Secret {
+    #[debug("redacted")]
+    token: String,
+}
+
+assert_eq!(
+    format!("{:?}", Secret { token: "hunter2".to_owned() }),
+    "Secret { token: redacted }",
+);
+```
+
+`Error` is the reverse case:
+both `thiserror` and `derive_more` provide it,
+and a bare `Error` means `thiserror`'s,
+because that is what it usually means elsewhere.
+Since `thiserror` needs a direct dependency,
+`#[rmx::derive(Error)]` without one is an error
+that says so and points at the alternative.
+
+Adding a direct dependency on one of these crates is always allowed,
+and `#[rmx::derive]` notices and uses it,
+generating exactly what the crate's own documentation describes.
+Mixing the two styles in one crate is fine.
+
+
+### Importing macros without `#[rmx::derive]`
+
+`#[rmx::derive]` is not the only way,
+and for `clap`, `derive_more` and `tokio`
+the plain import is barely different from upstream.
+These crates name themselves relative to the use site,
+so binding the name is enough:
+
+```rust
+# use rustmax as rmx;
+use rmx::clap::{self, Parser};
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long)]
+    count: u32,
+}
+
+assert_eq!(Cli::parse_from(["prog", "--count", "4"]).count, 4);
+```
+
+The `self` in that import is the whole trick:
+it binds `clap` as well as `Parser`,
+and the generated code needs the former.
+Importing only `rmx::clap::Parser` fails to compile.
+
+The same applies to attribute macros,
+which `#[rmx::derive]` does not cover:
+
+```rust,ignore
+# use rustmax as rmx;
+use rmx::tokio;
+
+#[tokio::main]
+async fn main() {
+    // ...
+}
+```
+
+For `serde`, the equivalent is its `crate` attribute,
+which takes the path to use in generated code:
+
+```rust
+# use rustmax as rmx;
+use rmx::serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "::rustmax::serde")]
+struct Point {
+    x: f64,
+    y: f64,
+}
+```
+
+Note that the path there is the real crate name.
+If the dependency is renamed, as the template renames it to `rmx`,
+the attribute has to say `"::rmx::serde"` instead.
+`#[rmx::derive]` exists partly to avoid having to know that:
+it discovers the name from the depending crate's manifest.
+
+
+### Adding a direct dependency
+
+For `thiserror` and `cxx` this is the only option,
+and it is a reasonable one for any of the affected crates.
+Add the crate alongside `rustmax`:
 
 ```toml
 [dependencies]
@@ -264,57 +428,45 @@ rmx.package = "rustmax"
 rmx.version = "0.0.10"
 rmx.features = ["rmx-profile-portable"]
 
-# Only needed for crates whose derive macros you use.
-serde = "1"
 thiserror = "2"
-derive_more = { version = "2", features = ["full"] }
-clap = { version = "4", features = ["derive"] }
 ```
 
-Note that you do not need to enable the `derive` feature on `serde`
-as `rustmax` already enables it via `rmx-feature-derive`.
-You can import the derive macros from either path:
+This costs less than it looks like it does.
+Cargo unifies the two references to a single build of the crate,
+so nothing is compiled twice,
+and `rmx::serde::Serialize` and `serde::Serialize`
+are the same trait, not two versions of it.
+What the extra line buys is a name in the extern prelude.
 
-```rust,ignore
-# use rustmax as rmx;
-// Both work equivalently:
-use rmx::serde::{Serialize, Deserialize};
-use serde::{Serialize, Deserialize};
-```
+The cost is that the version is now declared in two places,
+which is exactly what `rustmax` exists to avoid.
+Keep the version ranges loose enough
+that Cargo can unify them with whatever `rustmax` selects.
 
-### Workaround for `serde` only: the `crate` attribute
 
-Serde's derive macros support a `crate` attribute
-that overrides the path used in generated code.
-This avoids needing a direct `serde` dependency
-but requires annotating every derived type:
+### Known limitations
 
-```rust,ignore
-# use rustmax as rmx;
-use rmx::serde::{Serialize, Deserialize};
+`#[rmx::derive]` reads the depending crate's manifest
+to decide whether a crate is a direct dependency.
+The manifest does not distinguish `[dependencies]` from `[dev-dependencies]`,
+but the extern prelude of a given build target contains only one of them.
+A crate listed under `[dependencies]` but not `[dev-dependencies]`
+is treated as available inside integration tests, where it is not.
+Adding it to both sections resolves this.
 
-#[derive(Serialize, Deserialize)]
-#[serde(crate = "rmx::serde")]
-struct Point {
-    x: f64,
-    y: f64,
-}
-```
-
-The other affected crates (`thiserror`, `derive_more`, `clap`)
-do not support a `crate` path override attribute.
-
-### Why this is hard to fix
+Writing `#[serde(crate = "..")]` on a type
+that also has `#[rmx::derive(Serialize)]`
+produces a duplicate-attribute error from `serde`.
+Use one or the other.
 
 Proc macro functions cannot be called from other proc macros,
-so `rustmax` cannot provide wrapper derives that delegate to the originals.
-Cargo provides no mechanism for a library crate
-to inject dependencies into its dependents' extern prelude.
-The unstable Cargo `public-dependency` feature does not yet
-propagate extern prelude entries.
-
-Until Rust gains a mechanism for transitive extern prelude visibility,
-the direct-dependency workaround is the recommended approach.
+so `rustmax` cannot provide drop-in replacements
+for the derive macros themselves,
+only an attribute that rewrites what is handed to them.
+Cargo has no mechanism for a library crate
+to add entries to its dependents' extern prelude;
+the unstable `public-dependency` feature does not do this.
+That is why `thiserror` and `cxx` have no workaround.
 
 
 ## Known bugs

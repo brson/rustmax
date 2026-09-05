@@ -1,0 +1,22 @@
+[package]
+name = "rustmax-macros-test"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Tests for `#[rmx::derive]` from the outside, as a consumer sees it."
+publish = false
+
+# Deliberately renamed, matching the rustmax template, so that the macros
+# are exercised against a dependency that is not named `rustmax`.
+[dependencies]
+rmx.package = "rustmax"
+rmx.path = "../rustmax"
+rmx.version = "0.0.10"
+rmx.features = ["rmx-profile-full"]
+
+# `thiserror` cannot work through a re-export, so the one path that does
+# work for it needs a real direct dependency.
+[dev-dependencies]
+thiserror = "2"

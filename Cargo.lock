@@ -3536,6 +3536,7 @@ dependencies = [
  "rayon",
  "regex",
  "reqwest",
+ "rustmax-macros",
  "rustyline",
  "semver",
  "serde",
@@ -3592,6 +3593,23 @@ version = "0.0.10"
 dependencies = [
  "pulldown-cmark",
  "rustmax",
+]
+
+[[package]]
+name = "rustmax-macros"
+version = "0.0.10"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
+name = "rustmax-macros-test"
+version = "0.0.10"
+dependencies = [
+ "rustmax",
+ "thiserror",
 ]
 
 [[package]]

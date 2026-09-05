@@ -255,6 +255,54 @@ pub extern crate proc_macro;
 
 /* ---------- */
 
+/// Apply derive macros re-exported by `rustmax`.
+///
+/// Derive macros generate code that names their own crate,
+/// which does not resolve when that crate is reached through `rustmax`
+/// instead of being a direct dependency.
+/// This attribute rewrites the derive paths
+/// and injects whatever each derive crate needs to find its runtime.
+///
+/// ```
+/// # use rustmax as rmx;
+/// #[rmx::derive(Serialize, Deserialize, Clone, Debug)]
+/// #[serde(rename_all = "camelCase")]
+/// struct Config {
+///     some_field: u32,
+/// }
+/// ```
+///
+/// Unrecognized names are passed through unchanged,
+/// so built-in derives like `Clone` and `Debug`
+/// can be listed alongside re-exported ones.
+///
+/// See [Macros](crate::guide#macros) in the guide.
+#[cfg(feature = "rustmax-macros")]
+pub use ::rustmax_macros::derive;
+
+/// Scope shims for derive macros that name their crate relatively.
+///
+/// Some derive macros expand to paths like `clap::Parser`,
+/// which resolve against the scope the macro was used in.
+/// Glob-importing one of these modules binds the crate's own name there.
+/// Duplicate glob imports of the same module do not conflict,
+/// which is why [`derive`] can emit one per invocation.
+#[cfg(feature = "rustmax-macros")]
+#[doc(hidden)]
+pub mod __macro_scope {
+    #[cfg(feature = "clap")]
+    pub mod clap {
+        pub use crate::clap;
+    }
+
+    #[cfg(feature = "derive_more")]
+    pub mod derive_more {
+        pub use crate::derive_more;
+    }
+}
+
+/* ---------- */
+
 #[cfg(feature = "ahash")]
 pub mod ahash {
     #![doc = include_str!("../doc-src/crate-ahash.md")]

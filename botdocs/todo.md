@@ -1,10 +1,16 @@
 ## TODO
 
 - rename to `max` - crates are reserved
-- derive macro limitations (documented in guide)
-  - serde, thiserror, derive_more, clap derives need direct dependency
-  - root cause: proc macro extern prelude resolution, not fixable from library side
+- derive macro limitations (documented in guide under "Macros")
+  - mostly solved by `#[rmx::derive(..)]` in `rustmax-macros`
+  - serde and num_enum: crate-path attribute injected by the macro
+  - clap and derive_more: name their crate relatively, macro binds it via
+    `crate::__macro_scope`
+  - thiserror and cxx: generate `::thiserror` / `::cxx`, which resolve only
+    against the extern prelude, so a direct dependency is still required
   - possible future fix: Cargo public-dependency extern prelude propagation
+  - open: convert `doc-src/crate-*.md` examples to `#[rmx::derive]` and drop
+    the derive crates from the generated doctest crate's direct dependencies
 - why
   - feature management
 - xtask
