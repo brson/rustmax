@@ -202,10 +202,12 @@ fn parse_summary(content: &str) -> AnyResult<Vec<Chapter>> {
 fn parse_chapter_link(line: &str) -> Option<Chapter> {
     let trimmed = line.trim().trim_start_matches('-').trim();
 
-    // Match [Title](path)
+    // Match [Title](path). The path ends at the first `)` after the `](`,
+    // not the last one on the line, which would swallow any note the entry
+    // carries after the link.
     let start = trimmed.find('[')?;
     let mid = trimmed.find("](")?;
-    let end = trimmed.rfind(')')?;
+    let end = mid + 2 + trimmed[mid + 2..].find(')')?;
 
     if start >= mid || mid >= end {
         return None;
@@ -955,6 +957,22 @@ mod tests {
         let html = markdown_to_html("## Topics\n\n## Topics\n", None);
         assert!(html.contains(r#"id="topics""#), "{html}");
         assert!(html.contains(r#"id="topics-1""#), "{html}");
+    }
+
+    #[test]
+    fn test_summary_entry_with_a_trailing_note() {
+        let chapter =
+            parse_chapter_link("- [Rust Concept Index](concept-index.md) (aka \"glossary\")")
+                .unwrap();
+        assert_eq!(chapter.title, "Rust Concept Index");
+        assert_eq!(chapter.path, Some(PathBuf::from("concept-index.md")));
+    }
+
+    #[test]
+    fn test_summary_entry_title_may_contain_parens() {
+        let chapter = parse_chapter_link("- [Rust (2024) Edition](edition.md)").unwrap();
+        assert_eq!(chapter.title, "Rust (2024) Edition");
+        assert_eq!(chapter.path, Some(PathBuf::from("edition.md")));
     }
 
     /// `maintainers.md` writes its own anchors, which must keep working

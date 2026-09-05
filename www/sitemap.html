@@ -91,7 +91,6 @@
                 <li><a href="book/easy-mode-rust.html#upgrading-dependencies-across-minor-versions-in-cargotoml">Upgrading dependencies across minor versions in Cargo.toml</a>
                 <li><a href="book/easy-mode-rust.html#topics">Topics</a>
               </ul>
-            <li><a href="book/crates.html">Rustmax: The Crates</a>
             <li><a href="book/tools.html">Rustmax: The Tools</a>
               <ul>
                 <li><a href="book/tools.html#standard-rust-tools">Standard Rust tools</a>
@@ -140,6 +139,9 @@
             <li><a href="book/cli.html">The Rustmax CLI</a>
             <li><a href="book/simple-tips.html">Simple Rust Tips</a>
               <ul>
+                <li><a href="book/simple-tips.html#generate-random-numbers-without-the-rand-crate">Generate random numbers without the `rand` crate</a>
+                <li><a href="book/simple-tips.html#run-cargo-clean-all-to-free-up-large-amounts-of-disk-space">Run `cargo clean-all` to free up large amounts of disk space</a>
+                <li><a href="book/simple-tips.html#the-ok-whatevererror-block-tail">The `Ok::&lt;(), WhateverError&gt;(())` block tail</a>
                 <li><a href="book/simple-tips.html#assert-send--sync">Assert `Send` / `Sync`</a>
                 <li><a href="book/simple-tips.html#copy-a-directory-recursively">Copy a directory recursively</a>
                 <li><a href="book/simple-tips.html#theres-an-either-hiding-in-the-futures-crate">There's an `Either` hiding in the `futures` crate!</a>
@@ -148,18 +150,13 @@
                 <li><a href="book/simple-tips.html#use-rustfmtskip">Use `rustfmt::skip`</a>
                 <li><a href="book/simple-tips.html#use-option-with-">Use `Option` with `?`</a>
                 <li><a href="book/simple-tips.html#put-common-development-commands-in-a-justfile">Put common development commands in a `justfile`</a>
+                <li><a href="book/simple-tips.html#merge-message-streams-with-futuresstreamselect">Merge message streams with `futures::stream::select`</a>
               </ul>
             <li><a href="book/rust-cli-one-liners.html">Rust CLI One-Liners</a>
               <ul>
                 <li><a href="book/rust-cli-one-liners.html#find-all-rust-files">Find all Rust files</a>
                 <li><a href="book/rust-cli-one-liners.html#replace-text-in-all-rust-files">Replace text in all Rust files</a>
                 <li><a href="book/rust-cli-one-liners.html#delete-trailing-newlines-in-all-python-and-rust-files">Delete trailing newlines in all Python and Rust files</a>
-              </ul>
-            <li><a href="book/std.html">The Rust Standard Library Revisited</a>
-              <ul>
-                <li><a href="book/std.html#api-docs">API docs</a>
-                <li><a href="book/std.html#rust-standard-library-classics">Rust standard library classics</a>
-                <li><a href="book/std.html#a-new-tour-of-the-rust-standard-library">A (New) Tour of the Rust standard library</a>
               </ul>
             <li><a href="book/ecosystem.html">The Rust Ecosystem</a>
               <ul>
@@ -186,16 +183,19 @@
                   <ul>
                     <li><a href="book/how-do-i.html#-init-a-rustmax-project-from-template">… init a Rustmax project from template?</a>
                     <li><a href="book/how-do-i.html#-organize-a-rust-workspace">… organize a Rust workspace?</a>
+                    <li><a href="book/how-do-i.html#-fix-bugs-in-a-published-cratesio-dependency">… fix bugs in a published crates.io dependency?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#conveniences">Conveniences</a>
                   <ul>
                     <li><a href="book/how-do-i.html#-define-extension-methods-on-a-type-in-another-crate">… define "extension" methods on a type in another crate?</a>
                     <li><a href="book/how-do-i.html#-guarantee-a-trait-is-object-safe">… guarantee a trait is object-safe?</a>
+                    <li><a href="book/how-do-i.html#-make-compile-time-assertions">… make compile-time assertions?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#error-handling-and-debugging">Error handling and debugging</a>
                   <ul>
                     <li><a href="book/how-do-i.html#-handle-errors-simply-and-correctly">… handle errors simply and correctly?</a>
                     <li><a href="book/how-do-i.html#-structure-errors-in-a-public-api">… structure errors in a public API?</a>
+                    <li><a href="book/how-do-i.html#-capture-a-backtrace">… capture a backtrace?</a>
                     <li><a href="book/how-do-i.html#-set-up-basic-logging">… set up basic logging?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#collections">Collections</a>
@@ -209,6 +209,7 @@
                     <li><a href="book/how-do-i.html#-convert-between-numeric-types-ideomatically">… convert between numeric types ideomatically?</a>
                     <li><a href="book/how-do-i.html#-perform-math-ideomatically">… perform math ideomatically?</a>
                     <li><a href="book/how-do-i.html#-convert-between-ints-and-bytes">… convert between ints and bytes?</a>
+                    <li><a href="book/how-do-i.html#-perform-typical-byte-order-conversions">… perform typical byte order conversions?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#encoding-serialization-parsing">Encoding, serialization, parsing</a>
                   <ul>
@@ -236,6 +237,7 @@
                     <li><a href="book/how-do-i.html#-initialize-a-global-value">… initialize a global value?</a>
                     <li><a href="book/how-do-i.html#-send-messages-tofrom-async-code">… send messages to/from async code?</a>
                     <li><a href="book/how-do-i.html#-use-a-thread-pool">… use a thread pool?</a>
+                    <li><a href="book/how-do-i.html#-get-the-number-of-cpus">… get the number of CPUs?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#asynchronous-io">Asynchronous I/O</a>
                   <ul>
@@ -253,6 +255,7 @@
                     <li><a href="book/how-do-i.html#-set-up-a-simple-cli-parser-with-subcommands">… set up a simple CLI parser with subcommands?</a>
                     <li><a href="book/how-do-i.html#-display-colors-in-the-terminal">… display colors in the terminal?</a>
                     <li><a href="book/how-do-i.html#-read-line-based-input-from-the-terminal">… read line-based input from the terminal?</a>
+                    <li><a href="book/how-do-i.html#-handle-ctrl-">… handle ctrl-?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#system--os">System / OS</a>
                   <ul>
@@ -281,6 +284,10 @@
               <ul>
                 <li><a href="book/modern-rust.html#let-else">`let else`</a>
                 <li><a href="book/modern-rust.html#topics">Topics</a>
+              </ul>
+            <li><a href="book/concept-index.html">Rust Concept Index</a>
+              <ul>
+                <li><a href="book/concept-index.html#extension-trait">Extension Trait</a>
               </ul>
             <li><a href="book/radar.html">The Rustmax Radar</a>
               <ul>
@@ -378,7 +385,6 @@
             <li><a href="api/rustmax/ahash/index.html">ahash</a>
             <li><a href="api/rustmax/anyhow/index.html">anyhow</a>
             <li><a href="api/rustmax/axum/index.html">axum</a>
-            <li><a href="api/rustmax/backtrace/index.html">backtrace</a>
             <li><a href="api/rustmax/base64/index.html">base64</a>
             <li><a href="api/rustmax/bindgen/index.html">bindgen</a>
             <li><a href="api/rustmax/bitflags/index.html">bitflags</a>
@@ -388,7 +394,7 @@
             <li><a href="api/rustmax/cfg_if/index.html">cfg-if</a>
             <li><a href="api/rustmax/chrono/index.html">chrono</a>
             <li><a href="api/rustmax/clap/index.html">clap</a>
-            <li><a href="api/rustmax/cpal/index.html">cpal</a>
+            <li><a href="api/rustmax/comrak/index.html">comrak</a>
             <li><a href="api/rustmax/crossbeam/index.html">crossbeam</a>
             <li><a href="api/rustmax/ctrlc/index.html">ctrlc</a>
             <li><a href="api/rustmax/cxx/index.html">cxx</a>
@@ -397,20 +403,29 @@
             <li><a href="api/rustmax/env_logger/index.html">env_logger</a>
             <li><a href="api/rustmax/extension_trait/index.html">extension-trait</a>
             <li><a href="api/rustmax/extras/index.html">extras</a>
+            <li><a href="api/rustmax/flate2/index.html">flate2</a>
             <li><a href="api/rustmax/futures/index.html">futures</a>
+            <li><a href="api/rustmax/glob/index.html">glob</a>
+            <li><a href="api/rustmax/guide/index.html">guide</a>
             <li><a href="api/rustmax/hex/index.html">hex</a>
             <li><a href="api/rustmax/http/index.html">http</a>
             <li><a href="api/rustmax/hyper/index.html">hyper</a>
+            <li><a href="api/rustmax/ignore/index.html">ignore</a>
+            <li><a href="api/rustmax/image/index.html">image</a>
+            <li><a href="api/rustmax/indicatif/index.html">indicatif</a>
             <li><a href="api/rustmax/itertools/index.html">itertools</a>
             <li><a href="api/rustmax/jiff/index.html">jiff</a>
             <li><a href="api/rustmax/json5/index.html">json5</a>
             <li><a href="api/rustmax/libc/index.html">libc</a>
             <li><a href="api/rustmax/libm/index.html">libm</a>
             <li><a href="api/rustmax/log/index.html">log</a>
+            <li><a href="api/rustmax/memchr/index.html">memchr</a>
             <li><a href="api/rustmax/mime/index.html">mime</a>
             <li><a href="api/rustmax/nom/index.html">nom</a>
+            <li><a href="api/rustmax/notify/index.html">notify</a>
             <li><a href="api/rustmax/num_bigint/index.html">num-bigint</a>
             <li><a href="api/rustmax/num_enum/index.html">num_enum</a>
+            <li><a href="api/rustmax/powerletters/index.html">powerletters</a>
             <li><a href="api/rustmax/prelude/index.html">prelude</a>
             <li><a href="api/rustmax/proc_macro2/index.html">proc-macro2</a>
             <li><a href="api/rustmax/proptest/index.html">proptest</a>
@@ -421,7 +436,6 @@
             <li><a href="api/rustmax/rayon/index.html">rayon</a>
             <li><a href="api/rustmax/regex/index.html">regex</a>
             <li><a href="api/rustmax/reqwest/index.html">reqwest</a>
-            <li><a href="api/rustmax/rodio/index.html">rodio</a>
             <li><a href="api/rustmax/rustyline/index.html">rustyline</a>
             <li><a href="api/rustmax/semver/index.html">semver</a>
             <li><a href="api/rustmax/serde/index.html">serde</a>
@@ -441,6 +455,20 @@
             <li><a href="api/rustmax/url/index.html">url</a>
             <li><a href="api/rustmax/walkdir/index.html">walkdir</a>
             <li><a href="api/rustmax/xshell/index.html">xshell</a>
+            <li><a href="api/rustmax/zip/index.html">zip</a>
+          </ul>
+        </li>
+        <li>
+          <a href="news.html">Rustmax News</a>
+          <ul>
+            <li><a href="news.html#rustmax-0.0.10">Rustmax 0.0.10 Released</a>
+            <li><a href="news.html#rustmax-0.0.9">Rustmax 0.0.9 Released</a>
+            <li><a href="news.html#docs-and-api-fixes">Documentation and API doc fixes</a>
+            <li><a href="news.html#search-improvements">Search improvements</a>
+            <li><a href="news.html#search">New search feature</a>
+            <li><a href="news.html#rustmax-0.0.8">Rustmax 0.0.8 Released</a>
+            <li><a href="news.html#rustmax-0.0.7">Rustmax 0.0.7 Released</a>
+            <li><a href="news.html#rustmax-0.0.6">Rustmax 0.0.6 Released</a>
           </ul>
         </li>
       </ul>
