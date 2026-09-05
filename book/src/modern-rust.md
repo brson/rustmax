@@ -4,7 +4,7 @@
 
 ## topics
 
-See [graveyard](radar.md#user-content-graveyard).
+See [graveyard](radar.md#graveyard).
 
 - static assertions
 - num cpus

@@ -415,6 +415,11 @@ fn markdown_to_html(markdown: &str, rule_links: Option<(&Spec, &str)>) -> String
     options.extension.autolink = true;
     options.extension.tasklist = true;
     options.extension.footnotes = true;
+    // Give headings ids so links can target sections. The empty prefix keeps
+    // the GitHub slug without GitHub's `user-content-` namespacing, which
+    // exists to avoid colliding with GitHub's own page chrome and means
+    // nothing here.
+    options.extension.header_id_prefix = Some(String::new());
     // Book sources are trusted and hand-write HTML for things markdown can't
     // express. Without this comrak replaces each block with a comment saying
     // the raw HTML was omitted. mdbook passes it through too.
@@ -910,5 +915,53 @@ mod tests {
     fn test_md_links_in_code_are_left_alone() {
         let html = markdown_to_html("```text\n<a href=\"foo.md\">x</a>\n```\n", None);
         assert!(html.contains("foo.md"), "{html}");
+    }
+
+    #[test]
+    fn test_headings_get_ids() {
+        let html = markdown_to_html("## Graveyard\n", None);
+        assert!(html.contains(r#"<h2 id="graveyard">"#), "{html}");
+    }
+
+    /// GitHub namespaces ids to avoid colliding with its own page chrome.
+    /// We render the whole page, so the prefix is just noise, and the
+    /// sitemap links without it.
+    #[test]
+    fn test_heading_ids_are_not_github_prefixed() {
+        let html = markdown_to_html("## Graveyard\n", None);
+        assert!(!html.contains("user-content-"), "{html}");
+    }
+
+    /// Slugs follow the GitHub rules the sitemap was written against:
+    /// keep letters, numbers, `_` and `-`, drop everything else,
+    /// spaces become hyphens.
+    #[test]
+    fn test_heading_slugs_match_the_github_rules() {
+        for (heading, id) in [
+            ("### 🌞 `cargo-edit`", "-cargo-edit"),
+            ("## Must know URLS 🤯", "must-know-urls-"),
+            ("## Assert `Send` / `Sync`", "assert-send--sync"),
+            ("### Use `rustfmt::skip`", "use-rustfmtskip"),
+            ("### … create a fast `HashMap`?", "-create-a-fast-hashmap"),
+            ("## Logging - `log` and `env_logger`", "logging---log-and-env_logger"),
+        ] {
+            let html = markdown_to_html(&format!("{heading}\n"), None);
+            assert!(html.contains(&format!("id=\"{id}\"")), "{heading} -> {html}");
+        }
+    }
+
+    #[test]
+    fn test_repeated_headings_get_distinct_ids() {
+        let html = markdown_to_html("## Topics\n\n## Topics\n", None);
+        assert!(html.contains(r#"id="topics""#), "{html}");
+        assert!(html.contains(r#"id="topics-1""#), "{html}");
+    }
+
+    /// `maintainers.md` writes its own anchors, which must keep working
+    /// alongside the generated ones.
+    #[test]
+    fn test_hand_written_anchors_survive() {
+        let html = markdown_to_html("## <a id=\"dtolnay\"></a> David Tolnay\n", None);
+        assert!(html.contains(r#"<a id="dtolnay"></a>"#), "{html}");
     }
 }

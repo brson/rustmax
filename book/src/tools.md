@@ -4,37 +4,37 @@
 
 <!-- order of tools here is same is in library.html -->
 - Standard Rust tools:
-  [`cargo`](#user-content--cargo)
-  [`rustc`](#user-content--rustc)
-  [`rustup`](#user-content--rustup)
-  [`rustdoc`](#user-content--rustdoc)
-  [`rustfmt`](#user-content--rustfmt)
-  [`clippy`](#user-content--clippy)
-  [`just`](#user-content--just)
-  [`mdbook`](#user-content--mdbook)
-  [`bindgen`](#user-content--bindgen)
-  [`miri`](#user-content--miri)
+  [`cargo`](#-cargo)
+  [`rustc`](#-rustc)
+  [`rustup`](#-rustup)
+  [`rustdoc`](#-rustdoc)
+  [`rustfmt`](#-rustfmt)
+  [`clippy`](#-clippy)
+  [`just`](#-just)
+  [`mdbook`](#-mdbook)
+  [`bindgen`](#-bindgen)
+  [`miri`](#-miri)
 - Cargo plugins:
-  [`cargo-edit`](#user-content--cargo-edit)
-  [`cargo-clean-all`](#user-content--cargo-clean-all)
-  [`cargo-deny`](#user-content--cargo-deny)
-  [`cargo-license`](#user-content--cargo-license)
-  [`cargo-audit`](#user-content--cargo-audit)
-  [`cargo-generate`](#user-content--cargo-generate)
+  [`cargo-edit`](#-cargo-edit)
+  [`cargo-clean-all`](#-cargo-clean-all)
+  [`cargo-deny`](#-cargo-deny)
+  [`cargo-license`](#-cargo-license)
+  [`cargo-audit`](#-cargo-audit)
+  [`cargo-generate`](#-cargo-generate)
 - More Rust tools:
-  [`clippy-control`](#user-content--clippy-control)
+  [`clippy-control`](#-clippy-control)
 - Non-Rust tools for Rust:
-  [`mold`](#user-content--mold)
+  [`mold`](#-mold)
 - More general developer tools:
-  [`ripgrep`](#user-content--ripgrep)
-  [`tokei`](#user-content--tokei)
-  [`basic-http-server`](#user-content--basic-http-server)
-  [`gist`](#user-content--gist)
-  [`jaq`](#user-content--jaq)
-  [`jsonxf`](#user-content--jsonxf)
-  [`fd`](#user-content--fd)
-  [`sd`](#user-content--sd)
-  [`dust`](#user-content--dust)
+  [`ripgrep`](#-ripgrep)
+  [`tokei`](#-tokei)
+  [`basic-http-server`](#-basic-http-server)
+  [`gist`](#-gist)
+  [`jaq`](#-jaq)
+  [`jsonxf`](#-jsonxf)
+  [`fd`](#-fd)
+  [`sd`](#-sd)
+  [`dust`](#-dust)
 
 ---
 
@@ -429,7 +429,7 @@ cargo install jsonxf
 ### 🌞 `fd`
 
 Find files recursively. A simple, fast and user-friendly alternative to 'find'.
-Pair with [`sd`](#user-content--sd) to search and replace.
+Pair with [`sd`](#-sd) to search and replace.
 
 ```
 cargo install fd-find
@@ -442,7 +442,7 @@ cargo install fd-find
 ### 🌞 `sd`
 
 Intuitive find & replace CLI, `sed` alternative,
-pair with [`fd`](#user-content--fd).
+pair with [`fd`](#-fd).
 
 ```
 cargo install sd
