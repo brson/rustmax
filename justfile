@@ -107,6 +107,11 @@ export-search-index:
 search query: export-search-index
     cargo run -p rustmax-cli -- search {{query}}
 
+# Recompute the search parity corpus from www/search-core.js.
+# Only after a deliberate algorithm change; see the script's comments.
+gen-search-corpus:
+    node crates/rustmax-cli/tests/gen-search-corpus.js
+
 doc-www: doc-library export-search-index
     mkdir -p out/
     cp -r www/* out/

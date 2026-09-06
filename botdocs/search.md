@@ -13,19 +13,62 @@ src/topics/*.toml          hand-written topics: name, aliases, category, brief
   v
 work/search-index.json     115 entries, ~7.8 KB gzipped, copied to out/
   |
-  +--> www/search-core.js  matching and ranking, shared by browser and CLI
-        |                    |
-        |                    +--> www/search.js       dropdown UI on index.html
-        |                    +--> www/search-cli.js   node wrapper
-        |                           ^
-        |                           +-- `rustmax search` spawns node against it
+  +--> www/search-core.js            matching and ranking, browser
+  |      +--> www/search.js          dropdown UI on index.html
+  |
+  +--> crates/rustmax-cli/src/search.rs   matching and ranking, CLI
+         +--> `rustmax search`
 ```
 
+There are two implementations of one algorithm, one per language. The CLI
+used to shell out to node against `www/search-cli.js`; it no longer does,
+so nothing in the product needs node.
+
 `search-core.js` is written in ES5 with `var` so it loads as a plain
-`<script>` in the browser and via `require()` in node. `search.js` is
+`<script>` in the browser and via `require()` under node. `search.js` is
 browser-only and uses modern syntax.
 
 Categories are `crate`, `book`, `std`, defined in `src/topics/categories.toml`.
+
+
+## Parity between the two implementations
+
+`crates/rustmax-cli/tests/search-corpus.json` is the contract. It carries a
+small fixture index built to exercise the awkward cases — cross-category
+ties, the stable-sort order of equal scores, the word-boundary rule, the
+20-result cap, aliases containing markup — plus the expected results for 42
+queries.
+
+Both sides check themselves against it, and both run under `cargo test`:
+
+- `search.rs`'s own tests compare the Rust results to the corpus.
+- `the_javascript_implementation_matches_the_corpus` shells out to node to
+  run `tests/search-parity.js`, which does the same for `search-core.js`.
+  It skips when node is absent. Both CI runners ship node, so CI enforces it.
+
+Verified when this was set up: changing a category weight in either
+implementation alone fails that implementation's check.
+
+To change the algorithm deliberately: change both sides, run
+`just gen-search-corpus` (needs node), and review the corpus diff. Do not
+regenerate to silence a failure — a diff there is exactly the drift the
+corpus exists to catch.
+
+Two things make parity practical, and both are worth preserving:
+
+- **The index is ASCII.** Case folding is the one place where JS and Rust
+  can genuinely disagree, and ASCII lowercasing is identical in both. A test
+  asserts the corpus index stays ASCII. Adding a non-ASCII alias reopens
+  the question.
+- **Both languages sort stably and use IEEE 754 doubles**, so equal scores
+  keep their input order on both sides and arithmetic agrees bit for bit.
+
+One wrinkle: `serde_json` is built here without `float_roundtrip`, so its
+fast float parser can land one ULP off a literal in the corpus. Scores are
+therefore compared to a tolerance of 1e-9, while ids, order, match types
+and matched aliases are compared exactly. Ordering is the observable
+behaviour, and a score change large enough to matter shows up as a
+reordering.
 
 
 ## Paths
@@ -74,18 +117,19 @@ Without it, `Box<dyn Error>` is parsed as a tag and silently disappears.
 
 Reviewed 2026-09-06. Fixed then: broken std paths, missing escaping,
 display order ignoring score, no path validation, cli tests not running.
+Then: the CLI's node dependency, replaced by the Rust port above.
 
 Still outstanding, roughly by value:
 
 - **No multi-word matching.** The query is matched as one literal string
   against each alias, so `"hash map"` returns nothing while `"HashMap"`
   works. Needs tokenizing plus a coverage-based score.
-- **No tests for `search-core.js`.** There is no JS test runner in the repo
-  and no golden-query corpus. The whole matching and ranking algorithm is
-  unverified. Worth porting the algorithm to Rust so it can be tested with
-  the rest of the suite, keeping the JS as a thin mirror.
-- **`rustmax search` needs node** and repo-relative default paths, so it
-  only works from a checkout with node installed. CI never runs it.
+- **The corpus only pins behaviour, not quality.** It is generated from the
+  current implementation, so it locks in the present ranking, including its
+  flaws. It catches drift; it does not say the ranking is good.
+- **`rustmax search` still defaults to a repo-relative index path**
+  (`work/search-index.json`), so it only really works from a checkout.
+  Embedding the index in the binary would fix that.
 - **Word-prefix substring matches are unweighted**, so `"cli"` matches
   reqwest via "http client" and `"ser"` matches axum via "web server", each
   scored the same as a full-word hit.

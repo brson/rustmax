@@ -6,6 +6,7 @@ mod library_gen;
 mod linkcheck;
 mod moldman;
 mod rmxbook;
+mod search;
 mod tools;
 mod topics;
 
@@ -258,10 +259,6 @@ struct CliCmdSearch {
     /// Path to search-index.json.
     #[arg(short, long, default_value = "work/search-index.json")]
     index: String,
-
-    /// Path to the search-cli.js script.
-    #[arg(long, default_value = "www/search-cli.js")]
-    script: String,
 }
 
 #[derive(clap::Args)]
@@ -650,25 +647,6 @@ impl CliCmdExportSearchIndex {
     }
 }
 
-/// A single search result deserialized from the Node.js search output.
-#[derive(serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct JsSearchResult {
-    entry: JsSearchEntry,
-    score: f64,
-    matched_text: Option<String>,
-    match_type: String,
-}
-
-#[derive(serde::Deserialize)]
-struct JsSearchEntry {
-    id: String,
-    name: String,
-    category: String,
-    brief: String,
-    path: Option<String>,
-}
-
 /// A search result for TOML serialization.
 #[derive(serde::Serialize)]
 struct SearchResult {
@@ -703,49 +681,25 @@ impl CliCmdSearch {
             );
         }
 
-        let script_path = Path::new(&self.script);
-        if !script_path.exists() {
-            bail!("search script not found at {}", script_path.display());
-        }
+        let index = search::load_index(index_path)?;
+        let results = search::search(&index, &query);
 
-        // Spawn node to run the search.
-        let output = std::process::Command::new("node")
-            .arg(script_path)
-            .arg(index_path)
-            .arg(&query)
-            .output()
-            .context("failed to run node; is Node.js installed?")?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            bail!("node search failed: {}", stderr.trim());
-        }
-
-        let stdout = String::from_utf8(output.stdout)
-            .context("node output was not valid utf-8")?;
-
-        let js_results: Vec<JsSearchResult> = serde_json::from_str(&stdout)
-            .context("failed to parse search results from node")?;
-
-        if js_results.is_empty() {
+        if results.is_empty() {
             println!("No results for \"{}\".", query);
             return Ok(());
         }
 
         // Convert to TOML-friendly output.
-        let results: Vec<SearchResult> = js_results
+        let results: Vec<SearchResult> = results
             .into_iter()
-            .map(|r| {
-                let match_info = r.matched_text.map(|t| format!("aka \"{}\"", t));
-                SearchResult {
-                    name: r.entry.name,
-                    category: r.entry.category,
-                    brief: r.entry.brief,
-                    path: r.entry.path,
-                    score: r.score,
-                    match_type: r.match_type,
-                    match_info,
-                }
+            .map(|r| SearchResult {
+                name: r.entry.name,
+                category: r.entry.category,
+                brief: r.entry.brief,
+                path: r.entry.path,
+                score: r.score,
+                match_type: r.match_type.as_str().to_string(),
+                match_info: search::format_match_info(r.matched_text.as_deref()),
             })
             .collect();
 

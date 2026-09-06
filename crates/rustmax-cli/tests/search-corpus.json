@@ -1,0 +1,1098 @@
+{
+  "comment": [
+    "Shared parity corpus for the two search implementations.",
+    "www/search-core.js runs in the browser; crates/rustmax-cli/src/search.rs runs in the CLI.",
+    "Both must produce exactly these results. Regenerate with `just gen-search-corpus`."
+  ],
+  "index": [
+    {
+      "id": "tokio",
+      "name": "tokio",
+      "searchable": "tokio|async runtime|tokio::spawn|timer",
+      "category": "crate",
+      "brief": "Asynchronous runtime for Rust",
+      "path": "api/rustmax/tokio/index.html"
+    },
+    {
+      "id": "toml-crate",
+      "name": "toml",
+      "searchable": "toml|toml crate|config file",
+      "category": "crate",
+      "brief": "TOML serialization",
+      "path": "api/rustmax/toml/index.html"
+    },
+    {
+      "id": "std-future",
+      "name": "std::future",
+      "searchable": "std::future|async|Future trait|await",
+      "category": "std",
+      "brief": "The Future trait",
+      "path": "api/core/future/index.html"
+    },
+    {
+      "id": "trpl",
+      "name": "The Rust Programming Language",
+      "searchable": "The Rust Programming Language|TRPL|The Book|async",
+      "category": "book",
+      "brief": "The official Rust book",
+      "path": "library/trpl/"
+    },
+    {
+      "id": "std-time",
+      "name": "std::time",
+      "searchable": "std::time|time module|Duration|runtime cost",
+      "category": "std",
+      "brief": "Time measurement",
+      "path": "api/std/time/index.html"
+    },
+    {
+      "id": "std-error",
+      "name": "std::error",
+      "searchable": "std::error|Error trait|Box<dyn Error>|error handling",
+      "category": "std",
+      "brief": "The Error trait",
+      "path": "api/core/error/index.html"
+    },
+    {
+      "id": "anyhow",
+      "name": "anyhow",
+      "searchable": "anyhow|error handling crate|bail|#[error]",
+      "category": "crate",
+      "brief": "Flexible error handling",
+      "path": "api/rustmax/anyhow/index.html"
+    },
+    {
+      "id": "std-option",
+      "name": "std::option",
+      "searchable": "std::option|Option|unwrap",
+      "category": "std",
+      "brief": "The Option type",
+      "path": "api/core/option/index.html"
+    },
+    {
+      "id": "std-result",
+      "name": "std::result",
+      "searchable": "std::result|Result|unwrap",
+      "category": "std",
+      "brief": "The Result type",
+      "path": "api/core/result/index.html"
+    },
+    {
+      "id": "some-tool",
+      "name": "ripgrep",
+      "searchable": "ripgrep|rg|grep replacement",
+      "category": "tool",
+      "brief": "Recursive search tool"
+    },
+    {
+      "id": "empty-alias",
+      "name": "widget",
+      "searchable": "widget||gadget",
+      "category": "crate",
+      "brief": "A widget"
+    },
+    {
+      "id": "pathless",
+      "name": "orphan",
+      "searchable": "orphan|nothing here",
+      "category": "unknown",
+      "brief": "No page"
+    },
+    {
+      "id": "cap-00",
+      "name": "capped00",
+      "searchable": "capped00|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 0"
+    },
+    {
+      "id": "cap-01",
+      "name": "capped01",
+      "searchable": "capped01|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 1"
+    },
+    {
+      "id": "cap-02",
+      "name": "capped02",
+      "searchable": "capped02|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 2"
+    },
+    {
+      "id": "cap-03",
+      "name": "capped03",
+      "searchable": "capped03|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 3"
+    },
+    {
+      "id": "cap-04",
+      "name": "capped04",
+      "searchable": "capped04|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 4"
+    },
+    {
+      "id": "cap-05",
+      "name": "capped05",
+      "searchable": "capped05|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 5"
+    },
+    {
+      "id": "cap-06",
+      "name": "capped06",
+      "searchable": "capped06|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 6"
+    },
+    {
+      "id": "cap-07",
+      "name": "capped07",
+      "searchable": "capped07|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 7"
+    },
+    {
+      "id": "cap-08",
+      "name": "capped08",
+      "searchable": "capped08|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 8"
+    },
+    {
+      "id": "cap-09",
+      "name": "capped09",
+      "searchable": "capped09|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 9"
+    },
+    {
+      "id": "cap-10",
+      "name": "capped10",
+      "searchable": "capped10|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 10"
+    },
+    {
+      "id": "cap-11",
+      "name": "capped11",
+      "searchable": "capped11|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 11"
+    },
+    {
+      "id": "cap-12",
+      "name": "capped12",
+      "searchable": "capped12|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 12"
+    },
+    {
+      "id": "cap-13",
+      "name": "capped13",
+      "searchable": "capped13|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 13"
+    },
+    {
+      "id": "cap-14",
+      "name": "capped14",
+      "searchable": "capped14|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 14"
+    },
+    {
+      "id": "cap-15",
+      "name": "capped15",
+      "searchable": "capped15|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 15"
+    },
+    {
+      "id": "cap-16",
+      "name": "capped16",
+      "searchable": "capped16|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 16"
+    },
+    {
+      "id": "cap-17",
+      "name": "capped17",
+      "searchable": "capped17|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 17"
+    },
+    {
+      "id": "cap-18",
+      "name": "capped18",
+      "searchable": "capped18|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 18"
+    },
+    {
+      "id": "cap-19",
+      "name": "capped19",
+      "searchable": "capped19|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 19"
+    },
+    {
+      "id": "cap-20",
+      "name": "capped20",
+      "searchable": "capped20|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 20"
+    },
+    {
+      "id": "cap-21",
+      "name": "capped21",
+      "searchable": "capped21|capacity test",
+      "category": "crate",
+      "brief": "Cap fixture 21"
+    }
+  ],
+  "cases": [
+    {
+      "query": "tokio",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "TOKIO",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "tok",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "t",
+      "results": [
+        {
+          "id": "std-time",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "time module"
+        },
+        {
+          "id": "tokio",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "toml-crate",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "trpl",
+          "score": 0.9,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "std-future",
+          "score": 0.66,
+          "matchType": "substring",
+          "matchedText": "Future trait"
+        },
+        {
+          "id": "std-error",
+          "score": 0.66,
+          "matchType": "substring",
+          "matchedText": "Error trait"
+        },
+        {
+          "id": "cap-00",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-01",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-02",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-03",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-04",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-05",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-06",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-07",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-08",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-09",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-10",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-11",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-12",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-13",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "capacity test"
+        }
+      ]
+    },
+    {
+      "query": "toml",
+      "results": [
+        {
+          "id": "toml-crate",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "toml crate",
+      "results": [
+        {
+          "id": "toml-crate",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "toml crate"
+        }
+      ]
+    },
+    {
+      "query": "config file",
+      "results": [
+        {
+          "id": "toml-crate",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "config file"
+        }
+      ]
+    },
+    {
+      "query": "async",
+      "results": [
+        {
+          "id": "std-future",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "async"
+        },
+        {
+          "id": "trpl",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": "async"
+        },
+        {
+          "id": "tokio",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": "async runtime"
+        }
+      ]
+    },
+    {
+      "query": "async runtime",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "async runtime"
+        }
+      ]
+    },
+    {
+      "query": "asyn",
+      "results": [
+        {
+          "id": "std-future",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "async"
+        },
+        {
+          "id": "tokio",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": "async runtime"
+        },
+        {
+          "id": "trpl",
+          "score": 0.9,
+          "matchType": "prefix",
+          "matchedText": "async"
+        }
+      ]
+    },
+    {
+      "query": "time",
+      "results": [
+        {
+          "id": "std-time",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "time module"
+        },
+        {
+          "id": "tokio",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": "timer"
+        }
+      ]
+    },
+    {
+      "query": "runtime",
+      "results": [
+        {
+          "id": "std-time",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "runtime cost"
+        },
+        {
+          "id": "tokio",
+          "score": 0.63,
+          "matchType": "substring",
+          "matchedText": "async runtime"
+        }
+      ]
+    },
+    {
+      "query": "runtime cost",
+      "results": [
+        {
+          "id": "std-time",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "runtime cost"
+        }
+      ]
+    },
+    {
+      "query": "ime",
+      "results": []
+    },
+    {
+      "query": "error handling",
+      "results": [
+        {
+          "id": "std-error",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "error handling"
+        },
+        {
+          "id": "anyhow",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": "error handling crate"
+        }
+      ]
+    },
+    {
+      "query": "error",
+      "results": [
+        {
+          "id": "std-error",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "Error trait"
+        },
+        {
+          "id": "anyhow",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": "error handling crate"
+        }
+      ]
+    },
+    {
+      "query": "Box<dyn Error>",
+      "results": [
+        {
+          "id": "std-error",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "Box<dyn Error>"
+        }
+      ]
+    },
+    {
+      "query": "box",
+      "results": [
+        {
+          "id": "std-error",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "Box<dyn Error>"
+        }
+      ]
+    },
+    {
+      "query": "#[error]",
+      "results": [
+        {
+          "id": "anyhow",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "#[error]"
+        }
+      ]
+    },
+    {
+      "query": "unwrap",
+      "results": [
+        {
+          "id": "std-option",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "unwrap"
+        },
+        {
+          "id": "std-result",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "unwrap"
+        }
+      ]
+    },
+    {
+      "query": "Option",
+      "results": [
+        {
+          "id": "std-option",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "Option"
+        }
+      ]
+    },
+    {
+      "query": "option",
+      "results": [
+        {
+          "id": "std-option",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "Option"
+        }
+      ]
+    },
+    {
+      "query": "rg",
+      "results": [
+        {
+          "id": "some-tool",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": "rg"
+        }
+      ]
+    },
+    {
+      "query": "ripgrep",
+      "results": [
+        {
+          "id": "some-tool",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "grep",
+      "results": [
+        {
+          "id": "some-tool",
+          "score": 0.9,
+          "matchType": "prefix",
+          "matchedText": "grep replacement"
+        }
+      ]
+    },
+    {
+      "query": "widget",
+      "results": [
+        {
+          "id": "empty-alias",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "gadget",
+      "results": [
+        {
+          "id": "empty-alias",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "gadget"
+        }
+      ]
+    },
+    {
+      "query": "gad",
+      "results": [
+        {
+          "id": "empty-alias",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": "gadget"
+        }
+      ]
+    },
+    {
+      "query": "orphan",
+      "results": [
+        {
+          "id": "pathless",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "nothing here",
+      "results": [
+        {
+          "id": "pathless",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": "nothing here"
+        }
+      ]
+    },
+    {
+      "query": "capacity test",
+      "results": [
+        {
+          "id": "cap-00",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-01",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-02",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-03",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-04",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-05",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-06",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-07",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-08",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-09",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-10",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-11",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-12",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-13",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-14",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-15",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-16",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-17",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-18",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        },
+        {
+          "id": "cap-19",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "capacity test"
+        }
+      ]
+    },
+    {
+      "query": "capped",
+      "results": [
+        {
+          "id": "cap-00",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-01",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-02",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-03",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-04",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-05",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-06",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-07",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-08",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-09",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-10",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-11",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-12",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-13",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-14",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-15",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-16",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-17",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-18",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "cap-19",
+          "score": 0.9450000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "the book",
+      "results": [
+        {
+          "id": "trpl",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": "The Book"
+        }
+      ]
+    },
+    {
+      "query": "trpl",
+      "results": [
+        {
+          "id": "trpl",
+          "score": 1,
+          "matchType": "exact",
+          "matchedText": "TRPL"
+        }
+      ]
+    },
+    {
+      "query": "",
+      "results": []
+    },
+    {
+      "query": " ",
+      "results": []
+    },
+    {
+      "query": "   ",
+      "results": []
+    },
+    {
+      "query": "|",
+      "results": []
+    },
+    {
+      "query": "zzzznomatch",
+      "results": []
+    },
+    {
+      "query": "std::",
+      "results": [
+        {
+          "id": "std-future",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "std-time",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "std-error",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "std-option",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "std-result",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "std::option",
+      "results": [
+        {
+          "id": "std-option",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "future",
+      "results": [
+        {
+          "id": "std-future",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": "Future trait"
+        }
+      ]
+    }
+  ]
+}
