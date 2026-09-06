@@ -1,10 +1,10 @@
 //! Asset compression using flate2.
 
-use rustmax::prelude::*;
-use rustmax::flate2::write::GzEncoder;
-use rustmax::flate2::Compression;
-use rustmax::walkdir::WalkDir;
-use rustmax::log::{info, debug};
+use rmx::prelude::*;
+use rmx::flate2::write::GzEncoder;
+use rmx::flate2::Compression;
+use rmx::walkdir::WalkDir;
+use rmx::log::{info, debug};
 use std::io::Write;
 use std::path::Path;
 use std::fs;
@@ -108,7 +108,7 @@ fn compress_file(path: &Path) -> Result<u64> {
 
 /// Decompress gzip content.
 pub fn decompress(data: &[u8]) -> Result<Vec<u8>> {
-    use rustmax::flate2::read::GzDecoder;
+    use rmx::flate2::read::GzDecoder;
     use std::io::Read;
 
     let mut decoder = GzDecoder::new(data);

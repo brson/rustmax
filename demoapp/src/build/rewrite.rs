@@ -1,8 +1,8 @@
 //! URL and content rewriting using regex.
 
-use rustmax::prelude::*;
-use rustmax::regex;
-use rustmax::regex::{Regex, Captures};
+use rmx::prelude::*;
+use rmx::regex;
+use rmx::regex::{Regex, Captures};
 use std::borrow::Cow;
 
 /// URL rewriter for transforming links in content.

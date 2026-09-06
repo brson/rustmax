@@ -1,8 +1,8 @@
 //! Text processing utilities using memchr and unicode-segmentation.
 
-use rustmax::prelude::*;
-use rustmax::memchr::{memchr, memchr2, memchr3, memchr_iter, memmem};
-use rustmax::unicode_segmentation::UnicodeSegmentation;
+use rmx::prelude::*;
+use rmx::memchr::{memchr, memchr2, memchr3, memchr_iter, memmem};
+use rmx::unicode_segmentation::UnicodeSegmentation;
 
 /// Fast byte search using memchr.
 pub fn find_byte(haystack: &[u8], needle: u8) -> Option<usize> {

@@ -1,59 +1,87 @@
 //! Error types for Anthology.
+//!
+//! These use `derive_more` rather than `thiserror`.
+//! `thiserror` generates `::thiserror` paths,
+//! which resolve only against the extern prelude,
+//! so it is the one derive crate that cannot be reached through `rustmax`.
+//! `derive_more` covers the same ground and does work through the re-export,
+//! which lets Anthology depend on `rustmax` and nothing else.
 
-use thiserror::Error;
+use rmx::prelude::*;
 use std::path::PathBuf;
 
 /// The result type for Anthology operations.
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Errors that can occur in Anthology.
-#[derive(Debug, Error)]
+#[rmx::derive(Debug, Display, derive_more::Error, From)]
 pub enum Error {
-    #[error("IO error: {0}")]
+    #[display("IO error: {_0}")]
     Io(#[from] std::io::Error),
 
-    #[error("Configuration error: {message}")]
+    #[display("configuration error: {message}")]
+    #[from(ignore)]
     Config { message: String },
 
-    #[error("Failed to parse config file {path}: {source}")]
+    #[display("failed to parse config file {}: {source}", path.display())]
+    #[from(ignore)]
     ConfigParse {
         path: PathBuf,
-        #[source]
-        source: rustmax::toml::de::Error,
+        source: rmx::toml::de::Error,
     },
 
-    #[error("Collection not found at {path}")]
+    #[display("failed to parse config file {}: {source}", path.display())]
+    #[from(ignore)]
+    ConfigParseJson5 {
+        path: PathBuf,
+        source: rmx::json5::Error,
+    },
+
+    #[display("collection not found at {}", path.display())]
+    #[from(ignore)]
     CollectionNotFound { path: PathBuf },
 
-    #[error("Document error in {path}: {message}")]
+    #[display("document error in {}: {message}", path.display())]
+    #[from(ignore)]
     Document { path: PathBuf, message: String },
 
-    #[error("Frontmatter parse error in {path}: {message}")]
+    #[display("frontmatter parse error in {}: {message}", path.display())]
+    #[from(ignore)]
     Frontmatter { path: PathBuf, message: String },
 
-    #[error("Template error: {0}")]
-    Template(#[from] rustmax::tera::Error),
+    #[display("template error: {_0}")]
+    Template(#[from] rmx::tera::Error),
 
-    #[error("JSON error: {0}")]
-    Json(#[from] rustmax::serde_json::Error),
+    #[display("JSON error: {_0}")]
+    Json(#[from] rmx::serde_json::Error),
 
-    #[error("Directory walk error: {0}")]
-    WalkDir(#[from] rustmax::walkdir::Error),
+    #[display("directory walk error: {_0}")]
+    WalkDir(#[from] rmx::walkdir::Error),
 
-    #[error("Ignore pattern error: {0}")]
-    Ignore(#[from] rustmax::ignore::Error),
+    #[display("ignore pattern error: {_0}")]
+    Ignore(#[from] rmx::ignore::Error),
 
-    #[error("Build error: {message}")]
+    #[display("archive error: {_0}")]
+    Zip(#[from] rmx::zip::result::ZipError),
+
+    #[display("build error: {message}")]
+    #[from(ignore)]
     Build { message: String },
 
-    #[error("Server error: {message}")]
+    #[display("{count} problem{} found", if *count == 1 { "" } else { "s" })]
+    #[from(ignore)]
+    Check { count: usize },
+
+    #[display("server error: {message}")]
+    #[from(ignore)]
     Server { message: String },
 
-    #[error("Remote fetch error for {url}: {message}")]
+    #[display("remote fetch error for {url}: {message}")]
+    #[from(ignore)]
     Remote { url: String, message: String },
 
-    #[error("{0}")]
-    Other(#[from] rustmax::anyhow::Error),
+    #[display("{_0}")]
+    Other(#[from] rmx::anyhow::Error),
 }
 
 impl Error {
@@ -75,6 +103,10 @@ impl Error {
             path: path.into(),
             message: message.into(),
         }
+    }
+
+    pub fn check(count: usize) -> Self {
+        Self::Check { count }
     }
 
     pub fn build(message: impl Into<String>) -> Self {

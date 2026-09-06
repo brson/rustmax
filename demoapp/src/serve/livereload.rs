@@ -3,18 +3,18 @@
 //! Watches for file changes and broadcasts reload messages to connected clients.
 //! Uses the notify crate for native filesystem event notifications.
 
-use rustmax::prelude::*;
-use rustmax::axum::{
+use rmx::prelude::*;
+use rmx::axum::{
     extract::{
         ws::{Message, WebSocket, WebSocketUpgrade},
         State,
     },
     response::Response,
 };
-use rustmax::tokio::sync::broadcast;
-use rustmax::notify::{self, Watcher, RecursiveMode, EventKind, event::{CreateKind, ModifyKind, RemoveKind}};
-use rustmax::log::{debug, info, warn};
-use std::path::PathBuf;
+use rmx::tokio::sync::broadcast;
+use rmx::notify::{self, Watcher, RecursiveMode, EventKind, event::{CreateKind, ModifyKind, RemoveKind}};
+use rmx::log::{debug, info, warn};
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 /// Type of change detected.
@@ -89,7 +89,7 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<LiveReloadState>) {
     }
 
     loop {
-        rustmax::tokio::select! {
+        rmx::tokio::select! {
             // Forward reload events to client.
             result = receiver.recv() => {
                 match result {
@@ -139,7 +139,7 @@ impl FileWatcher {
     }
 
     /// Determine change type from a file path.
-    fn classify_path(path: &PathBuf) -> ChangeType {
+    fn classify_path(path: &Path) -> ChangeType {
         let ext = path
             .extension()
             .and_then(|e| e.to_str())
@@ -160,7 +160,7 @@ impl FileWatcher {
         info!("File watcher started (native events via notify)");
 
         // Create a channel to receive file events.
-        let (tx, mut rx) = rustmax::tokio::sync::mpsc::channel(100);
+        let (tx, mut rx) = rmx::tokio::sync::mpsc::channel(100);
 
         // Create the watcher in a separate thread since notify uses std sync.
         let paths = self.paths.clone();

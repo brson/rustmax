@@ -2,7 +2,7 @@
 //!
 //! Uses indicatif to provide visual feedback during builds.
 
-use rustmax::indicatif::{ProgressBar, ProgressStyle, MultiProgress};
+use rmx::indicatif::{ProgressBar, ProgressStyle, MultiProgress};
 use std::time::Duration;
 
 /// Style for main build progress bar.

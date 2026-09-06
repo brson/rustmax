@@ -2,8 +2,8 @@
 //!
 //! Creates EPUB3-compatible ebooks from document collections.
 
-use rustmax::zip::{ZipWriter, write::SimpleFileOptions, CompressionMethod};
-use rustmax::jiff::Zoned;
+use rmx::zip::{ZipWriter, write::SimpleFileOptions, CompressionMethod};
+use rmx::jiff::Zoned;
 use std::io::{Write, Seek};
 use std::path::Path;
 use std::fs::File;
@@ -371,8 +371,8 @@ fn xml_escape(s: &str) -> String {
 
 /// Generate a simple UUID v4.
 fn generate_uuid() -> String {
-    use rustmax::rand::RngExt;
-    let mut rng = rustmax::rand::rng();
+    use rmx::rand::RngExt;
+    let mut rng = rmx::rand::rng();
 
     let mut bytes = [0u8; 16];
     rng.fill(&mut bytes);
@@ -394,7 +394,7 @@ fn generate_uuid() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustmax::tempfile::tempdir;
+    use rmx::tempfile::tempdir;
     use std::io::Cursor;
 
     #[test]
@@ -446,7 +446,7 @@ mod tests {
 
         // Verify ZIP structure.
         let reader = Cursor::new(data);
-        let mut archive = rustmax::zip::ZipArchive::new(reader).unwrap();
+        let mut archive = rmx::zip::ZipArchive::new(reader).unwrap();
 
         assert!(archive.by_name("mimetype").is_ok());
         assert!(archive.by_name("META-INF/container.xml").is_ok());
@@ -493,7 +493,7 @@ base_url = "http://example.com"
 
         // Verify it's a valid ZIP.
         let file = File::open(&epub_path).unwrap();
-        let mut archive = rustmax::zip::ZipArchive::new(file).unwrap();
+        let mut archive = rmx::zip::ZipArchive::new(file).unwrap();
 
         assert!(archive.by_name("mimetype").is_ok());
         assert!(archive.by_name("OEBPS/content.opf").is_ok());

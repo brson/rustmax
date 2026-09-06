@@ -2,7 +2,7 @@
 //!
 //! Uses the image crate for resizing, format conversion, and optimization.
 
-use rustmax::image::{self, DynamicImage, ImageFormat, imageops::FilterType, GenericImageView};
+use rmx::image::{self, DynamicImage, ImageFormat, imageops::FilterType, GenericImageView};
 use std::path::{Path, PathBuf};
 use std::fs;
 use crate::Result;
@@ -245,7 +245,7 @@ pub fn process_directory(
     output_dir: &Path,
     config: &ImageConfig,
 ) -> Result<Vec<ImageResult>> {
-    use rustmax::walkdir::WalkDir;
+    use rmx::walkdir::WalkDir;
 
     let mut results = Vec::new();
 
@@ -265,7 +265,7 @@ pub fn process_directory(
             match process_image(path, &out_subdir, config) {
                 Ok(result) => results.push(result),
                 Err(e) => {
-                    rustmax::log::warn!("Failed to process {}: {}", path.display(), e);
+                    rmx::log::warn!("Failed to process {}: {}", path.display(), e);
                 }
             }
         }
@@ -321,7 +321,7 @@ impl ImageStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustmax::tempfile::tempdir;
+    use rmx::tempfile::tempdir;
 
     #[test]
     fn test_is_supported_format() {

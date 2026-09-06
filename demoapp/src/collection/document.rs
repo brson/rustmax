@@ -1,9 +1,8 @@
 //! Document model and frontmatter parsing.
 
-use rustmax::prelude::*;
-use serde::{Deserialize, Serialize};
-use rustmax::jiff::civil::Date;
-use rustmax::blake3;
+use rmx::prelude::*;
+use rmx::jiff::civil::Date;
+use rmx::blake3;
 use std::path::{Path, PathBuf};
 
 use crate::{Error, Result};
@@ -19,6 +18,11 @@ pub struct Document {
     pub content: String,
     /// Content hash for caching.
     pub content_hash: String,
+    /// Lines of the source file that precede [`Self::content`].
+    ///
+    /// Anything reporting a position in the content -- lints, mainly -- has to
+    /// add this to name a line the author can find in their editor.
+    pub content_line_offset: usize,
 }
 
 impl Document {
@@ -30,12 +34,29 @@ impl Document {
         let hash = blake3::hash(raw.as_bytes());
         let content_hash = hash.to_hex().to_string();
 
+        // How far into the file the content starts. `content` is a suffix of
+        // `raw`, including the blank lines trimmed from the front of it, so
+        // the offset is the newline count of everything before that suffix.
+        let content_line_offset = raw
+            .len()
+            .checked_sub(content.len())
+            .map(|prefix| raw[..prefix].matches('\n').count())
+            .unwrap_or(0);
+
         Ok(Self {
             source_path,
             frontmatter,
             content,
             content_hash,
+            content_line_offset,
         })
+    }
+
+    /// The line of the source file that content line `line` appears on.
+    ///
+    /// Both are 1-based.
+    pub fn source_line(&self, line: usize) -> usize {
+        line + self.content_line_offset
     }
 
     /// Load a document from a file path.
@@ -75,10 +96,10 @@ impl Document {
         } else {
             // Take first paragraph or max_chars.
             let content = self.content.trim();
-            if let Some(pos) = content.find("\n\n") {
-                if pos < max_chars {
-                    return content[..pos].to_string();
-                }
+            if let Some(pos) = content.find("\n\n")
+                && pos < max_chars
+            {
+                return content[..pos].to_string();
             }
             if content.len() <= max_chars {
                 content.to_string()
@@ -108,7 +129,7 @@ impl Document {
 
     /// Get word count.
     pub fn word_count(&self) -> usize {
-        use rustmax::unicode_segmentation::UnicodeSegmentation;
+        use rmx::unicode_segmentation::UnicodeSegmentation;
         self.content.unicode_words().count()
     }
 
@@ -120,7 +141,7 @@ impl Document {
 }
 
 /// Document frontmatter (metadata).
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Frontmatter {
     /// Document title.
     #[serde(default)]
@@ -148,11 +169,11 @@ pub struct Frontmatter {
     pub author: Option<String>,
     /// Extra metadata as key-value pairs.
     #[serde(default, flatten)]
-    pub extra: std::collections::HashMap<String, rustmax::toml::Value>,
+    pub extra: std::collections::HashMap<String, rmx::toml::Value>,
 }
 
 /// Serializable document for export.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct DocumentExport {
     pub slug: String,
     pub title: String,
@@ -183,7 +204,7 @@ fn parse_frontmatter(path: &Path, raw: &str) -> Result<(Frontmatter, String)> {
     let content = &rest[end + 4..]; // Skip "\n---"
 
     let frontmatter: Frontmatter =
-        rustmax::toml::from_str(frontmatter_str).map_err(|e| {
+        rmx::toml::from_str(frontmatter_str).map_err(|e| {
             Error::frontmatter(path, format!("invalid TOML: {}", e))
         })?;
 
@@ -191,8 +212,8 @@ fn parse_frontmatter(path: &Path, raw: &str) -> Result<(Frontmatter, String)> {
 }
 
 mod option_date_format {
-    use rustmax::jiff::civil::Date;
-    use serde::{self, Deserialize, Deserializer, Serializer};
+    use rmx::jiff::civil::Date;
+    use rmx::serde::{self, Deserialize, Deserializer, Serializer};
 
     pub fn serialize<S>(date: &Option<Date>, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -266,7 +287,7 @@ One two three four five.
 #[cfg(test)]
 mod proptest_tests {
     use super::*;
-    use rustmax::proptest::prelude::*;
+    use rmx::proptest::prelude::*;
 
     proptest! {
         #[test]
@@ -285,10 +306,13 @@ mod proptest_tests {
         }
 
         #[test]
-        fn word_count_is_non_negative(content in ".*") {
-            use rustmax::unicode_segmentation::UnicodeSegmentation;
+        fn word_count_is_bounded_by_length(content in ".*") {
+            use rmx::unicode_segmentation::UnicodeSegmentation;
+            // Every word occupies at least one byte, so the word count can
+            // never exceed the byte length, and empty text has no words.
             let count = content.unicode_words().count();
-            prop_assert!(count >= 0);
+            prop_assert!(count <= content.len());
+            prop_assert_eq!(count == 0, content.unicode_words().next().is_none());
         }
 
         #[test]

@@ -1,10 +1,10 @@
 //! Remote content fetching with reqwest.
 
-use rustmax::prelude::*;
-use rustmax::reqwest;
-use rustmax::url::Url;
-use rustmax::mime::{self, Mime};
-use rustmax::log::info;
+use rmx::prelude::*;
+use rmx::reqwest;
+use rmx::url::Url;
+use rmx::mime::{self, Mime};
+use rmx::log::info;
 use std::path::Path;
 
 use crate::{Error, Result};
@@ -72,14 +72,14 @@ pub async fn fetch_asset(url: &str) -> Result<Vec<u8>> {
 
 /// Fetch multiple URLs in parallel.
 pub async fn fetch_all(urls: &[&str]) -> Vec<Result<String>> {
-    use rustmax::futures::future::join_all;
+    use rmx::futures::future::join_all;
 
     let fetches = urls.iter().map(|url| fetch_content(url));
     join_all(fetches).await
 }
 
 /// Remote source configuration for a collection.
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[rmx::derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RemoteSource {
     /// Base URL for the remote source.
     pub url: String,
@@ -123,7 +123,7 @@ pub fn parse_url(url: &str) -> Result<Url> {
 /// Extract the filename from a URL path.
 pub fn filename_from_url(url: &Url) -> Option<String> {
     url.path_segments()
-        .and_then(|segments| segments.last())
+        .and_then(|mut segments| segments.next_back())
         .filter(|s| !s.is_empty() && s.contains('.'))
         .map(|s| s.to_string())
 }

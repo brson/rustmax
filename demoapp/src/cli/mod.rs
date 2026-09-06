@@ -5,7 +5,8 @@ pub mod repl;
 
 pub use commands::Cli;
 
-use clap::Parser;
+use rmx::clap::Parser as _;
+
 use crate::Result;
 
 /// Run the CLI application.

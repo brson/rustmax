@@ -1,6 +1,6 @@
 //! Integration tests for anthology using tempfile.
 
-use rustmax::tempfile::tempdir;
+use rmx::tempfile::tempdir;
 use std::fs;
 use std::path::Path;
 
@@ -25,7 +25,10 @@ output_dir = "output"
     // TemplateEngine puts in the context, or the pages render empty.
     let template = r#"<!DOCTYPE html>
 <html>
-<head><title>{{ title }}</title></head>
+<head>
+<title>{{ title }}</title>
+<meta name="generator" content="{{ generator }}" data-build="{{ build_id }}">
+</head>
 <body>
 {% if is_index or is_tag_page %}
 <h1>{{ site_title }}</h1>
@@ -328,7 +331,7 @@ fn test_json_export() {
     let collection = anthology::collection::Collection::load(root, &config).unwrap();
 
     let export = collection.to_export();
-    let json = rustmax::serde_json::to_string_pretty(&export).unwrap();
+    let json = rmx::serde_json::to_string_pretty(&export).unwrap();
 
     assert!(json.contains("Test Doc"));
     assert!(json.contains("\"slug\": \"test\""));
@@ -481,4 +484,194 @@ fn init_then_build_renders_with_the_generated_templates() {
 
     // The document date went through the custom `date_format` filter.
     assert!(document.contains("January 01, 2024"), "date filter did not run");
+}
+
+/// Every file of a built site, keyed by its path relative to the output
+/// directory, so that two builds can be compared byte for byte.
+fn output_snapshot(dir: &Path) -> std::collections::BTreeMap<String, Vec<u8>> {
+    rmx::walkdir::WalkDir::new(dir)
+        .into_iter()
+        .filter_map(Result::ok)
+        .filter(|entry| entry.file_type().is_file())
+        .map(|entry| {
+            let rel = entry.path().strip_prefix(dir).unwrap().display().to_string();
+            (rel, fs::read(entry.path()).unwrap())
+        })
+        .collect()
+}
+
+fn seeded_collection(root: &Path, seed: Option<u64>) {
+    create_test_collection(root);
+    if let Some(seed) = seed {
+        let config = fs::read_to_string(root.join("anthology.toml")).unwrap();
+        fs::write(
+            root.join("anthology.toml"),
+            config.replace("output_dir = \"output\"", &format!("output_dir = \"output\"\nseed = {seed}")),
+        )
+        .unwrap();
+    }
+    create_document(root, "alpha", "Alpha", "The first document, about rust.", false);
+    create_document(root, "beta", "Beta", "The second document, about search.", false);
+}
+
+fn build_twice(seed: Option<u64>) -> (
+    std::collections::BTreeMap<String, Vec<u8>>,
+    std::collections::BTreeMap<String, Vec<u8>>,
+) {
+    let mut snapshots = Vec::new();
+    for _ in 0..2 {
+        let dir = tempdir().unwrap();
+        seeded_collection(dir.path(), seed);
+
+        let config = anthology::collection::Config::load(dir.path()).unwrap();
+        let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+        let out = dir.path().join("output");
+        anthology::build::build(&collection, &config, &out, false).unwrap();
+
+        snapshots.push(output_snapshot(&out));
+    }
+    (snapshots.remove(0), snapshots.remove(0))
+}
+
+#[test]
+fn a_seeded_build_is_reproducible() {
+    let (first, second) = build_twice(Some(1234));
+
+    assert!(!first.is_empty(), "the build produced no files");
+    assert_eq!(
+        first.keys().collect::<Vec<_>>(),
+        second.keys().collect::<Vec<_>>(),
+    );
+
+    for (path, bytes) in &first {
+        // `build_time` is a wall-clock timestamp and is not seeded, so a page
+        // carrying it can still differ. Everything else must match.
+        // See ROADMAP.md: pinning it is the remaining piece.
+        if path.ends_with(".json") || !path.ends_with(".html") {
+            assert_eq!(bytes, &second[path], "{path} differs between builds");
+        }
+    }
+}
+
+#[test]
+fn the_build_id_is_fixed_by_the_seed_and_random_without_one() {
+    fn build_ids(seed: Option<u64>) -> (String, String) {
+        let (first, second) = build_twice(seed);
+        let read = |files: &std::collections::BTreeMap<String, Vec<u8>>| {
+            let html = String::from_utf8(files["index.html"].clone()).unwrap();
+            let start = html.find("data-build=\"").expect("no build id in {html}") + 12;
+            html[start..].split('"').next().unwrap().to_owned()
+        };
+        (read(&first), read(&second))
+    }
+
+    let (a, b) = build_ids(Some(99));
+    assert_eq!(a, b, "a seeded build changed its build id");
+    assert_eq!(a.len(), 12);
+
+    let (a, b) = build_ids(None);
+    assert_ne!(a, b, "an unseeded build repeated its build id");
+}
+
+#[test]
+fn the_search_index_does_not_depend_on_hash_order() {
+    let (first, second) = build_twice(None);
+
+    let index = "search-index.json";
+    assert!(first.contains_key(index), "no search index in {:?}", first.keys());
+    assert_eq!(
+        first[index], second[index],
+        "the search index differs between two builds of identical content",
+    );
+
+    // Equal bytes could still be luck, since both builds ran in one process.
+    // The guarantee is that the terms are written in sorted order.
+    let parsed: rmx::serde_json::Value = rmx::serde_json::from_slice(&first[index]).unwrap();
+    let terms: Vec<&String> = parsed["word_index"].as_object().unwrap().keys().collect();
+
+    assert!(terms.len() > 1, "expected an indexed vocabulary, got {terms:?}");
+    assert!(terms.is_sorted(), "search index terms are not sorted: {terms:?}");
+}
+
+#[test]
+fn a_collection_can_be_configured_in_json5() {
+    let dir = tempdir().unwrap();
+    create_test_collection(dir.path());
+    fs::remove_file(dir.path().join("anthology.toml")).unwrap();
+    fs::write(
+        dir.path().join("anthology.json5"),
+        r#"{
+            // A collection written by another tool.
+            collection: { title: "From JSON5", base_url: "https://json5.example.com" },
+            build: { output_dir: "output" },
+        }"#,
+    )
+    .unwrap();
+    create_document(dir.path(), "one", "One", "Body text.", false);
+
+    let config = anthology::collection::Config::load(dir.path()).unwrap();
+    assert_eq!(config.collection.title, "From JSON5");
+
+    let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+    let out = dir.path().join("output");
+    anthology::build::build(&collection, &config, &out, false).unwrap();
+
+    let index = fs::read_to_string(out.join("index.html")).unwrap();
+    assert!(index.contains("From JSON5"), "{index}");
+}
+
+#[test]
+fn a_built_site_can_be_archived_and_unpacked() {
+    let dir = tempdir().unwrap();
+    seeded_collection(dir.path(), None);
+
+    let config = anthology::collection::Config::load(dir.path()).unwrap();
+    let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+    let out = dir.path().join("output");
+    anthology::build::build(&collection, &config, &out, false).unwrap();
+
+    let archive = dir.path().join("site.tar.gz");
+    let options = anthology::export::ArchiveOptions::default();
+    let stats = anthology::export::archive_directory(&out, &archive, &options).unwrap();
+
+    assert_eq!(stats.files, output_snapshot(&out).len());
+
+    let entries = anthology::export::list_archive(&archive).unwrap();
+    assert!(
+        entries.iter().any(|e| e.path.ends_with("index.html")),
+        "{entries:?}",
+    );
+}
+
+#[test]
+fn check_reports_a_rust_code_block_that_does_not_parse() {
+    let dir = tempdir().unwrap();
+    create_test_collection(dir.path());
+    create_document(
+        dir.path(),
+        "broken",
+        "Broken",
+        "Here is some code:\n\n```rust\nfn main( {\n```\n",
+        false,
+    );
+    create_document(
+        dir.path(),
+        "fine",
+        "Fine",
+        "And some that is fine:\n\n```rust\nlet x = 1;\n```\n",
+        false,
+    );
+
+    let config = anthology::collection::Config::load(dir.path()).unwrap();
+    let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+
+    let lints: Vec<_> = collection
+        .documents
+        .iter()
+        .flat_map(anthology::lint::check_document)
+        .collect();
+
+    assert_eq!(lints.len(), 1, "{lints:?}");
+    assert!(lints[0].path.ends_with("broken.md"), "{:?}", lints[0]);
+    assert_eq!(lints[0].level, anthology::lint::Level::Error);
 }

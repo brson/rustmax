@@ -1,10 +1,9 @@
 //! Template rendering with Tera.
 
-use rustmax::prelude::*;
-use rustmax::tera::{self, Tera, Context, Kwargs, State};
-use rustmax::jiff::Zoned;
-use rustmax::serde::Serialize;
-use rustmax::walkdir::WalkDir;
+use rmx::prelude::*;
+use rmx::tera::{self, Tera, Context, Kwargs, State};
+use rmx::jiff::Zoned;
+use rmx::walkdir::WalkDir;
 use std::path::Path;
 
 use crate::collection::{Config, Document};
@@ -17,6 +16,7 @@ const BUILTIN_TEMPLATE_NAME: &str = "_builtin/default.html";
 /// Template engine wrapping Tera.
 pub struct TemplateEngine {
     tera: Tera,
+    build_id: String,
 }
 
 impl TemplateEngine {
@@ -43,7 +43,37 @@ impl TemplateEngine {
         // Add built-in templates as fallback.
         tera.add_raw_template(BUILTIN_TEMPLATE_NAME, BUILTIN_DEFAULT_TEMPLATE)?;
 
-        Ok(Self { tera })
+        Ok(Self {
+            tera,
+            build_id: crate::util::build_id(None),
+        })
+    }
+
+    /// Fix the build identifier this engine stamps into rendered pages.
+    ///
+    /// A collection that sets `[build] seed` gets the same identifier from
+    /// every build, which is what makes its output reproducible.
+    pub fn with_seed(mut self, seed: Option<u64>) -> Self {
+        if let Some(seed) = seed {
+            self.build_id = crate::util::build_id(Some(seed));
+        }
+        self
+    }
+
+    /// The identifier stamped into pages this engine renders.
+    pub fn build_id(&self) -> &str {
+        &self.build_id
+    }
+
+    /// Insert the variables every page gets, whatever kind of page it is.
+    fn insert_site_context(&self, ctx: &mut Context, config: &Config) {
+        ctx.insert("site_title", &config.collection.title);
+        ctx.insert("site_description", &config.collection.description);
+        ctx.insert("site_author", &config.collection.author);
+        ctx.insert("base_url", &config.collection.base_url);
+        ctx.insert("language", &config.collection.language);
+        ctx.insert("generator", &format!("anthology {}", crate::collection::ANTHOLOGY_VERSION));
+        ctx.insert("build_id", &self.build_id);
     }
 
     /// Render `template_name`, or the built-in template if the collection
@@ -76,11 +106,7 @@ impl TemplateEngine {
     ) -> Context {
         let mut ctx = Context::new();
 
-        // Site info.
-        ctx.insert("site_title", &config.collection.title);
-        ctx.insert("site_description", &config.collection.description);
-        ctx.insert("site_author", &config.collection.author);
-        ctx.insert("base_url", &config.collection.base_url);
+        self.insert_site_context(&mut ctx, config);
 
         // Document info.
         ctx.insert("title", &doc.frontmatter.title);
@@ -131,10 +157,7 @@ impl TemplateEngine {
     pub fn index_context(&self, documents: &[&Document], config: &Config) -> Context {
         let mut ctx = Context::new();
 
-        ctx.insert("site_title", &config.collection.title);
-        ctx.insert("site_description", &config.collection.description);
-        ctx.insert("site_author", &config.collection.author);
-        ctx.insert("base_url", &config.collection.base_url);
+        self.insert_site_context(&mut ctx, config);
         ctx.insert("title", &config.collection.title);
 
         let docs: Vec<DocumentSummary> = documents
@@ -198,7 +221,7 @@ fn load_templates(tera: &mut Tera, templates_dir: &Path) -> Result<()> {
 }
 
 /// A document as seen by index and tag templates.
-#[derive(Serialize)]
+#[rmx::derive(Serialize)]
 struct DocumentSummary {
     title: String,
     slug: String,
@@ -214,7 +237,7 @@ fn filter_date_format(value: &str, kwargs: Kwargs, _state: &State) -> tera::Tera
     let format = kwargs.get::<&str>("format")?.unwrap_or("%B %d, %Y");
 
     // Parse as jiff Date.
-    let date: rustmax::jiff::civil::Date = value
+    let date: rmx::jiff::civil::Date = value
         .parse()
         .map_err(|e| tera::Error::message(format!("invalid date: {}", e)))?;
 
@@ -223,14 +246,14 @@ fn filter_date_format(value: &str, kwargs: Kwargs, _state: &State) -> tera::Tera
 
 /// Filter: count words in text.
 fn filter_word_count(value: &str, _kwargs: Kwargs, _state: &State) -> usize {
-    use rustmax::unicode_segmentation::UnicodeSegmentation;
+    use rmx::unicode_segmentation::UnicodeSegmentation;
 
     value.unicode_words().count()
 }
 
 /// Filter: estimate reading time.
 fn filter_reading_time(value: &str, _kwargs: Kwargs, _state: &State) -> usize {
-    use rustmax::unicode_segmentation::UnicodeSegmentation;
+    use rmx::unicode_segmentation::UnicodeSegmentation;
 
     let words = value.unicode_words().count();
     (words / 200).max(1)
@@ -238,7 +261,7 @@ fn filter_reading_time(value: &str, _kwargs: Kwargs, _state: &State) -> usize {
 
 /// Filter: truncate to N words.
 fn filter_truncate_words(value: &str, kwargs: Kwargs, _state: &State) -> tera::TeraResult<String> {
-    use rustmax::unicode_segmentation::UnicodeSegmentation;
+    use rmx::unicode_segmentation::UnicodeSegmentation;
 
     let count = kwargs.get::<usize>("count")?.unwrap_or(50);
 
@@ -257,6 +280,7 @@ const BUILTIN_DEFAULT_TEMPLATE: &str = r#"<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if generator %}<meta name="generator" content="{{ generator }}" data-build="{{ build_id }}">{% endif %}
     <title>{% if title %}{{ title }} - {% endif %}{{ site_title }}</title>
     <style>
         body {
@@ -326,7 +350,7 @@ const BUILTIN_DEFAULT_TEMPLATE: &str = r#"<!DOCTYPE html>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustmax::tempfile::tempdir;
+    use rmx::tempfile::tempdir;
     use std::fs;
 
     #[test]

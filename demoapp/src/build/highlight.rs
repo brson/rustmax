@@ -3,8 +3,7 @@
 //! Provides regex-based tokenization for multiple programming languages
 //! with configurable color themes.
 
-use rustmax::prelude::*;
-use serde::{Deserialize, Serialize};
+use rmx::prelude::*;
 use std::sync::LazyLock;
 
 /// Token types for syntax highlighting.
@@ -56,7 +55,7 @@ pub struct Token {
 }
 
 /// Color theme for syntax highlighting.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Theme {
     pub name: String,
     pub background: String,
@@ -68,7 +67,7 @@ pub struct Theme {
 }
 
 /// Token colors for a theme.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ThemeColors {
     pub keyword: String,
     pub string: String,
@@ -944,33 +943,33 @@ pub fn tokenize(code: &str, language: &str) -> Vec<Token> {
 
     while i < chars.len() {
         // Check for multi-line comment.
-        if let Some((start, end)) = lang.multi_line_comment {
-            if starts_with_at(&chars, i, start) {
-                let start_idx = i;
-                i += start.len();
-                while i < chars.len() && !starts_with_at(&chars, i, end) {
-                    i += 1;
-                }
-                if starts_with_at(&chars, i, end) {
-                    i += end.len();
-                }
-                let text: String = chars[start_idx..i].iter().collect();
-                tokens.push(Token { text, token_type: TokenType::Comment });
-                continue;
+        if let Some((start, end)) = lang.multi_line_comment
+            && starts_with_at(&chars, i, start)
+        {
+            let start_idx = i;
+            i += start.len();
+            while i < chars.len() && !starts_with_at(&chars, i, end) {
+                i += 1;
             }
+            if starts_with_at(&chars, i, end) {
+                i += end.len();
+            }
+            let text: String = chars[start_idx..i].iter().collect();
+            tokens.push(Token { text, token_type: TokenType::Comment });
+            continue;
         }
 
         // Check for single-line comment.
-        if let Some(comment) = lang.single_line_comment {
-            if starts_with_at(&chars, i, comment) {
-                let start_idx = i;
-                while i < chars.len() && chars[i] != '\n' {
-                    i += 1;
-                }
-                let text: String = chars[start_idx..i].iter().collect();
-                tokens.push(Token { text, token_type: TokenType::Comment });
-                continue;
+        if let Some(comment) = lang.single_line_comment
+            && starts_with_at(&chars, i, comment)
+        {
+            let start_idx = i;
+            while i < chars.len() && chars[i] != '\n' {
+                i += 1;
             }
+            let text: String = chars[start_idx..i].iter().collect();
+            tokens.push(Token { text, token_type: TokenType::Comment });
+            continue;
         }
 
         // Check for string.
@@ -1206,7 +1205,7 @@ fn html_escape(s: &str) -> String {
 }
 
 /// Highlight options for configuration.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HighlightOptions {
     pub theme: String,
     pub line_numbers: bool,

@@ -2,8 +2,8 @@
 //!
 //! Controls optional build and rendering features.
 
-use rustmax::prelude::*;
-use rustmax::bitflags::bitflags;
+use rmx::prelude::*;
+use rmx::bitflags::bitflags;
 
 bitflags! {
     /// Build feature flags.

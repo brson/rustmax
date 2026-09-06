@@ -1,10 +1,26 @@
 //! Full-text search indexing with stemming and stop words.
 
-use rustmax::prelude::*;
-use serde::{Deserialize, Serialize};
-use rustmax::unicode_segmentation::UnicodeSegmentation;
-use rustmax::log::info;
-use std::collections::{HashMap, HashSet};
+use rmx::prelude::*;
+use rmx::unicode_segmentation::UnicodeSegmentation;
+use rmx::log::info;
+use std::collections::HashMap;
+use std::sync::LazyLock;
+
+/// Where a term occurs: document index and how often, per document.
+type Postings = Vec<(usize, u16)>;
+
+/// A hash map keyed by strings the index controls.
+///
+/// `ahash` is a good deal faster than the standard hasher on the short string
+/// keys an inverted index is made of, and the index is rebuilt on every build.
+type FastMap<K, V> = HashMap<K, V, rmx::ahash::RandomState>;
+
+/// The stop words, hashed once.
+///
+/// This used to be rebuilt on every call to `search`, which cost more than the
+/// search did on a small collection.
+static STOP_WORD_SET: LazyLock<rmx::ahash::AHashSet<&'static str>> =
+    LazyLock::new(|| STOP_WORDS.iter().copied().collect());
 use std::path::Path;
 
 use crate::collection::Collection;
@@ -33,10 +49,9 @@ impl PorterStemmer {
     fn stem(word: &str) -> String {
         let mut s = word.to_lowercase();
 
-        // Step 1a: plurals.
-        if s.ends_with("sses") {
-            s.truncate(s.len() - 2);
-        } else if s.ends_with("ies") {
+        // Step 1a: plurals. `sses` becomes `ss` and `ies` becomes `i`, which
+        // are both a two-character truncation for different reasons.
+        if s.ends_with("sses") || s.ends_with("ies") {
             s.truncate(s.len() - 2);
         } else if !s.ends_with("ss") && s.ends_with('s') {
             s.pop();
@@ -223,10 +238,10 @@ impl PorterStemmer {
                     // Special case for -ion.
                     if suffix == "ion" {
                         let chars: Vec<char> = stem.chars().collect();
-                        if let Some(&last) = chars.last() {
-                            if last == 's' || last == 't' {
-                                s.truncate(s.len() - suffix.len());
-                            }
+                        if let Some(&last) = chars.last()
+                            && (last == 's' || last == 't')
+                        {
+                            s.truncate(s.len() - suffix.len());
                         }
                     } else {
                         s.truncate(s.len() - suffix.len());
@@ -240,18 +255,24 @@ impl PorterStemmer {
 }
 
 /// Search index for a collection.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct SearchIndex {
     /// Document entries.
     pub documents: Vec<IndexEntry>,
     /// Inverted index: stemmed word -> document indices with term frequency.
-    pub word_index: HashMap<String, Vec<(usize, u16)>>,
+    ///
+    /// Serialized in sorted order. A hash map iterates in an order that
+    /// depends on the process's hash seed, and the index is written to disk as
+    /// `search-index.json`, so without this two builds of identical content
+    /// would differ.
+    #[serde(with = "sorted_word_index")]
+    pub word_index: FastMap<String, Postings>,
     /// Total word count per document.
     pub doc_lengths: Vec<usize>,
 }
 
 /// Entry for a document in the search index.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct IndexEntry {
     pub slug: String,
     pub title: String,
@@ -263,9 +284,9 @@ pub struct IndexEntry {
 impl SearchIndex {
     /// Build an index from a collection.
     pub fn build(collection: &Collection) -> Self {
-        let stop_words: HashSet<&str> = STOP_WORDS.iter().copied().collect();
+        let stop_words = &*STOP_WORD_SET;
         let mut documents = Vec::new();
-        let mut word_index: HashMap<String, Vec<(usize, u16)>> = HashMap::new();
+        let mut word_index: FastMap<String, Postings> = default();
         let mut doc_lengths = Vec::new();
 
         for (idx, doc) in collection.documents.iter().enumerate() {
@@ -282,7 +303,7 @@ impl SearchIndex {
             let title_text = &doc.frontmatter.title;
             let content_text = format!("{} {}", doc.frontmatter.tags.join(" "), doc.content);
 
-            let mut term_counts: HashMap<String, u16> = HashMap::new();
+            let mut term_counts: FastMap<String, u16> = default();
             let mut total_words = 0;
 
             // Title words get extra weight.
@@ -305,8 +326,9 @@ impl SearchIndex {
                 }
             }
 
-            // Add to inverted index.
-            for (term, count) in term_counts {
+            // Add to inverted index. Sorted, so that the postings lists do
+            // not inherit the iteration order of `term_counts`.
+            for (term, count) in term_counts.into_iter().sorted() {
                 word_index.entry(term).or_default().push((idx, count));
             }
 
@@ -323,7 +345,7 @@ impl SearchIndex {
 
     /// Search for documents matching a query.
     pub fn search(&self, query: &str) -> Vec<SearchResult> {
-        let stop_words: HashSet<&str> = STOP_WORDS.iter().copied().collect();
+        let stop_words = &*STOP_WORD_SET;
 
         let query_terms: Vec<String> = query
             .unicode_words()
@@ -347,7 +369,7 @@ impl SearchIndex {
         let b = 0.75;
         let num_docs = self.documents.len() as f64;
 
-        let mut doc_scores: HashMap<usize, f64> = HashMap::new();
+        let mut doc_scores: FastMap<usize, f64> = default();
 
         for term in &query_terms {
             // Exact stem match.
@@ -379,8 +401,6 @@ impl SearchIndex {
             }
         }
 
-        use rustmax::itertools::Itertools;
-
         // Sort by score descending.
         doc_scores
             .into_iter()
@@ -398,6 +418,9 @@ impl SearchIndex {
     }
 
     /// Get suggestions for a partial query (autocomplete).
+    ///
+    /// Sorted, so that the same prefix suggests the same words every time
+    /// rather than whichever ten the hash map happened to yield first.
     pub fn suggest(&self, prefix: &str) -> Vec<String> {
         let prefix = PorterStemmer::stem(&prefix.to_lowercase());
         if prefix.len() < 2 {
@@ -407,14 +430,42 @@ impl SearchIndex {
         self.word_index
             .keys()
             .filter(|term| term.starts_with(&prefix))
+            .sorted()
             .take(10)
             .cloned()
             .collect()
     }
 }
 
+/// Serialize the inverted index in key order.
+///
+/// Deserialization is the ordinary map deserialization; only the writing side
+/// needs to be pinned down.
+mod sorted_word_index {
+    use super::{FastMap, Postings};
+    use rmx::prelude::*;
+    use rmx::serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::collections::BTreeMap;
+
+    pub fn serialize<S: Serializer>(
+        index: &FastMap<String, Postings>,
+        serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        index
+            .iter()
+            .collect::<BTreeMap<_, _>>()
+            .serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D: Deserializer<'de>>(
+        deserializer: D,
+    ) -> std::result::Result<FastMap<String, Postings>, D::Error> {
+        FastMap::deserialize(deserializer)
+    }
+}
+
 /// A search result.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct SearchResult {
     pub slug: String,
     pub title: String,
@@ -429,7 +480,7 @@ pub fn build_index(collection: &Collection, root: &Path) -> Result<()> {
     let index = SearchIndex::build(collection);
     let index_path = root.join("search-index.json");
 
-    let json = rustmax::serde_json::to_string_pretty(&index)?;
+    let json = rmx::serde_json::to_string_pretty(&index)?;
     std::fs::write(&index_path, json)?;
 
     info!("Search index saved to {}", index_path.display());
@@ -560,7 +611,7 @@ mod tests {
 
         let index = SearchIndex::build(&collection);
         let suggestions = index.suggest("pro");
-        assert!(suggestions.len() >= 1);
+        assert!(!suggestions.is_empty());
     }
 
     #[test]
@@ -587,7 +638,7 @@ mod tests {
 #[cfg(test)]
 mod proptest_tests {
     use super::*;
-    use rustmax::proptest::prelude::*;
+    use rmx::proptest::prelude::*;
 
     proptest! {
         #[test]

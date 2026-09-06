@@ -1,8 +1,8 @@
 //! Cryptographic utilities using blake3 and sha2.
 
-use rustmax::prelude::*;
-use rustmax::blake3;
-use rustmax::sha2::{Sha256, Sha512, Digest};
+use rmx::prelude::*;
+use rmx::blake3;
+use rmx::sha2::{Sha256, Sha512, Digest};
 
 /// Hash data using BLAKE3 (fast, secure).
 pub fn blake3_hash(data: &[u8]) -> String {
@@ -18,7 +18,7 @@ pub fn blake3_hash_str(s: &str) -> String {
 pub fn sha256_hash(data: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(data);
-    rustmax::hex::encode(hasher.finalize())
+    rmx::hex::encode(hasher.finalize())
 }
 
 /// Hash a string using SHA-256.
@@ -30,7 +30,7 @@ pub fn sha256_hash_str(s: &str) -> String {
 pub fn sha512_hash(data: &[u8]) -> String {
     let mut hasher = Sha512::new();
     hasher.update(data);
-    rustmax::hex::encode(hasher.finalize())
+    rmx::hex::encode(hasher.finalize())
 }
 
 /// Hash a string using SHA-512.

@@ -1,9 +1,9 @@
 //! Encoding utilities using bytes, base64, and hex.
 
-use rustmax::prelude::*;
-use rustmax::bytes::{Bytes, BytesMut, BufMut};
-use rustmax::base64::{Engine, prelude::BASE64_STANDARD};
-use rustmax::hex;
+use rmx::prelude::*;
+use rmx::bytes::{Bytes, BytesMut, BufMut};
+use rmx::base64::{Engine, prelude::BASE64_STANDARD};
+use rmx::hex;
 use std::path::Path;
 
 use crate::Result;

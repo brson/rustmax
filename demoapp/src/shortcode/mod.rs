@@ -4,8 +4,8 @@
 //! - `{{< name arg1="value" >}}` - inline shortcode
 //! - `{{% name %}}content{{% /name %}}` - block shortcode
 
-use rustmax::prelude::*;
-use rustmax::nom::{
+use rmx::prelude::*;
+use rmx::nom::{
     IResult, Parser,
     bytes::complete::{tag, take_until, take_while1, take_while},
     character::complete::{char, multispace0, multispace1, alphanumeric1},
@@ -92,8 +92,8 @@ fn parse_args(input: &str) -> IResult<&str, (HashMap<String, String>, Vec<String
     let (remaining, args) = many0(preceded(
         multispace1,
         alt((
-            map(parse_named_arg, |arg| Either::Left(arg)),
-            map(parse_value, |v| Either::Right(v)),
+            map(parse_named_arg, Either::Left),
+            map(parse_value, Either::Right),
         ))
     )).parse(input)?;
 
@@ -128,7 +128,11 @@ fn parse_inline_shortcode(input: &str) -> IResult<&str, Shortcode> {
 }
 
 /// Parse block shortcode opening: `{{% name args %}}`
-fn parse_block_open(input: &str) -> IResult<&str, (&str, HashMap<String, String>, Vec<String>)> {
+/// A parsed block-shortcode opening tag: name, named arguments, positional
+/// arguments.
+type BlockOpen<'a> = (&'a str, HashMap<String, String>, Vec<String>);
+
+fn parse_block_open(input: &str) -> IResult<&str, BlockOpen<'_>> {
     let (remaining, (_, _, name, args, _, _)) = (
         tag("{{%"),
         multispace0,
@@ -177,9 +181,9 @@ fn parse_block_shortcode(input: &str) -> IResult<&str, Shortcode> {
         }));
     }
 
-    Err(rustmax::nom::Err::Error(rustmax::nom::error::Error::new(
+    Err(rmx::nom::Err::Error(rmx::nom::error::Error::new(
         after_open,
-        rustmax::nom::error::ErrorKind::Tag
+        rmx::nom::error::ErrorKind::Tag
     )))
 }
 
@@ -197,13 +201,13 @@ pub fn extract_shortcodes(content: &str) -> Vec<(usize, Shortcode, usize)> {
         let remaining = &content[pos..];
 
         // Look for shortcode start.
-        if remaining.starts_with("{{<") || remaining.starts_with("{{%") {
-            if let Ok((after, shortcode)) = parse_shortcode(remaining) {
-                let end_pos = pos + (remaining.len() - after.len());
-                results.push((pos, shortcode, end_pos));
-                pos = end_pos;
-                continue;
-            }
+        if (remaining.starts_with("{{<") || remaining.starts_with("{{%"))
+            && let Ok((after, shortcode)) = parse_shortcode(remaining)
+        {
+            let end_pos = pos + (remaining.len() - after.len());
+            results.push((pos, shortcode, end_pos));
+            pos = end_pos;
+            continue;
         }
 
         pos += 1;

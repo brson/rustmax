@@ -1,9 +1,9 @@
 //! Interactive REPL for collection queries.
 
-use rustmax::prelude::*;
-use rustmax::rustyline::error::ReadlineError;
-use rustmax::rustyline::{DefaultEditor, Config, EditMode};
-use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+use rmx::prelude::*;
+use rmx::rustyline::error::ReadlineError;
+use rmx::rustyline::{DefaultEditor, Config, EditMode};
+use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
 use std::io::Write;
 
 use crate::collection::{Collection, Config as CollectionConfig};
@@ -343,7 +343,7 @@ fn cmd_recent(collection: &Collection, stdout: &mut StandardStream) -> Result<()
 }
 
 fn cmd_files(collection: &Collection, pattern: &str, stdout: &mut StandardStream) -> Result<()> {
-    use rustmax::glob::glob;
+    use rmx::glob::glob;
 
     // Default pattern if none provided.
     let pattern = if pattern.is_empty() {

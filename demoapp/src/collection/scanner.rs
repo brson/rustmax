@@ -1,9 +1,9 @@
 //! Directory scanning for document discovery.
 
-use rustmax::prelude::*;
-use rustmax::ignore::WalkBuilder;
-use rustmax::rayon::prelude::*;
-use rustmax::log::debug;
+use rmx::prelude::*;
+use rmx::ignore::WalkBuilder;
+use rmx::rayon::prelude::*;
+use rmx::log::debug;
 use std::path::{Path, PathBuf};
 
 use super::Document;
@@ -54,12 +54,11 @@ impl Scanner {
             let entry = entry?;
             let path = entry.path();
 
-            if path.is_file() {
-                if let Some(ext) = path.extension() {
-                    if ext == "md" || ext == "markdown" {
-                        paths.push(path.to_path_buf());
-                    }
-                }
+            if path.is_file()
+                && let Some(ext) = path.extension()
+                    && (ext == "md" || ext == "markdown")
+            {
+                paths.push(path.to_path_buf());
             }
         }
 
@@ -73,7 +72,7 @@ impl Scanner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustmax::tempfile::TempDir;
+    use rmx::tempfile::TempDir;
     use std::fs;
 
     #[test]

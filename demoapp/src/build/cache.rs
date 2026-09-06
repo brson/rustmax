@@ -2,9 +2,8 @@
 //!
 //! Tracks content hashes to skip rebuilding unchanged documents.
 
-use rustmax::prelude::*;
-use rustmax::log::{debug, info};
-use serde::{Deserialize, Serialize};
+use rmx::prelude::*;
+use rmx::log::{debug, info};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
@@ -15,7 +14,7 @@ use crate::Result;
 const CACHE_FILE: &str = ".anthology-cache.json";
 
 /// Build cache for tracking document changes.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[rmx::derive(Debug, Default, Serialize, Deserialize)]
 pub struct BuildCache {
     /// Map of source path -> cached entry.
     entries: HashMap<PathBuf, CacheEntry>,
@@ -24,7 +23,7 @@ pub struct BuildCache {
 }
 
 /// Cache entry for a single document.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CacheEntry {
     /// Content hash of the source file.
     pub content_hash: String,
@@ -61,7 +60,7 @@ impl BuildCache {
         }
 
         match std::fs::read_to_string(&cache_path) {
-            Ok(json) => match rustmax::serde_json::from_str(&json) {
+            Ok(json) => match rmx::serde_json::from_str(&json) {
                 Ok(cache) => {
                     debug!("Loaded build cache with {} entries", Self::entry_count(&cache));
                     cache
@@ -85,7 +84,7 @@ impl BuildCache {
     /// Save cache to the collection root.
     pub fn save(&self, root: &Path) -> Result<()> {
         let cache_path = root.join(CACHE_FILE);
-        let json = rustmax::serde_json::to_string_pretty(self)?;
+        let json = rmx::serde_json::to_string_pretty(self)?;
         std::fs::write(&cache_path, json)?;
         debug!("Saved build cache with {} entries", self.entries.len());
         Ok(())
@@ -193,8 +192,8 @@ pub struct CacheStats {
 
 /// Compute a hash for the templates directory.
 pub fn hash_templates(templates_dir: &Path) -> Result<String> {
-    use rustmax::blake3::Hasher;
-    use rustmax::walkdir::WalkDir;
+    use rmx::blake3::Hasher;
+    use rmx::walkdir::WalkDir;
 
     let mut hasher = Hasher::new();
 
@@ -264,7 +263,7 @@ impl Default for IncrementalBuildResult {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustmax::tempfile::tempdir;
+    use rmx::tempfile::tempdir;
 
     #[test]
     fn test_cache_new() {

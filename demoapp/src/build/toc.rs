@@ -3,9 +3,8 @@
 //! Extracts headings from markdown content and generates hierarchical
 //! table of contents with anchor links.
 
-use rustmax::prelude::*;
-use rustmax::regex::Regex;
-use serde::{Deserialize, Serialize};
+use rmx::prelude::*;
+use rmx::regex::Regex;
 use std::sync::LazyLock;
 
 /// Regex to match markdown headings.
@@ -21,11 +20,38 @@ static HTML_H4_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h4[^>]*(?:i
 static HTML_H5_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h5[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h5>"#).expect("invalid regex"));
 static HTML_H6_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h6[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h6>"#).expect("invalid regex"));
 
+/// A markdown heading level, `#` through `######`.
+///
+/// Markdown and HTML both stop at six, so a level outside that range is not a
+/// deep heading but a parse that has gone wrong. Making it unrepresentable
+/// keeps that from reaching the nesting logic, which assumes levels are
+/// comparable and bounded.
+#[rmx::derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash,
+    TryFromPrimitive, IntoPrimitive,
+)]
+#[repr(u8)]
+pub enum HeadingLevel {
+    H1 = 1,
+    H2 = 2,
+    H3 = 3,
+    H4 = 4,
+    H5 = 5,
+    H6 = 6,
+}
+
+impl HeadingLevel {
+    /// The level as the number written in `<h1>`.
+    pub fn number(self) -> u8 {
+        self.into()
+    }
+}
+
 /// A heading extracted from content.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Heading {
-    /// Heading level (1-6).
-    pub level: u8,
+    /// Heading level.
+    pub level: HeadingLevel,
     /// Heading text (plain text, no markdown).
     pub text: String,
     /// Anchor ID for linking.
@@ -34,7 +60,7 @@ pub struct Heading {
 
 impl Heading {
     /// Create a new heading.
-    pub fn new(level: u8, text: impl Into<String>, id: impl Into<String>) -> Self {
+    pub fn new(level: HeadingLevel, text: impl Into<String>, id: impl Into<String>) -> Self {
         Self {
             level,
             text: text.into(),
@@ -44,7 +70,7 @@ impl Heading {
 }
 
 /// A table of contents entry with nested children.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TocEntry {
     /// Heading text.
     pub text: String,
@@ -62,14 +88,14 @@ impl TocEntry {
         Self {
             text: heading.text.clone(),
             id: heading.id.clone(),
-            level: heading.level,
+            level: heading.level.number(),
             children: Vec::new(),
         }
     }
 }
 
 /// Table of contents.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableOfContents {
     /// Top-level entries.
     pub entries: Vec<TocEntry>,
@@ -89,11 +115,9 @@ impl TableOfContents {
             return toc;
         }
 
-        // Find minimum level (available for future normalization).
-        let _min_level = headings.iter().map(|h| h.level).min().unwrap_or(1);
-
         // Build hierarchical structure.
-        let mut stack: Vec<(u8, usize)> = Vec::new(); // (level, index in parent's children)
+        // (level, index in parent's children)
+        let mut stack: Vec<(HeadingLevel, usize)> = Vec::new();
 
         for heading in headings {
             let entry = TocEntry::from_heading(heading);
@@ -124,7 +148,7 @@ impl TableOfContents {
     }
 
     /// Get mutable reference to entry at stack path.
-    fn get_entry_mut<'a>(entries: &'a mut [TocEntry], stack: &[(u8, usize)]) -> &'a mut TocEntry {
+    fn get_entry_mut<'a>(entries: &'a mut [TocEntry], stack: &[(HeadingLevel, usize)]) -> &'a mut TocEntry {
         let mut current = &mut entries[stack[0].1];
         for &(_, idx) in &stack[1..] {
             current = &mut current.children[idx];
@@ -224,7 +248,10 @@ pub fn extract_headings(markdown: &str) -> Vec<Heading> {
     let mut seen_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for caps in HEADING_RE.captures_iter(markdown) {
-        let level = caps.get(1).map(|m| m.as_str().len() as u8).unwrap_or(1);
+        // The regex matches one to six `#`, so the count is always a level.
+        let hashes = caps.get(1).expect("the heading regex captures its hashes");
+        let level = HeadingLevel::try_from(hashes.as_str().len() as u8)
+            .expect("the heading regex matches at most six hashes");
         let text = caps.get(2).map(|m| m.as_str().to_string()).unwrap_or_default();
 
         // Use custom ID if provided, otherwise generate from text.
@@ -233,7 +260,7 @@ pub fn extract_headings(markdown: &str) -> Vec<Heading> {
             .unwrap_or_else(|| generate_id(&text));
 
         // Ensure unique ID.
-        let unique_id = make_unique_id(&id, &mut seen_ids);
+        let unique_id = make_unique_id(&id, &seen_ids);
         seen_ids.insert(unique_id.clone());
 
         headings.push(Heading::new(level, strip_markdown(&text), unique_id));
@@ -248,9 +275,13 @@ pub fn extract_headings_html(html: &str) -> Vec<Heading> {
     let mut seen_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     // Process each heading level.
-    let regexes: &[(u8, &Regex)] = &[
-        (1, &HTML_H1_RE), (2, &HTML_H2_RE), (3, &HTML_H3_RE),
-        (4, &HTML_H4_RE), (5, &HTML_H5_RE), (6, &HTML_H6_RE),
+    let regexes: &[(HeadingLevel, &Regex)] = &[
+        (HeadingLevel::H1, &HTML_H1_RE),
+        (HeadingLevel::H2, &HTML_H2_RE),
+        (HeadingLevel::H3, &HTML_H3_RE),
+        (HeadingLevel::H4, &HTML_H4_RE),
+        (HeadingLevel::H5, &HTML_H5_RE),
+        (HeadingLevel::H6, &HTML_H6_RE),
     ];
 
     for &(level, re) in regexes {
@@ -265,7 +296,7 @@ pub fn extract_headings_html(html: &str) -> Vec<Heading> {
                 .map(|m| m.as_str().to_string())
                 .unwrap_or_else(|| generate_id(&text));
 
-            let unique_id = make_unique_id(&id, &mut seen_ids);
+            let unique_id = make_unique_id(&id, &seen_ids);
             seen_ids.insert(unique_id.clone());
 
             // Store with position in original text for sorting.
@@ -321,7 +352,7 @@ fn make_unique_id(id: &str, seen: &std::collections::HashSet<String>) -> String 
 fn strip_markdown(text: &str) -> String {
     // Remove bold/italic markers.
     let text = text.replace("**", "").replace("__", "");
-    let text = text.replace('*', "").replace('_', "");
+    let text = text.replace(['*', '_'], "");
     // Remove inline code.
     let text = text.replace('`', "");
     // Remove links [text](url) -> text.
@@ -372,7 +403,7 @@ pub fn add_heading_ids(html: &str) -> String {
     ];
 
     for &(tag, re) in regexes {
-        result = re.replace_all(&result, |caps: &rustmax::regex::Captures| {
+        result = re.replace_all(&result, |caps: &rmx::regex::Captures| {
             let attrs = caps.get(1).map(|m| m.as_str()).unwrap_or("");
             let content = caps.get(2).map(|m| m.as_str()).unwrap_or("");
 
@@ -384,7 +415,7 @@ pub fn add_heading_ids(html: &str) -> String {
             // Generate ID from content.
             let text = strip_html(content);
             let id = generate_id(&text);
-            let unique_id = make_unique_id(&id, &mut seen_ids);
+            let unique_id = make_unique_id(&id, &seen_ids);
             seen_ids.insert(unique_id.clone());
 
             format!("<{} id=\"{}\"{}>{}</{}>", tag, unique_id, attrs, content, tag)
@@ -395,7 +426,7 @@ pub fn add_heading_ids(html: &str) -> String {
 }
 
 /// TOC configuration options.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TocOptions {
     /// Minimum heading level to include (1-6).
     #[serde(default = "default_min_level")]
@@ -432,7 +463,7 @@ impl TocOptions {
     pub fn filter_headings(&self, headings: &[Heading]) -> Vec<Heading> {
         headings
             .iter()
-            .filter(|h| h.level >= self.min_level && h.level <= self.max_level)
+            .filter(|h| h.level.number() >= self.min_level && h.level.number() <= self.max_level)
             .cloned()
             .collect()
     }
@@ -502,13 +533,13 @@ mod tests {
         let headings = extract_headings(md);
 
         assert_eq!(headings.len(), 4);
-        assert_eq!(headings[0].level, 1);
+        assert_eq!(headings[0].level, HeadingLevel::H1);
         assert_eq!(headings[0].text, "Title");
-        assert_eq!(headings[1].level, 2);
+        assert_eq!(headings[1].level, HeadingLevel::H2);
         assert_eq!(headings[1].text, "Section 1");
-        assert_eq!(headings[2].level, 3);
+        assert_eq!(headings[2].level, HeadingLevel::H3);
         assert_eq!(headings[2].text, "Subsection");
-        assert_eq!(headings[3].level, 2);
+        assert_eq!(headings[3].level, HeadingLevel::H2);
         assert_eq!(headings[3].text, "Section 2");
     }
 
@@ -556,10 +587,10 @@ mod tests {
     #[test]
     fn test_toc_from_headings() {
         let headings = vec![
-            Heading::new(1, "Title", "title"),
-            Heading::new(2, "Section 1", "section-1"),
-            Heading::new(3, "Subsection 1.1", "subsection-1-1"),
-            Heading::new(2, "Section 2", "section-2"),
+            Heading::new(HeadingLevel::H1, "Title", "title"),
+            Heading::new(HeadingLevel::H2, "Section 1", "section-1"),
+            Heading::new(HeadingLevel::H3, "Subsection 1.1", "subsection-1-1"),
+            Heading::new(HeadingLevel::H2, "Section 2", "section-2"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
@@ -575,9 +606,9 @@ mod tests {
     #[test]
     fn test_toc_flat_headings() {
         let headings = vec![
-            Heading::new(2, "A", "a"),
-            Heading::new(2, "B", "b"),
-            Heading::new(2, "C", "c"),
+            Heading::new(HeadingLevel::H2, "A", "a"),
+            Heading::new(HeadingLevel::H2, "B", "b"),
+            Heading::new(HeadingLevel::H2, "C", "c"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
@@ -589,8 +620,8 @@ mod tests {
     #[test]
     fn test_toc_to_html() {
         let headings = vec![
-            Heading::new(1, "Title", "title"),
-            Heading::new(2, "Section", "section"),
+            Heading::new(HeadingLevel::H1, "Title", "title"),
+            Heading::new(HeadingLevel::H2, "Section", "section"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
@@ -605,8 +636,8 @@ mod tests {
     #[test]
     fn test_toc_to_markdown() {
         let headings = vec![
-            Heading::new(1, "Title", "title"),
-            Heading::new(2, "Section", "section"),
+            Heading::new(HeadingLevel::H1, "Title", "title"),
+            Heading::new(HeadingLevel::H2, "Section", "section"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
@@ -619,10 +650,10 @@ mod tests {
     #[test]
     fn test_toc_len() {
         let headings = vec![
-            Heading::new(1, "Title", "title"),
-            Heading::new(2, "Section 1", "section-1"),
-            Heading::new(3, "Sub", "sub"),
-            Heading::new(2, "Section 2", "section-2"),
+            Heading::new(HeadingLevel::H1, "Title", "title"),
+            Heading::new(HeadingLevel::H2, "Section 1", "section-1"),
+            Heading::new(HeadingLevel::H3, "Sub", "sub"),
+            Heading::new(HeadingLevel::H2, "Section 2", "section-2"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
@@ -662,20 +693,20 @@ mod tests {
         let headings = extract_headings_html(html);
 
         assert_eq!(headings.len(), 2);
-        assert_eq!(headings[0].level, 1);
+        assert_eq!(headings[0].level, HeadingLevel::H1);
         assert_eq!(headings[0].text, "Title");
         assert_eq!(headings[0].id, "title");
-        assert_eq!(headings[1].level, 2);
+        assert_eq!(headings[1].level, HeadingLevel::H2);
         assert_eq!(headings[1].text, "Section");
     }
 
     #[test]
     fn test_toc_options_filter() {
         let headings = vec![
-            Heading::new(1, "H1", "h1"),
-            Heading::new(2, "H2", "h2"),
-            Heading::new(3, "H3", "h3"),
-            Heading::new(4, "H4", "h4"),
+            Heading::new(HeadingLevel::H1, "H1", "h1"),
+            Heading::new(HeadingLevel::H2, "H2", "h2"),
+            Heading::new(HeadingLevel::H3, "H3", "h3"),
+            Heading::new(HeadingLevel::H4, "H4", "h4"),
         ];
 
         let options = TocOptions {
@@ -725,12 +756,12 @@ mod tests {
     #[test]
     fn test_deep_nesting() {
         let headings = vec![
-            Heading::new(1, "L1", "l1"),
-            Heading::new(2, "L2", "l2"),
-            Heading::new(3, "L3", "l3"),
-            Heading::new(4, "L4", "l4"),
-            Heading::new(5, "L5", "l5"),
-            Heading::new(6, "L6", "l6"),
+            Heading::new(HeadingLevel::H1, "L1", "l1"),
+            Heading::new(HeadingLevel::H2, "L2", "l2"),
+            Heading::new(HeadingLevel::H3, "L3", "l3"),
+            Heading::new(HeadingLevel::H4, "L4", "l4"),
+            Heading::new(HeadingLevel::H5, "L5", "l5"),
+            Heading::new(HeadingLevel::H6, "L6", "l6"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
@@ -743,14 +774,59 @@ mod tests {
     #[test]
     fn test_skipped_levels() {
         let headings = vec![
-            Heading::new(1, "Title", "title"),
-            Heading::new(3, "Jump to H3", "h3"),
-            Heading::new(2, "Back to H2", "h2"),
+            Heading::new(HeadingLevel::H1, "Title", "title"),
+            Heading::new(HeadingLevel::H3, "Jump to H3", "h3"),
+            Heading::new(HeadingLevel::H2, "Back to H2", "h2"),
         ];
 
         let toc = TableOfContents::from_headings(&headings);
 
         assert_eq!(toc.entries.len(), 1);
         assert_eq!(toc.entries[0].children.len(), 2);
+    }
+}
+
+#[cfg(test)]
+mod heading_level_tests {
+    use super::*;
+
+    #[test]
+    fn levels_convert_to_and_from_their_number() {
+        for (level, number) in [
+            (HeadingLevel::H1, 1u8),
+            (HeadingLevel::H2, 2),
+            (HeadingLevel::H3, 3),
+            (HeadingLevel::H4, 4),
+            (HeadingLevel::H5, 5),
+            (HeadingLevel::H6, 6),
+        ] {
+            assert_eq!(level.number(), number);
+            assert_eq!(HeadingLevel::try_from(number).unwrap(), level);
+        }
+    }
+
+    #[test]
+    fn numbers_outside_one_through_six_are_not_levels() {
+        for number in [0u8, 7, 8, 255] {
+            assert!(HeadingLevel::try_from(number).is_err(), "{number} became a level");
+        }
+    }
+
+    #[test]
+    fn levels_order_from_shallowest_to_deepest() {
+        assert!(HeadingLevel::H1 < HeadingLevel::H2);
+        assert!(HeadingLevel::H6 > HeadingLevel::H3);
+
+        let mut levels = [HeadingLevel::H3, HeadingLevel::H1, HeadingLevel::H2];
+        levels.sort();
+        assert_eq!(levels, [HeadingLevel::H1, HeadingLevel::H2, HeadingLevel::H3]);
+    }
+
+    #[test]
+    fn seven_hashes_is_not_a_heading() {
+        // If it ever became one, the `expect` in `extract_headings` would fire
+        // rather than silently producing an out-of-range level.
+        assert!(extract_headings("####### Not a heading\n").is_empty());
+        assert_eq!(extract_headings("###### Six\n")[0].level, HeadingLevel::H6);
     }
 }

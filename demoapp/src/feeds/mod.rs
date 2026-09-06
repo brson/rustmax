@@ -1,8 +1,7 @@
 //! Feed generation for Atom and JSON Feed formats.
 
-use rustmax::prelude::*;
-use serde::{Deserialize, Serialize};
-use rustmax::jiff::Zoned;
+use rmx::prelude::*;
+use rmx::jiff::Zoned;
 use crate::collection::{Collection, Config};
 use crate::Result;
 
@@ -83,7 +82,7 @@ pub fn generate_atom(collection: &Collection, config: &Config) -> Result<String>
 }
 
 /// JSON Feed 1.1 structure.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct JsonFeed {
     pub version: String,
     pub title: String,
@@ -101,7 +100,7 @@ pub struct JsonFeed {
 }
 
 /// JSON Feed author.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct JsonFeedAuthor {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -109,7 +108,7 @@ pub struct JsonFeedAuthor {
 }
 
 /// JSON Feed item.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct JsonFeedItem {
     pub id: String,
     pub url: String,
@@ -181,7 +180,7 @@ pub fn generate_json_feed(collection: &Collection, config: &Config) -> Result<St
         items,
     };
 
-    let json = rustmax::serde_json::to_string_pretty(&feed)?;
+    let json = rmx::serde_json::to_string_pretty(&feed)?;
     Ok(json)
 }
 
@@ -216,12 +215,9 @@ mod tests {
                 base_url: "https://example.com".to_string(),
                 description: "A test blog".to_string(),
                 author: "Test Author".to_string(),
-                language: "en".to_string(),
+                ..default()
             },
-            build: Default::default(),
-            content: Default::default(),
-            server: Default::default(),
-            highlight: Default::default(),
+            ..default()
         }
     }
 
@@ -324,7 +320,7 @@ mod tests {
         let json_str = generate_json_feed(&collection, &config).unwrap();
 
         // Parse to verify structure.
-        let feed: JsonFeed = rustmax::serde_json::from_str(&json_str).unwrap();
+        let feed: JsonFeed = rmx::serde_json::from_str(&json_str).unwrap();
 
         assert_eq!(feed.version, "https://jsonfeed.org/version/1.1");
         assert_eq!(feed.title, "Test Blog");
@@ -346,7 +342,7 @@ mod tests {
 
         let config = make_config();
         let json_str = generate_json_feed(&collection, &config).unwrap();
-        let feed: JsonFeed = rustmax::serde_json::from_str(&json_str).unwrap();
+        let feed: JsonFeed = rmx::serde_json::from_str(&json_str).unwrap();
 
         let item = &feed.items[0];
         assert_eq!(item.title, "My Post");
@@ -370,7 +366,7 @@ mod tests {
         assert!(!atom.contains("<entry>"));
 
         let json = generate_json_feed(&collection, &config).unwrap();
-        let feed: JsonFeed = rustmax::serde_json::from_str(&json).unwrap();
+        let feed: JsonFeed = rmx::serde_json::from_str(&json).unwrap();
         assert!(feed.items.is_empty());
     }
 

@@ -1,15 +1,14 @@
 //! CLI command definitions.
 
-use rustmax::prelude::*;
-use clap::{Parser, Subcommand, ValueEnum};
-use rustmax::log::info;
+use rmx::prelude::*;
+use rmx::log::info;
 use std::path::PathBuf;
 
 use crate::{Result, Error};
 use crate::collection::Config;
 
 /// Anthology: A document publishing platform.
-#[derive(Parser, Debug)]
+#[rmx::derive(Parser, Debug)]
 #[command(name = "anthology")]
 #[command(version, about, long_about = None)]
 pub struct Cli {
@@ -21,7 +20,7 @@ pub struct Cli {
     command: Command,
 }
 
-#[derive(Subcommand, Debug)]
+#[rmx::derive(Subcommand, Debug)]
 enum Command {
     /// Initialize a new collection.
     Init {
@@ -70,6 +69,12 @@ enum Command {
         /// Include draft documents.
         #[arg(long)]
         drafts: bool,
+
+        /// Open the site in a browser once the server is listening.
+        ///
+        /// Overrides `[server] open` in the collection's config.
+        #[arg(long)]
+        open: bool,
     },
 
     /// Validate documents in the collection.
@@ -144,7 +149,7 @@ enum Command {
     },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+#[rmx::derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 enum ExportFormat {
     Json,
     Rss,
@@ -152,20 +157,22 @@ enum ExportFormat {
     JsonFeed,
     Sitemap,
     Epub,
+    /// Gzipped tarball of the built output directory.
+    Tar,
 }
 
 impl Cli {
     pub fn execute(self) -> Result<()> {
         // Initialize logging.
         let log_level = if self.verbose { "debug" } else { "info" };
-        rustmax::env_logger::Builder::from_env(
-            rustmax::env_logger::Env::default().default_filter_or(log_level)
+        rmx::env_logger::Builder::from_env(
+            rmx::env_logger::Env::default().default_filter_or(log_level)
         ).init();
 
         match self.command {
             Command::Init { path } => cmd_init(path),
             Command::Build { path, output, drafts, compress, incremental, progress } => cmd_build(path, output, drafts, compress, incremental, progress),
-            Command::Serve { path, port, drafts } => cmd_serve(path, port, drafts),
+            Command::Serve { path, port, drafts, open } => cmd_serve(path, port, drafts, open),
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
             Command::Index { path } => cmd_index(path),
@@ -179,7 +186,7 @@ impl Cli {
 
 fn cmd_init(path: PathBuf) -> Result<()> {
     use std::fs;
-    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
     let config_path = path.join("anthology.toml");
@@ -199,7 +206,7 @@ fn cmd_init(path: PathBuf) -> Result<()> {
 
     // Write default config.
     let default_config = Config::default();
-    let config_toml = rustmax::toml::to_string_pretty(&default_config)
+    let config_toml = rmx::toml::to_string_pretty(&default_config)
         .map_err(|e| Error::config(e.to_string()))?;
     fs::write(&config_path, config_toml)?;
 
@@ -275,17 +282,18 @@ fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: boo
     Ok(())
 }
 
-fn cmd_serve(path: PathBuf, port: u16, drafts: bool) -> Result<()> {
+fn cmd_serve(path: PathBuf, port: u16, drafts: bool, open: bool) -> Result<()> {
     info!("Starting server for collection at {}", path.display());
 
     let config = Config::load(&path)?;
     let collection = crate::collection::Collection::load(&path, &config)?;
 
-    crate::serve::serve(collection, config, port, drafts)
+    let open = open || config.server.open;
+    crate::serve::serve_with_options(collection, config, port, drafts, open)
 }
 
 fn cmd_check(path: PathBuf) -> Result<()> {
-    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
     info!("Checking collection at {}", path.display());
@@ -295,32 +303,59 @@ fn cmd_check(path: PathBuf) -> Result<()> {
 
     let mut stdout = StandardStream::stdout(ColorChoice::Auto);
     let mut errors = 0;
+    let mut warnings = 0;
 
     for doc in &collection.documents {
         if let Err(e) = doc.validate() {
             stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
-            write!(stdout, "Error")?;
+            write!(stdout, "error")?;
             stdout.reset()?;
             writeln!(stdout, " {}: {}", doc.source_path.display(), e)?;
             errors += 1;
         }
+
+        for lint in crate::lint::check_document(doc) {
+            let color = match lint.level {
+                crate::lint::Level::Error => Color::Red,
+                crate::lint::Level::Warning => Color::Yellow,
+            };
+            stdout.set_color(ColorSpec::new().set_fg(Some(color)))?;
+            write!(stdout, "{}", lint.level)?;
+            stdout.reset()?;
+            writeln!(
+                stdout,
+                " {}:{}: {}",
+                lint.path.display(),
+                lint.line,
+                lint.message,
+            )?;
+
+            match lint.level {
+                crate::lint::Level::Error => errors += 1,
+                crate::lint::Level::Warning => warnings += 1,
+            }
+        }
     }
 
-    if errors == 0 {
-        stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
-        write!(stdout, "OK")?;
-        stdout.reset()?;
-        writeln!(stdout, " {} documents validated", collection.documents.len())?;
-    } else {
-        return Err(Error::build(format!("{} validation errors", errors)));
+    if errors > 0 {
+        return Err(Error::check(errors));
     }
+
+    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
+    write!(stdout, "ok")?;
+    stdout.reset()?;
+    write!(stdout, " {} documents validated", collection.documents.len())?;
+    if warnings > 0 {
+        write!(stdout, ", {} warnings", warnings)?;
+    }
+    writeln!(stdout)?;
 
     Ok(())
 }
 
 fn cmd_new(title: String, path: PathBuf) -> Result<()> {
-    use rustmax::jiff::Zoned;
-    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use rmx::jiff::Zoned;
+    use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
     let _config = Config::load(&path)?;
@@ -390,7 +425,7 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
     let config = Config::load(&path)?;
     let collection = crate::collection::Collection::load(&path, &config)?;
 
-    // Handle EPUB separately since it's binary.
+    // EPUB and tar are binary, and go straight to a file rather than stdout.
     if format == ExportFormat::Epub {
         let epub_path = output.unwrap_or_else(|| path.join("output.epub"));
         let epub_config = crate::export::EpubConfig::default();
@@ -399,9 +434,25 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
         return Ok(());
     }
 
+    if format == ExportFormat::Tar {
+        let options = crate::export::ArchiveOptions::default();
+        let archive_path = output
+            .unwrap_or_else(|| path.join(crate::export::default_archive_name(&options)));
+        let built = path.join(&config.build.output_dir);
+
+        let stats = crate::export::archive_directory(&built, &archive_path, &options)?;
+        info!(
+            "Archived {} files to {} ({} bytes)",
+            stats.files,
+            archive_path.display(),
+            stats.archive_bytes,
+        );
+        return Ok(());
+    }
+
     let content = match format {
         ExportFormat::Json => {
-            rustmax::serde_json::to_string_pretty(&collection.to_export())?
+            rmx::serde_json::to_string_pretty(&collection.to_export())?
         }
         ExportFormat::Rss => {
             crate::build::generate_rss(&collection, &config)?
@@ -415,7 +466,8 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
         ExportFormat::Sitemap => {
             crate::build::generate_sitemap(&collection, &config)?
         }
-        ExportFormat::Epub => unreachable!(),
+        // Both are written to a file above and never reach here.
+        ExportFormat::Epub | ExportFormat::Tar => bug!("binary export format"),
     };
 
     match output {
@@ -439,8 +491,8 @@ fn cmd_repl(path: PathBuf) -> Result<()> {
 }
 
 fn cmd_files(path: PathBuf, pattern: String) -> Result<()> {
-    use rustmax::glob::glob;
-    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use rmx::glob::glob;
+    use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
     let full_pattern = path.join(&pattern);
@@ -482,7 +534,7 @@ fn cmd_files(path: PathBuf, pattern: String) -> Result<()> {
 }
 
 fn cmd_fetch(url: String, output: Option<PathBuf>, path: PathBuf) -> Result<()> {
-    use rustmax::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
+    use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
     info!("Fetching content from {}", url);
@@ -501,7 +553,7 @@ fn cmd_fetch(url: String, output: Option<PathBuf>, path: PathBuf) -> Result<()> 
     };
 
     // Run async fetch in tokio runtime.
-    let rt = rustmax::tokio::runtime::Runtime::new()
+    let rt = rmx::tokio::runtime::Runtime::new()
         .map_err(|e| Error::Other(e.into()))?;
 
     rt.block_on(async {

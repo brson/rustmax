@@ -2,10 +2,10 @@
 //!
 //! Provides work-stealing, scoped threads, and channel-based progress reporting.
 
-use rustmax::prelude::*;
-use rustmax::crossbeam::channel::{Receiver, Sender, bounded, unbounded};
-use rustmax::crossbeam::deque::{Injector, Stealer, Worker};
-use rustmax::crossbeam::scope;
+use rmx::prelude::*;
+use rmx::crossbeam::channel::{Receiver, Sender, bounded, unbounded};
+use rmx::crossbeam::deque::{Injector, Stealer, Worker};
+use rmx::crossbeam::scope;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
@@ -124,9 +124,9 @@ impl<T> TaskPool<T> {
         // Then try the global queue.
         loop {
             match self.injector.steal_batch_and_pop(&self.workers[worker_id]) {
-                rustmax::crossbeam::deque::Steal::Success(task) => return Some(task),
-                rustmax::crossbeam::deque::Steal::Empty => break,
-                rustmax::crossbeam::deque::Steal::Retry => continue,
+                rmx::crossbeam::deque::Steal::Success(task) => return Some(task),
+                rmx::crossbeam::deque::Steal::Empty => break,
+                rmx::crossbeam::deque::Steal::Retry => continue,
             }
         }
 
@@ -137,9 +137,9 @@ impl<T> TaskPool<T> {
             }
             loop {
                 match stealer.steal() {
-                    rustmax::crossbeam::deque::Steal::Success(task) => return Some(task),
-                    rustmax::crossbeam::deque::Steal::Empty => break,
-                    rustmax::crossbeam::deque::Steal::Retry => continue,
+                    rmx::crossbeam::deque::Steal::Success(task) => return Some(task),
+                    rmx::crossbeam::deque::Steal::Empty => break,
+                    rmx::crossbeam::deque::Steal::Retry => continue,
                 }
             }
         }
@@ -164,7 +164,7 @@ where
         .unwrap_or(4);
 
     scope(|s| {
-        let chunk_size = (items.len() + num_threads - 1) / num_threads;
+        let chunk_size = items.len().div_ceil(num_threads);
         let f = &f;
 
         for chunk in items.chunks(chunk_size) {
@@ -192,7 +192,7 @@ where
     let results = std::sync::Mutex::new(Vec::with_capacity(items.len()));
 
     scope(|s| {
-        let chunk_size = (items.len() + num_threads - 1) / num_threads;
+        let chunk_size = items.len().div_ceil(num_threads);
         let f = &f;
         let results = &results;
 
@@ -282,8 +282,12 @@ pub struct Pipeline<T> {
 }
 
 impl<T: Send + 'static> Pipeline<T> {
-    /// Create a new pipeline from an iterator.
-    pub fn from_iter<I>(iter: I) -> Self
+    /// Create a new pipeline feeding from an iterator on its own thread.
+    ///
+    /// Deliberately not `FromIterator`: that trait consumes the iterator
+    /// eagerly, and the point here is that a producer thread walks it while
+    /// the stages downstream are already running.
+    pub fn spawn_from<I>(iter: I) -> Self
     where
         I: IntoIterator<Item = T> + Send + 'static,
     {
@@ -323,10 +327,10 @@ impl<T: Send + 'static> Pipeline<T> {
         let (tx, rx) = unbounded();
         thread::spawn(move || {
             for item in self.receiver {
-                if predicate(&item) {
-                    if tx.send(item).is_err() {
-                        break;
-                    }
+                if predicate(&item)
+                    && tx.send(item).is_err()
+                {
+                    break;
                 }
             }
         });
@@ -425,7 +429,7 @@ mod tests {
 
     #[test]
     fn test_pipeline() {
-        let result: Vec<i32> = Pipeline::from_iter(1..=10)
+        let result: Vec<i32> = Pipeline::spawn_from(1..=10)
             .filter(|x| x % 2 == 0)
             .map(|x| x * 3)
             .collect();

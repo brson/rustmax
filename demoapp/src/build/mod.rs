@@ -30,7 +30,7 @@ pub use highlight::{
     themes, languages,
 };
 pub use toc::{
-    TableOfContents, TocEntry, TocOptions, Heading,
+    TableOfContents, TocEntry, TocOptions, Heading, HeadingLevel,
     extract_headings, extract_headings_html, generate_toc, generate_toc_html,
     add_heading_ids, generate_id, generate_toc_css,
 };
@@ -45,10 +45,10 @@ pub use images::{
     process_image, process_directory,
 };
 
-use rustmax::prelude::*;
-use rustmax::rayon::prelude::*;
-use rustmax::log::{info, debug};
-use rustmax::jiff::Zoned;
+use rmx::prelude::*;
+use rmx::rayon::prelude::*;
+use rmx::log::{info, debug};
+use rmx::jiff::Zoned;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -72,7 +72,7 @@ pub fn build(
 
     // Initialize template engine.
     let templates_dir = collection.root.join("templates");
-    let engine = TemplateEngine::new(&templates_dir)?;
+    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
 
     // Filter documents.
     let documents: Vec<&Document> = if include_drafts {
@@ -120,7 +120,7 @@ pub fn build(
 
     // Build and write search index.
     let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rustmax::serde_json::to_string(&search_index)?;
+    let search_json = rmx::serde_json::to_string(&search_index)?;
     fs::write(output_dir.join("search-index.json"), search_json)?;
 
     Ok(())
@@ -144,7 +144,7 @@ pub fn build_with_progress(
     // Initialize template engine with spinner.
     let template_pb = template_spinner();
     let templates_dir = collection.root.join("templates");
-    let engine = TemplateEngine::new(&templates_dir)?;
+    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
     finish_with_check(&template_pb, "Templates compiled");
 
     // Filter documents.
@@ -203,7 +203,7 @@ pub fn build_with_progress(
     // Build and write search index with spinner.
     let search_pb = search_spinner();
     let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rustmax::serde_json::to_string(&search_index)?;
+    let search_json = rmx::serde_json::to_string(&search_index)?;
     fs::write(output_dir.join("search-index.json"), search_json)?;
     finish_with_check(&search_pb, "Search index built");
 
@@ -234,7 +234,7 @@ pub fn build_incremental(
     fs::create_dir_all(output_dir)?;
 
     // Initialize template engine.
-    let engine = TemplateEngine::new(&templates_dir)?;
+    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
 
     // Filter documents.
     let documents: Vec<&Document> = if include_drafts {
@@ -311,7 +311,7 @@ pub fn build_incremental(
 
     // Build and write search index.
     let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rustmax::serde_json::to_string(&search_index)?;
+    let search_json = rmx::serde_json::to_string(&search_index)?;
     fs::write(output_dir.join("search-index.json"), search_json)?;
 
     // Prune deleted documents from cache.
@@ -355,7 +355,7 @@ pub fn build_incremental_with_progress(
     fs::create_dir_all(output_dir)?;
 
     // Initialize template engine.
-    let engine = TemplateEngine::new(&templates_dir)?;
+    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
     finish_with_check(&template_pb, "Templates compiled");
 
     // Filter documents.
@@ -451,7 +451,7 @@ pub fn build_incremental_with_progress(
     // Build and write search index with spinner.
     let search_pb = search_spinner();
     let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rustmax::serde_json::to_string(&search_index)?;
+    let search_json = rmx::serde_json::to_string(&search_index)?;
     fs::write(output_dir.join("search-index.json"), search_json)?;
     finish_with_check(&search_pb, "Search index built");
 
@@ -549,7 +549,7 @@ fn build_tag_pages(
 
 /// Copy static assets to output.
 fn copy_static(static_dir: &Path, output_dir: &Path) -> Result<()> {
-    use rustmax::walkdir::WalkDir;
+    use rmx::walkdir::WalkDir;
 
     for entry in WalkDir::new(static_dir) {
         let entry = entry?;

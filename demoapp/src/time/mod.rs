@@ -1,8 +1,8 @@
 //! Time and date utilities using jiff and chrono.
 
-use rustmax::prelude::*;
-use rustmax::jiff::{civil::Date, Zoned};
-use rustmax::chrono::{NaiveDate, DateTime, Utc, Local, Datelike};
+use rmx::prelude::*;
+use rmx::jiff::{civil::Date, Zoned};
+use rmx::chrono::{NaiveDate, DateTime, Utc, Local, Datelike};
 
 /// Parse a date string using jiff.
 pub fn parse_date(s: &str) -> Option<Date> {

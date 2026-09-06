@@ -1,7 +1,7 @@
 //! Markdown rendering with comrak and syntax highlighting.
 
-use rustmax::comrak::{markdown_to_html, Options};
-use rustmax::regex::Regex;
+use rmx::comrak::{markdown_to_html, Options};
+use rmx::regex::Regex;
 use std::sync::LazyLock;
 
 use super::highlight::{Highlighter, HighlightOptions, themes};
@@ -65,7 +65,7 @@ pub fn apply_syntax_highlighting(html: &str, options: &HighlightOptions) -> Stri
         .with_line_numbers(options.line_numbers)
         .with_copy_button(options.copy_button);
 
-    CODE_BLOCK_RE.replace_all(html, |caps: &rustmax::regex::Captures| {
+    CODE_BLOCK_RE.replace_all(html, |caps: &rmx::regex::Captures| {
         // Get language from either lang attribute or class.
         let lang = caps.get(1)
             .or_else(|| caps.get(2))

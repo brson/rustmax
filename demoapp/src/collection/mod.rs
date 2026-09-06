@@ -4,12 +4,14 @@ mod config;
 mod document;
 mod scanner;
 
-pub use config::{Config, HighlightConfig, CollectionConfig, BuildConfig, ContentConfig, ServerConfig};
+pub use config::{
+    ANTHOLOGY_VERSION, BuildConfig, CollectionConfig, Config, ConfigFormat, ContentConfig,
+    HighlightConfig, ServerConfig,
+};
 pub use document::{Document, Frontmatter};
 pub use scanner::Scanner;
 
-use rustmax::prelude::*;
-use serde::{Deserialize, Serialize};
+use rmx::prelude::*;
 use std::path::{Path, PathBuf};
 
 use crate::{Error, Result};
@@ -21,6 +23,51 @@ pub struct Collection {
     pub root: PathBuf,
     /// All documents in the collection.
     pub documents: Vec<Document>,
+}
+
+/// The queries a collection answers, on any slice of documents.
+///
+/// `Collection` is not the only thing that holds documents: the dev server
+/// hands slices to handlers and the REPL narrows them as the user filters. The
+/// queries belong to the documents rather than to the container, so they live
+/// here and `Collection` delegates.
+#[extension_trait]
+pub impl DocumentsExt for [Document] {
+    /// Non-draft documents, newest first.
+    fn published(&self) -> Vec<&Document> {
+        self.iter()
+            .filter(|d| !d.frontmatter.draft)
+            .sorted_by(|a, b| b.frontmatter.date.cmp(&a.frontmatter.date))
+            .collect()
+    }
+
+    /// Every document, drafts included, newest first.
+    fn all_sorted(&self) -> Vec<&Document> {
+        self.iter()
+            .sorted_by(|a, b| b.frontmatter.date.cmp(&a.frontmatter.date))
+            .collect()
+    }
+
+    /// Documents carrying `tag`.
+    fn by_tag(&self, tag: &str) -> Vec<&Document> {
+        self.iter()
+            .filter(|d| d.frontmatter.tags.iter().any(|t| t == tag))
+            .collect()
+    }
+
+    /// The document with this slug, if there is one.
+    fn by_slug(&self, slug: &str) -> Option<&Document> {
+        self.iter().find(|d| d.slug() == slug)
+    }
+
+    /// Every tag used, sorted and deduplicated.
+    fn tags(&self) -> Vec<String> {
+        self.iter()
+            .flat_map(|d| d.frontmatter.tags.iter().cloned())
+            .sorted()
+            .dedup()
+            .collect()
+    }
 }
 
 impl Collection {
@@ -41,40 +88,27 @@ impl Collection {
 
     /// Get all non-draft documents, sorted by date descending.
     pub fn published(&self) -> Vec<&Document> {
-        let mut docs: Vec<_> = self
-            .documents
-            .iter()
-            .filter(|d| !d.frontmatter.draft)
-            .collect();
-        docs.sort_by(|a, b| b.frontmatter.date.cmp(&a.frontmatter.date));
-        docs
+        self.documents.published()
     }
 
     /// Get all documents including drafts, sorted by date descending.
     pub fn all_sorted(&self) -> Vec<&Document> {
-        let mut docs: Vec<_> = self.documents.iter().collect();
-        docs.sort_by(|a, b| b.frontmatter.date.cmp(&a.frontmatter.date));
-        docs
+        self.documents.all_sorted()
     }
 
     /// Get documents by tag.
     pub fn by_tag(&self, tag: &str) -> Vec<&Document> {
-        self.documents
-            .iter()
-            .filter(|d| d.frontmatter.tags.iter().any(|t| t == tag))
-            .collect()
+        self.documents.by_tag(tag)
+    }
+
+    /// Get the document with this slug, if there is one.
+    pub fn by_slug(&self, slug: &str) -> Option<&Document> {
+        self.documents.by_slug(slug)
     }
 
     /// Get all unique tags.
     pub fn tags(&self) -> Vec<String> {
-        use rustmax::itertools::Itertools;
-
-        self.documents
-            .iter()
-            .flat_map(|d| d.frontmatter.tags.iter().cloned())
-            .sorted()
-            .dedup()
-            .collect()
+        self.documents.tags()
     }
 
     /// Convert to exportable format.
@@ -86,7 +120,7 @@ impl Collection {
 }
 
 /// Serializable collection for export.
-#[derive(Debug, Serialize, Deserialize)]
+#[rmx::derive(Debug, Serialize, Deserialize)]
 pub struct CollectionExport {
     pub documents: Vec<document::DocumentExport>,
 }

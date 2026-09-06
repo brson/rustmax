@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if generator %}<meta name="generator" content="{{ generator }}" data-build="{{ build_id }}">{% endif %}
     <title>{% if title %}{{ title }} - {% endif %}{{ site_title }}</title>
     <link rel="stylesheet" href="/highlight.css">
     <link rel="stylesheet" href="/toc.css">
