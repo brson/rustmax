@@ -30,6 +30,19 @@
         }
     }
 
+    // Escape text for interpolation into HTML.
+    //
+    // Topic names and aliases are Rust source fragments, so they contain
+    // markup characters: the alias "Box<dyn Error>" is parsed as a tag and
+    // silently swallowed if it goes into innerHTML unescaped.
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     // Render search results grouped by category.
     function renderSearchResults(results) {
         if (!searchResults) return;
@@ -40,35 +53,30 @@
             return;
         }
 
-        // Group by category.
-        const groups = {};
+        // Group by category, in the order the categories first appear.
+        //
+        // Results arrive sorted by score, so a category's first result is its
+        // best one, and grouping this way keeps the highest-scoring result at
+        // the top of the dropdown. A fixed category order would bury it.
+        const groups = new Map();
         for (const result of results) {
             const cat = result.entry.category;
-            if (!groups[cat]) groups[cat] = [];
-            groups[cat].push(result);
+            if (!groups.has(cat)) groups.set(cat, []);
+            groups.get(cat).push(result);
         }
 
-        // Render order: crate, book, std.
-        const order = ['crate', 'book', 'std'];
-        const sortedCats = Object.keys(groups).sort((a, b) => {
-            const ai = order.indexOf(a);
-            const bi = order.indexOf(b);
-            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-        });
-
         let html = '';
-        for (const cat of sortedCats) {
-            const items = groups[cat];
-            html += `<div class="search-category">${cat}</div>`;
+        for (const [cat, items] of groups) {
+            html += `<div class="search-category">${escapeHtml(cat)}</div>`;
             for (const { entry, matchedText } of items) {
                 const href = entry.path || '#';
                 const matchInfo = formatMatchInfo(matchedText);
                 const matchHtml = matchInfo
-                    ? `<span class="search-match-info">${matchInfo}</span>`
+                    ? `<span class="search-match-info">${escapeHtml(matchInfo)}</span>`
                     : '';
-                html += `<a class="search-result" href="${href}">
-                    <span class="search-result-name">${entry.name}${matchHtml}</span>
-                    <span class="search-result-brief">${entry.brief}</span>
+                html += `<a class="search-result" href="${escapeHtml(href)}">
+                    <span class="search-result-name">${escapeHtml(entry.name)}${matchHtml}</span>
+                    <span class="search-result-brief">${escapeHtml(entry.brief)}</span>
                 </a>`;
             }
         }

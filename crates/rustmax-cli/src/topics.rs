@@ -1,13 +1,13 @@
 //! Topic index validation.
 //!
-//! Loads and validates the topic index from TOML files in `data/topics/`.
+//! Loads and validates the topic index from TOML files in `src/topics/`.
 
 use rmx::prelude::*;
 use rmx::serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
-/// A search index entry for client-side fuzzy search.
+/// A search index entry for client-side search.
 #[derive(Debug, Clone, Serialize)]
 pub struct SearchEntry {
     /// Unique identifier.
@@ -47,6 +47,13 @@ pub struct Topic {
     pub aliases: Vec<String>,
     pub category: String,
     pub brief: String,
+    /// Explicit site-relative documentation path.
+    ///
+    /// When absent the path is derived from the category and topic id.
+    /// Set it when the derivation would be wrong, as for the std modules
+    /// that rustdoc documents under `core` or `alloc`.
+    #[serde(default)]
+    pub path: Option<String>,
 }
 
 /// Intermediate structure for deserializing categories.toml.
@@ -169,6 +176,21 @@ impl TopicIndex {
                     message: "name is empty".to_string(),
                 });
             }
+
+            // Validate an explicit path is site-relative.
+            if let Some(path) = &topic.path {
+                if path.is_empty() {
+                    result.errors.push(ValidationError {
+                        topic_id: id.clone(),
+                        message: "path is empty".to_string(),
+                    });
+                } else if path.starts_with('/') || path.contains("://") {
+                    result.errors.push(ValidationError {
+                        topic_id: id.clone(),
+                        message: format!("path '{}' must be site-relative", path),
+                    });
+                }
+            }
         }
 
         // Update stats.
@@ -176,6 +198,29 @@ impl TopicIndex {
         result.stats.category_count = self.categories.len();
 
         result
+    }
+}
+
+/// Derive a site-relative documentation path from a topic id and category.
+///
+/// Returns `None` for categories that have no documentation page.
+/// A topic may override this with an explicit `path` field.
+fn derive_path(id: &str, category: &str) -> Option<String> {
+    match category {
+        "crate" => {
+            // Strip the "-crate" disambiguation suffix, then convert hyphens
+            // to underscores to get the crate's module name.
+            let base_id = id.strip_suffix("-crate").unwrap_or(id);
+            let crate_name = base_id.replace('-', "_");
+            Some(format!("api/rustmax/{}/index.html", crate_name))
+        }
+        "book" => Some(format!("library/{}/", id)),
+        "std" => {
+            // "std-sync-atomic" -> "api/std/sync/atomic/index.html".
+            let module_path = id.strip_prefix("std-").unwrap_or(id).replace('-', "/");
+            Some(format!("api/std/{}/index.html", module_path))
+        }
+        _ => None,
     }
 }
 
@@ -306,26 +351,10 @@ impl TopicIndex {
                 .collect::<Vec<_>>()
                 .join("|");
 
-            // Generate path based on category (relative, no leading slash).
-            let path = match topic.category.as_str() {
-                "crate" => {
-                    // Convert topic id to crate name.
-                    // Strip "-crate" suffix if present, then convert hyphens to underscores.
-                    let base_id = id.strip_suffix("-crate").unwrap_or(id);
-                    let crate_name = base_id.replace('-', "_");
-                    Some(format!("api/rustmax/{}/index.html", crate_name))
-                }
-                "book" => {
-                    // Book path (e.g., "trpl" -> "library/trpl/").
-                    Some(format!("library/{}/", id))
-                }
-                "std" => {
-                    // Std module path (e.g., "std-sync-atomic" -> "api/std/sync/atomic/index.html").
-                    let module_path = id.strip_prefix("std-").unwrap_or(id).replace('-', "/");
-                    Some(format!("api/std/{}/index.html", module_path))
-                }
-                _ => None,
-            };
+            let path = topic
+                .path
+                .clone()
+                .or_else(|| derive_path(id, &topic.category));
 
             entries.push(SearchEntry {
                 id: id.clone(),
@@ -369,6 +398,76 @@ mod tests {
     }
 
     #[test]
+    fn test_derived_paths() {
+        assert_eq!(
+            derive_path("serde-json", "crate").unwrap(),
+            "api/rustmax/serde_json/index.html"
+        );
+        // The "-crate" suffix disambiguates an id, and is not part of the name.
+        assert_eq!(
+            derive_path("toml-crate", "crate").unwrap(),
+            "api/rustmax/toml/index.html"
+        );
+        assert_eq!(derive_path("trpl", "book").unwrap(), "library/trpl/");
+        assert_eq!(
+            derive_path("std-sync-atomic", "std").unwrap(),
+            "api/std/sync/atomic/index.html"
+        );
+        assert_eq!(derive_path("whatever", "unknown-category"), None);
+    }
+
+    /// std re-exports some modules from core and alloc, so those topics carry
+    /// an explicit path and must not fall back to the derived one.
+    #[test]
+    fn test_explicit_path_overrides_the_derived_one() {
+        let mut index = TopicIndex::default();
+        index.topics.insert(
+            "std-option".to_string(),
+            Topic {
+                name: "std::option".to_string(),
+                aliases: vec![],
+                category: "std".to_string(),
+                brief: "The Option type".to_string(),
+                path: Some("api/core/option/index.html".to_string()),
+            },
+        );
+
+        let entries = index.export_search_index();
+
+        assert_eq!(
+            entries[0].path,
+            Some("api/core/option/index.html".to_string())
+        );
+    }
+
+    #[test]
+    fn test_an_absolute_path_is_rejected() {
+        let mut index = TopicIndex::default();
+        index.categories.insert(
+            "std".to_string(),
+            Category {
+                name: "Standard Library".to_string(),
+                description: "std".to_string(),
+            },
+        );
+        index.topics.insert(
+            "std-option".to_string(),
+            Topic {
+                name: "std::option".to_string(),
+                aliases: vec![],
+                category: "std".to_string(),
+                brief: "The Option type".to_string(),
+                path: Some("/api/core/option/index.html".to_string()),
+            },
+        );
+
+        let result = index.validate();
+
+        assert!(!result.is_ok());
+        assert_eq!(result.errors.len(), 1);
+    }
+
+    #[test]
     fn test_search_index_contains_aliases() {
         let mut index = TopicIndex::default();
         index.topics.insert(
@@ -381,6 +480,7 @@ mod tests {
                 ],
                 category: "book".to_string(),
                 brief: "The official Rust book".to_string(),
+                path: None,
             },
         );
 
@@ -406,6 +506,7 @@ mod tests {
                 aliases: vec!["TRPL".to_string()],
                 category: "book".to_string(),
                 brief: "The official Rust book".to_string(),
+                path: None,
             },
         );
 

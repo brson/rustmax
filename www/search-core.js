@@ -83,10 +83,15 @@ function findMatch(query, entry) {
 // Category weights for ranking.
 // Standard library modules rank highest since they are the foundational
 // building blocks. Crates extend them, and books explain them.
+//
+// These only break ties between equally good matches. The weights stay
+// within a ratio of 1.0/0.9, the smallest gap between two match types, so
+// a weight can never promote a worse match over a better one: an exact
+// match on a book still beats a prefix match on a std module.
 var categoryWeights = {
-    'std': 1.5,
-    'crate': 1.3,
-    'book': 1.1,
+    'std': 1.10,
+    'crate': 1.05,
+    'book': 1.00,
 };
 
 // Perform search and return ranked results.

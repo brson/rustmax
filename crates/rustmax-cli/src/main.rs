@@ -219,6 +219,10 @@ struct CliCmdValidateLinks {
     #[arg(long, default_value = "src/linksubs.json5")]
     linksubs: String,
 
+    /// Path to the generated search index.
+    #[arg(long, default_value = "work/search-index.json")]
+    search_index: String,
+
     /// Path to the built site.
     #[arg(long, default_value = "out")]
     site: String,
@@ -581,13 +585,27 @@ impl CliCmdValidateLinks {
 
         println!("Checking {} against {}...", linksubs.display(), site.display());
 
-        let report = linkcheck::check(linksubs, site)?;
-        report.print();
+        let linksubs_report = linkcheck::check(linksubs, site)?;
+        linksubs_report.print();
 
-        if report.is_ok() {
+        let search_index = Path::new(&self.search_index);
+        if !search_index.is_file() {
+            bail!(
+                "no search index at {}; run `just export-search-index` first",
+                search_index.display()
+            );
+        }
+
+        println!();
+        println!("Checking {} against {}...", search_index.display(), site.display());
+
+        let search_report = linkcheck::check_search_index(search_index, site)?;
+        search_report.print();
+
+        if linksubs_report.is_ok() && search_report.is_ok() {
             Ok(())
         } else {
-            bail!("link substitution validation failed")
+            bail!("link validation failed")
         }
     }
 }

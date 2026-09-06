@@ -1,4 +1,7 @@
 # Standard library modules and types
+#
+# Modules that std re-exports from core or alloc have no page of their own
+# under api/std/, so they carry an explicit path to the module's real page.
 
 [topics.std-collections]
 name = "std::collections"
@@ -11,18 +14,21 @@ name = "std::string"
 aliases = ["String", "&str", "string slice", "str type", "to_string", "ToString", "FromStr", "from_str", "string type", "text"]
 category = "std"
 brief = "The String type and string slicing"
+path = "api/alloc/string/index.html"
 
 [topics.std-option]
 name = "std::option"
 aliases = ["Option", "Some", "None", "unwrap", "expect", "is_some", "is_none", "unwrap_or", "optional value", "nullable"]
 category = "std"
 brief = "The Option type for optional values"
+path = "api/core/option/index.html"
 
 [topics.std-result]
 name = "std::result"
 aliases = ["Result", "Ok", "Err", "unwrap", "expect", "map_err", "error handling", "error propagation", "? operator"]
 category = "std"
 brief = "The Result type for error handling"
+path = "api/core/result/index.html"
 
 [topics.std-io]
 name = "std::io"
@@ -59,6 +65,7 @@ name = "std::sync::atomic"
 aliases = ["atomic module", "AtomicBool", "AtomicUsize", "Ordering", "memory ordering", "atomic operations", "fence", "compare_exchange", "lock-free", "AtomicPtr"]
 category = "std"
 brief = "Atomic types for lock-free concurrent programming"
+path = "api/core/sync/atomic/index.html"
 
 [topics.std-sync-mpsc]
 name = "std::sync::mpsc"
@@ -89,30 +96,35 @@ name = "std::mem"
 aliases = ["mem module", "size_of", "align_of", "swap", "take", "replace", "transmute", "memory", "drop", "forget", "ManuallyDrop", "MaybeUninit"]
 category = "std"
 brief = "Memory manipulation utilities"
+path = "api/core/mem/index.html"
 
 [topics.std-ptr]
 name = "std::ptr"
 aliases = ["ptr module", "null", "read", "write", "copy", "pointer operations"]
 category = "std"
 brief = "Raw pointer operations"
+path = "api/core/ptr/index.html"
 
 [topics.std-cell]
 name = "std::cell"
 aliases = ["cell module", "Cell", "RefCell", "UnsafeCell", "interior mutability", "borrow_mut", "OnceCell", "LazyCell"]
 category = "std"
 brief = "Types providing interior mutability"
+path = "api/core/cell/index.html"
 
 [topics.std-rc]
 name = "std::rc"
 aliases = ["rc module", "Rc", "Weak", "reference counting", "shared ownership", "reference count", "Rc::clone"]
 category = "std"
 brief = "Single-threaded reference counting"
+path = "api/alloc/rc/index.html"
 
 [topics.std-fmt]
 name = "std::fmt"
 aliases = ["fmt module", "Display", "Debug", "format!", "write!", "Formatter", "formatting", "print", "println", "{:?}", "{:#?}"]
 category = "std"
 brief = "Formatting and display traits"
+path = "api/alloc/fmt/index.html"
 
 [topics.std-error]
 name = "std::error"
@@ -131,6 +143,7 @@ name = "std::future"
 aliases = ["future module", "Future trait", "poll", "async", "await", "async fn", "IntoFuture"]
 category = "std"
 brief = "The Future trait for asynchronous computation"
+path = "api/core/future/index.html"
 
 [topics.std-task]
 name = "std::task"
@@ -143,30 +156,35 @@ name = "std::pin"
 aliases = ["pin module", "Pin", "pin!", "self-referential", "Unpin", "pin_mut!"]
 category = "std"
 brief = "Pinning types in memory"
+path = "api/core/pin/index.html"
 
 [topics.std-any]
 name = "std::any"
 aliases = ["any module", "Any trait", "TypeId", "type erasure", "downcast", "dynamic typing", "runtime type", "downcast_ref"]
 category = "std"
 brief = "Runtime type identification and reflection"
+path = "api/core/any/index.html"
 
 [topics.std-marker]
 name = "std::marker"
 aliases = ["marker module", "PhantomData", "Send", "Sync", "Copy", "Sized", "auto traits", "thread safety", "Unpin"]
 category = "std"
 brief = "Marker traits and phantom types"
+path = "api/core/marker/index.html"
 
 [topics.std-ops]
 name = "std::ops"
 aliases = ["ops module", "Add", "Sub", "Deref", "Index", "Fn", "operator overloading", "operators", "FnOnce", "FnMut", "Range", "Mul", "Div", "closures", "closure traits"]
 category = "std"
 brief = "Overloadable operators and traits"
+path = "api/core/ops/index.html"
 
 [topics.std-cmp]
 name = "std::cmp"
 aliases = ["cmp module", "Ord", "PartialOrd", "Eq", "PartialEq", "Ordering", "sort", "sorting", "min", "max", "compare"]
 category = "std"
 brief = "Comparison traits for ordering and equality"
+path = "api/core/cmp/index.html"
 
 [topics.std-hash]
 name = "std::hash"
@@ -179,12 +197,14 @@ name = "std::convert"
 aliases = ["convert module", "From", "Into", "TryFrom", "TryInto", "AsRef", "AsMut"]
 category = "std"
 brief = "Type conversion traits"
+path = "api/core/convert/index.html"
 
 [topics.std-iter]
 name = "std::iter"
 aliases = ["iter module", "Iterator trait", "IntoIterator", "FromIterator", "iterator adapters", "map", "filter", "collect", "for loop", "fold", "iter()"]
 category = "std"
 brief = "Iterator trait and combinators"
+path = "api/core/iter/index.html"
 
 [topics.std-ffi]
 name = "std::ffi"
