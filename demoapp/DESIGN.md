@@ -1,282 +1,234 @@
-# Anthology Design Document
+# Anthology Design
 
-A static site generator and document publishing platform demonstrating the rustmax supercrate.
+Anthology is a static site generator for technical writing,
+and the application `rustmax` is tested against.
 
-## Purpose
+## Two jobs
 
-Anthology serves two goals:
-1. **User goal**: Achieve test coverage for rustmax crate APIs
-2. **App goal**: Be a production-quality, useful static site generator
+1. Be a static site generator worth using.
+2. Put weight on `rustmax` until something breaks.
 
-## Architecture Overview
+The second job is why Anthology exists,
+and it only works if the first one is done honestly.
+A program that calls one function from each crate
+to fill in a checklist does not find anything;
+what finds things is a real program
+that reaches for whichever crate the task actually calls for
+and has to live with the result.
+Every crate listed under [Coverage](#coverage) below
+is used by a feature that would exist anyway.
+Every crate that is not listed is not listed for a reason,
+and the reasons are given.
 
-```
-anthology/
-├── src/
-│   ├── main.rs          # Entry point, runs CLI
-│   ├── lib.rs           # Public module exports
-│   ├── error.rs         # Error types (thiserror)
-│   ├── cli/
-│   │   ├── mod.rs       # Re-exports
-│   │   └── commands.rs  # CLI commands (clap)
-│   ├── collection/
-│   │   ├── mod.rs       # Collection type, queries
-│   │   ├── config.rs    # anthology.toml parsing
-│   │   ├── document.rs  # Document model, frontmatter
-│   │   └── scanner.rs   # Directory walking (walkdir, ignore)
-│   ├── build/
-│   │   ├── mod.rs       # Build orchestration (rayon)
-│   │   ├── markdown.rs  # MD->HTML (comrak)
-│   │   ├── template.rs  # Template rendering (tera)
-│   │   ├── highlight.rs # Syntax highlighting (regex)
-│   │   ├── toc.rs       # Table of contents generation
-│   │   ├── cache.rs     # Incremental build cache
-│   │   ├── compress.rs  # Asset compression (flate2)
-│   │   ├── encoding.rs  # Base64/hex encoding
-│   │   ├── rewrite.rs   # URL rewriting
-│   │   └── search_js.rs # Client-side search JS
-│   ├── serve/
-│   │   └── mod.rs       # Dev server with search API (axum, tokio)
-│   ├── search/
-│   │   └── mod.rs       # Full-text indexing with BM25
-│   └── feeds/
-│       └── mod.rs       # Atom and JSON Feed generation
-└── templates/
-    └── default.html     # Built-in default template
-```
-
-## Core Data Flow
-
-```
-anthology.toml (Config)
-        |
-        v
-content/*.md --> Scanner --> Documents --> Collection
-                (walkdir)   (frontmatter)
-        |
-        v
-    Build Pipeline (rayon parallel)
-        |
-        +---> Markdown -> HTML (comrak)
-        |
-        +---> Template rendering (tera)
-        |
-        +---> Static asset copy (walkdir)
-        |
-        v
-    output/ (static HTML site)
-```
-
-## Rustmax Crate Coverage
-
-### Currently Used (45 crates)
-
-| Category | Crate | Usage |
-|----------|-------|-------|
-| CLI | clap | Command-line argument parsing |
-| CLI | termcolor | Colored terminal output |
-| CLI | rustyline | Interactive REPL |
-| CLI | ctrlc | Graceful shutdown handling |
-| Web | axum | Development server |
-| Web | tower-http | Static file serving (external dep) |
-| Web | reqwest | Remote content fetching |
-| Async | tokio | Async runtime for server |
-| Async | futures | Parallel async operations |
-| Concurrency | rayon | Parallel document building |
-| Parsing | comrak | Markdown to HTML |
-| Parsing | regex | URL rewriting, content transforms |
-| Parsing | nom | Shortcode syntax parsing |
-| Templates | tera | HTML template rendering |
-| Serialization | serde | Document/config serialization |
-| Serialization | serde_json | JSON export, search index |
-| Serialization | toml | Config and frontmatter parsing |
-| Encoding | flate2 | Gzip asset compression |
-| Encoding | base64 | Inline image data URLs |
-| Encoding | hex | Hash display formatting |
-| Encoding | bytes | Binary asset handling |
-| Crypto | blake3 | Content hashing for cache keys |
-| Crypto | sha2 | Alternative hashing (SHA-256/512) |
-| Filesystem | walkdir | Directory traversal |
-| Filesystem | ignore | .gitignore-style filtering |
-| Filesystem | glob | File pattern matching |
-| Filesystem | tempfile | Test fixtures |
-| Time | jiff | Date parsing (civil::Date) |
-| Time | chrono | Date compatibility layer |
-| Text | unicode-segmentation | Word counting, search tokenization |
-| Text | memchr | Fast byte/substring searching |
-| Collections | itertools | Iterator utilities |
-| Config | bitflags | Feature flags and options |
-| Random | rand | Random ID generation |
-| Concurrency | crossbeam | Work-stealing, channels, scoped threads |
-| Logging | log + env_logger | Logging infrastructure |
-| Errors | thiserror | Error type definitions |
-| Errors | anyhow | Fallback error handling |
-| Graphics | image | Image optimization, resizing, WebP conversion |
-| Encoding | zip | EPUB export (ZIP-based format) |
-| Filesystem | notify | Native file watching for live reload |
-| CLI | indicatif | Progress bars for builds and asset processing |
-| URL | url | URL parsing and validation |
-| Web | mime | MIME type detection |
-| Testing | proptest | Property-based testing |
-
-### Status
-
-45 rustmax crates currently in use. All targeted crates have been integrated.
-
-## Key Design Decisions
-
-### 1. Standalone Project
-Anthology is NOT part of the rustmax workspace. It lives in `demoapp/` and references rustmax via path dependency. This keeps the demo isolated.
-
-### 2. Derive Macro Dependencies
-serde, clap, and thiserror derive macros emit `::crate_name::` in generated code. These must be direct dependencies even though rustmax re-exports them.
-
-### 3. Sync Build, Async Serve
-- Build pipeline uses `rayon` for CPU-bound parallel work
-- Dev server uses `tokio` + `axum` for async I/O
-- No mixing of async in build (keeps it simple)
-
-### 4. TOML Frontmatter
-Uses TOML (not YAML) for frontmatter to match Rust ecosystem conventions:
-```markdown
----
-title = "Hello World"
-date = "2024-01-15"
-tags = ["rust"]
----
-```
-
-### 5. Content Hashing
-Each document has a blake3 hash (`Document.content_hash`) for incremental builds (future feature).
-
-### 6. Template Fallbacks
-If a specific template (e.g., `post.html`) doesn't exist, falls back to `default.html`.
-
-## CLI Commands
-
-| Command | Description |
-|---------|-------------|
-| `init [path]` | Create new collection with example content |
-| `build [path]` | Build static site to output/ |
-| `build --compress` | Build with gzip compression |
-| `serve [path]` | Start dev server on port 3000 |
-| `check [path]` | Validate all documents |
-| `new <title>` | Create new document |
-| `index [path]` | Rebuild search index |
-| `export --format` | Export as JSON/RSS/sitemap |
-| `fetch <url>` | Fetch remote content |
-| `files [pattern]` | List files matching glob pattern |
-| `repl` | Interactive REPL for queries |
-
-## Config Format (anthology.toml)
+## One dependency
 
 ```toml
-[collection]
-title = "My Collection"
-base_url = "https://example.com"
-description = ""
-author = ""
-
-[build]
-output_dir = "output"
-
-[content]
-date_format = "%Y-%m-%d"
-default_template = "default.html"
-excerpt_separator = "<!--more-->"
-
-[server]
-port = 3000
-
-[highlight]
-enabled = true
-theme = "github-dark"  # github, monokai, dracula, one-dark, solarized-light, solarized-dark, nord
-line_numbers = true
-copy_button = true
+[dependencies]
+rmx.package = "rustmax"
+rmx.path = "../crates/rustmax"
+rmx.features = ["rmx-profile-max"]
 ```
 
-## Document Format
+That is the whole manifest.
+Anthology takes no direct dependency on any crate `rustmax` re-exports,
+which is the strongest statement it can make about the supercrate:
+a twelve-thousand-line program with a CLI, a markdown pipeline,
+a search engine, an HTTP server and four export formats
+needs nothing else.
 
-```markdown
----
-title = "Post Title"
-date = "2024-01-15"
-tags = ["tag1", "tag2"]
-draft = false
-slug = "custom-url"           # optional
-template = "custom.html"      # optional
-description = "Summary"       # optional
-author = "Name"               # optional
-custom_field = "value"        # extra fields allowed
----
+The dependency is renamed to `rmx`,
+matching the project template,
+so the macros are exercised against a dependency
+that is not named `rustmax` --
+`#[rmx::derive]` finds its own path through the depending crate's manifest,
+and a rename is the case that can go wrong.
 
-Markdown content here.
+Getting to one dependency required two things to change.
+
+**Derives go through `#[rmx::derive]`.**
+Anthology previously carried direct dependencies on `serde` and `clap`
+purely so their derive macros would resolve.
+`#[rmx::derive(..)]` removes that,
+and all thirty-odd derive sites use it.
+
+**The error type uses `derive_more`, not `thiserror`.**
+`thiserror` generates `::thiserror`,
+which resolves only against the extern prelude,
+so it is the one derive crate that cannot be reached through a re-export.
+`derive_more`'s `Display`, `Error` and `From` cover the same ground
+and do work through `rustmax`.
+See [`src/error.rs`](src/error.rs).
+
+**Static file serving is hand-rolled.**
+`tower-http`'s `ServeDir` was the last non-`rustmax` dependency.
+It is replaced by `handle_static` in [`src/serve/mod.rs`](src/serve/mod.rs),
+about forty lines over `axum`, `tokio::fs` and `mime`,
+with the path-traversal check the real thing does
+and tests that a request cannot escape the static root.
+
+## Layout
+
+```
+src/
+  main.rs          entry point
+  lib.rs           module exports
+  error.rs         error type (derive_more)
+  cli/             clap command definitions, REPL
+  collection/      config, documents, frontmatter, directory scanning
+  build/           the build pipeline
+    markdown.rs      comrak
+    template.rs      tera
+    highlight.rs     syntax highlighting
+    toc.rs           table of contents, HeadingLevel
+    cache.rs         incremental builds
+    images.rs        image processing
+    compress.rs      gzip
+    encoding.rs      base64/hex
+    rewrite.rs       URL rewriting
+    search_js.rs     client-side search bundle
+    progress.rs      progress bars
+  lint/            content lints, including Rust code block parsing
+  search/          BM25 index, Porter stemmer
+  serve/           dev server, live reload, browser opening
+  export/          EPUB and tar archives
+  feeds/           Atom and JSON Feed
+  shortcode/       nom-parsed shortcodes
+  concurrency/     crossbeam pipelines
+  util/            reproducible identifier generation
+  crypto/ text/ time/ remote/ features/
 ```
 
-## Error Handling Strategy
+## Design decisions
 
-- `Error` enum with variants for each failure mode
-- `#[from]` conversions for common error types
-- Helper constructors: `Error::config()`, `Error::document()`, etc.
-- `Result<T>` type alias used throughout
+### Reproducible builds
 
-## Testing Strategy
+`[build] seed` fixes every generated identifier,
+so two builds of the same content produce the same bytes.
+[`util::IdGenerator`](src/util/mod.rs) is `ChaCha8Rng` rather than the thread RNG
+because its output is a documented function of its seed
+on every platform and every run.
 
-Current tests (200 passing):
-- Frontmatter parsing
-- No-frontmatter documents
-- Word counting
-- Search indexing (with stemming, BM25)
-- Collection queries
-- Syntax highlighting (36 tests)
-- Table of contents (24 tests)
-- Build cache
-- Compression
-- Encoding
-- Atom and JSON Feed generation (9 tests)
-- Client-side search JS (2 tests)
+Reproducibility turned out to be a stricter constraint than it looked.
+The search index is written to disk as JSON from a hash map,
+and a hash map iterates in an order that depends on the process's hash seed,
+so the index differed between two builds of identical content
+before anything else did.
+`SearchIndex::word_index` now serializes through a `BTreeMap`,
+and `suggest` sorts before truncating to ten
+so the same prefix suggests the same words every time.
 
-Future tests needed:
-- CLI integration tests
-- Build output verification
-- Server endpoint tests
-- Property tests with proptest
+### Two config formats
 
-## Development Phases
+A collection is configured by `anthology.toml`, or by `anthology.json5`
+if it was generated by something that speaks JSON.
+JSON5 reads plain JSON as well as its own extensions,
+so one parser covers both.
+`[collection] anthology_version` is a semver requirement
+checked when the config loads.
 
-### Phase 1: Foundation (COMPLETE)
-- Basic CLI with clap
-- Config loading
-- Document parsing
-- Build pipeline
-- Dev server
-- Search indexing
+### Lints over prose
 
-### Phase 2: Enhanced Features (COMPLETE)
-- [x] Live reload via WebSocket (file watcher + hot CSS)
-- [x] REPL mode (rustyline)
-- [x] Incremental builds using content_hash
-- [x] Asset compression (flate2)
+Anthology is aimed at technical writing,
+where what usually goes wrong in a document is the code, not the sentences.
+`anthology check` parses every Rust code block with `syn`
+and reports the ones that do not parse,
+honouring rustdoc's conventions:
+hidden `#` lines are part of the program,
+`ignore` and `compile_fail` opt out,
+and a snippet with no `fn main` is checked as a `main` body.
+Lints carry the source line of the opening fence.
 
-### Phase 3: Advanced (IN PROGRESS)
-- [x] Remote content fetching (reqwest)
-- [x] Custom syntax extensions (nom)
-- [ ] Image optimization (image crate)
-- [ ] EPUB export (zip crate)
-- [ ] Native file watching (notify crate)
-- [ ] Build progress bars (indicatif crate)
-- [ ] Plugin system
+### Typed heading levels
 
-## Known Issues / Technical Debt
+Markdown and HTML headings stop at six,
+so a level outside one to six is a parse that has gone wrong,
+not a deep heading.
+`HeadingLevel` (`num_enum`) makes that unrepresentable
+and replaced an `unwrap_or(1)` that silently papered over it.
 
-1. **tower-http external**: Not in rustmax, added as direct dependency
-2. **Templates are limited**: Few built-in templates
+### Queries belong to the documents
 
-## File Locations
+`Collection` is not the only thing holding documents:
+the server hands slices to handlers, the REPL narrows them as the user filters.
+`DocumentsExt` (`extension_trait`) puts `published`, `by_tag`, `by_slug` and `tags`
+on `[Document]`, and `Collection` delegates.
 
-- Config: `anthology.toml` in collection root
-- Content: `content/*.md`
-- Templates: `templates/*.html`
-- Static assets: `static/`
-- Output: `output/` (configurable)
-- Search index: `search-index.json`
+### Sync build, async serve
+
+The build pipeline is `rayon` over CPU-bound work.
+The dev server is `tokio` and `axum`.
+They do not mix.
+
+### The listening socket is built by hand
+
+`socket2` sets `SO_REUSEADDR` before the bind,
+so restarting the server does not fail
+while the previous socket sits in `TIME_WAIT`.
+Tokio's `TcpListener::bind` offers no way to set an option before binding,
+so the socket is built with `socket2` and handed over.
+
+## Coverage
+
+Used by a feature, as of this writing: 58 of the 71 crates `rustmax` re-exports.
+
+| Area | Crates |
+| --- | --- |
+| CLI | `clap`, `termcolor`, `rustyline`, `ctrlc`, `indicatif`, `xshell` |
+| Web | `axum`, `http`, `tower`, `socket2`, `reqwest`, `mime`, `url` |
+| Async | `tokio`, `futures` |
+| Concurrency | `rayon`, `crossbeam` |
+| Parsing | `comrak`, `regex`, `nom`, `syn` |
+| Templates | `tera` |
+| Serialization | `serde`, `serde_json`, `toml`, `json5` |
+| Encoding | `flate2`, `base64`, `hex`, `bytes`, `zip`, `tar` |
+| Crypto | `blake3`, `sha2` |
+| Filesystem | `walkdir`, `ignore`, `glob`, `notify`, `tempfile` |
+| Time | `jiff`, `chrono` |
+| Text | `unicode-segmentation`, `memchr` |
+| Collections | `itertools`, `ahash` |
+| Numbers | `semver`, `num_enum`, `bitflags` |
+| Random | `rand`, `rand_chacha` |
+| Graphics | `image` |
+| Logging | `log`, `env_logger` |
+| Errors | `derive_more`, `anyhow` |
+| Language | `cfg-if`, `extension-trait`, `rustmax-macros` |
+| Testing | `proptest` |
+
+### Deliberately not covered
+
+Filling these in would mean inventing work,
+which is the failure mode this app is supposed to avoid.
+
+| Crate | Why not |
+| --- | --- |
+| `bindgen`, `cc`, `cxx`, `cxx-build` | Anthology links no C or C++. |
+| `libc` | Nothing here needs a raw syscall; `socket2` covers the one place that came close. |
+| `libm` | `no_std` math. Anthology is a hosted program. |
+| `num-bigint` | No arbitrary-precision arithmetic anywhere in a site generator. |
+| `hyper` | `axum` and `reqwest` are the layers Anthology works at. Reaching past them would be pretence. |
+| `proc-macro2`, `quote` | Only meaningful inside a proc-macro crate. `syn` is here because parsing Rust is a real feature; generating it is not. |
+| `rand_pcg` | `rand_chacha` already covers the reproducibility requirement. A second PRNG would be decoration. |
+| `thiserror` | Deliberately avoided, and that is the finding. See [One dependency](#one-dependency). |
+
+`powerletters` is glob-imported by the prelude
+rather than named directly.
+That it introduces no ambiguity across twelve thousand lines
+is itself worth knowing.
+
+## Testing
+
+302 tests: 278 unit, 24 integration.
+
+The dev server is tested against a live socket.
+`serve::tests` binds port 0, spawns the real router
+-- not a rebuilt approximation of it -- and drives it with `reqwest`:
+index and document rendering, draft visibility, tag pages,
+the search API, static files and their content types,
+and that a percent-encoded `..` cannot escape the static root.
+
+Reproducibility is tested by building the same collection twice
+and comparing the output byte for byte,
+plus a direct assertion that the search index's terms come out sorted,
+since equal bytes from two builds in one process could be luck.
+
+`proptest` covers hashing, stemming and frontmatter parsing invariants.
