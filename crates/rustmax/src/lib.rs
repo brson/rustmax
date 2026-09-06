@@ -109,14 +109,27 @@ pub mod extras {
     //! Additional tidbits defined by `rmx`.
 
     /// Like 'unimplemented' but shorter to type.
+    ///
+    /// ```should_panic
+    /// # use rustmax as rmx;
+    /// use rmx::prelude::*;
+    ///
+    /// # let state = "wedged";
+    /// bug!("unreachable state: {state}");
+    /// ```
+    // Both paths go through `$crate::core` rather than `core`, so that the
+    // expansion does not depend on anything being in scope at the use site.
     #[cfg(feature = "rmx-rustlib-core")]
     #[macro_export]
     macro_rules! bug {
         () => {
-            core::panic!("unexpected case (bug!)")
+            $crate::core::panic!("unexpected case (bug!)")
         };
         ($($arg:tt)+) => {
-            core::panic!("unexpected case (bug!): {}", $crate::format_args!($($arg)+))
+            $crate::core::panic!(
+                "unexpected case (bug!): {}",
+                $crate::core::format_args!($($arg)+),
+            )
         };
     }
 
