@@ -34,6 +34,15 @@ impl MatchType {
         }
     }
 
+    /// Ordering over match types, for picking the better or worse of two.
+    fn rank(self) -> u8 {
+        match self {
+            MatchType::Exact => 3,
+            MatchType::Prefix => 2,
+            MatchType::Substring => 1,
+        }
+    }
+
     pub fn as_str(self) -> &'static str {
         match self {
             MatchType::Exact => "exact",
@@ -125,33 +134,122 @@ fn get_match(query: &str, target: &str) -> Option<MatchType> {
     None
 }
 
-/// Find the best match for a query against an entry.
+/// Split text into tokens on ASCII whitespace.
+///
+/// Deliberately ASCII-only rather than `split_whitespace`: search-core.js
+/// has to split identically, and the two languages disagree about the
+/// edges of Unicode whitespace.
+fn split_tokens(text: &str) -> Vec<&str> {
+    text.split([' ', '\t', '\n', '\r'])
+        .filter(|token| !token.is_empty())
+        .collect()
+}
+
+/// The forms of a query that get matched against the index.
+struct PreparedQuery {
+    /// The query as typed, trimmed with runs of whitespace collapsed.
+    normalized: String,
+    /// The same with the spaces taken out, so "hash map" finds "HashMap".
+    joined: String,
+    /// Tokens of two or more characters.
+    tokens: Vec<String>,
+    multi_word: bool,
+}
+
+fn prepare_query(query: &str) -> PreparedQuery {
+    let tokens = split_tokens(query);
+
+    PreparedQuery {
+        normalized: tokens.join(" "),
+        joined: tokens.concat(),
+        // Single-character tokens are dropped from token matching. They
+        // match most of the index, so "read a file" would otherwise hinge
+        // on "a".
+        tokens: tokens
+            .iter()
+            .filter(|token| token.chars().count() >= 2)
+            .map(|token| token.to_string())
+            .collect(),
+        multi_word: tokens.len() > 1,
+    }
+}
+
+/// Match every token somewhere in the entry, each possibly in a different
+/// alias. Returns the weakest of the per-token match types, or `None` if
+/// any token matches nothing.
+///
+/// Scoring by the weakest token means a scattered match can never outrank
+/// a literal match of the same quality.
+fn match_all_tokens(tokens: &[String], parts: &[&str]) -> Option<MatchType> {
+    let mut worst: Option<MatchType> = None;
+
+    for token in tokens {
+        let mut best_for_token: Option<MatchType> = None;
+        for (i, part) in parts.iter().enumerate() {
+            if i > 0 && part.is_empty() {
+                continue;
+            }
+            if let Some(kind) = get_match(token, part)
+                && best_for_token.is_none_or(|best| kind.rank() > best.rank())
+            {
+                best_for_token = Some(kind);
+            }
+        }
+
+        let best_for_token = best_for_token?;
+        if worst.is_none_or(|worst| best_for_token.rank() < worst.rank()) {
+            worst = Some(best_for_token);
+        }
+    }
+
+    worst
+}
+
+/// Find the best match for a prepared query against an entry.
 ///
 /// The searchable field is `"name|alias one|alias two"`. Each alias is
 /// matched on its own so that multi-word aliases keep their boundaries and
 /// a match cannot straddle two of them.
-fn find_match(query: &str, entry: &IndexEntry) -> Option<(f64, Option<String>, MatchType)> {
-    let mut parts = entry.searchable.split('|');
-    let name = parts.next().unwrap_or("");
-
+///
+/// Three ways to match are tried, best result wins. Ties go to whichever
+/// was tried first, so a literal match beats a spaces-removed one, which
+/// beats a scattered token match.
+fn find_match(
+    prepared: &PreparedQuery,
+    entry: &IndexEntry,
+) -> Option<(f64, Option<String>, MatchType)> {
+    let parts: Vec<&str> = entry.searchable.split('|').collect();
     let mut best: Option<(f64, Option<String>, MatchType)> = None;
 
+    // Strictly greater, so the earliest equally good match wins.
+    let mut consider = |kind: Option<MatchType>, text: Option<&str>| {
+        let Some(kind) = kind else { return };
+        let score = kind.score();
+        if best.as_ref().is_none_or(|(best, _, _)| score > *best) {
+            best = Some((score, text.map(str::to_string), kind));
+        }
+    };
+
     // The name is displayed already, so a name match carries no alias text.
-    if let Some(kind) = get_match(query, name) {
-        best = Some((kind.score(), None, kind));
+    let mut consider_all = |query: &str| {
+        consider(get_match(query, parts[0]), None);
+        for part in &parts[1..] {
+            if part.is_empty() {
+                continue;
+            }
+            consider(get_match(query, part), Some(part));
+        }
+    };
+
+    consider_all(&prepared.normalized);
+
+    if prepared.multi_word {
+        consider_all(&prepared.joined);
     }
 
-    for alias in parts {
-        if alias.is_empty() {
-            continue;
-        }
-        if let Some(kind) = get_match(query, alias) {
-            let score = kind.score();
-            // Strictly greater, so the earliest of equally good aliases wins.
-            if best.as_ref().is_none_or(|(best, _, _)| score > *best) {
-                best = Some((score, Some(alias.to_string()), kind));
-            }
-        }
+    // No single alias explains a scattered match, so it reports no alias.
+    if prepared.tokens.len() >= 2 {
+        consider(match_all_tokens(&prepared.tokens, &parts), None);
     }
 
     best
@@ -159,7 +257,8 @@ fn find_match(query: &str, entry: &IndexEntry) -> Option<(f64, Option<String>, M
 
 /// Search the index and return results ranked best first, capped at 20.
 pub fn search(index: &[IndexEntry], query: &str) -> Vec<SearchResult> {
-    if query.trim().is_empty() {
+    let prepared = prepare_query(query);
+    if prepared.normalized.is_empty() {
         return Vec::new();
     }
 
@@ -167,7 +266,7 @@ pub fn search(index: &[IndexEntry], query: &str) -> Vec<SearchResult> {
     let mut seen = std::collections::HashSet::new();
 
     for entry in index {
-        let Some((score, matched_text, match_type)) = find_match(query, entry) else {
+        let Some((score, matched_text, match_type)) = find_match(&prepared, entry) else {
             continue;
         };
 
@@ -347,6 +446,94 @@ mod tests {
         assert_eq!(get_match("a", "ba"), None);
     }
 
+    /// Whether a relevance case is expected to work yet.
+    #[derive(Debug, Default, PartialEq, Deserialize)]
+    #[serde(rename_all = "lowercase")]
+    enum Status {
+        #[default]
+        Ok,
+        Fails,
+    }
+
+    #[derive(Deserialize)]
+    struct RelevanceCorpus {
+        case: Vec<RelevanceCase>,
+    }
+
+    #[derive(Deserialize)]
+    struct RelevanceCase {
+        query: String,
+        /// Any of these ids is an acceptable top result.
+        expect: Vec<String>,
+        #[serde(default)]
+        status: Status,
+    }
+
+    /// Build the search index from the real topics, the way the site does.
+    ///
+    /// Returns None outside a checkout, where `src/topics` is not present.
+    fn real_index() -> Option<Vec<IndexEntry>> {
+        let dir = std::path::Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../src/topics"));
+        if !dir.is_dir() {
+            return None;
+        }
+        let topics = crate::topics::TopicIndex::load(dir).unwrap();
+        // Round-trip through the on-disk format so this sees exactly what
+        // the browser would be served.
+        let json = serde_json::to_string(&topics.export_search_index()).unwrap();
+        Some(serde_json::from_str(&json).unwrap())
+    }
+
+    /// Measures whether search finds the right thing, against hand-written
+    /// judgment rather than against its own past behaviour.
+    #[test]
+    fn finds_the_right_topic() {
+        let Some(index) = real_index() else {
+            eprintln!("skipping: no src/topics, not a checkout");
+            return;
+        };
+
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/search-relevance.toml");
+        let corpus: RelevanceCorpus =
+            toml::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+
+        let mut regressed = Vec::new();
+        let mut fixed = Vec::new();
+
+        for case in &corpus.case {
+            let results = search(&index, &case.query);
+            let top = results.first().map(|r| r.entry.id.clone());
+            let passed = top.as_ref().is_some_and(|id| case.expect.contains(id));
+
+            match (passed, &case.status) {
+                (false, Status::Ok) => regressed.push(format!(
+                    "  {:?} -> {} (want one of {})",
+                    case.query,
+                    top.unwrap_or_else(|| "nothing".to_string()),
+                    case.expect.join(", "),
+                )),
+                (true, Status::Fails) => fixed.push(format!("  {:?}", case.query)),
+                _ => {}
+            }
+        }
+
+        let total = corpus.case.len();
+        let known_bad = corpus.case.iter().filter(|c| c.status == Status::Fails).count();
+        eprintln!("relevance: {}/{} cases pass", total - known_bad, total);
+
+        assert!(
+            regressed.is_empty(),
+            "search stopped finding the right topic:\n{}",
+            regressed.join("\n"),
+        );
+        assert!(
+            fixed.is_empty(),
+            "these now pass -- drop their `status = \"fails\"` in \
+             search-relevance.toml to lock the improvement in:\n{}",
+            fixed.join("\n"),
+        );
+    }
+
     #[test]
     fn a_blank_query_finds_nothing() {
         let index = corpus().index;
@@ -354,4 +541,5 @@ mod tests {
         assert!(search(&index, "   ").is_empty());
     }
 }
+
 

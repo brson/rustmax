@@ -99,6 +99,22 @@
       "brief": "No page"
     },
     {
+      "id": "std-collections",
+      "name": "std::collections",
+      "searchable": "std::collections|collections module|HashMap|BTreeMap|data structures",
+      "category": "std",
+      "brief": "Collection types",
+      "path": "api/std/collections/index.html"
+    },
+    {
+      "id": "std-fs",
+      "name": "std::fs",
+      "searchable": "std::fs|fs module|read file|File|read_to_string",
+      "category": "std",
+      "brief": "Filesystem operations",
+      "path": "api/std/fs/index.html"
+    },
+    {
       "id": "cap-00",
       "name": "capped00",
       "searchable": "capped00|capacity test",
@@ -327,6 +343,12 @@
           "matchedText": "Error trait"
         },
         {
+          "id": "std-fs",
+          "score": 0.66,
+          "matchType": "substring",
+          "matchedText": "read_to_string"
+        },
+        {
           "id": "cap-00",
           "score": 0.63,
           "matchType": "substring",
@@ -400,12 +422,6 @@
         },
         {
           "id": "cap-12",
-          "score": 0.63,
-          "matchType": "substring",
-          "matchedText": "capacity test"
-        },
-        {
-          "id": "cap-13",
           "score": 0.63,
           "matchType": "substring",
           "matchedText": "capacity test"
@@ -1069,6 +1085,18 @@
           "score": 0.9900000000000001,
           "matchType": "prefix",
           "matchedText": null
+        },
+        {
+          "id": "std-collections",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        },
+        {
+          "id": "std-fs",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
         }
       ]
     },
@@ -1091,6 +1119,139 @@
           "score": 0.9900000000000001,
           "matchType": "prefix",
           "matchedText": "Future trait"
+        }
+      ]
+    },
+    {
+      "query": "hash map",
+      "results": [
+        {
+          "id": "std-collections",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "HashMap"
+        }
+      ]
+    },
+    {
+      "query": "hashmap",
+      "results": [
+        {
+          "id": "std-collections",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "HashMap"
+        }
+      ]
+    },
+    {
+      "query": "hash  map",
+      "results": [
+        {
+          "id": "std-collections",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "HashMap"
+        }
+      ]
+    },
+    {
+      "query": "error box",
+      "results": [
+        {
+          "id": "std-error",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "std collections",
+      "results": [
+        {
+          "id": "std-collections",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "read a file",
+      "results": [
+        {
+          "id": "std-fs",
+          "score": 0.9900000000000001,
+          "matchType": "prefix",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "read file",
+      "results": [
+        {
+          "id": "std-fs",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "read file"
+        }
+      ]
+    },
+    {
+      "query": "a file",
+      "results": []
+    },
+    {
+      "query": "zzz tokio",
+      "results": []
+    },
+    {
+      "query": "tokio zzz",
+      "results": []
+    },
+    {
+      "query": " tokio ",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "tokio\t",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": null
+        }
+      ]
+    },
+    {
+      "query": "async  runtime",
+      "results": [
+        {
+          "id": "tokio",
+          "score": 1.05,
+          "matchType": "exact",
+          "matchedText": "async runtime"
+        }
+      ]
+    },
+    {
+      "query": "collections module",
+      "results": [
+        {
+          "id": "std-collections",
+          "score": 1.1,
+          "matchType": "exact",
+          "matchedText": "collections module"
         }
       ]
     }

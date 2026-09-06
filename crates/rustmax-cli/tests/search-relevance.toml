@@ -1,0 +1,217 @@
+# Relevance corpus: does search return the right answer?
+#
+# This is not search-corpus.json. That one pins the two implementations to
+# each other and was generated from the code, so it locks in whatever the
+# ranking does today, mistakes included. This file is hand-written judgment
+# about what a query *should* find, and the code is measured against it.
+#
+# Each case gives a query and the topic ids that would be a good top result.
+# The search runs against the real topics in src/topics, not a fixture.
+#
+# status = "fails" records a case that does not work yet. Those are tracked
+# rather than deleted: they are the to-do list, and the test fails if one
+# starts passing so that the progress gets recorded here.
+
+# --- Names people type directly. These are the regression guard. ---
+
+[[case]]
+query = "tokio"
+expect = ["tokio"]
+
+[[case]]
+query = "regex"
+expect = ["regex-crate"]
+
+[[case]]
+query = "clap"
+expect = ["clap"]
+
+[[case]]
+query = "tempfile"
+expect = ["tempfile"]
+
+[[case]]
+query = "rayon"
+expect = ["rayon"]
+
+[[case]]
+query = "serde"
+expect = ["serde"]
+
+[[case]]
+query = "unwrap"
+expect = ["std-option", "std-result"]
+
+[[case]]
+query = "iterator"
+expect = ["std-iter"]
+
+[[case]]
+query = "mutex"
+expect = ["std-sync"]
+
+[[case]]
+query = "atomic"
+expect = ["std-sync-atomic"]
+
+[[case]]
+query = "backtrace"
+expect = ["std-backtrace"]
+
+[[case]]
+query = "markdown"
+expect = ["comrak"]
+
+[[case]]
+query = "readline"
+expect = ["rustyline"]
+
+[[case]]
+query = "the book"
+expect = ["trpl"]
+
+# A word that is a prefix of an unrelated std alias ("UnsafeCell"), which
+# outranks the book on category weight.
+[[case]]
+query = "unsafe"
+expect = ["nomicon"]
+status = "fails"
+
+# --- Phrases that already work, because an alias happens to match. ---
+
+[[case]]
+query = "http client"
+expect = ["reqwest"]
+
+[[case]]
+query = "random numbers"
+expect = ["rand"]
+
+[[case]]
+query = "date time"
+expect = ["chrono", "jiff"]
+
+[[case]]
+query = "web framework"
+expect = ["axum"]
+
+[[case]]
+query = "progress bar"
+expect = ["indicatif"]
+
+[[case]]
+query = "temporary file"
+expect = ["tempfile"]
+
+[[case]]
+query = "shared ownership"
+expect = ["std-rc"]
+
+[[case]]
+query = "environment variables"
+expect = ["std-env"]
+
+[[case]]
+query = "error handling"
+expect = ["std-result", "std-error", "anyhow"]
+
+[[case]]
+query = "regular expressions"
+expect = ["regex-crate"]
+
+[[case]]
+query = "parallel iterator"
+expect = ["rayon"]
+
+[[case]]
+query = "async runtime"
+expect = ["tokio"]
+
+[[case]]
+query = "json serialization"
+expect = ["serde-json"]
+
+[[case]]
+query = "measure time"
+expect = ["std-time"]
+
+[[case]]
+query = "property testing"
+expect = ["proptest"]
+
+[[case]]
+query = "terminal colors"
+expect = ["termcolor"]
+
+[[case]]
+query = "big integers"
+expect = ["num-bigint"]
+
+[[case]]
+query = "byte search"
+expect = ["memchr"]
+
+[[case]]
+query = "http server"
+expect = ["hyper", "axum"]
+
+[[case]]
+query = "cryptographic hash"
+expect = ["blake3", "sha2"]
+
+# --- Phrases nobody thought to write an alias for. ---
+
+[[case]]
+query = "hash map"
+expect = ["std-collections"]
+
+# Needs stemming: the alias is "JSON parsing" and "parsing" does not
+# contain "parse", so no token match is possible. Recorded as a gap rather
+# than papered over by adding an alias.
+[[case]]
+query = "parse json"
+expect = ["serde-json"]
+status = "fails"
+
+[[case]]
+query = "read a file"
+expect = ["std-fs"]
+
+[[case]]
+query = "spawn a thread"
+expect = ["std-thread"]
+
+[[case]]
+query = "gzip compression"
+expect = ["flate2"]
+
+[[case]]
+query = "command line parsing"
+expect = ["clap"]
+
+# Ties with the `ignore` crate, which also has a "directory walker" alias,
+# and loses on index order. Needs a tiebreak better than alphabetical.
+[[case]]
+query = "walk a directory"
+expect = ["walkdir"]
+status = "fails"
+
+[[case]]
+query = "sorting"
+expect = ["std-cmp"]
+
+[[case]]
+query = "watch files"
+expect = ["notify-crate"]
+
+[[case]]
+query = "zip archive"
+expect = ["zip-crate"]
+
+[[case]]
+query = "url parsing"
+expect = ["url-crate"]
+
+[[case]]
+query = "command line arguments"
+expect = ["clap"]

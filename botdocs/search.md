@@ -31,6 +31,23 @@ browser-only and uses modern syntax.
 Categories are `crate`, `book`, `std`, defined in `src/topics/categories.toml`.
 
 
+## The two corpora
+
+They answer different questions and should not be confused:
+
+- `tests/search-corpus.json` -- **do the two implementations agree?** It is
+  generated from the code, so it pins current behaviour including its
+  flaws. It catches drift; it says nothing about quality.
+- `tests/search-relevance.toml` -- **does search find the right thing?**
+  Hand-written judgment about what a query should return, run against the
+  real topics in `src/topics`. Cases carry `status = "fails"` when they do
+  not work yet; the test fails if one starts passing, so improvements get
+  recorded rather than silently absorbed. Currently 44 of 47 pass.
+
+Change the algorithm and you regenerate the first and hope the second goes
+up. Never edit the relevance corpus to match what the code does.
+
+
 ## Parity between the two implementations
 
 `crates/rustmax-cli/tests/search-corpus.json` is the contract. It carries a
@@ -88,6 +105,31 @@ built site, so a wrong path fails `just doc-build` instead of shipping a
 guarantees within `doc-build`.
 
 
+## Matching
+
+A query is tokenized on ASCII whitespace, then matched three ways. The best
+result wins, and ties go to whichever was tried first:
+
+1. **The query as typed**, trimmed with whitespace runs collapsed, against
+   the name and each alias separately.
+2. **The query with its spaces removed**, which is what makes `hash map`
+   find the `HashMap` alias. Only tried for multi-word queries.
+3. **Every token matching somewhere in the entry**, possibly in different
+   aliases -- `error box` finds `std::error` through "Error trait" and
+   "Box<dyn Error>". Scored as its *weakest* token, so a scattered match
+   can never outrank a literal match of the same quality. A token that
+   matches nothing rejects the entry outright.
+
+Tokens of one character are dropped before step 3, which is what lets
+`read a file` work: otherwise the whole match would hinge on "a", which is
+a prefix of a large slice of the index. A scattered match reports no alias,
+since no single alias explains it.
+
+Scoring stays on the three discrete tiers throughout. That is deliberate:
+it keeps the category-weight ceiling below meaningful, which a continuous
+score would blur.
+
+
 ## Ranking
 
 Match type is the primary signal: exact 1.0, prefix 0.9, word-prefix
@@ -117,19 +159,31 @@ Without it, `Box<dyn Error>` is parsed as a tag and silently disappears.
 
 Reviewed 2026-09-06. Fixed then: broken std paths, missing escaping,
 display order ignoring score, no path validation, cli tests not running.
-Then: the CLI's node dependency, replaced by the Rust port above.
+Then: the CLI's node dependency, replaced by the Rust port above. Then:
+multi-word queries, which took relevance from 38/47 to 44/47.
 
 Still outstanding, roughly by value:
 
-- **No multi-word matching.** The query is matched as one literal string
-  against each alias, so `"hash map"` returns nothing while `"HashMap"`
-  works. Needs tokenizing plus a coverage-based score.
+- **No stemming.** `parse json` finds nothing because the alias is "JSON
+  parsing" and "parsing" does not contain "parse". This is the single
+  biggest remaining matching gap.
+- **Ties break alphabetically.** `walk a directory` ties `walkdir` with
+  `ignore` and loses on index order. Needs a real tiebreak -- shorter
+  target, or match position.
+- **A prefix of an unrelated alias outranks the right answer.** `unsafe`
+  returns `std::cell`, because "UnsafeCell" is a prefix match carrying the
+  std category weight, beating the Rustonomicon.
 - **The corpus only pins behaviour, not quality.** It is generated from the
   current implementation, so it locks in the present ranking, including its
   flaws. It catches drift; it does not say the ranking is good.
 - **`rustmax search` still defaults to a repo-relative index path**
   (`work/search-index.json`), so it only really works from a checkout.
   Embedding the index in the binary would fix that.
+- **`rustmax search` prints prose on no results** and TOML otherwise, so
+  its output cannot be parsed unconditionally.
+- **Every target is lowercased on every comparison.** Fine at 115 entries,
+  wasteful once the book is indexed; the token strategy multiplies the
+  call count by the token count.
 - **Word-prefix substring matches are unweighted**, so `"cli"` matches
   reqwest via "http client" and `"ser"` matches axum via "web server", each
   scored the same as a full-word hit.
