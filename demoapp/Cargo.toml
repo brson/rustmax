@@ -16,3 +16,11 @@ rmx.package = "rustmax"
 rmx.path = "../crates/rustmax"
 rmx.version = "0.0.10"
 rmx.features = ["rmx-profile-max"]
+
+# The workspace excludes this directory, so it is its own profile root and
+# needs the setting the workspace root carries. Full DWARF for this app and
+# its dependencies is the bulk of a target directory; `line-tables-only`
+# keeps the file and line that a backtrace prints and drops the variable and
+# type descriptions that only a debugger reads.
+[profile.dev]
+debug = "line-tables-only"

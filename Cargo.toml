@@ -24,5 +24,12 @@ exclude = [
   "suite",
 ]
 
+# Full DWARF for this workspace and its dependencies is the bulk of a target
+# directory. `line-tables-only` keeps the file and line that a backtrace
+# prints and drops the variable and type descriptions that only a debugger
+# reads. Release is left at the default of no debuginfo at all.
+[profile.dev]
+debug = "line-tables-only"
+
 [profile.release]
 overflow-checks = true
