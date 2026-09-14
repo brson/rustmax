@@ -98,10 +98,14 @@ but that are not yet part of Rustmax.
 
 ## Tools
 
+- [`cargo-cache`](https://crates.io/crates/cargo-cache).
+  Inspect and clean the `~/.cargo` registry caches and git checkouts.
 - [`cargo-duplicates`](https://crates.io/crates/cargo-duplicates)
 - [`cargo-hack`](https://crates.io/crates/cargo-hack)
 - [`cargo-llvm-cov`](https://crates.io/crates/cargo-llvm-cov)
 - [`cargo-outdated`](https://crates.io/crates/cargo-outdated)
+- [`cargo-sweep`](https://crates.io/crates/cargo-sweep).
+  Delete stale build artifacts from `target` directories.
 - [`flamegraph`](https://crates.io/crates/flamegraph)
   - and [`inferno`](https://crates.io/crates/inferno)
 - [`hyperfine`](https://github.com/sharkdp/hyperfine)
