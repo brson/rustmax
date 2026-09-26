@@ -489,10 +489,6 @@ fn cargo_plugin_uninstall(config: &CargoPluginConfig) -> AnyResult<()> {
         }
     }
 
-    if let Some(note) = config.post_install_note {
-        println!("{}", note);
-    }
-
     if let Some(action) = config.post_uninstall_action {
         action()?;
     }
@@ -784,10 +780,6 @@ fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
         _ => {
             println!("✓ {} uninstalled successfully", config.tool_name);
         }
-    }
-
-    if let Some(note) = config.post_install_note {
-        println!("{}", note);
     }
 
     if let Some(action) = config.post_uninstall_action {
