@@ -229,19 +229,55 @@ Run `just test` to test in all profiles.
 
 # Task task-add-cargo-plugin-cli: Add a cargo plugin to rustmax-cli
 
-`rustmax-cli` has four commands that operate on "tools":
-`install-tool`, `uninstall-tool`, `update-tool`, `tool-status`;
-the source for which begins in `rustmax-cli/src/main.rs`, `tools.rs` and `impls.rs`.
+`rustmax-cli` has four commands that operate on a single "tool":
+`install-tool`, `uninstall-tool`, `update-tool`, `tool-status`,
+and five that operate on every tool at once:
+`list-tools`, `install-tools`, `update-tools`, `uninstall-tools`, `tools-status`.
+The source for which begins in `crates/rustmax-cli/src/main.rs`,
+`tools.rs` and `impls.rs`.
 
 To add a new cargo plugin:
 
-- Add it to the `Tools` enum if it doesn't already exist.
+- Add it to the `Tool` enum in `tools.rs` if it doesn't already exist,
+  in the `/* cargo plugins */` group, in alphabetical order.
+- Add a `ToolAttrs` arm in `impls.rs` with `impl_complete: true`.
+  `display_name` is the full `cargo-foo` package name, not the bare subcommand.
 - Create the `CargoPluginConfig` constant for the tool.
-- Fill in any associated match arms in `tools.rs` and `impls.rs`
+- Fill in the match arms in all four of `install`, `update`, `uninstall`
+  and `status` in `impls.rs`.
 - Follow the coding pattern that already exists for cargo plugins like `cargo-audit` and `cargo-clean-all`,
   defering to `cargo_plugin_install` etc for the primary logic.
 - Think about if these tools have any special considerations for post-install/uninstall actions etc.
   Do they store caches in the home directory that can be delete on uninstall?
+  If they don't, note that in a comment above the config constant,
+  so the next reader doesn't have to work it out again.
+
+**Common gotchas:**
+
+- `subcommand` is the cargo subcommand, which is not always the package
+  name with `cargo-` stripped off: `cargo-edit` provides `cargo upgrade`.
+  Every `cargo_plugin_*` function detects the tool by running
+  `cargo <subcommand> --version`, so getting this wrong leaves the tool
+  looking permanently uninstalled.
+- A missing `attrs` arm does not fail to compile - it falls through to the
+  `_ => "<unknown>"` catch-all. And `impl_complete: false` silently drops the
+  tool from `list-tools` and from every bulk `*-tools` command.
+- The `install`/`update`/`uninstall`/`status` matches all end in `_ => todo!()`,
+  so a forgotten arm panics at runtime rather than failing to compile.
+  Add all four.
+
+**Verify:**
+
+- `cargo build -p rustmax-cli`
+- `cargo run -p rustmax-cli -- list-tools` lists the new tool
+- `cargo run -p rustmax-cli -- tool-status <tool>` reports its version
+- `just test`
+
+Adding a plugin to the CLI is not the same as documenting it;
+see `task-add-cargo-tool-to-book` for `book/src/tools.md`.
+If the tool is listed in the `## Tools` section of `book/src/radar.md`,
+remove it - the radar is for things we have not adopted yet,
+and CLI support means we have adopted it.
 
 
 # Task task-add-cargo-tool-cli: Add a cargo tool to rustmax-cli
