@@ -101,6 +101,10 @@ impl Tool {
                 display_name: "cargo-outdated",
                 impl_complete: true,
             },
+            CargoSweep => ToolAttrs {
+                display_name: "cargo-sweep",
+                impl_complete: true,
+            },
 
             /* non-plugin cargo programs */
             BasicHttpServer => ToolAttrs {
@@ -173,6 +177,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_install(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_install(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoSweep => cargo_plugin_install(&CARGO_SWEEP_CONFIG),
             Tool::BasicHttpServer => cargo_tool_install(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_install(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_install(&FD_FIND_CONFIG),
@@ -200,6 +205,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_update(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_update(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoSweep => cargo_plugin_update(&CARGO_SWEEP_CONFIG),
             Tool::BasicHttpServer => cargo_tool_update(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_update(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_update(&FD_FIND_CONFIG),
@@ -227,6 +233,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_uninstall(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_uninstall(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoSweep => cargo_plugin_uninstall(&CARGO_SWEEP_CONFIG),
             Tool::BasicHttpServer => cargo_tool_uninstall(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_uninstall(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_uninstall(&FD_FIND_CONFIG),
@@ -254,6 +261,7 @@ impl Tool {
             Tool::CargoEdit => cargo_plugin_status(&CARGO_EDIT_CONFIG),
             Tool::CargoGenerate => cargo_plugin_status(&CARGO_GENERATE_CONFIG),
             Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
+            Tool::CargoSweep => cargo_plugin_status(&CARGO_SWEEP_CONFIG),
             Tool::BasicHttpServer => cargo_tool_status(&BASIC_HTTP_SERVER_CONFIG),
             Tool::DuDust => cargo_tool_status(&DU_DUST_CONFIG),
             Tool::FdFind => cargo_tool_status(&FD_FIND_CONFIG),
@@ -344,6 +352,19 @@ const CARGO_OUTDATED_CONFIG: CargoPluginConfig = CargoPluginConfig {
     tool_name: "cargo-outdated",
     package_name: "cargo-outdated",
     subcommand: "outdated",
+    post_install_note: None,
+    post_install_action: None,
+    post_status_action: None,
+    post_uninstall_action: None,
+};
+
+// `cargo-sweep` keeps no state outside the `target` directories it cleans:
+// the `--stamp` timestamp file lives in the project being swept,
+// so there is nothing to remove on uninstall.
+const CARGO_SWEEP_CONFIG: CargoPluginConfig = CargoPluginConfig {
+    tool_name: "cargo-sweep",
+    package_name: "cargo-sweep",
+    subcommand: "sweep",
     post_install_note: None,
     post_install_action: None,
     post_status_action: None,
