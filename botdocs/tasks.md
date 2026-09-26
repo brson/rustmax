@@ -282,19 +282,70 @@ and CLI support means we have adopted it.
 
 # Task task-add-cargo-tool-cli: Add a cargo tool to rustmax-cli
 
-`rustmax-cli` has four commands that operate on "tools":
-`install-tool`, `uninstall-tool`, `update-tool`, `tool-status`;
-the source for which begins in `rustmax-cli/src/main.rs`, `tools.rs` and `impls.rs`.
+`rustmax-cli` has four commands that operate on a single "tool":
+`install-tool`, `uninstall-tool`, `update-tool`, `tool-status`,
+and five that operate on every tool at once:
+`list-tools`, `install-tools`, `update-tools`, `uninstall-tools`, `tools-status`.
+The source for which begins in `crates/rustmax-cli/src/main.rs`,
+`tools.rs` and `impls.rs`.
+
+This is the sibling of `task-add-cargo-plugin-cli`, for tools invoked as
+their own binary rather than as a `cargo` subcommand.
 
 To add a new cargo-installable tool that is not a cargo plugin:
 
-- Add it to the `Tools` enum if it doesn't already exist.
+- Add it to the `Tool` enum in `tools.rs` if it doesn't already exist,
+  in the `/* non-plugin cargo programs */` group.
+  That group is alphabetical by variant name, give or take `Jsonxf`/`Jaq`.
+- Add a `ToolAttrs` arm in `impls.rs` with `impl_complete: true`.
+  `display_name` is the installed binary name, not the package name.
 - Create the `CargoToolConfig` constant for the tool.
-- Fill in any associated match arms in `tools.rs` and `impls.rs`
+  These live at the bottom of `impls.rs`, below the `cargo_tool_*` functions,
+  in the same order as the enum - unlike the plugin configs, which sit above
+  their functions.
+- Fill in the match arms in all four of `install`, `update`, `uninstall`
+  and `status` in `impls.rs`.
 - Follow the coding pattern that already exists for cargo programs like `basic-http-server` and `ripgrep`,
   defering to `cargo_tool_install` etc for the primary logic.
 - Think about if these tools have any special considerations for post-install/uninstall actions etc.
   Do they store caches in the home directory that can be delete on uninstall?
+  If they don't, note that in a comment above the config constant,
+  so the next reader doesn't have to work it out again.
+
+**Common gotchas:**
+
+- `tool_name` is not a label, it is the binary that gets executed.
+  All four `cargo_tool_*` functions detect the tool by running
+  `<tool_name> --version`, so it has to be the installed binary name,
+  which is frequently not the package name: `du-dust` installs `dust`,
+  `fd-find` installs `fd`, `ripgrep` installs `rg`.
+  Getting this wrong leaves the tool looking permanently uninstalled.
+- `CargoToolConfig` has no `post_status_action`, so unlike a plugin there is
+  no hook to report extra state under `tool-status`. Add the field if a tool
+  needs one.
+- A missing `attrs` arm does not fail to compile - it falls through to the
+  `_ => "<unknown>"` catch-all. And `impl_complete: false` silently drops the
+  tool from `list-tools` and from every bulk `*-tools` command.
+- The `install`/`update`/`uninstall`/`status` matches all end in `_ => todo!()`,
+  so a forgotten arm panics at runtime rather than failing to compile.
+  Add all four.
+- The single-tool commands take the kebab-cased *enum variant* name, while
+  `list-tools` prints `display_name`. Where those differ the listing is not
+  copy-pasteable: `list-tools` says `fd`, but the command wants
+  `tool-status fd-find`.
+
+**Verify:**
+
+- `cargo build -p rustmax-cli`
+- `cargo run -p rustmax-cli -- list-tools` lists the new tool
+- `cargo run -p rustmax-cli -- tool-status <tool>` reports its version
+- `just test`
+
+Adding a tool to the CLI is not the same as documenting it;
+see `task-add-cargo-tool-to-book` for `book/src/tools.md`.
+If the tool is listed in the `## Tools` section of `book/src/radar.md`,
+remove it - the radar is for things we have not adopted yet,
+and CLI support means we have adopted it.
 
 
 # Task task-add-cargo-tool-to-book: Add a cargo-based tool to the rustmax book
