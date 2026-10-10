@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set +euxo pipefail
+set -euxo pipefail
 
 TOOLCHAIN=1.90.0
 rustup default $TOOLCHAIN
