@@ -63,10 +63,15 @@ pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> 
 pub fn refresh_library(root: &Path) -> AnyResult<()> {
     let books = load(root)?.books;
     println!("Refreshing all library repositories...");
+    let mut failed = Vec::new();
     for book in &books {
         if let Err(e) = get_repo(book) {
             eprintln!("Failed to refresh {}: {}", book.slug, e);
+            failed.push(book.slug.as_str());
         }
+    }
+    if !failed.is_empty() {
+        bail!("failed to refresh books: {}", failed.join(", "));
     }
     println!("Library refresh complete");
     Ok(())
@@ -235,17 +240,19 @@ fn get_repo(book: &Book) -> AnyResult<()> {
         true
     };
 
+    // Only the pinned commit is ever built, so fetch it alone, without history.
     if need_clone {
-        println!("  Cloning {} from {} (blobless)", book.slug, repo);
-        cmd!(sh, "git clone --filter=blob:none {repo} {dir}").run()?;
-    } else {
-        println!("  Fetching commit {} for {}", commit, book.slug);
+        println!("  Initializing {} from {}", book.slug, repo);
+        cmd!(sh, "git init -q {dir}").run()?;
         let _pd = sh.push_dir(dir);
-        cmd!(sh, "git fetch origin {commit}").run()?;
+        cmd!(sh, "git remote add origin {repo}").run()?;
     }
 
-    println!("  Checking out commit {} for {}", commit, book.slug);
+    println!("  Fetching commit {} for {}", commit, book.slug);
     let _pd = sh.push_dir(dir);
+    cmd!(sh, "git fetch -q --depth 1 origin {commit}").run()?;
+
+    println!("  Checking out commit {} for {}", commit, book.slug);
     cmd!(sh, "git checkout -f {commit}").run()?;
 
     Ok(())
