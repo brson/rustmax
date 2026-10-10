@@ -83,8 +83,9 @@ fn build_tree_recursive<'a>(
     let (module_id, module_item) = krate.index.get_key_value(module_id)
         .ok_or_else(|| anyhow!("Module {} not found in index", module_id.0))?;
 
-    let module_name = module_item.name.clone()
-        .unwrap_or_else(|| current_path.last().cloned().unwrap_or_default());
+    // The path's last segment, not the item name, so a module re-exported
+    // under another name is named for where it is presented.
+    let module_name = current_path.last().cloned().unwrap_or_default();
 
     let ItemEnum::Module(module) = &module_item.inner else {
         bail!("Expected module, got {:?}", module_item.inner);
@@ -254,6 +255,29 @@ fn collect_module_children<'a>(
 
         let mut child_path = current_path.to_vec();
         child_path.push(item_name(child_item));
+
+        // A named re-export of a local module becomes a submodule at the re-export path,
+        // as `alloc` does with `pub use rcs::rc` out of its private `rcs` module.
+        if let ItemEnum::Use(use_item) = &child_item.inner {
+            let local_module = use_item.id.as_ref()
+                .and_then(|target_id| krate.index.get_key_value(target_id))
+                .filter(|(_, target_item)| matches!(target_item.inner, ItemEnum::Module(_)));
+
+            if let Some((target_id, _)) = local_module {
+                if !expanding.contains(target_id) {
+                    let subtree = build_tree_recursive(
+                        krate,
+                        target_id,
+                        child_path,
+                        include_private,
+                        id_to_path,
+                        expanding,
+                    )?;
+                    submodules.push(subtree);
+                }
+                continue;
+            }
+        }
 
         match &child_item.inner {
             ItemEnum::Module(_) => {
@@ -676,5 +700,63 @@ mod tests {
         assert!(tree.items.is_empty());
         assert_eq!(tree.glob_reexports.len(), 1);
         assert_eq!(tree.glob_reexports[0].target_crate, "clap_builder");
+    }
+
+    /// The `alloc` shape: a public module defined inside a private one
+    /// and re-exported by name from the crate root.
+    #[test]
+    fn named_reexport_of_module_is_presented_at_reexport_path() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1, 2]));
+        index.insert(id, i);
+        let (id, i) = item(1, "rcs", module(false, vec![3]));
+        index.insert(id, i);
+        let (id, i) = item(2, "shared", ItemEnum::Use(Use {
+            source: "rcs::rc".to_string(),
+            name: "shared".to_string(),
+            id: Some(Id(3)),
+            is_glob: false,
+        }));
+        index.insert(id, i);
+        let (id, i) = item(3, "rc", module(false, vec![4]));
+        index.insert(id, i);
+        let (id, i) = item(4, "Rc", empty_struct());
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        let names: Vec<&str> = tree.submodules.iter().map(|m| m.name.as_str()).collect();
+        assert_eq!(names, ["rcs", "shared"]);
+        let shared = &tree.submodules[1];
+        assert_eq!(shared.module_item.as_ref().unwrap().html_path, PathBuf::from("mycrate/shared/index.html"));
+        assert_eq!(item_names(shared), ["Rc"]);
+        assert_eq!(shared.items[0].path, ["mycrate", "shared", "Rc"]);
+    }
+
+    /// A module re-exporting its own ancestor by name must not recurse forever.
+    #[test]
+    fn named_module_reexport_cycle_terminates() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1]));
+        index.insert(id, i);
+        let (id, i) = item(1, "inner", module(false, vec![2]));
+        index.insert(id, i);
+        let (id, i) = item(2, "top", ItemEnum::Use(Use {
+            source: "crate".to_string(),
+            name: "top".to_string(),
+            id: Some(Id(0)),
+            is_glob: false,
+        }));
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate, false).unwrap();
+
+        let inner = &tree.submodules[0];
+        assert!(inner.submodules.is_empty());
+        assert!(inner.items.is_empty());
     }
 }
