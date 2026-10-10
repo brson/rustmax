@@ -104,12 +104,12 @@ doc-book:
 
 doc-library: prebuild
     @if [ -n "${RUSTMAX_CI:-}" ]; then \
-        cargo run -- refresh-library; \
+        cargo run --release -- refresh-library; \
     fi
     cargo run --release -- build-library --generate-library-page
 
 export-search-index:
-    cargo run -p rustmax-cli -- export-search-index
+    cargo run -p rustmax-cli --release -- export-search-index
 
 search query: export-search-index
     cargo run -p rustmax-cli -- search {{query}}
@@ -131,7 +131,7 @@ doc-www: doc-library export-search-index
 
 # Requires a built site; run after doc-api.
 doc-check-links:
-    cargo run -p rustmax-cli -- validate-links
+    cargo run -p rustmax-cli --release -- validate-links
 
 doc-build: doc-www doc-api doc-book doc-library
     mkdir -p out/book
