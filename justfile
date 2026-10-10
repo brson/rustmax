@@ -1,3 +1,7 @@
+# The nightly used for rustdoc JSON, which is unstable.
+# Bump deliberately, together with the rustdoc-types version in rustmax-rustdoc.
+nightly := "nightly-2026-10-09"
+
 default:
     just --list
 
@@ -81,11 +85,14 @@ prebuild:
 doc-clean:
     rm -rf out
 
-doc-api: prebuild
+install-nightly:
+    rustup toolchain install {{nightly}} --profile minimal --component rust-docs-json
+
+doc-api: prebuild install-nightly
     # Generate JSON for rustmax and all dependencies.
-    RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +nightly doc -p rustmax --features rmx-profile-max
-    # Copy std library JSON files from nightly toolchain (requires rust-docs-json component).
-    cp "$(rustup +nightly which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/ 2>/dev/null || echo "Warning: rust-docs-json not installed, std links won't resolve"
+    RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +{{nightly}} doc -p rustmax --features rmx-profile-max
+    # Copy std library JSON files from the rust-docs-json component.
+    cp "$(rustup +{{nightly}} which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/
     # Build HTML docs with rustmax-rustdoc.
     rm -rf out/api
     mkdir -p out/api
