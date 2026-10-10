@@ -25,6 +25,11 @@ rustdoc-types.features = ["rustc-hash"]
 serde.version = "1"
 serde.features = ["derive"]
 
+# Types like typenum's nest past serde_json's default recursion limit.
+serde_json.version = "1"
+serde_json.features = ["unbounded_depth"]
+serde_stacker.version = "0.1"
+
 comrak.version = "0.54"
 comrak.default-features = false
 syntect.version = "5.3"

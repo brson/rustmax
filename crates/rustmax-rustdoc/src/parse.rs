@@ -1,6 +1,7 @@
 //! JSON parsing for rustdoc output.
 
 use rmx::prelude::*;
+use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -22,10 +23,10 @@ pub fn load_bytes(json: &[u8]) -> AnyResult<rustdoc_types::Crate> {
 /// Load all rustdoc JSON files from a directory.
 ///
 /// Returns a map from crate name to parsed crate data.
-/// Files that fail to parse are skipped with a warning.
+/// Any file that fails to parse is an error,
+/// since it usually means the JSON format has drifted from `rustdoc-types`.
 pub fn load_json_dir(dir: &Path) -> AnyResult<BTreeMap<String, rustdoc_types::Crate>> {
     let mut crates = BTreeMap::new();
-    let mut skipped = 0;
 
     for entry in fs::read_dir(dir)
         .with_context(|| format!("Failed to read directory {}", dir.display()))?
@@ -34,33 +35,31 @@ pub fn load_json_dir(dir: &Path) -> AnyResult<BTreeMap<String, rustdoc_types::Cr
         let path = entry.path();
 
         if path.extension().map(|e| e == "json").unwrap_or(false) {
-            match load_json(&path) {
-                Ok(krate) => {
-                    let name = krate.index.get(&krate.root)
-                        .and_then(|item| item.name.clone())
-                        .unwrap_or_else(|| {
-                            path.file_stem()
-                                .map(|s| s.to_string_lossy().into_owned())
-                                .unwrap_or_default()
-                        });
-                    crates.insert(name, krate);
-                }
-                Err(e) => {
-                    eprintln!("Warning: skipping {} ({})", path.display(), e);
-                    skipped += 1;
-                }
-            }
+            let krate = load_json(&path)
+                .with_context(|| format!("Failed to load {}", path.display()))?;
+            let name = krate.index.get(&krate.root)
+                .and_then(|item| item.name.clone())
+                .unwrap_or_else(|| {
+                    path.file_stem()
+                        .map(|s| s.to_string_lossy().into_owned())
+                        .unwrap_or_default()
+                });
+            crates.insert(name, krate);
         }
-    }
-
-    if skipped > 0 {
-        eprintln!("Skipped {} files due to parse errors.", skipped);
     }
 
     Ok(crates)
 }
 
+/// Parse rustdoc JSON with no recursion limit.
+///
+/// Deeply nested types, like typenum's, exceed serde_json's default limit,
+/// so the stack is grown on demand instead.
 fn parse_json(content: &str) -> AnyResult<rustdoc_types::Crate> {
-    rmx::serde_json::from_str(content)
-        .context("Failed to parse rustdoc JSON")
+    let mut de = serde_json::Deserializer::from_str(content);
+    de.disable_recursion_limit();
+    let de = serde_stacker::Deserializer::new(&mut de);
+    let krate = rustdoc_types::Crate::deserialize(de)
+        .context("Failed to parse rustdoc JSON")?;
+    Ok(krate)
 }
