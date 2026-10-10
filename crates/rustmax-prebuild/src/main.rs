@@ -255,6 +255,9 @@ fn get_manifest_crate_info(manifest: &toml::Value) -> AnyResult<Vec<ManifestCrat
         .ok_or(A!("toml: dependencies table"))?;
 
     deps.iter()
+        // Ignore path dependencies.
+        // These are rustmax's own workspace crates, not curated crates.
+        .filter(|(_, dep)| dep.get("path").is_none())
         .map(|(name, dep)| {
             let version = dep
                 .as_table()
