@@ -11,6 +11,8 @@ name = "Rust by Example"
 aliases = ["RBE", "examples", "learn by example", "rust examples", "code examples", "example code"]
 category = "book"
 brief = "Learn Rust through annotated example programs"
+# Not built locally; the library page links to it offsite.
+path = "library.html"
 
 [topics.reference]
 name = "The Rust Reference"
