@@ -11,9 +11,9 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow.version = "1"
-chrono.version = "0.4.39"
 clap.version = "4.5.23"
 json5.version = "1.3.0"
+megaspace-pipeliner.version = "0.6.0"
 regex.version = "1.11.1"
 serde.version = "1"
 serde.features = ["derive"]

@@ -124,9 +124,8 @@ doc-www: doc-library export-search-index
     cp -r www/* out/
     cp work/crates.html out/
     cp work/build-info.json out/
-    cp work/latest-post.html out/ || true
-    cp work/news.html out/ || true
-    cp work/news.xml out/ || true
+    cp work/latest-post.html out/
+    cp -r work/news/* out/
     cp work/search-index.json out/
 
 # Requires a built site; run after doc-api.

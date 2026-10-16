@@ -1,0 +1,59 @@
+<!doctype html>
+
+<html lang='en'>
+
+  <head>
+    <meta charset='utf-8'>
+
+    <title>{{ title }} - Rustmax</title>
+    <meta name='description' content='{{ post.summary }}'>
+    <link rel='canonical' href='{{ post.canonical_url }}'>
+
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Zilla+Slab:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href='{{ path_prefix }}rustmax-themes.css' rel='stylesheet'/>
+    <link href='{{ path_prefix }}style.css' rel='stylesheet'/>
+
+    <!-- Syntax highlighting (pre-rendered by syntect) -->
+    <link href='{{ path_prefix }}rustmax-syntax.css' rel='stylesheet'/>
+
+    <script src='{{ path_prefix }}set-theme.js'></script>
+    <script src='{{ path_prefix }}script.js'></script>
+
+    <link rel="alternate" type="application/rss+xml" title="Rustmax News" href="{{ path_prefix }}posts.xml">
+
+  </head>
+
+  <main>
+
+    <header>
+      <hgroup>
+        <h1><a href="{{ path_prefix }}index.html" style="text-decoration: none; color: inherit;">R<span>·</span>U<span>·</span>S<span>·</span>T<span>·</span>M<span>·</span>A<span>·</span>X</a></h1>
+      </hgroup>
+    </header>
+
+    <article class="post">
+      <header class="post-header">
+        <h2>{{ post.title }}</h2>
+        <div class="post-meta">
+          <span class="post-date">{{ post.date }}</span>
+          <span class="post-category category-{{ post.category }}">{{ post.category }}</span>
+        </div>
+      </header>
+
+      <div class="post-content">
+        {{ content | safe }}
+      </div>
+
+      <footer class="post-footer">
+        <a href="{{ posts_url }}">All news</a>
+      </footer>
+    </article>
+
+    <footer>
+    </footer>
+
+  </main>

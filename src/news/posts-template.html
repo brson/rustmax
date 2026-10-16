@@ -13,16 +13,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Zilla+Slab:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link href='rustmax-themes.css' rel='stylesheet'/>
-    <link href='style.css' rel='stylesheet'/>
+    <link href='{{ path_prefix }}rustmax-themes.css' rel='stylesheet'/>
+    <link href='{{ path_prefix }}style.css' rel='stylesheet'/>
 
     <!-- Syntax highlighting (pre-rendered by syntect) -->
-    <link href='rustmax-syntax.css' rel='stylesheet'/>
+    <link href='{{ path_prefix }}rustmax-syntax.css' rel='stylesheet'/>
 
-    <script src='set-theme.js'></script>
-    <script src='script.js'></script>
+    <script src='{{ path_prefix }}set-theme.js'></script>
+    <script src='{{ path_prefix }}script.js'></script>
 
-    <link rel="alternate" type="application/rss+xml" title="Rustmax News" href="news.xml">
+    <link rel="alternate" type="application/rss+xml" title="Rustmax News" href="posts.xml">
 
   </head>
 
@@ -30,20 +30,20 @@
 
     <header>
       <hgroup>
-        <h1><a href="index.html" style="text-decoration: none; color: inherit;">R<span>·</span>U<span>·</span>S<span>·</span>T<span>·</span>M<span>·</span>A<span>·</span>X</a></h1>
+        <h1><a href="{{ path_prefix }}index.html" style="text-decoration: none; color: inherit;">R<span>·</span>U<span>·</span>S<span>·</span>T<span>·</span>M<span>·</span>A<span>·</span>X</a></h1>
       </hgroup>
     </header>
 
     <section>
       <h2>News</h2>
-      <p><a href="news.xml">RSS</a></p>
+      <p><a href="posts.xml">RSS</a></p>
     </section>
 
     <section class="feed-list">
       {% for post in posts %}
       <article class="post" id="{{ post.slug }}">
         <header class="post-header">
-          <h3>{{ post.title }}</h3>
+          <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
           <div class="post-meta">
             <span class="post-date">{{ post.date }}</span>
             <span class="post-category category-{{ post.category }}">{{ post.category }}</span>
@@ -51,8 +51,11 @@
         </header>
 
         <div class="post-content">
-          {{ post.content_html | safe }}
+          {{ post.excerpt_html | safe }}
         </div>
+        {% if post.truncated %}
+        <p class="post-more"><a href="{{ post.url }}">Read more</a></p>
+        {% endif %}
       </article>
       {% endfor %}
     </section>

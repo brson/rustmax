@@ -14,8 +14,8 @@
 
 #![allow(unused)]
 
-mod feed;
 mod highlight;
+mod news;
 
 use anyhow::Context;
 use anyhow::Result as AnyResult;
@@ -33,12 +33,16 @@ const EXAMPLES_DIR: &str = "crates/rustmax/doc-src";
 const LINK_SUBS: &str = "src/linksubs.json5";
 const CLI_DIR: &str = "crates/rustmax-cli";
 const POSTS_DIR: &str = "src/posts";
+const NEWS_DIR: &str = "src/news";
+const WWW_DIR: &str = "www";
 
 const OUT_DIR: &str = "work";
 const OUT_CRATES_MD: &str = "work/crates.md";
 const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
 const OUT_BUILD_INFO: &str = "work/build-info.json";
+const OUT_NEWS_DIR: &str = "work/news";
+const OUT_LATEST_POST: &str = "work/latest-post.html";
 
 #[derive(Debug)]
 struct CrateInfo {
@@ -152,17 +156,21 @@ fn main() -> AnyResult<()> {
     write(out_crates_html_file, &out_crates_html_str)?;
     write(out_build_info_file, &build_info_str)?;
 
-    // Generate feed content.
-    let posts_dir = workspace_dir.join(POSTS_DIR);
-    let posts = feed::parse_posts(&posts_dir)?;
+    let out_news_dir = workspace_dir.join(OUT_NEWS_DIR);
+    news::build_posts(
+        &workspace_dir.join(NEWS_DIR),
+        &workspace_dir.join(POSTS_DIR),
+        &workspace_dir.join(WWW_DIR),
+        &out_news_dir,
+    )?;
 
     let mut tera = tera::Tera::new();
     tera.load_from_glob("src/*.template.*")?;
-    let out_dir = workspace_dir.join(OUT_DIR);
-
-    feed::generate_feed_page(&posts, &tera, &out_dir)?;
-    feed::generate_latest_post(&posts, &tera, &out_dir)?;
-    feed::generate_rss(&posts, &out_dir, "https://rustmax.org")?;
+    news::generate_latest_post(
+        &out_news_dir.join("posts.json"),
+        &tera,
+        &workspace_dir.join(OUT_LATEST_POST),
+    )?;
 
     copy_cli_assets(&workspace_dir, &cli_dir);
 
