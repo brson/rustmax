@@ -120,6 +120,16 @@ fn build_books(books: &[Book], no_fetch: bool) -> Vec<BookBuildResult> {
 
         println!("Processing: {} - {}", book.slug, book.name);
 
+        if let Err(e) = check_checkout(book) {
+            eprintln!("Stale checkout of {}: {}", book.slug, e);
+            results.push(BookBuildResult {
+                book: book.clone(),
+                success: false,
+                error_message: Some(e.to_string()),
+            });
+            continue;
+        }
+
         if let Err(e) = prepare_book(book) {
             eprintln!("Failed to prepare {}: {}", book.slug, e);
             results.push(BookBuildResult {
@@ -210,6 +220,30 @@ fn build_book(book: &Book) -> AnyResult<()> {
 
     if !fs::exists(format!("{}/index.html", output_dir))? {
         return Err(anyhow!("Build failed - index.html not found"));
+    }
+
+    Ok(())
+}
+
+/// Fail unless the book's checkout is at its pinned commit.
+///
+/// Builds without fetching use whatever is already checked out,
+/// which falls behind when the pins in `src/books.json5` change.
+fn check_checkout(book: &Book) -> AnyResult<()> {
+    let ref dir = book_src_dir(book);
+    if !fs::exists(dir)? {
+        bail!("{dir} does not exist; run `rustmax refresh-library`");
+    }
+
+    let sh = Shell::new()?;
+    let _pd = sh.push_dir(dir);
+    let head = cmd!(sh, "git rev-parse HEAD").read()?;
+    if head.trim() != book.commit {
+        bail!(
+            "{dir} is at {}, but src/books.json5 pins {}; run `rustmax refresh-library`",
+            head.trim(),
+            book.commit,
+        );
     }
 
     Ok(())
