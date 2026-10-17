@@ -18,10 +18,10 @@ pub fn build_posts(news_dir: &Path, posts_dir: &Path, www_dir: &Path, out_dir: &
         link_context: &[],
         posts: Some(PostsConfig {
             site_title: "Rustmax",
-            site_description: "Updates from Rustmax - curated Rust crates, tips, and news",
+            site_description: "Updates from rustmax.net",
             author: "Brian Anderson",
             language: "en",
-            base_url: "https://rustmax.org",
+            base_url: "https://rustmax.net",
             categories: &["crates", "tips", "news"],
             excerpt_bytes: 600,
             posts_dir: Some(posts_dir),
