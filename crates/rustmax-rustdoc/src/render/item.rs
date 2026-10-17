@@ -35,7 +35,9 @@ fn page_base(ctx: &RenderContext, item: &RenderableItem, tera_ctx: &mut Context)
         .unwrap_or_default();
     tera_ctx.insert("docs", &docs);
 
-    tera_ctx.insert("sidebar", &ctx.sidebar(&item.path, depth));
+    // No module is current on an item page.
+    tera_ctx.insert("sidebar_current", "");
+    tera_ctx.insert("sidebar_tree", &ctx.sidebar_tree);
 
     Ok(PageBase { depth })
 }

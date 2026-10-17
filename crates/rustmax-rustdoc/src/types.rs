@@ -561,6 +561,38 @@ mod tests {
         tree.items.iter().map(|i| item_name(i.item)).collect()
     }
 
+    /// The sidebar tree holds every module, but no other items.
+    #[test]
+    fn sidebar_tree_script_lists_modules() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1, 2]));
+        index.insert(id, i);
+        let (id, i) = item(1, "outer", module(false, vec![3]));
+        index.insert(id, i);
+        let (id, i) = item(2, "top_fn", empty_fn());
+        index.insert(id, i);
+        let (id, i) = item(3, "inner", module(false, vec![]));
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate).unwrap();
+
+        assert_eq!(
+            crate::render::sidebar::tree_script_path(&tree),
+            PathBuf::from("mycrate/sidebar-tree.js"),
+        );
+        assert_eq!(
+            crate::render::sidebar::tree_script(&tree),
+            concat!(
+                r#"window.rmxSidebarTree = ["mycrate","mycrate/index.html","mycrate",["#,
+                r#"["outer","mycrate/outer/index.html","mycrate::outer",["#,
+                r#"["inner","mycrate/outer/inner/index.html","mycrate::outer::inner",[]]]]]];"#,
+                "\n",
+            ),
+        );
+    }
+
     /// The `libm` shape: the whole API lives in a private module
     /// that the crate root re-exports with a glob.
     #[test]

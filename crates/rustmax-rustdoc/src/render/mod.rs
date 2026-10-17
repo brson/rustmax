@@ -52,8 +52,8 @@ pub struct RenderContext<'a> {
     /// Map from an associated item's ID to the ID its page lives on: the
     /// implementing type for an impl member, or the trait itself.
     assoc_item_parents: HashMap<Id, Id>,
-    /// Pre-rendered sidebars, one per distinct page shape.
-    sidebars: sidebar::Sidebars,
+    /// The crate's sidebar tree script, as a URL path from the output directory.
+    pub sidebar_tree: String,
 }
 
 impl<'a> RenderContext<'a> {
@@ -85,7 +85,7 @@ impl<'a> RenderContext<'a> {
         let impl_index = build_impl_index(krate);
         let reexport_paths = build_reexport_paths(&module_tree);
         let assoc_item_parents = build_assoc_item_parents(krate);
-        let sidebars = sidebar::Sidebars::build(&module_tree, &tera)?;
+        let sidebar_tree = sidebar::tree_script_path(&module_tree).display().to_string();
 
         Ok(Self {
             krate,
@@ -99,14 +99,10 @@ impl<'a> RenderContext<'a> {
             all_crates: all_crates.into(),
             reexport_paths,
             assoc_item_parents,
-            sidebars,
+            sidebar_tree,
         })
     }
 
-    /// The sidebar for a page at `current_path`, `depth` levels below the root.
-    pub fn sidebar(&self, current_path: &[String], depth: usize) -> String {
-        self.sidebars.get(current_path, depth)
-    }
 
     /// Get the crate name.
     pub fn crate_name(&self) -> &str {
@@ -481,7 +477,6 @@ fn load_templates() -> AnyResult<Tera> {
     tera.add_raw_template("type_alias.html", include_str!("../templates/type_alias.html"))?;
     tera.add_raw_template("constant.html", include_str!("../templates/constant.html"))?;
     tera.add_raw_template("macro.html", include_str!("../templates/macro.html"))?;
-    tera.add_raw_template("sidebar.html", include_str!("../templates/sidebar.html"))?;
 
     Ok(tera)
 }

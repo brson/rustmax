@@ -32,7 +32,9 @@
         <div class="sidebar-title">
             <a href="{{ path_to_root }}index.html">{{ crate_name }}</a>
         </div>
-        {{ sidebar | safe }}
+        <ul class="module-tree" data-root="{{ path_to_root }}" data-current="{{ sidebar_current }}"></ul>
+        <script src="{{ path_to_root }}{{ sidebar_tree }}"></script>
+        <script src="{{ path_to_root }}rustdoc-sidebar.js"></script>
     </nav>
     <main>
         <header>

@@ -18,6 +18,8 @@ pub fn write_docs(ctx: &RenderContext) -> AnyResult<()> {
     // Write CSS.
     write_css(&ctx.config.output_dir)?;
 
+    write_sidebar(ctx)?;
+
     // Write module pages recursively.
     write_module_tree(ctx, &ctx.module_tree)?;
 
@@ -159,6 +161,22 @@ fn build_reexport_html_path(path: &[String], inner: &ItemEnum) -> PathBuf {
     result.push(filename);
 
     result
+}
+
+/// Write the crate's sidebar tree, and the script that builds it into pages.
+fn write_sidebar(ctx: &RenderContext) -> AnyResult<()> {
+    let output_dir = &ctx.config.output_dir;
+
+    let tree_path = output_dir.join(&ctx.sidebar_tree);
+    if let Some(parent) = tree_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    fs::write(&tree_path, render::sidebar::tree_script(&ctx.module_tree))
+        .with_context(|| format!("Failed to write {}", tree_path.display()))?;
+
+    let script_path = output_dir.join("rustdoc-sidebar.js");
+    fs::write(&script_path, render::sidebar::SIDEBAR_JS)
+        .with_context(|| format!("Failed to write {}", script_path.display()))
 }
 
 fn write_css(output_dir: &Path) -> AnyResult<()> {
