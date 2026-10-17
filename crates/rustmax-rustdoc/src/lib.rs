@@ -25,8 +25,6 @@ pub struct RenderConfig {
     pub output_dir: PathBuf,
     /// Base URL for external crate documentation (e.g., "https://docs.rs").
     pub external_base_url: String,
-    /// Whether to include private items in the documentation.
-    pub include_private: bool,
     /// Crate version to display.
     pub crate_version: Option<String>,
 }
@@ -36,7 +34,6 @@ impl Default for RenderConfig {
         Self {
             output_dir: PathBuf::from("target/rmxdoc"),
             external_base_url: "https://docs.rs".to_string(),
-            include_private: false,
             crate_version: None,
         }
     }
@@ -78,12 +75,6 @@ impl RustDoc {
     /// Set the external documentation base URL.
     pub fn external_base_url(mut self, url: impl Into<String>) -> Self {
         self.config.external_base_url = url.into();
-        self
-    }
-
-    /// Include private items in documentation.
-    pub fn include_private(mut self, include: bool) -> Self {
-        self.config.include_private = include;
         self
     }
 
@@ -157,12 +148,6 @@ impl RustDocSet {
     /// Set the external documentation base URL.
     pub fn external_base_url(mut self, url: impl Into<String>) -> Self {
         self.config.external_base_url = url.into();
-        self
-    }
-
-    /// Include private items in documentation.
-    pub fn include_private(mut self, include: bool) -> Self {
-        self.config.include_private = include;
         self
     }
 

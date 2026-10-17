@@ -80,7 +80,7 @@ impl<'a> RenderContext<'a> {
     ) -> AnyResult<Self> {
         let tera = load_templates()?;
         let id_to_path = build_id_to_path(krate);
-        let module_tree = build_module_tree(krate, config.include_private)?;
+        let module_tree = build_module_tree(krate)?;
         let highlighter = highlight::Highlighter::new();
         let impl_index = build_impl_index(krate);
         let reexport_paths = build_reexport_paths(&module_tree);

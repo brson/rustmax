@@ -279,9 +279,6 @@ enum RustdocAction {
         /// Output directory.
         #[arg(short, long, default_value = "target/rmxdoc")]
         output: std::path::PathBuf,
-        /// Include private items.
-        #[arg(long)]
-        document_private_items: bool,
     },
 }
 
@@ -719,15 +716,13 @@ impl CliCmdRustdoc {
             RustdocAction::Build {
                 json_path,
                 output,
-                document_private_items,
             } => {
                 if json_path.is_dir() {
                     // Directory mode: load all JSON files and render with cross-crate linking.
                     println!("Loading rustdoc JSON files from {}...", json_path.display());
 
                     let doc_set = rustmax_rustdoc::RustDocSet::from_json_dir(json_path)?
-                        .output_dir(output.clone())
-                        .include_private(*document_private_items);
+                        .output_dir(output.clone());
 
                     println!("Found {} crates.", doc_set.crates.len());
                     println!("Rendering to {}...", output.display());
@@ -739,8 +734,7 @@ impl CliCmdRustdoc {
                     println!("Loading rustdoc JSON from {}...", json_path.display());
 
                     let doc = rustmax_rustdoc::RustDoc::from_json(json_path)?
-                        .output_dir(output.clone())
-                        .include_private(*document_private_items);
+                        .output_dir(output.clone());
 
                     println!("Rendering to {}...", output.display());
                     doc.render()?;

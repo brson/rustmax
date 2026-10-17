@@ -45,7 +45,6 @@ pub struct GlobReexport {
 /// Builds a module tree from the rustdoc crate data.
 pub fn build_module_tree<'a>(
     krate: &'a Crate,
-    include_private: bool,
 ) -> AnyResult<ModuleTree<'a>> {
     let mut id_to_path: HashMap<&Id, Vec<String>> = HashMap::new();
 
@@ -66,7 +65,6 @@ pub fn build_module_tree<'a>(
         krate,
         &krate.root,
         vec![crate_name.clone()],
-        include_private,
         &id_to_path,
         &mut expanding,
     )
@@ -76,7 +74,6 @@ fn build_tree_recursive<'a>(
     krate: &'a Crate,
     module_id: &'a Id,
     current_path: Vec<String>,
-    include_private: bool,
     id_to_path: &HashMap<&Id, Vec<String>>,
     expanding: &mut HashSet<&'a Id>,
 ) -> AnyResult<ModuleTree<'a>> {
@@ -101,7 +98,6 @@ fn build_tree_recursive<'a>(
         krate,
         &module.items,
         &current_path,
-        include_private,
         id_to_path,
         &mut items,
         &mut submodules,
@@ -189,7 +185,6 @@ fn collect_module_children<'a>(
     krate: &'a Crate,
     child_ids: &'a [Id],
     current_path: &[String],
-    include_private: bool,
     id_to_path: &HashMap<&Id, Vec<String>>,
     items: &mut Vec<RenderableItem<'a>>,
     submodules: &mut Vec<ModuleTree<'a>>,
@@ -201,9 +196,9 @@ fn collect_module_children<'a>(
             continue;
         };
 
-        // Skip private items unless requested.
+        // Skip private items.
         // But always include modules (they're navigable) and check re-exports by their target.
-        if !include_private && is_private(child_item, krate) {
+        if is_private(child_item, krate) {
             continue;
         }
 
@@ -223,8 +218,7 @@ fn collect_module_children<'a>(
                             krate,
                             &target_module.items,
                             current_path,
-                            include_private,
-                            id_to_path,
+                                                id_to_path,
                             items,
                             submodules,
                             glob_reexports,
@@ -269,8 +263,7 @@ fn collect_module_children<'a>(
                         krate,
                         target_id,
                         child_path,
-                        include_private,
-                        id_to_path,
+                                        id_to_path,
                         expanding,
                     )?;
                     submodules.push(subtree);
@@ -286,8 +279,7 @@ fn collect_module_children<'a>(
                     krate,
                     child_id,
                     child_path,
-                    include_private,
-                    id_to_path,
+                                id_to_path,
                     expanding,
                 )?;
                 submodules.push(subtree);
@@ -587,7 +579,7 @@ mod tests {
         let (id, i) = item(4, "Libm", empty_struct());
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         let mut names = item_names(&tree);
         names.sort();
@@ -631,7 +623,7 @@ mod tests {
         let (id, i) = item(7, "can_frame", empty_struct());
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         assert_eq!(item_names(&tree), ["can_frame"]);
     }
@@ -653,7 +645,7 @@ mod tests {
         let (id, i) = item(4, "flock", empty_fn());
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         assert_eq!(item_names(&tree), ["flock", "flock"]);
     }
@@ -674,7 +666,7 @@ mod tests {
         let (id, i) = item(3, "mycrate", glob("super", 0));
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         assert_eq!(item_names(&tree), ["thing"]);
         // The glob back into the parent is dropped rather than followed.
@@ -695,7 +687,7 @@ mod tests {
         let (id, i) = item(1, "clap_builder", external_glob("clap_builder"));
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         assert!(tree.items.is_empty());
         assert_eq!(tree.glob_reexports.len(), 1);
@@ -725,7 +717,7 @@ mod tests {
         let (id, i) = item(4, "Rc", empty_struct());
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         let names: Vec<&str> = tree.submodules.iter().map(|m| m.name.as_str()).collect();
         assert_eq!(names, ["rcs", "shared"]);
@@ -753,7 +745,7 @@ mod tests {
         }));
         index.insert(id, i);
 
-        let tree = build_module_tree(&krate, false).unwrap();
+        let tree = build_module_tree(&krate).unwrap();
 
         let inner = &tree.submodules[0];
         assert!(inner.submodules.is_empty());
