@@ -21,7 +21,7 @@ pub fn build_posts(news_dir: &Path, posts_dir: &Path, www_dir: &Path, out_dir: &
             site_description: "Updates from rustmax.net",
             author: "Brian Anderson",
             language: "en",
-            base_url: "https://rustmax.net",
+            base_url: "https://www.rustmax.net",
             categories: &["crates", "tips", "news"],
             excerpt_bytes: 600,
             posts_dir: Some(posts_dir),
