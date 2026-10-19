@@ -30,7 +30,7 @@ let mut archive = ZipArchive::new(file).unwrap();
 
 for i in 0..archive.len() {
     let mut file = archive.by_index(i).unwrap();
-    println!("File: {}", file.name());
+    println!("File: {}", file.name().unwrap());
 
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
