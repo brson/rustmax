@@ -30,7 +30,7 @@ serde_json.version = "1"
 serde_json.features = ["unbounded_depth"]
 serde_stacker.version = "0.1"
 
-comrak.version = "0.56"
+comrak.version = "0.57"
 comrak.default-features = false
 syntect.version = "5.3"
 syntect.default-features = false
