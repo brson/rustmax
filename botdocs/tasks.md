@@ -37,16 +37,30 @@ and its a bit of a mess.
 
 Metadata is in src/books.json5.
 
-They are managed with the cli commands `refresh-library`,
-`install-library-deps`, and `build-library`.
+They are managed with the cli commands `refresh-library`
+and `build-library`.
+They are rendered by our own `rmxbook` renderer
+(`crates/rustmax-cli/src/rmxbook.rs`), not by mdbook,
+so no mdbook or plugins need installing.
 
 We usually build with `just doc-library`.
+It only runs `refresh-library` under `RUSTMAX_CI`,
+so run `cargo run --release -- refresh-library` first
+after changing the pins.
 
 Go through the book repos and update books.json5 to the latest commits
-of each;
+of each (`git ls-remote <repo> HEAD`);
 run `just doc-library`;
 examine the output for errors
 and try to resolve them.
+
+The build reports success whenever `index.html` is produced,
+so also check the output itself.
+`out/library` holds the previous build if `just doc-build` has been run,
+which makes it easy to compare page counts per book.
+rmxbook does not expand `{{#include}}` and friends,
+so those appear verbatim in trpl, rust-cookbook and others;
+that is a known limitation, not a regression.
 
 
 # Task: task-upgrade-crates
