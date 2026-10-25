@@ -86,7 +86,7 @@ over both the main workspace and the `demoapp` workspace,
 which has its own `Cargo.lock`.
 
 - `just maint-audit` runs `cargo audit` over both.
-- `cargo deny check advisories bans sources` covers the main workspace.
+- `cargo deny check` covers the main workspace.
 
 Read `botdocs/cargo-audit.md` first:
 it records findings that have already been investigated
@@ -116,9 +116,9 @@ Report fixed advisories, remaining ones with their dependency path
 - `cargo deny` treats "unmaintained" advisories as errors
   where `cargo audit` treats them as warnings,
   so `cargo deny check advisories` fails on the accepted ones.
-- `cargo deny check licenses` fails for license policy reasons,
-  not security reasons. Report it but don't edit the allow list
-  in `deny.toml` without asking.
+- `cargo deny check licenses` passes as of 2026-10-25.
+  If a new dependency breaks it, report the license,
+  but don't edit the allow list in `deny.toml` without asking.
 
 
 # Task: task-review-unreplaced-links

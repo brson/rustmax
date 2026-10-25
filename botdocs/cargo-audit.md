@@ -42,10 +42,8 @@ source of the MPL-2.0 crates (cssparser, cssparser-macros, dtoa-short,
 selectors, all via scraper) and of the GPL-3.0+ html2md. The exclusion also
 hides it from the advisories and bans checks; `cargo audit` still covers it.
 
-`cargo deny check licenses` still fails on license policy, not on security:
-
-- Apache-2.0 WITH LLVM-exception: ar_archive_writer.
-- CDLA-Permissive-2.0: webpki-root-certs.
-- Unicode-DFS-2016: finl_unicode. NCSA: libfuzzer-sys. bzip2-1.0.6: libbz2-rs-sys.
-
-Expanding the allow list in `deny.toml` is a policy call for the maintainer.
+The allow list in `deny.toml` also includes the permissive licenses that
+rustmax's own dependencies use: Apache-2.0 WITH LLVM-exception
+(ar_archive_writer), CDLA-Permissive-2.0 (webpki-root-certs),
+Unicode-DFS-2016 (finl_unicode), NCSA (libfuzzer-sys) and bzip2-1.0.6
+(libbz2-rs-sys). With those, `licenses`, `bans` and `sources` all pass.
