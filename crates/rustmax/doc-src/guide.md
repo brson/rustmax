@@ -414,16 +414,6 @@ That is why `thiserror` and `cxx` have no workaround.
 
 
 
-
-<br>
-
-----
-
-<br>
-
-
-
-
 ## Profiles
 
 `rustmax` organizes crates into _profiles_,
