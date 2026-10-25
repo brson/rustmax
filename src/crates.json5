@@ -68,12 +68,12 @@
         },
         {
             name: "comrak",
-            category: "encoding",
+            category: "parsing",
             short_desc: "Markdown parser",
         },
         {
             name: "crossbeam",
-            category: "parallelism",
+            category: "concurrency",
             short_desc: "Fast channels, etc.",
         },
         {
@@ -105,7 +105,7 @@
         },
         {
             name: "extension-trait",
-            category: "conveniences",
+            category: "convenience",
             short_desc: "Define methods for out-of-crate types",
         },
         {
@@ -116,7 +116,7 @@
         },
         {
             name: "futures",
-            category: "async",
+            category: "concurrency",
             short_desc: "Basic async definitions and helpers",
             maintainer: "rust-lang",
         },
@@ -173,7 +173,7 @@
         },
         {
             name: "json5",
-            category: "encoding",
+            category: "serialization",
             short_desc: "JSON with comments, etc.",
         },
         {
@@ -196,7 +196,7 @@
         },
         {
             name: "memchr",
-            category: "encoding",
+            category: "parsing",
             short_desc: "Fast byte search",
             maintainer: "burntsushi",
         },
@@ -208,7 +208,7 @@
         },
         {
             name: "nom",
-            category: "encoding",
+            category: "parsing",
             short_desc: "Parser combinators",
         },
         {
@@ -250,27 +250,27 @@
         },
         {
             name: "rand",
-            category: "rand",
+            category: "numbers",
             short_desc: "Random numbers",
         },
         {
             name: "rand_chacha",
-            category: "rand",
+            category: "numbers",
             short_desc: "Secure random numbers",
         },
         {
             name: "rand_pcg",
-            category: "rand",
+            category: "numbers",
             short_desc: "Fast random numbers",
         },
         {
             name: "rayon",
-            category: "parallelism",
+            category: "concurrency",
             short_desc: "Parallel iterators, thread pools, etc.",
         },
         {
             name: "regex",
-            category: "encoding",
+            category: "parsing",
             short_desc: "Regular expressions",
             maintainer: "burntsushi",
         },
@@ -287,19 +287,19 @@
         },
         {
             name: "semver",
-            category: "deployment",
+            category: "parsing",
             short_desc: "Semantic versioning",
             maintainer: "dtolnay",
         },
         {
             name: "serde",
-            category: "encoding",
+            category: "serialization",
             short_desc: "Standard serialization",
             maintainer: "dtolnay",
         },
         {
             name: "serde_json",
-            category: "encoding",
+            category: "serialization",
             short_desc: "JSON",
             maintainer: "dtolnay",
         },
@@ -333,7 +333,7 @@
         },
         {
             name: "tera",
-            category: "web",
+            category: "parsing",
             short_desc: "Text templates, as for websites",
         },
         {
@@ -350,13 +350,13 @@
         },
         {
             name: "tokio",
-            category: "async",
+            category: "concurrency",
             short_desc: "The asyncronous runtime",
             maintainer: "tokio-rs",
         },
         {
             name: "toml",
-            category: "encoding",
+            category: "serialization",
             short_desc: "TOML serialization",
         },
         {
@@ -367,7 +367,7 @@
         },
         {
             name: "unicode-segmentation",
-            category: "text",
+            category: "parsing",
             short_desc: "Graphemes, words and sentences for Unicode",
         },
         {
