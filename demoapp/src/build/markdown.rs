@@ -31,7 +31,6 @@ fn render_markdown_internal(content: &str, _base_options: &Options) -> String {
 
     // Enable common extensions.
     options.extension.strikethrough = true;
-    options.extension.tagfilter = true;
     options.extension.table = true;
     options.extension.autolink = true;
     options.extension.tasklist = true;

@@ -75,6 +75,7 @@ maint-lock-minimum-versions:
 
 maint-audit:
     cargo audit
+    cd demoapp && cargo audit
 
 
 

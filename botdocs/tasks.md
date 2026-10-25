@@ -79,6 +79,48 @@ Report on the keepers and non-keepers.
 The `just maint-outdated` rule may help.
 
 
+# Task: task-security-audit
+
+Run the standard crate security audit tools
+over both the main workspace and the `demoapp` workspace,
+which has its own `Cargo.lock`.
+
+- `just maint-audit` runs `cargo audit` over both.
+- `cargo deny check advisories bans sources` covers the main workspace.
+
+Read `botdocs/cargo-audit.md` first:
+it records findings that have already been investigated
+and are accepted, so don't re-investigate those.
+
+Most vulnerabilities are fixed by `cargo update`
+in both the root and in `demoapp`.
+Prefer `cargo update -p <crate>` if a full update breaks something.
+If a fix needs a major version bump of a rustmax dependency,
+handle it per `task-upgrade-crates`.
+
+Run `just test` and `just test-demoapp` after updating the lockfiles.
+
+Update `botdocs/cargo-audit.md` with the date and anything that remains.
+Report fixed advisories, remaining ones with their dependency path
+(`cargo tree -i <crate>@<version>`), and why they can't be fixed here.
+
+**Common gotchas:**
+
+- `cargo audit` exits 0 even when it reports vulnerabilities,
+  so read the output, or use `--json` and `jq`.
+- The demoapp lockfile drifts behind the root one,
+  so it can have advisories the root doesn't.
+  Updating it can also pull in the newer rustmax dependency versions
+  the root already uses, breaking the demoapp build on API changes
+  (comrak dropping `tagfilter`, for example). Fix the demoapp code.
+- `cargo deny` treats "unmaintained" advisories as errors
+  where `cargo audit` treats them as warnings,
+  so `cargo deny check advisories` fails on the accepted ones.
+- `cargo deny check licenses` fails for license policy reasons,
+  not security reasons. Report it but don't edit the allow list
+  in `deny.toml` without asking.
+
+
 # Task: task-review-unreplaced-links
 
 Our crate docs in `doc-src` are displayed in both rustdocs
