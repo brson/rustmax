@@ -37,10 +37,13 @@ With cargo-deny 0.20.2 the advisory database loads again. `cargo deny check
 advisories` fails on the two unmaintained crates above, because cargo-deny
 treats "unmaintained" as an error. `bans` and `sources` pass.
 
-`cargo deny check licenses` fails on license policy, not on security:
+`deny.toml` excludes `rustmax-anthology` from the graph. It is the only
+source of the MPL-2.0 crates (cssparser, cssparser-macros, dtoa-short,
+selectors, all via scraper) and of the GPL-3.0+ html2md. The exclusion also
+hides it from the advisories and bans checks; `cargo audit` still covers it.
 
-- MPL-2.0: cssparser, cssparser-macros, dtoa-short, selectors (via scraper).
-- GPL-3.0+: html2md, a direct dependency of `rustmax-anthology`.
+`cargo deny check licenses` still fails on license policy, not on security:
+
 - Apache-2.0 WITH LLVM-exception: ar_archive_writer.
 - CDLA-Permissive-2.0: webpki-root-certs.
 - Unicode-DFS-2016: finl_unicode. NCSA: libfuzzer-sys. bzip2-1.0.6: libbz2-rs-sys.
