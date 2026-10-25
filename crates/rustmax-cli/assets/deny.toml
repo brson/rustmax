@@ -38,7 +38,9 @@ targets = [
 # they are connected to another crate in the graph that hasn't been pruned,
 # so it should be used with care. The identifiers are [Package ID Specifications]
 # (https://doc.rust-lang.org/cargo/reference/pkgid-spec.html)
-#exclude = []
+# rustmax-anthology is an internal tool, not on crates.io, whose scraper (MPL-2.0)
+# and html2md (GPL-3.0+) dependencies would otherwise fail the license check.
+exclude = ["rustmax-anthology"]
 # If true, metadata will be collected with `--all-features`. Note that this can't
 # be toggled off if true, if you want to conditionally enable `--all-features` it
 # is recommended to pass `--all-features` on the cmd line instead
@@ -91,13 +93,18 @@ ignore = [
 allow = [
     "0BSD",
     "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
     "BSD-2-Clause",
     "BSD-3-Clause",
     "BSL-1.0",
+    "bzip2-1.0.6",
     "CC0-1.0",
+    "CDLA-Permissive-2.0",
     "ISC",
     "MIT",
+    "NCSA",
     "Unicode-3.0",
+    "Unicode-DFS-2016",
     "Zlib",
 ]
 # The confidence threshold for detecting a license from license text.
