@@ -137,27 +137,6 @@
                   </ul>
               </ul>
             <li><a href="book/cli.html">The Rustmax CLI</a>
-            <li><a href="book/simple-tips.html">Simple Rust Tips</a>
-              <ul>
-                <li><a href="book/simple-tips.html#generate-random-numbers-without-the-rand-crate">Generate random numbers without the `rand` crate</a>
-                <li><a href="book/simple-tips.html#run-cargo-clean-all-to-free-up-large-amounts-of-disk-space">Run `cargo clean-all` to free up large amounts of disk space</a>
-                <li><a href="book/simple-tips.html#the-ok-whatevererror-block-tail">The `Ok::&lt;(), WhateverError&gt;(())` block tail</a>
-                <li><a href="book/simple-tips.html#assert-send--sync">Assert `Send` / `Sync`</a>
-                <li><a href="book/simple-tips.html#copy-a-directory-recursively">Copy a directory recursively</a>
-                <li><a href="book/simple-tips.html#theres-an-either-hiding-in-the-futures-crate">There's an `Either` hiding in the `futures` crate!</a>
-                <li><a href="book/simple-tips.html#import-traits-with-as-_">Import traits with `as _`</a>
-                <li><a href="book/simple-tips.html#set-up-the-mold-linker">Set up the `mold` linker</a>
-                <li><a href="book/simple-tips.html#use-rustfmtskip">Use `rustfmt::skip`</a>
-                <li><a href="book/simple-tips.html#use-option-with-">Use `Option` with `?`</a>
-                <li><a href="book/simple-tips.html#put-common-development-commands-in-a-justfile">Put common development commands in a `justfile`</a>
-                <li><a href="book/simple-tips.html#merge-message-streams-with-futuresstreamselect">Merge message streams with `futures::stream::select`</a>
-              </ul>
-            <li><a href="book/rust-cli-one-liners.html">Rust CLI One-Liners</a>
-              <ul>
-                <li><a href="book/rust-cli-one-liners.html#find-all-rust-files">Find all Rust files</a>
-                <li><a href="book/rust-cli-one-liners.html#replace-text-in-all-rust-files">Replace text in all Rust files</a>
-                <li><a href="book/rust-cli-one-liners.html#delete-trailing-newlines-in-all-python-and-rust-files">Delete trailing newlines in all Python and Rust files</a>
-              </ul>
             <li><a href="book/ecosystem.html">The Rust Ecosystem</a>
               <ul>
                 <li><a href="book/ecosystem.html#rust-resources">Rust resources</a>
@@ -185,16 +164,31 @@
                     <li><a href="book/how-do-i.html#-organize-a-rust-workspace">… organize a Rust workspace?</a>
                     <li><a href="book/how-do-i.html#-fix-bugs-in-a-published-cratesio-dependency">… fix bugs in a published crates.io dependency?</a>
                   </ul>
+                <li><a href="book/how-do-i.html#tooling-and-the-command-line">Tooling and the command line</a>
+                  <ul>
+                    <li><a href="book/how-do-i.html#-find-all-rust-files">… find all Rust files?</a>
+                    <li><a href="book/how-do-i.html#-replace-text-in-all-rust-files">… replace text in all Rust files?</a>
+                    <li><a href="book/how-do-i.html#-delete-trailing-whitespace-in-all-python-and-rust-files">… delete trailing whitespace in all Python and Rust files?</a>
+                    <li><a href="book/how-do-i.html#-free-up-the-disk-space-used-by-target-directories">… free up the disk space used by `target/` directories?</a>
+                    <li><a href="book/how-do-i.html#-speed-up-linking">… speed up linking?</a>
+                    <li><a href="book/how-do-i.html#-stop-rustfmt-from-reformatting-some-code">… stop `rustfmt` from reformatting some code?</a>
+                    <li><a href="book/how-do-i.html#-keep-a-projects-common-development-commands-at-hand">… keep a project's common development commands at hand?</a>
+                  </ul>
                 <li><a href="book/how-do-i.html#conveniences">Conveniences</a>
                   <ul>
+                    <li><a href="book/how-do-i.html#-import-a-trait-just-to-call-its-methods">… import a trait just to call its methods?</a>
+                    <li><a href="book/how-do-i.html#-get-an-either-type">… get an `Either` type?</a>
                     <li><a href="book/how-do-i.html#-define-extension-methods-on-a-type-in-another-crate">… define "extension" methods on a type in another crate?</a>
                     <li><a href="book/how-do-i.html#-guarantee-a-trait-is-object-safe">… guarantee a trait is object-safe?</a>
                     <li><a href="book/how-do-i.html#-make-compile-time-assertions">… make compile-time assertions?</a>
+                    <li><a href="book/how-do-i.html#-assert-a-type-is-send-and-sync">… assert a type is `Send` and `Sync`?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#error-handling-and-debugging">Error handling and debugging</a>
                   <ul>
                     <li><a href="book/how-do-i.html#-handle-errors-simply-and-correctly">… handle errors simply and correctly?</a>
                     <li><a href="book/how-do-i.html#-structure-errors-in-a-public-api">… structure errors in a public API?</a>
+                    <li><a href="book/how-do-i.html#-use--with-option">… use `?` with `Option`?</a>
+                    <li><a href="book/how-do-i.html#-make-a-block-that-uses--typecheck">… make a block that uses `?` typecheck?</a>
                     <li><a href="book/how-do-i.html#-capture-a-backtrace">… capture a backtrace?</a>
                     <li><a href="book/how-do-i.html#-set-up-basic-logging">… set up basic logging?</a>
                   </ul>
@@ -227,6 +221,7 @@
                     <li><a href="book/how-do-i.html#-generate-a-fast-random-number-from-a-seed">… generate a fast random number from a seed?</a>
                     <li><a href="book/how-do-i.html#-generate-a-strong-random-number-from-a-seed-with-stable-algorithm">… generate a strong random number from a seed with stable algorithm?</a>
                     <li><a href="book/how-do-i.html#-generate-a-fast-random-number-from-a-seed-with-stable-algorithm">… generate a fast random number from a seed with stable algorithm?</a>
+                    <li><a href="book/how-do-i.html#-generate-random-numbers-without-the-rand-crate">… generate random numbers without the `rand` crate?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#cryptography">Cryptography</a>
                   <ul>
@@ -243,6 +238,7 @@
                   <ul>
                     <li><a href="book/how-do-i.html#-set-up-the-tokio-event-loop">… set up the `tokio` event loop?</a>
                     <li><a href="book/how-do-i.html#-stub-an-unwritten-async-fn">… stub an unwritten `async fn`?</a>
+                    <li><a href="book/how-do-i.html#-merge-message-streams-in-an-event-loop">… merge message streams in an event loop?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#networking-and-web">Networking and web</a>
                   <ul>
@@ -262,6 +258,7 @@
                     <li><a href="book/how-do-i.html#-read-environment-variables">… read environment variables?</a>
                     <li><a href="book/how-do-i.html#-work-with-a-temporary-file">… work with a temporary file?</a>
                     <li><a href="book/how-do-i.html#-work-with-multiple-files-in-a-temporary-directory">… work with multiple files in a temporary directory?</a>
+                    <li><a href="book/how-do-i.html#-copy-a-directory-recursively">… copy a directory recursively?</a>
                   </ul>
                 <li><a href="book/how-do-i.html#testing">Testing</a>
                   <ul>

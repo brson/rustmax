@@ -7,8 +7,6 @@
 
 ---
 
-- [Simple Rust Tips](simple-tips.md)
-- [Rust CLI One-Liners](rust-cli-one-liners.md)
 - [The Rust Ecosystem](ecosystem.md)
 - [How Do I … ?](how-do-i.md)
 - [Modern Rust Features](modern-rust.md)
