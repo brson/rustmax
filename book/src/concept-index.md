@@ -1,13 +1,9 @@
 # Rust Concept Index
 
-Short definitions of the concepts that come up again and again in Rust,
+Short definitions of concepts related to Rust,
 each with links to where they are explained in depth:
 the [library] books, the [standard library][std] API docs,
-and the [rustmax crates][rmx] that put them to work.
-
-The site search covers the same ground from the other direction:
-search for a concept and it finds the std modules, crates, and books
-that discuss it.
+and the [rustmax crates][rmx].
 
 [library]: ../library.html
 [std]: ../api/std/index.html
@@ -21,7 +17,7 @@ that discuss it.
 [Lifetime elision](#lifetime-elision) ·
 [The static lifetime](#the-static-lifetime) ·
 [Copy and Clone](#copy-and-clone) ·
-[Drop and RAII](#drop-and-raii) ·
+[Drop and resource management](#drop-and-ownership-based-resource-management) ·
 [Slices](#slices)
 
 **Types:**
@@ -89,6 +85,7 @@ that discuss it.
 **Code organization:**
 [Crates and packages](#crates-and-packages) ·
 [Modules and visibility](#modules-and-visibility) ·
+[Preludes](#preludes) ·
 [Workspaces](#workspaces) ·
 [Features](#features) ·
 [Conditional compilation](#conditional-compilation) ·
@@ -108,7 +105,7 @@ that discuss it.
 [The entry API](#the-entry-api) ·
 [Lazy initialization](#lazy-initialization)
 
-**Under the hood:**
+**Internals:**
 [Monomorphization](#monomorphization) ·
 [Zero-cost abstractions](#zero-cost-abstractions) ·
 [The borrow checker](#the-borrow-checker) ·
@@ -125,8 +122,8 @@ that discuss it.
 
 Every value has exactly one owner, a variable or another value,
 and is destroyed when its owner goes out of scope.
-This one rule replaces both garbage collection and manual `free`,
-and most of the rest of this page follows from it.
+Programmers do not need to free memory manually,
+and Rust does not need a [garbage collector](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)).
 
 Books: [TRPL 4.1](../library/trpl/ch04-01-what-is-ownership.html),
 [Nomicon: Ownership](../library/nomicon/ownership.html)
@@ -134,15 +131,14 @@ Books: [TRPL 4.1](../library/trpl/ch04-01-what-is-ownership.html),
 
 ### Moves
 
-Assigning a value or passing it to a function _moves_ it:
-the old binding can no longer be used, and no deep copy happens.
+Assigning a value or passing it to a function _moves_ it,
+transferring ownership.
+The old binding can no longer be used.
 A move is a shallow `memcpy` at most,
 and frequently optimized away.
-The compiler error "use of moved value" (E0382) is the most common
-first encounter with ownership.
 
 Books: [TRPL 4.1](../library/trpl/ch04-01-what-is-ownership.html),
-[Reference: Moved and copied types](../library/reference/expressions.html)
+[Reference: Moved and copied types](../library/reference/expressions.html#moved-and-copied-types)
 
 
 ### Borrowing
@@ -150,8 +146,8 @@ Books: [TRPL 4.1](../library/trpl/ch04-01-what-is-ownership.html),
 A reference, `&T` or `&mut T`, uses a value without taking ownership of it.
 At any moment a value may have any number of shared `&` borrows
 or exactly one `&mut` borrow, never both.
-Think of `&mut` as "exclusive" rather than "mutable"
-and the rule makes more sense.
+One can think of `&mut` as "exclusive" rather than "mutable".
+The mutability is a benefit of having exclusive access.
 
 Books: [TRPL 4.2](../library/trpl/ch04-02-references-and-borrowing.html),
 [Nomicon: References](../library/nomicon/references.html)
@@ -161,8 +157,8 @@ Books: [TRPL 4.2](../library/trpl/ch04-02-references-and-borrowing.html),
 
 A lifetime is the region of code over which a reference is valid,
 written `'a`.
-Lifetime annotations never change how long anything lives;
-they describe relationships between references
+Lifetime annotations never change how long anything lives.
+They describe relationships between references
 so the compiler can check them.
 
 Books: [TRPL 10.3](../library/trpl/ch10-03-lifetime-syntax.html),
@@ -172,9 +168,11 @@ Books: [TRPL 10.3](../library/trpl/ch10-03-lifetime-syntax.html),
 ### Lifetime elision
 
 Rules that let most function signatures omit lifetimes.
-With exactly one input reference, the output borrows from it;
-in a method, the output borrows from `self`.
-When elision guesses wrong, write the lifetimes out.
+With exactly one input reference, the output borrows from it.
+In a method, the output borrows from `self`.
+Elision rules reflect the most common lifetime patterns.
+When elision produces incorrect restrictions it results in compilation failures.
+Write the lifetimes out then.
 
 Books: [Reference: Lifetime elision](../library/reference/lifetime-elision.html),
 [Nomicon: Lifetime elision](../library/nomicon/lifetime-elision.html)
@@ -186,7 +184,6 @@ Books: [Reference: Lifetime elision](../library/reference/lifetime-elision.html)
 not "lives for the rest of the program".
 As a bound, `T: 'static` means the type holds no non-static borrows,
 so owned types like `String` satisfy it.
-This is why `thread::spawn` requires `'static` closures.
 
 Books: [TRPL 10.3](../library/trpl/ch10-03-lifetime-syntax.html)
 
@@ -196,20 +193,21 @@ Books: [TRPL 10.3](../library/trpl/ch10-03-lifetime-syntax.html)
 `Clone` is an explicit, possibly expensive, duplication: `x.clone()`.
 `Copy` marks types where a bitwise copy is enough,
 so they are copied instead of moved.
-Only types with no destructor and no owned heap data can be `Copy`.
+A type can be `Copy` only if all its fields are `Copy`
+and it has no `Drop` implementation.
 
 Books: [TRPL Appendix C](../library/trpl/appendix-03-derivable-traits.html)<br>
 std: [`Copy`](../api/core/marker/trait.Copy.html),
 [`Clone`](../api/core/clone/trait.Clone.html)
 
 
-### Drop and RAII
+### Drop and ownership-based resource management
 
 When a value goes out of scope its `Drop` implementation runs,
 then its fields are dropped in declaration order.
-Resources such as files, locks, and sockets are released this way,
-which is the C++ idiom "resource acquisition is initialization".
-A `MutexGuard` unlocking at the end of a block is RAII at work.
+Resources such as files, locks, and sockets are released this way.
+This pervasive behavior is what C++ calls (confusingly)
+["resource acquisition is initialization"](https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization).
 
 Books: [TRPL 15.3](../library/trpl/ch15-03-drop.html),
 [Reference: Destructors](../library/reference/destructors.html),
@@ -220,11 +218,14 @@ std: [`Drop`](../api/core/ops/trait.Drop.html),
 
 ### Slices
 
-A slice, `[T]`, is a view into a contiguous run of elements,
-almost always used behind a reference as `&[T]` or `&mut [T]`.
-`&str` is a string slice.
-Take slices as function parameters rather than `&Vec<T>` or `&String`;
-they accept more callers at no cost.
+A slice, `[T]`, is a view into a contiguous run of elements.
+It is [dynamically sized](#dynamically-sized-types),
+and almost always used behind a reference as `&[T]` or `&mut [T]`,
+which are also conventionally called slices.
+Likewise `&str` is a string slice,
+a reference to the unsized `str` slice.
+Take slices as function parameters rather than `&Vec<T>` or `&String`,
+each of which automatically dereferences to a slice.
 
 Books: [TRPL 4.3](../library/trpl/ch04-03-slices.html),
 [Reference: Slice types](../library/reference/types/slice.html)<br>
@@ -238,10 +239,11 @@ std: [`std::slice`](../api/core/slice/index.html)
 
 ### Structs and enums
 
-Structs group fields together; enums choose between variants,
+Structs group fields together. Enums choose between variants,
 each of which can carry its own data.
-Enums with data, "algebraic data types" or "sum types",
-are the idiomatic way to model a value that is one of several shapes,
+Enums are [sum types](https://en.wikipedia.org/wiki/Tagged_union),
+and together with structs they make up Rust's [algebraic data types](https://en.wikipedia.org/wiki/Algebraic_data_type).
+They are the idiomatic way to model a value that is one of several shapes,
 and `match` forces every shape to be handled.
 
 Books: [TRPL 5](../library/trpl/ch05-00-structs.html),
@@ -251,10 +253,10 @@ Books: [TRPL 5](../library/trpl/ch05-00-structs.html),
 
 ### Option
 
-`Option<T>` is either `Some(T)` or `None`, Rust's replacement for null.
-Its large set of combinators, `map`, `and_then`, `unwrap_or`, `ok_or`,
-is worth learning, as is the fact that `Option<&T>` and `Option<Box<T>>`
-are the same size as a bare pointer.
+The `Option<T>` enum is either `Some(T)` or `None`.
+Rust uses it where other languages use [null](https://en.wikipedia.org/wiki/Null_pointer).
+Its combinators, like `map`, `and_then`, `unwrap_or`, and `ok_or`,
+are core Rust vocabulary.
 
 Books: [TRPL 6.1](../library/trpl/ch06-01-defining-an-enum.html)<br>
 std: [`std::option`](../api/core/option/index.html)
@@ -262,10 +264,11 @@ std: [`std::option`](../api/core/option/index.html)
 
 ### Strings
 
-`String` is an owned, growable, UTF-8 buffer; `&str` is a borrowed view of one.
-Strings can't be indexed by integer because a character may be several bytes.
+`String` is an owned, growable, [UTF-8](https://en.wikipedia.org/wiki/UTF-8) buffer.
+`&str` is a borrowed view of one.
+Strings can't be indexed by integer because a Unicode character may be several bytes.
 `OsString` and `PathBuf` hold platform strings that may not be UTF-8,
-and `CString` holds the NUL-terminated strings C expects.
+and `CString` holds the [NUL-terminated strings](https://en.wikipedia.org/wiki/Null-terminated_string) C expects.
 
 Books: [TRPL 8.2](../library/trpl/ch08-02-strings.html)<br>
 std: [`std::string`](../api/alloc/string/index.html),
@@ -277,9 +280,10 @@ std: [`std::string`](../api/alloc/string/index.html),
 
 Types that own a value through a pointer and add behavior.
 `Box<T>` puts a value on the heap with a single owner.
-`Rc<T>` and `Arc<T>` add shared ownership through reference counting,
+`Rc<T>` and `Arc<T>` add shared ownership through [reference counting](https://en.wikipedia.org/wiki/Reference_counting),
 `Arc` being the thread-safe one.
-Cycles of `Rc` leak; break them with `Weak`.
+Cycles of `Rc` and `Arc` leak.
+Break them with `Weak`.
 
 Books: [TRPL 15](../library/trpl/ch15-00-smart-pointers.html)<br>
 std: [`Box`](../api/alloc/boxed/struct.Box.html),
@@ -290,11 +294,16 @@ std: [`Box`](../api/alloc/boxed/struct.Box.html),
 ### Interior mutability
 
 Mutating through a shared `&` reference,
-with the exclusivity rule checked at runtime or made unnecessary.
-`Cell` swaps values in and out, `RefCell` checks borrows at runtime,
-and `Mutex`, `RwLock`, and atomics do the same across threads.
-`Rc<RefCell<T>>` is a common combination, and often a sign
-the data structure could be designed differently.
+with the exclusivity rule checked at runtime or made unnecessary statically.
+`Cell` moves values in and out without ever handing out a reference,
+so it needs no runtime checks.
+`RefCell` checks borrows at runtime.
+`Mutex`, `RwLock`, and [atomics](#atomics) do the same across threads.
+`Rc<RefCell<T>>` is a common combination that produces
+shared mutable data structures like in many other languages.
+It is a pattern that works against the strengths of Rust's type system
+and its presence can be a hint that the code could be restructured
+to be more idiomatic and possibly more performant.
 
 Books: [TRPL 15.5](../library/trpl/ch15-05-interior-mutability.html),
 [Reference: Interior mutability](../library/reference/interior-mutability.html)<br>
@@ -314,9 +323,9 @@ std: [`Cow`](../api/alloc/borrow/enum.Cow.html)
 ### Dynamically sized types
 
 Types whose size is only known at runtime: `str`, `[T]`, and `dyn Trait`.
-They only exist behind a "fat" pointer that carries a length or vtable.
-Generic parameters are implicitly `Sized`;
-write `T: ?Sized` to accept these types too.
+They only exist behind a "fat" pointer that carries a length or [vtable](https://en.wikipedia.org/wiki/Virtual_method_table).
+Generic parameters are implicitly `Sized`.
+Write `T: ?Sized` ("maybe sized") to accept these types too.
 
 Books: [Reference: Dynamically sized types](../library/reference/dynamically-sized-types.html),
 [Nomicon: Exotic sizes](../library/nomicon/exotic-sizes.html)<br>
@@ -338,7 +347,8 @@ A zero-sized marker that makes a type act as if it owned a `T`
 without storing one.
 Use it when a type parameter appears only in the meaning of a type,
 such as typed IDs or handles to foreign data,
-so variance and drop checking come out right.
+so lifetime [variance](#variance) is analyzed correctly.
+In safe code the compiler will tell you when you need this.
 
 Books: [Nomicon: PhantomData](../library/nomicon/phantom-data.html)<br>
 std: [`PhantomData`](../api/core/marker/struct.PhantomData.html)
@@ -346,8 +356,10 @@ std: [`PhantomData`](../api/core/marker/struct.PhantomData.html)
 
 ### The never type
 
-`!` is the type of expressions that never produce a value:
-`panic!()`, `loop {}`, `return`, `continue`.
+`!` is the type of expressions that never produce a value,
+like `panic!()`, `loop {}`, `return`, `continue`.
+It is also the return type of functions that never return,
+e.g. by panicking or looping forever.
 It coerces to any type, which is why `let x: u32 = todo!();` compiles.
 
 Books: [Reference: Never type](../library/reference/types/never.html),
@@ -375,8 +387,9 @@ std: [`std::mem`](../api/core/mem/index.html)
 
 A trait is a set of methods a type can implement,
 and is Rust's main tool for abstraction and code sharing.
-A trait's methods can only be called where the trait is in scope,
-which is why crates provide preludes.
+A trait's methods can only be called where the trait is in scope.
+Crates that are heavily generic often provide a [prelude](#preludes)
+to import many traits at a time.
 
 Books: [TRPL 10.2](../library/trpl/ch10-02-traits.html),
 [Reference: Traits](../library/reference/items/traits.html)
@@ -386,7 +399,7 @@ Books: [TRPL 10.2](../library/trpl/ch10-02-traits.html),
 
 Functions and types parameterized over other types, `fn max<T: Ord>(...)`.
 Generic code is compiled separately for each concrete type it is used with,
-see [monomorphization](#monomorphization).
+called [monomorphization](#monomorphization).
 
 Books: [TRPL 10.1](../library/trpl/ch10-01-syntax.html),
 [Reference: Generic parameters](../library/reference/items/generics.html)
@@ -396,8 +409,8 @@ Books: [TRPL 10.1](../library/trpl/ch10-01-syntax.html),
 
 Constraints on generic parameters, `T: Display + Clone`,
 written inline or in a `where` clause.
-A bound grants a capability:
-inside the function you can only use what the bounds promise.
+A bound grants a capability.
+Inside the function you can only use what the bounds promise.
 
 Books: [TRPL 10.2](../library/trpl/ch10-02-traits.html),
 [Reference: Trait and lifetime bounds](../library/reference/trait-bounds.html)
@@ -406,11 +419,13 @@ Books: [TRPL 10.2](../library/trpl/ch10-02-traits.html),
 ### Trait objects
 
 `dyn Trait` is a value of some unknown type implementing `Trait`,
-called through a vtable, usually as `Box<dyn Trait>` or `&dyn Trait`.
-Use trait objects for heterogeneous collections or to cut compile times;
-use generics when the type is known statically.
-Not every trait can be made into an object:
-methods with generic parameters or returning `Self` prevent it.
+called through a [vtable](#dynamically-sized-types), usually as `Box<dyn Trait>` or `&dyn Trait`.
+Use trait objects to hold collections of heterogeneous types,
+or to reduce compile times and the syntactic overhead
+of generics when ultimate performance is not necessary.
+Not every trait can be made into an object,
+and traits that can be are called "dyn compatible",
+formerly "object safe".
 
 Books: [TRPL 18.2](../library/trpl/ch18-02-trait-objects.html),
 [Reference: Trait objects](../library/reference/types/trait-object.html)
@@ -430,9 +445,11 @@ Books: [TRPL 10.2](../library/trpl/ch10-02-traits.html),
 
 A type chosen by each implementation of a trait,
 like `Iterator::Item`.
-Unlike a generic parameter on the trait,
-a type can implement the trait only once,
-so callers never need to say which `Item` they mean.
+A trait with a generic parameter, `Iterator<T>`,
+could be implemented many times for one type, once per `T`.
+With an associated type there is only one implementation,
+so `Item` is determined by the implementing type
+and callers never have to specify it.
 
 Books: [TRPL 20.2](../library/trpl/ch20-02-advanced-traits.html),
 [Reference: Associated items](../library/reference/items/associated-items.html)
@@ -485,7 +502,7 @@ std: [`std::marker`](../api/core/marker/index.html)
 An `impl<T: Display> ToString for T` implements a trait
 for every type meeting a bound at once.
 They are powerful, but each one rules out many other implementations,
-so adding one to a published crate is a breaking change.
+restricting other crates' ability to implement the trait.
 
 Books: [TRPL 10.2](../library/trpl/ch10-02-traits.html),
 [Reference: Implementations](../library/reference/items/implementations.html)
@@ -536,7 +553,7 @@ When a `&T` is expected and a `&U` is given,
 the compiler inserts `Deref` calls until the types match,
 so a `&String` passes as `&str` and a `&Box<T>` as `&T`.
 Method calls auto-deref the same way.
-Implementing `Deref` on non-pointer types to imitate inheritance is discouraged.
+Implementing `Deref` on non-pointer types to imitate [inheritance](https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming)) is discouraged.
 
 Books: [TRPL 15.2](../library/trpl/ch15-02-deref.html),
 [Reference: Type coercions](../library/reference/type-coercions.html),
@@ -553,8 +570,7 @@ std: [`Deref`](../api/core/ops/trait.Deref.html)
 
 Patterns destructure values and test their shape,
 in `match`, `if let`, `while let`, `let`, and function parameters.
-`match` must be exhaustive,
-so adding an enum variant points you at every place that needs updating.
+`match` must be exhaustive, covering every possible value.
 
 Books: [TRPL 6.2](../library/trpl/ch06-02-match.html),
 [TRPL 19](../library/trpl/ch19-00-patterns.html),
@@ -564,8 +580,9 @@ Books: [TRPL 6.2](../library/trpl/ch06-02-match.html),
 ### let else
 
 `let Some(x) = opt else { return; };` binds on a match
-and diverges otherwise,
-keeping the happy path unindented.
+and diverges otherwise.
+This exists entirely to avoid the unwieldy indentation
+imposed by a `match` over a single case.
 
 Books: [Reference: Statements](../library/reference/statements.html),
 [RFC 3137](../library/rfcs/3137-let-else.html)
@@ -577,8 +594,8 @@ Anonymous functions that capture variables from their environment,
 `|x| x + offset`.
 Each closure has its own unnameable type implementing
 `Fn`, `FnMut`, or `FnOnce` depending on how it uses its captures.
-`move` makes the closure take ownership of what it captures,
-which is required to send it to another thread.
+A `move` before the arguments makes the closure take ownership of what it captures,
+which `thread::spawn` usually requires.
 
 Books: [TRPL 13.1](../library/trpl/ch13-01-closures.html),
 [Reference: Closure expressions](../library/reference/expressions/closure-expr.html)<br>
@@ -590,8 +607,9 @@ std: [`Fn`](../api/core/ops/trait.Fn.html)
 Lazy sequences driven by `next()`, transformed with adapters
 like `map`, `filter`, and `zip`, and consumed by `collect` or `sum`.
 Iterator chains usually compile to the same code as a hand-written loop.
-`iter()`, `iter_mut()`, and `into_iter()` borrow, mutably borrow,
-or consume the collection.
+`for` loops call `IntoIterator::into_iter`,
+so `for x in &v`, `for x in &mut v`, and `for x in v`
+are equivalent to iterating `v.iter()`, `v.iter_mut()`, and `v.into_iter()`.
 
 Books: [TRPL 13.2](../library/trpl/ch13-02-iterators.html)<br>
 std: [`std::iter`](../api/core/iter/index.html)<br>
@@ -604,7 +622,6 @@ Crates: [`itertools`](../api/rustmax/itertools/index.html),
 The compiler infers types within a function body from how values are used,
 so annotations are rarely needed except on function signatures,
 which are never inferred.
-`collect` and `parse` are the usual places inference needs help.
 
 Books: [TRPL 3.2](../library/trpl/ch03-02-data-types.html)
 
@@ -614,6 +631,8 @@ Books: [TRPL 3.2](../library/trpl/ch03-02-data-types.html)
 The `::<>` syntax for supplying generic arguments in expression position:
 `"5".parse::<u32>()`, `iter.collect::<Vec<_>>()`.
 The `_` asks the compiler to infer the rest.
+The name "turbofish" is an informal affectionate name that is evocative
+of the awkward syntax.
 
 Books: [Reference: Paths](../library/reference/paths.html)
 
@@ -627,8 +646,8 @@ Books: [Reference: Paths](../library/reference/paths.html)
 
 Recoverable errors are values: `Result<T, E>` is `Ok(T)` or `Err(E)`.
 A `Result` must be used, or the compiler warns.
-Libraries tend to define specific error types;
-applications tend to use a single catch-all error type.
+Libraries tend to define specific error types.
+Applications tend to use a single catch-all error type for convenience.
 
 Books: [TRPL 9.2](../library/trpl/ch09-02-recoverable-errors-with-result.html)<br>
 std: [`std::result`](../api/core/result/index.html)
@@ -636,7 +655,7 @@ std: [`std::result`](../api/core/result/index.html)
 
 ### The question mark operator
 
-`expr?` returns early with the error if `expr` is `Err` or `None`,
+`expr?` returns early if `expr` is `Err` or `None`,
 and unwraps the value otherwise.
 On the way out it calls `From::from` on the error,
 which is how one function can propagate several error types into one.
@@ -647,9 +666,9 @@ Books: [TRPL 9.2](../library/trpl/ch09-02-recoverable-errors-with-result.html),
 
 ### The Error trait
 
-The common interface for error types:
-a `Display` message plus an optional underlying `source()`.
-[`thiserror`] derives it for library errors;
+The common interface for error types,
+with a `Display` message plus an optional underlying `source()`.
+[`thiserror`] derives it for library errors.
 [`anyhow`] wraps any error with context for applications.
 
 Books: [Rust Cookbook: Error handling](../library/rust-cookbook/errors.html)<br>
@@ -662,9 +681,9 @@ Crates: [`anyhow`], [`thiserror`]
 
 ### Panics
 
-Unrecoverable errors: `panic!`, a failed `unwrap`, an out-of-bounds index.
+Unrecoverable errors like `panic!`, a failed `unwrap`, or an out-of-bounds index.
 By default a panic unwinds the stack, running destructors,
-and kills only the current thread.
+and terminates the current thread.
 Panics are for bugs, not for expected failures.
 
 Books: [TRPL 9.1](../library/trpl/ch09-01-unrecoverable-errors-with-panic.html),
@@ -683,7 +702,7 @@ std: [`std::panic`](../api/std/panic/index.html)
 An `unsafe` block lets you dereference raw pointers,
 call `unsafe` functions, and access mutable statics,
 promising the compiler that you uphold rules it can't check.
-The goal is to wrap small `unsafe` cores in safe APIs
+When writing unsafe Rust the goal is to wrap small `unsafe` cores in safe APIs
 whose safety doesn't depend on their callers.
 
 Books: [TRPL 20.1](../library/trpl/ch20-01-unsafe-rust.html),
@@ -695,9 +714,12 @@ Books: [TRPL 20.1](../library/trpl/ch20-01-unsafe-rust.html),
 
 Breaking a rule the compiler relies on, such as creating a dangling
 reference or two live `&mut` to the same value.
-UB is not a crash; the compiler may assume it never happens,
-so the program can behave arbitrarily.
-Safe Rust can't cause it; `cargo miri test` finds much of it in unsafe code.
+[UB](https://en.wikipedia.org/wiki/Undefined_behavior) may not produce a crash.
+The compiler may assume UB never happens,
+so UB can produce arbitrary behavior, including a crash.
+Safe Rust can't cause it.
+Unsafe Rust's primary responsibility is to not cause it.
+`cargo miri test` finds much of it in unsafe code.
 
 Books: [Reference: Behavior considered undefined](../library/reference/behavior-considered-undefined.html),
 [Nomicon: What unsafe can do](../library/nomicon/what-unsafe-does.html),
@@ -707,7 +729,8 @@ Books: [Reference: Behavior considered undefined](../library/reference/behavior-
 ### Raw pointers
 
 `*const T` and `*mut T` are pointers without lifetimes or borrow rules.
-Creating one is safe; dereferencing one is `unsafe`.
+Creating one is safe.
+Dereferencing one is `unsafe`.
 
 Books: [TRPL 20.1](../library/trpl/ch20-01-unsafe-rust.html)<br>
 std: [`std::ptr`](../api/core/ptr/index.html)
@@ -715,8 +738,8 @@ std: [`std::ptr`](../api/core/ptr/index.html)
 
 ### FFI
 
-The foreign function interface: calling C from Rust through
-`extern "C"` blocks, and exposing Rust to C.
+The [foreign function interface](https://en.wikipedia.org/wiki/Foreign_function_interface),
+calling C from Rust through `extern "C"` blocks, and exposing Rust to C.
 `bindgen` generates Rust declarations from C headers,
 and `cxx` builds safe bridges to C++.
 
@@ -733,7 +756,7 @@ Crates: [`libc`](../api/rustmax/libc/index.html),
 
 `#![no_std]` crates use only `core`, and optionally `alloc`,
 not the OS-dependent parts of `std`,
-so they run on bare metal and in other restricted environments.
+so they run on [bare metal](https://en.wikipedia.org/wiki/Bare_machine) and in other restricted environments.
 
 Books: [Embedded Book: no_std](../library/embedded-book/intro/no-std.html),
 [Nomicon: Beneath std](../library/nomicon/beneath-std.html)<br>
@@ -751,8 +774,8 @@ std: [`core`](../api/core/index.html),
 OS threads are spawned with `thread::spawn`,
 which requires `'static` data,
 or with `thread::scope`, which may borrow from the enclosing function.
-The type system prevents data races, sometimes called "fearless concurrency",
-but not deadlocks.
+The type system prevents [data races](https://en.wikipedia.org/wiki/Race_condition#Data_race) but not [deadlocks](https://en.wikipedia.org/wiki/Deadlock_(computer_science)),
+a guarantee often called "fearless concurrency" in Rust.
 
 Books: [TRPL 16.1](../library/trpl/ch16-01-threads.html)<br>
 std: [`std::thread`](../api/std/thread/index.html)
@@ -760,11 +783,12 @@ std: [`std::thread`](../api/std/thread/index.html)
 
 ### Send and Sync
 
-`Send` types can be moved to another thread;
+`Send` types can be moved to another thread.
 `Sync` types can be shared between threads by reference.
 They are auto traits, so most types get them for free.
-`Rc` and `RefCell` are the usual exceptions, and the reason errors
-suggest `Arc` and `Mutex` instead.
+`Rc` is neither, so it is tied to its thread.
+`RefCell` is `Send` but not `Sync`.
+Their thread-safe counterparts are `Arc` and `Mutex`.
 
 Books: [TRPL 16.4](../library/trpl/ch16-04-extensible-concurrency-sync-and-send.html),
 [Nomicon: Send and Sync](../library/nomicon/send-and-sync.html)<br>
@@ -777,7 +801,7 @@ std: [`Send`](../api/core/marker/trait.Send.html),
 Data shared between threads lives in an `Arc`
 and is mutated through a `Mutex` or `RwLock`.
 A mutex in Rust owns the data it protects,
-so you can't touch the data without holding the lock.
+so you can't read or write the data without holding the lock.
 
 Books: [TRPL 16.3](../library/trpl/ch16-03-shared-state.html),
 [Nomicon: Poisoning](../library/nomicon/poisoning.html)<br>
@@ -787,9 +811,11 @@ std: [`std::sync`](../api/std/sync/index.html)
 ### Atomics
 
 Integer and pointer types updated with single hardware instructions,
-the building blocks of lock-free code.
-Each operation takes a memory `Ordering`;
-`SeqCst` is the safe default, `Relaxed` is for counters.
+the building blocks of [lock-free](https://en.wikipedia.org/wiki/Non-blocking_algorithm) code.
+Each operation takes a [memory `Ordering`](https://en.cppreference.com/w/cpp/atomic/memory_order).
+`SeqCst` is the safe default.
+`Relaxed` is for counters.
+Atomics are tricky to use soundly and hard to debug. Be careful!
 
 Books: [Nomicon: Atomics](../library/nomicon/atomics.html),
 [Reference: Memory model](../library/reference/memory-model.html)<br>
@@ -798,9 +824,9 @@ std: [`std::sync::atomic`](../api/core/sync/atomic/index.html)
 
 ### Channels
 
-Message passing between threads: senders on one side,
+[Message passing](https://en.wikipedia.org/wiki/Channel_(programming)) between threads, senders on one side,
 a receiver on the other.
-`std::sync::mpsc` covers the basics;
+`std::sync::mpsc` covers the basics.
 `crossbeam` and `tokio` have more capable channels.
 
 Books: [TRPL 16.2](../library/trpl/ch16-02-message-passing.html)<br>
@@ -821,10 +847,11 @@ Crates: [`rayon`](../api/rustmax/rayon/index.html)
 
 ### Async and await
 
-`async fn` returns a `Future`, a value that makes progress when polled,
+`async fn` returns a [`Future`](https://en.wikipedia.org/wiki/Futures_and_promises), a value that makes progress when polled,
 and `.await` suspends until another future is done.
 Futures do nothing until awaited or spawned,
 and std provides no executor to run them.
+`tokio` provides the most common executor.
 
 Books: [TRPL 17](../library/trpl/ch17-00-async-await.html),
 [Reference: Await expressions](../library/reference/expressions/await-expr.html)<br>
@@ -863,7 +890,7 @@ std: [`std::pin`](../api/core/pin/index.html),
 ### Crates and packages
 
 A crate is the unit of compilation, a library or a binary.
-A package is a `Cargo.toml` that builds one or more crates.
+A package is defined by a `Cargo.toml` (manifest) that builds one or more crates.
 Crates are published to [crates.io](https://crates.io) and documented on
 [docs.rs](https://docs.rs).
 
@@ -875,13 +902,25 @@ Books: [TRPL 7.1](../library/trpl/ch07-01-packages-and-crates.html),
 ### Modules and visibility
 
 Modules, declared with `mod`, organize code within a crate
-and control privacy.
+and are the primary boundary of visibility and unsafety in Rust.
 Items are private to their module unless marked `pub`,
 or `pub(crate)` for crate-wide visibility.
 `use` brings paths into scope.
 
 Books: [TRPL 7.2](../library/trpl/ch07-02-defining-modules-to-control-scope-and-privacy.html),
 [Reference: Visibility and privacy](../library/reference/visibility-and-privacy.html)
+
+
+### Preludes
+
+A set of names imported into every module automatically.
+The standard prelude, chosen by edition, is why `Option`, `Vec`, `String`,
+and traits like `Clone` and `Iterator` need no `use`.
+Many crates offer their own prelude to glob-import with `use cratename::prelude::*`.
+
+Books: [Reference: Preludes](../library/reference/names/preludes.html)<br>
+std: [`std::prelude`](../api/std/prelude/index.html)<br>
+Crates: [`rustmax::prelude`](../api/rustmax/prelude/index.html)
 
 
 ### Workspaces
@@ -896,8 +935,8 @@ Books: [TRPL 14.3](../library/trpl/ch14-03-cargo-workspaces.html),
 ### Features
 
 Cargo features turn optional code and dependencies on and off.
-Features are unified across the dependency graph, so they must be additive:
-enabling a feature should never remove functionality.
+Features are unified across the dependency graph, so they must be additive.
+Enabling a feature should never remove functionality.
 
 Books: [Cargo Book: Features](../library/cargo-book/reference/features.html)
 
@@ -974,7 +1013,7 @@ Books: [Edition Guide](../library/edition-guide/editions/index.html)
 
 ### Semantic versioning
 
-Cargo treats version numbers as semver.
+Cargo treats version numbers as [semver](https://semver.org).
 Before 1.0, a minor bump such as 0.7 to 0.8 is a breaking change,
 which is why so much of the ecosystem is versioned 0.x.
 
@@ -992,7 +1031,7 @@ Crates: [`semver`](../api/rustmax/semver/index.html)
 
 A single-field tuple struct around another type, `struct Meters(f64)`.
 It gives a value a distinct type at no runtime cost,
-hides an implementation, and gets around the orphan rule.
+hides an implementation, and gets around the [orphan rule](#coherence-and-the-orphan-rule).
 
 Books: [TRPL 20.2](../library/trpl/ch20-02-advanced-traits.html),
 [API Guidelines: Newtypes](../library/api-guidelines/type-safety.html#c-newtype)<br>
@@ -1002,8 +1041,8 @@ Crates: [`derive_more`](../api/rustmax/derive_more/index.html)
 ### Builder
 
 Constructing a complex value step by step through chained method calls,
-`Command::new("ls").arg("-l").spawn()`,
-since Rust has no named or default arguments.
+`Command::new("ls").arg("-l").spawn()`.
+This prominent [pattern](https://en.wikipedia.org/wiki/Builder_pattern) mostly exists because Rust has no named or default arguments.
 
 Books: [API Guidelines: Builders](../library/api-guidelines/type-safety.html#c-builder)<br>
 std: [`std::process`](../api/std/process/index.html)
@@ -1015,6 +1054,7 @@ Encoding the state of an object in its type,
 so operations invalid in the current state don't compile.
 A method that consumes `self` and returns a different type
 moves the object to its next state.
+This is a lightweight form of [typestate analysis](https://en.wikipedia.org/wiki/Typestate_analysis).
 
 Books: [Embedded Book: Typestate programming](../library/embedded-book/static-guarantees/typestate-programming.html)
 
@@ -1055,9 +1095,9 @@ std: [`Entry`](../api/std/collections/hash_map/enum.Entry.html)
 
 ### Lazy initialization
 
-Global values computed on first use.
-`LazyLock` and `OnceLock` in std have replaced
-the `lazy_static` and `once_cell` crates.
+Global values computed on first use](https://en.wikipedia.org/wiki/Lazy_initialization).
+Used when statics can't be computed at compile time.
+Typically created with `LazyLock` and `OnceLock`.
 
 std: [`LazyLock`](../api/std/sync/struct.LazyLock.html),
 [`OnceLock`](../api/std/sync/struct.OnceLock.html)
@@ -1065,7 +1105,7 @@ std: [`LazyLock`](../api/std/sync/struct.LazyLock.html),
 
 
 
-## Under the hood
+## Internals
 
 
 ### Monomorphization
@@ -1080,7 +1120,8 @@ Books: [rustc dev guide: Monomorphization](../library/rustc-dev-guide/backend/mo
 
 ### Zero-cost abstractions
 
-The principle that abstractions like iterators, closures, and generics
+The principle, [inherited from C++](https://en.cppreference.com/w/cpp/language/Zero-overhead_principle),
+that abstractions like iterators, closures, and generics
 cost nothing at runtime compared to writing the code by hand.
 
 Books: [TRPL 13.4](../library/trpl/ch13-04-performance.html)
@@ -1091,8 +1132,8 @@ Books: [TRPL 13.4](../library/trpl/ch13-04-performance.html)
 The compiler pass that enforces ownership and borrowing rules.
 Since "non-lexical lifetimes" it reasons about where references are
 actually used, not just their lexical scope.
-When it rejects correct-looking code,
-restructuring or cloning is usually simpler than fighting it.
+"Fighting the borrow checker" is a common experience for new Rust programmers.
+For experienced Rust programmers it is an indication to restructure.
 
 Books: [Nomicon: Limits of lifetimes](../library/nomicon/lifetime-mismatch.html),
 [rustc dev guide: Borrow checking](../library/rustc-dev-guide/borrow-check.html),
@@ -1103,7 +1144,8 @@ Books: [Nomicon: Limits of lifetimes](../library/nomicon/lifetime-mismatch.html)
 
 Whether a generic type with a longer lifetime may be used
 where a shorter one is expected.
-`&'a T` is covariant, so it may; `&'a mut T` is invariant in `T`, so it may not.
+`&'a T` is [covariant](https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)) in `T`, so it may.
+`&'a mut T` is invariant in `T`, so it may not.
 It surfaces mostly as confusing lifetime errors in generic code.
 
 Books: [Nomicon: Subtyping and variance](../library/nomicon/subtyping.html),
@@ -1116,5 +1158,6 @@ A long-unstable feature allowing overlapping trait implementations
 where the more specific one wins.
 It is not available on stable Rust,
 which is why some generic code can't take fast paths for particular types.
+The standard library gets to use it to optimize its own types.
 
 Books: [RFC 1210](../library/rfcs/1210-impl-specialization.html)
