@@ -2,7 +2,7 @@
 
 These are not part of Rustmax.
 
-## Must know URLS 🤯
+## Must know URLS
 
 - [rust-lang.org](`https://rust-lang.org`)
 - [std.rs](`https://std.rs`)
@@ -12,7 +12,7 @@ These are not part of Rustmax.
 - [play.rust-lang.org](`https://play.rust-lang.org`)
 
 
-## Tier 1 - looks good 👍
+## Tier 1 - looks good
 
 - **[Rust Language Cheat Sheet](https://cheats.rs/)**.
   This looks awesome.
@@ -25,7 +25,7 @@ These are not part of Rustmax.
   Rust release history.
 
 
-## Tier 2 - unvetted 😒
+## Tier 2 - unvetted
 
 - [Rust String Conversions Cheat Sheet](https://docs.google.com/spreadsheets/d/19vSPL6z2d50JlyzwxariaYD6EU2QQUQqIDOGbiGQC7Y/pubhtml?gid=0&single=true)
 - [Rust Iterator Cheat Sheet](https://danielkeep.github.io/itercheat_baked.html)
@@ -35,18 +35,3 @@ These are not part of Rustmax.
 - [List of security-related projects](https://github.com/rust-secure-code/projects)
 - [Tour of Rust's standard library traits](https://github.com/pretzelhammer/rust-blog/blob/master/posts/tour-of-rusts-standard-library-traits.md)
 - [Another Container Cheet Sheet](https://i.redd.it/220xo2f6wci51.png)
-
-
----
-
-todo
-
-- rust-lang.org
-- play.rust-lang.org
-- rustup.org
-- crates.io
-- std.rs
-- docs.rs
-- query.rs
-- social and forums
-- releases.rs
