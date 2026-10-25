@@ -352,7 +352,6 @@ fn test_config_defaults() {
     assert_eq!(config.collection.title, "My Collection");
     assert_eq!(config.build.output_dir, "output");
     assert_eq!(config.content.default_template, "default.html");
-    assert_eq!(config.server.port, 3000);
 }
 
 #[test]

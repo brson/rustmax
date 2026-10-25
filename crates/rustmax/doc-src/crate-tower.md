@@ -8,7 +8,7 @@ Modular middleware framework for async request/response services.
 ---
 
 `tower` defines the [`Service`] and [`Layer`] traits
-that form the middleware model for [`axum`], [`hyper`], and the broader [`tokio`] ecosystem.
+that form the middleware model for [`hyper`], web frameworks like [`axum`], and the broader [`tokio`] ecosystem.
 A [`Service`] is an async function from request to response;
 a [`Layer`] wraps a service to add behavior like timeouts, rate limiting, retries, etc.
 
@@ -20,9 +20,9 @@ Built-in middleware:
 - [`buffer`] - adds a cloneable mpsc queue in front of a service
 - [`load_shed`] - rejects requests immediately when the inner service is not ready
 
-In practice, most `axum` users encounter tower through
-[`axum::Router::layer`] and [`ServiceBuilder`]
-when adding middleware to routes.
+In practice, most web framework users encounter tower
+when adding middleware to routes,
+through methods like [`axum::Router::layer`] and [`ServiceBuilder`].
 
 ## Examples
 
@@ -75,7 +75,7 @@ async fn main() {
 }
 ```
 
-[`axum`]: crate::axum
+[`axum`]: https://docs.rs/axum
 [`hyper`]: crate::hyper
 [`tokio`]: crate::tokio
 [`Service`]: crate::tower::Service
@@ -88,4 +88,4 @@ async fn main() {
 [`retry`]: crate::tower::retry
 [`buffer`]: crate::tower::buffer
 [`load_shed`]: crate::tower::load_shed
-[`axum::Router::layer`]: crate::axum::Router::layer
+[`axum::Router::layer`]: https://docs.rs/axum/latest/axum/struct.Router.html#method.layer

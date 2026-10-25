@@ -56,27 +56,6 @@ enum Command {
         progress: bool,
     },
 
-    /// Start a development server with live reload.
-    Serve {
-        /// Collection directory (defaults to current directory).
-        #[arg(default_value = ".")]
-        path: PathBuf,
-
-        /// Port to listen on.
-        #[arg(short, long, default_value = "3000")]
-        port: u16,
-
-        /// Include draft documents.
-        #[arg(long)]
-        drafts: bool,
-
-        /// Open the site in a browser once the server is listening.
-        ///
-        /// Overrides `[server] open` in the collection's config.
-        #[arg(long)]
-        open: bool,
-    },
-
     /// Validate documents in the collection.
     Check {
         /// Collection directory (defaults to current directory).
@@ -172,7 +151,6 @@ impl Cli {
         match self.command {
             Command::Init { path } => cmd_init(path),
             Command::Build { path, output, drafts, compress, incremental, progress } => cmd_build(path, output, drafts, compress, incremental, progress),
-            Command::Serve { path, port, drafts, open } => cmd_serve(path, port, drafts, open),
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
             Command::Index { path } => cmd_index(path),
@@ -280,16 +258,6 @@ fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: boo
         println!("Build complete: {}", output_dir.display());
     }
     Ok(())
-}
-
-fn cmd_serve(path: PathBuf, port: u16, drafts: bool, open: bool) -> Result<()> {
-    info!("Starting server for collection at {}", path.display());
-
-    let config = Config::load(&path)?;
-    let collection = crate::collection::Collection::load(&path, &config)?;
-
-    let open = open || config.server.open;
-    crate::serve::serve_with_options(collection, config, port, drafts, open)
 }
 
 fn cmd_check(path: PathBuf) -> Result<()> {

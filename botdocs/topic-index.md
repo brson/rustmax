@@ -308,7 +308,7 @@ tokio, futures, crossbeam
 rayon
 
 **Networking:**
-reqwest, hyper, axum, http, url, mime, tower, socket2
+reqwest, hyper, http, url, mime, tower, socket2
 
 **Web:**
 tera
@@ -535,7 +535,7 @@ Rust community concepts and history.
 - "hashmap" -> HashMap, std::collections::HashMap, ahash
 - "json" -> serde_json, JSON, serialization
 - "regex" -> regex crate, regular expressions, pattern matching
-- "http" -> reqwest, hyper, axum, web
+- "http" -> reqwest, hyper, web
 - "thread" -> std::thread, concurrency, parallelism
 - "mutex" -> std::sync::Mutex, synchronization, locking
 

@@ -12,12 +12,6 @@
             maintainer: "dtolnay",
         },
         {
-            name: "axum",
-            category: "web",
-            short_desc: "Web framework",
-            maintainer: "tokio-rs",
-        },
-        {
             name: "base64",
             category: "encoding",
             short_desc: "Base-64 encoding and decoding",

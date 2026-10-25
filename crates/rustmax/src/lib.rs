@@ -330,13 +330,6 @@ pub mod anyhow {
     pub use ::anyhow::*;
 }
 
-#[cfg(feature = "axum")]
-pub mod axum {
-    #![doc = include_str!("../doc-src/crate-axum.md")]
-
-    pub use ::axum::*;
-}
-
 #[cfg(feature = "base64")]
 pub mod base64 {
     #![doc = include_str!("../doc-src/crate-base64.md")]

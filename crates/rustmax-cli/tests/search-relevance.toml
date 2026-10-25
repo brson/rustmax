@@ -92,10 +92,6 @@ query = "date time"
 expect = ["chrono", "jiff"]
 
 [[case]]
-query = "web framework"
-expect = ["axum"]
-
-[[case]]
 query = "progress bar"
 expect = ["indicatif"]
 
@@ -153,7 +149,7 @@ expect = ["memchr"]
 
 [[case]]
 query = "http server"
-expect = ["hyper", "axum"]
+expect = ["hyper"]
 
 [[case]]
 query = "cryptographic hash"

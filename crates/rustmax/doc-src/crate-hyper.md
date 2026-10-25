@@ -48,7 +48,7 @@ assert_eq!(resp.status(), StatusCode::OK);
 ```
 
 [`tokio`]: crate::tokio
-[`axum`]: crate::axum
+[`axum`]: https://docs.rs/axum
 [`reqwest`]: crate::reqwest
 [`http`]: crate::http
 [`Request`]: crate::hyper::Request

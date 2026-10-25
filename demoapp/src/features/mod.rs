@@ -152,28 +152,6 @@ impl ContentFlags {
     }
 }
 
-bitflags! {
-    /// Server configuration flags.
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-    pub struct ServerFlags: u8 {
-        /// Enable live reload.
-        const LIVE_RELOAD = 1 << 0;
-        /// Enable CORS headers.
-        const CORS = 1 << 1;
-        /// Enable directory listings.
-        const DIRECTORY_LISTING = 1 << 2;
-        /// Enable gzip compression.
-        const COMPRESSION = 1 << 3;
-        /// Enable caching headers.
-        const CACHE = 1 << 4;
-
-        /// Default development server flags.
-        const DEV_DEFAULTS = Self::LIVE_RELOAD.bits()
-            | Self::CORS.bits()
-            | Self::DIRECTORY_LISTING.bits();
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -227,14 +205,6 @@ mod tests {
         let content = "Text with {{< youtube >}} shortcode";
         let flags = ContentFlags::analyze(content);
         assert!(flags.contains(ContentFlags::HAS_SHORTCODES));
-    }
-
-    #[test]
-    fn test_server_flags() {
-        let flags = ServerFlags::DEV_DEFAULTS;
-        assert!(flags.contains(ServerFlags::LIVE_RELOAD));
-        assert!(flags.contains(ServerFlags::CORS));
-        assert!(!flags.contains(ServerFlags::CACHE));
     }
 
     #[test]

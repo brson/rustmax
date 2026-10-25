@@ -117,7 +117,7 @@ assert_eq!(port, 8080);
 | time | [`chrono`], [`jiff`] |
 | cryptography | [`blake3`], [`sha2`] |
 | concurrency and async | [`crossbeam`], [`futures`], [`rayon`], [`tokio`] |
-| networking and web | [`axum`], [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tower`], [`url`] |
+| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tower`], [`url`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`], [`powerletters`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`indicatif`], [`rustyline`], [`termcolor`] |
 | system / OS | [`glob`], [`ignore`], [`notify`], [`tempfile`], [`walkdir`], [`xshell`] |
@@ -549,12 +549,11 @@ All crates from [`rmx-profile-portable`], plus:
 Networking crates, including the [`tokio`] async runtime.
 Builds on [`rmx-profile-std`].
 
-- [`axum`] - Web application framework based on [`tokio`].
 - [`hyper`] - HTTP, versions 1 and 2.
 - [`reqwest`] - Simple HTTP requests, synchronous and asynchronous.
 - [`tokio`] - An async task runtime and I/O library.
 - [`tower`] - Service request/response abstraction (HTTP middleware)
-              for [`tokio`] and [`axum`].
+              for [`tokio`] and [`hyper`].
 
 
 ### Profile: `rmx-profile-build-script`

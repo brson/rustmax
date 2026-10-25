@@ -54,7 +54,7 @@ assert_eq!(resp.status().as_u16(), 404);
 ```
 
 [`hyper`]: crate::hyper
-[`axum`]: crate::axum
+[`axum`]: https://docs.rs/axum
 [`reqwest`]: crate::reqwest
 [`Request`]: crate::http::Request
 [`Response`]: crate::http::Response

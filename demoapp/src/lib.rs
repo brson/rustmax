@@ -7,7 +7,6 @@
 pub mod cli;
 pub mod collection;
 pub mod build;
-pub mod serve;
 pub mod search;
 pub mod lint;
 pub mod remote;

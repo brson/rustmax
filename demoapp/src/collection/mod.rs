@@ -6,7 +6,7 @@ mod scanner;
 
 pub use config::{
     ANTHOLOGY_VERSION, BuildConfig, CollectionConfig, Config, ConfigFormat, ContentConfig,
-    HighlightConfig, ServerConfig,
+    HighlightConfig,
 };
 pub use document::{Document, Frontmatter};
 pub use scanner::Scanner;
@@ -27,10 +27,9 @@ pub struct Collection {
 
 /// The queries a collection answers, on any slice of documents.
 ///
-/// `Collection` is not the only thing that holds documents: the dev server
-/// hands slices to handlers and the REPL narrows them as the user filters. The
-/// queries belong to the documents rather than to the container, so they live
-/// here and `Collection` delegates.
+/// `Collection` is not the only thing that holds documents: the REPL narrows
+/// them as the user filters. The queries belong to the documents rather than to
+/// the container, so they live here and `Collection` delegates.
 #[extension_trait]
 pub impl DocumentsExt for [Document] {
     /// Non-draft documents, newest first.

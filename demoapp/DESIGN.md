@@ -33,7 +33,7 @@ That is the whole manifest.
 Anthology takes no direct dependency on any crate `rustmax` re-exports,
 which is the strongest statement it can make about the supercrate:
 a twelve-thousand-line program with a CLI, a markdown pipeline,
-a search engine, an HTTP server and four export formats
+a search engine and four export formats
 needs nothing else.
 
 The dependency is renamed to `rmx`,
@@ -59,13 +59,6 @@ so it is the one derive crate that cannot be reached through a re-export.
 and do work through `rustmax`.
 See [`src/error.rs`](src/error.rs).
 
-**Static file serving is hand-rolled.**
-`tower-http`'s `ServeDir` was the last non-`rustmax` dependency.
-It is replaced by `handle_static` in [`src/serve/mod.rs`](src/serve/mod.rs),
-about forty lines over `axum`, `tokio::fs` and `mime`,
-with the path-traversal check the real thing does
-and tests that a request cannot escape the static root.
-
 ## Layout
 
 ```
@@ -89,7 +82,6 @@ src/
     progress.rs      progress bars
   lint/            content lints, including Rust code block parsing
   search/          BM25 index, Porter stemmer
-  serve/           dev server, live reload, browser opening
   export/          EPUB and tar archives
   feeds/           Atom and JSON Feed
   shortcode/       nom-parsed shortcodes
@@ -149,32 +141,18 @@ and replaced an `unwrap_or(1)` that silently papered over it.
 ### Queries belong to the documents
 
 `Collection` is not the only thing holding documents:
-the server hands slices to handlers, the REPL narrows them as the user filters.
+the REPL narrows them as the user filters.
 `DocumentsExt` (`extension_trait`) puts `published`, `by_tag`, `by_slug` and `tags`
 on `[Document]`, and `Collection` delegates.
 
-### Sync build, async serve
-
-The build pipeline is `rayon` over CPU-bound work.
-The dev server is `tokio` and `axum`.
-They do not mix.
-
-### The listening socket is built by hand
-
-`socket2` sets `SO_REUSEADDR` before the bind,
-so restarting the server does not fail
-while the previous socket sits in `TIME_WAIT`.
-Tokio's `TcpListener::bind` offers no way to set an option before binding,
-so the socket is built with `socket2` and handed over.
-
 ## Coverage
 
-Used by a feature, as of this writing: 58 of the 71 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 53 of the 70 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
 | CLI | `clap`, `termcolor`, `rustyline`, `ctrlc`, `indicatif`, `xshell` |
-| Web | `axum`, `http`, `tower`, `socket2`, `reqwest`, `mime`, `url` |
+| Web | `reqwest`, `mime`, `url` |
 | Async | `tokio`, `futures` |
 | Concurrency | `rayon`, `crossbeam` |
 | Parsing | `comrak`, `regex`, `nom`, `syn` |
@@ -182,7 +160,7 @@ Used by a feature, as of this writing: 58 of the 71 crates `rustmax` re-exports.
 | Serialization | `serde`, `serde_json`, `toml`, `json5` |
 | Encoding | `flate2`, `base64`, `hex`, `bytes`, `zip`, `tar` |
 | Crypto | `blake3`, `sha2` |
-| Filesystem | `walkdir`, `ignore`, `glob`, `notify`, `tempfile` |
+| Filesystem | `walkdir`, `ignore`, `glob`, `tempfile` |
 | Time | `jiff`, `chrono` |
 | Text | `unicode-segmentation`, `memchr` |
 | Collections | `itertools`, `ahash` |
@@ -202,10 +180,11 @@ which is the failure mode this app is supposed to avoid.
 | Crate | Why not |
 | --- | --- |
 | `bindgen`, `cc`, `cxx`, `cxx-build` | Anthology links no C or C++. |
-| `libc` | Nothing here needs a raw syscall; `socket2` covers the one place that came close. |
+| `libc` | Nothing here needs a raw syscall. |
 | `libm` | `no_std` math. Anthology is a hosted program. |
 | `num-bigint` | No arbitrary-precision arithmetic anywhere in a site generator. |
-| `hyper` | `axum` and `reqwest` are the layers Anthology works at. Reaching past them would be pretence. |
+| `hyper` | `reqwest` is the layer Anthology works at. Reaching past it would be pretence. |
+| `http`, `tower`, `socket2`, `notify` | Used only by the dev server, which was removed when `axum` left `rustmax`. |
 | `proc-macro2`, `quote` | Only meaningful inside a proc-macro crate. `syn` is here because parsing Rust is a real feature; generating it is not. |
 | `rand_pcg` | `rand_chacha` already covers the reproducibility requirement. A second PRNG would be decoration. |
 | `thiserror` | Deliberately avoided, and that is the finding. See [One dependency](#one-dependency). |
@@ -217,14 +196,7 @@ is itself worth knowing.
 
 ## Testing
 
-302 tests: 278 unit, 24 integration.
-
-The dev server is tested against a live socket.
-`serve::tests` binds port 0, spawns the real router
--- not a rebuilt approximation of it -- and drives it with `reqwest`:
-index and document rendering, draft visibility, tag pages,
-the search API, static files and their content types,
-and that a percent-encoded `..` cannot escape the static root.
+278 tests: 254 unit, 24 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

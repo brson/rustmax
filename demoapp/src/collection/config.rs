@@ -47,8 +47,6 @@ pub struct Config {
     #[serde(default)]
     pub content: ContentConfig,
     #[serde(default)]
-    pub server: ServerConfig,
-    #[serde(default)]
     pub highlight: HighlightConfig,
 }
 
@@ -249,30 +247,6 @@ fn default_excerpt_separator() -> String {
     "<!--more-->".to_string()
 }
 
-/// Development server configuration.
-#[rmx::derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ServerConfig {
-    /// Port to listen on.
-    #[serde(default = "default_port")]
-    pub port: u16,
-    /// Whether to open browser on start.
-    #[serde(default)]
-    pub open: bool,
-}
-
-impl Default for ServerConfig {
-    fn default() -> Self {
-        Self {
-            port: default_port(),
-            open: false,
-        }
-    }
-}
-
-fn default_port() -> u16 {
-    3000
-}
-
 /// Syntax highlighting configuration.
 #[rmx::derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HighlightConfig {
@@ -366,14 +340,14 @@ title = "Tomlish"
     collection: {
         title: "Jsonish",
     },
-    server: { port: 8080 },
+    build: { output_dir: "site" },
 }
 "#,
         );
 
         let config = Config::load(dir.path()).unwrap();
         assert_eq!(config.collection.title, "Jsonish");
-        assert_eq!(config.server.port, 8080);
+        assert_eq!(config.build.output_dir, "site");
     }
 
     #[test]
@@ -452,6 +426,6 @@ title = "Tomlish"
 
         let json = rmx::serde_json::to_string(&config).unwrap();
         let from_json5 = Config::parse(&json, ConfigFormat::Json5, Path::new("j")).unwrap();
-        assert_eq!(from_json5.server.port, config.server.port);
+        assert_eq!(from_json5.build.output_dir, config.build.output_dir);
     }
 }

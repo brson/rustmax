@@ -1,15 +1,4 @@
 {
-    // axum
-    "crate::axum::extract::Path":
-    "api/axum/extract/struct.Path.html",
-    "crate::axum::extract::Query":
-    "api/axum/extract/struct.Query.html",
-    "crate::axum::extract::State":
-    "api/axum/extract/struct.State.html",
-    "crate::axum::Json":
-    "api/axum/struct.Json.html",
-    "crate::axum::response::IntoResponse":
-    "api/axum_core/response/trait.IntoResponse.html",
     "crate::tower":
     "api/rustmax/tower/index.html",
     "crate::tower::Service":
@@ -32,10 +21,6 @@
     "api/tower/buffer/index.html",
     "crate::tower::load_shed":
     "api/tower/load_shed/index.html",
-    "crate::axum":
-    "api/rustmax/axum/index.html",
-    "crate::axum::Router::layer":
-    "api/axum/struct.Router.html#method.layer",
     "crate::tokio":
     "api/rustmax/tokio/index.html",
 

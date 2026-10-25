@@ -66,12 +66,6 @@ aliases = ["http library", "HTTP implementation", "http server", "http1", "http2
 category = "crate"
 brief = "Low-level HTTP implementation"
 
-[topics.axum]
-name = "axum"
-aliases = ["web framework", "axum framework", "router", "handler", "REST API", "web server", "API server", "routing", "extractor"]
-category = "crate"
-brief = "Ergonomic web framework built on tokio and hyper"
-
 [topics.tower]
 name = "tower"
 aliases = ["tower service", "middleware", "Service trait", "layer", "service layer", "tower-http"]

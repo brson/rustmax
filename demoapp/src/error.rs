@@ -72,10 +72,6 @@ pub enum Error {
     #[from(ignore)]
     Check { count: usize },
 
-    #[display("server error: {message}")]
-    #[from(ignore)]
-    Server { message: String },
-
     #[display("remote fetch error for {url}: {message}")]
     #[from(ignore)]
     Remote { url: String, message: String },
@@ -111,12 +107,6 @@ impl Error {
 
     pub fn build(message: impl Into<String>) -> Self {
         Self::Build {
-            message: message.into(),
-        }
-    }
-
-    pub fn server(message: impl Into<String>) -> Self {
-        Self::Server {
             message: message.into(),
         }
     }
