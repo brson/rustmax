@@ -81,12 +81,15 @@ rmx-crates-portable = [
 
 rmx-crates-std = [
   "rmx-crates-portable",
+  "ctrlc",
   "ignore",
   "image",
   "indicatif",
   "notify",
   "proptest",
+  "rustyline",
   "tera",
+  "termcolor",
   "xshell",
 ]
 
@@ -101,13 +104,6 @@ rmx-crates-net = [
   "tokio",
   "tower",
   "url",
-]
-
-rmx-crates-cli = [
-  "rmx-crates-std",
-  "ctrlc",
-  "termcolor",
-  "rustyline",
 ]
 
 rmx-crates-build-script = [
@@ -160,11 +156,6 @@ rmx-profile-net = [
   "rmx-crates-net",
 ]
 
-rmx-profile-cli = [
-  "rmx-profile-std",
-  "rmx-crates-cli",
-]
-
 rmx-profile-build-script = [
   "rmx-profile-std",
   "rmx-crates-build-script",
@@ -179,7 +170,6 @@ rmx-profile-proc-macro = [
 rmx-profile-max = [
   "rmx-profile-std",
   "rmx-profile-net",
-  "rmx-profile-cli",
   "rmx-profile-build-script",
   "rmx-profile-proc-macro",
 ]

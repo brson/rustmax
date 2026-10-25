@@ -528,12 +528,15 @@ Also enables
 
 All crates from [`rmx-profile-portable`], plus:
 
+- [`ctrlc`] - Simple handling of Ctrl-C for CLI programs.
 - [`ignore`] - Directory traversal respecting gitignore rules.
 - [`image`] - Image processing and manipulation.
 - [`indicatif`] - Progress bars and spinners for CLI.
 - [`notify`] - Cross-platform filesystem notifications.
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
+- [`rustyline`] - Command-line input reading with history.
 - [`tera`] - A text template engine based on Jinja2.
+- [`termcolor`] - Cross-platform library for writing colored output to the terminal.
 - [`xshell`] - A Swiss-army knife for writing shell-style scripts in Rust.
 
 
@@ -552,16 +555,6 @@ Builds on [`rmx-profile-std`].
 - [`tower`] - Service request/response abstraction (HTTP middleware)
               for [`tokio`] and [`axum`].
 - [`url`] - URL parsing and data structures.
-
-
-### Profile: `rmx-profile-cli`
-
-Crates for building command-line interfaces.
-Builds on [`rmx-profile-std`].
-
-- [`ctrlc`] - Simple handling of Ctrl-C for CLI programs.
-- [`rustyline`] - Command-line input reading with history.
-- [`termcolor`] - Cross-platform library for writing colored output to the terminal.
 
 
 ### Profile: `rmx-profile-build-script`
@@ -589,8 +582,8 @@ and also enables [`rmx-rustlib-proc_macro`].
 ### Profile: `rmx-profile-max`
 
 All of the above profiles:
-[`rmx-profile-net`], [`rmx-profile-cli`],
-[`rmx-profile-build-script`] and [`rmx-profile-proc-macro`].
+[`rmx-profile-net`], [`rmx-profile-build-script`]
+and [`rmx-profile-proc-macro`].
 
 
 ### Profile: `rmx-profile-max-nightly`
@@ -662,7 +655,6 @@ via the group features
 [`rmx-profile-std`]: #profile-rmx-profile-std
 [`rmx-profile-portable`]: #profile-rmx-profile-portable
 [`rmx-profile-net`]: #profile-rmx-profile-net
-[`rmx-profile-cli`]: #profile-rmx-profile-cli
 [`rmx-profile-build-script`]: #profile-rmx-profile-build-script
 [`rmx-profile-proc-macro`]: #profile-rmx-profile-proc-macro
 [`rmx-profile-max`]: #profile-rmx-profile-max
