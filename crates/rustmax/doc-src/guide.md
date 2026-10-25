@@ -503,13 +503,16 @@ All crates from [`rmx-profile-no-std`], plus:
 - [`env_logger`] - A basic logger to use with the [`log`] crate.
 - [`flate2`] - Deflate, gzip, and zlib compression and decompression.
 - [`glob`] - Unix shell style pattern matching for paths.
+- [`http`] - Shared definitions related to the HTTP protocol.
 - [`json5`] - JSON5, a superset of JSON with expanded syntax.
+- [`mime`] - MIME media types.
 - [`rayon`] - Parallel iterators and other parallel processing tools.
 - [`regex`] - Regular expressions.
 - [`tar`] - Read and write tar archives; pair with [`flate2`] for `.tar.gz`.
 - [`tempfile`] - Temporary files and directories.
 - [`thiserror`] - Tools for defining custom error types.
 - [`unicode-segmentation`](unicode_segmentation) - Splitting strings on grapheme cluster, word, and sentence boundaries.
+- [`url`] - URL parsing and data structures.
 - [`walkdir`] - Efficient directory traversal.
 - [`zip`] - Read and write ZIP archives.
 
@@ -535,6 +538,7 @@ All crates from [`rmx-profile-portable`], plus:
 - [`notify`] - Cross-platform filesystem notifications.
 - [`proptest`] - Testing over generated inputs, ala QuickCheck.
 - [`rustyline`] - Command-line input reading with history.
+- [`socket2`] - Low-level network socket programming beyond [`std::net`].
 - [`tera`] - A text template engine based on Jinja2.
 - [`termcolor`] - Cross-platform library for writing colored output to the terminal.
 - [`xshell`] - A Swiss-army knife for writing shell-style scripts in Rust.
@@ -546,15 +550,11 @@ Networking crates, including the [`tokio`] async runtime.
 Builds on [`rmx-profile-std`].
 
 - [`axum`] - Web application framework based on [`tokio`].
-- [`http`] - Shared definitions related to the HTTP protocol.
 - [`hyper`] - HTTP, versions 1 and 2.
-- [`mime`] - MIME media types.
 - [`reqwest`] - Simple HTTP requests, synchronous and asynchronous.
-- [`socket2`] - Low-level network socket programming beyond [`std::net`].
 - [`tokio`] - An async task runtime and I/O library.
 - [`tower`] - Service request/response abstraction (HTTP middleware)
               for [`tokio`] and [`axum`].
-- [`url`] - URL parsing and data structures.
 
 
 ### Profile: `rmx-profile-build-script`

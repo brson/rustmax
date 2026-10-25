@@ -68,13 +68,16 @@ rmx-crates-portable = [
   "env_logger",
   "flate2",
   "glob",
+  "http",
   "json5",
+  "mime",
   "rayon",
   "regex",
   "tar",
   "tempfile",
   "thiserror",
   "unicode-segmentation",
+  "url",
   "walkdir",
   "zip",
 ]
@@ -88,6 +91,7 @@ rmx-crates-std = [
   "notify",
   "proptest",
   "rustyline",
+  "socket2",
   "tera",
   "termcolor",
   "xshell",
@@ -96,14 +100,10 @@ rmx-crates-std = [
 rmx-crates-net = [
   "rmx-crates-std",
   "axum",
-  "http",
   "hyper",
-  "mime",
   "reqwest",
-  "socket2",
   "tokio",
   "tower",
-  "url",
 ]
 
 rmx-crates-build-script = [
