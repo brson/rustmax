@@ -16,7 +16,6 @@ check:
     cargo check -p rustmax
     cargo check -p rustmax --features rmx-profile-no-std
     cargo check -p rustmax --features rmx-profile-std
-    cargo check -p rustmax --features rmx-profile-full
     cargo check -p rustmax --features rmx-profile-max
     cargo check -p rustmax-cli
     cargo check -p rustmax-macros-test
@@ -25,7 +24,6 @@ check:
 test:
     cargo test -p rustmax --lib --tests --bins
     cargo test -p rustmax --features rmx-profile-std --lib --tests --bins
-    cargo test -p rustmax --features rmx-profile-full --lib --tests --bins
     cargo test -p rustmax --features rmx-profile-max --lib --tests --bins
     cargo test -p rustmax-macros-test
     cargo test -p rustmax-cli

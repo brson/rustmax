@@ -14,7 +14,7 @@ publish = false
 rmx.package = "rustmax"
 rmx.path = "../rustmax"
 rmx.version = "0.0.10"
-rmx.features = ["rmx-profile-full"]
+rmx.features = ["rmx-profile-max"]
 
 # `thiserror` cannot work through a re-export, so the one path that does
 # work for it needs a real direct dependency.

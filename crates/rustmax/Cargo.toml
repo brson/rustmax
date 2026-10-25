@@ -176,18 +176,12 @@ rmx-profile-proc-macro = [
   "rmx-crates-proc-macro",
 ]
 
-rmx-profile-full = [
+rmx-profile-max = [
   "rmx-profile-std",
   "rmx-profile-net",
   "rmx-profile-cli",
   "rmx-profile-build-script",
   "rmx-profile-proc-macro",
-]
-
-rmx-profile-max = [
-  "rmx-profile-full",
-  "rmx-feature-backtrace",
-  "rmx-feature-tokio",
 ]
 
 rmx-profile-max-nightly = [
@@ -391,13 +385,6 @@ rmx-feature-serde = [
   "semver?/serde",
   "num-bigint?/serde",
   "url?/serde",
-]
-
-rmx-feature-backtrace = [
-  "anyhow?/backtrace",
-]
-
-rmx-feature-tokio = [
 ]
 
 rmx-feature-nightly = [

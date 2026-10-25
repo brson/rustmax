@@ -141,7 +141,7 @@ primarily through _profile_ features.
 and [`rmx-profile-net`] adds networking and async I/O.
 
 [Ecosystem features](#ecosystem-features) provide cross-cutting control
-over individual crate features like `derive`, `serde`, and `backtrace` support.
+over individual crate features like `derive` and `serde` support.
 Profiles enable sensible defaults for these,
 but they can also be toggled individually.
 
@@ -586,22 +586,15 @@ and also enables [`rmx-rustlib-proc_macro`].
 - [`syn`] - A Rust parser used by procedural macros.
 
 
-### Profile: `rmx-profile-full`
+### Profile: `rmx-profile-max`
 
 All of the above profiles:
 [`rmx-profile-net`], [`rmx-profile-cli`],
 [`rmx-profile-build-script`] and [`rmx-profile-proc-macro`].
 
 
-### Profile: `rmx-profile-max`
-
-`rustmax` with all features that don't require nightly:
-[`rmx-profile-full`] plus [`rmx-feature-backtrace`] and [`rmx-feature-tokio`].
-
-
 ### Profile: `rmx-profile-max-nightly`
 
-`rustmax` with all features, including nightly:
 [`rmx-profile-max`] plus [`rmx-feature-nightly`].
 
 
@@ -635,9 +628,12 @@ enable `derive` and `serde`.
 | --- | --- |
 | `rmx-feature-derive` | Derive macros, typically a feature named "derive" |
 | `rmx-feature-serde` | [`serde`] support, typically a feature named "serde" |
-| `rmx-feature-backtrace` | Backtrace support, typically a feature named "backtrace"; needed for backtraces in [`anyhow`] |
-| `rmx-feature-tokio` | Reserved for [`tokio`] support in other crates; currently enables nothing |
 | `rmx-feature-nightly` | Features that only compile with the Rust nightly compiler, typically a feature named "nightly" |
+
+Backtraces need no feature:
+[`anyhow`] captures backtraces through [`std::backtrace`],
+controlled by the `RUST_BACKTRACE` and `RUST_LIB_BACKTRACE`
+environment variables.
 
 
 
@@ -669,7 +665,6 @@ via the group features
 [`rmx-profile-cli`]: #profile-rmx-profile-cli
 [`rmx-profile-build-script`]: #profile-rmx-profile-build-script
 [`rmx-profile-proc-macro`]: #profile-rmx-profile-proc-macro
-[`rmx-profile-full`]: #profile-rmx-profile-full
 [`rmx-profile-max`]: #profile-rmx-profile-max
 [`rmx-feature-no-std`]: #ecosystem-features
 [`rmx-feature-std`]: #ecosystem-features
@@ -680,8 +675,6 @@ via the group features
 [`rmx-feature-more-portable`]: #ecosystem-features
 [`rmx-feature-derive`]: #ecosystem-features
 [`rmx-feature-serde`]: #ecosystem-features
-[`rmx-feature-backtrace`]: #ecosystem-features
-[`rmx-feature-tokio`]: #ecosystem-features
 [`rmx-feature-nightly`]: #ecosystem-features
 [`rmx-rustlib-core`]: #rust-standard-libraries
 [`rmx-rustlib-alloc`]: #rust-standard-libraries
