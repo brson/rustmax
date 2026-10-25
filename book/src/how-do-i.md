@@ -1,15 +1,15 @@
 # How Do I … in Rust?
 
-**[Discovery](#discovery)**:
+**Discovery:**
 [find a crate for a given purpose](#-find-a-crate-for-a-given-purpose) ·
 [find the latest version of a crate](#-find-the-latest-version-of-a-crate)
 
-**[Project organization and maintenance](#project-organization-and-maintenance)**:
+**Project organization and maintenance:**
 [init a Rustmax project from template](#-init-a-rustmax-project-from-template) ·
 [organize a Rust workspace](#-organize-a-rust-workspace) ·
 [fix bugs in a published crates.io dependency](#-fix-bugs-in-a-published-cratesio-dependency)
 
-**[Tooling and the command line](#tooling-and-the-command-line)**:
+**Tooling and the command line:**
 [find all Rust files](#-find-all-rust-files) ·
 [replace text in all Rust files](#-replace-text-in-all-rust-files) ·
 [delete trailing whitespace in all Python and Rust files](#-delete-trailing-whitespace-in-all-python-and-rust-files) ·
@@ -18,7 +18,7 @@
 [stop `rustfmt` from reformatting some code](#-stop-rustfmt-from-reformatting-some-code) ·
 [keep a project's common development commands at hand](#-keep-a-projects-common-development-commands-at-hand)
 
-**[Conveniences](#conveniences)**:
+**Conveniences:**
 [import a trait just to call its methods](#-import-a-trait-just-to-call-its-methods) ·
 [get an `Either` type](#-get-an-either-type) ·
 [define "extension" methods on a type in another crate](#-define-extension-methods-on-a-type-in-another-crate) ·
@@ -26,7 +26,7 @@
 [make compile-time assertions](#-make-compile-time-assertions) ·
 [assert a type is `Send` and `Sync`](#-assert-a-type-is-send-and-sync)
 
-**[Error handling and debugging](#error-handling-and-debugging)**:
+**Error handling and debugging:**
 [handle errors simply and correctly](#-handle-errors-simply-and-correctly) ·
 [structure errors in a public API](#-structure-errors-in-a-public-api) ·
 [use `?` with `Option`](#-use--with-option) ·
@@ -34,25 +34,25 @@
 [capture a backtrace](#-capture-a-backtrace) ·
 [set up basic logging](#-set-up-basic-logging)
 
-**[Collections](#collections)**:
+**Collections:**
 [create a fast `HashMap`](#-create-a-fast-hashmap) ·
 [convert from slices to fixed-length arrays](#-convert-from-slices-to-fixed-length-arrays) ·
 [Implement an `impl Iterator` with `todo!`](#-implement-an-impl-iterator-with-todo)
 
-**[Numerics](#numerics)**:
+**Numerics:**
 [convert between numeric types ideomatically](#-convert-between-numeric-types-ideomatically) ·
 [perform math ideomatically](#-perform-math-ideomatically) ·
 [convert between ints and bytes](#-convert-between-ints-and-bytes) ·
 [perform typical byte order conversions](#-perform-typical-byte-order-conversions)
 
-**[Encoding, serialization, parsing](#encoding-serialization-parsing)**:
+**Encoding, serialization, parsing:**
 [serialize to and from JSON](#-serialize-to-and-from-json) ·
 [decide what format to use with `serde`](#-decide-what-format-to-use-with-serde)
 
-**[Time](#time)**:
+**Time:**
 [parse and render standard time formats](#-parse-and-render-standard-time-formats)
 
-**[Random numbers](#random-numbers)**:
+**Random numbers:**
 [generate a strong random anything](#-generate-a-strong-random-anything) ·
 [generate a strong random number from a seed](#-generate-a-strong-random-number-from-a-seed) ·
 [generate a fast random number from a seed](#-generate-a-fast-random-number-from-a-seed) ·
@@ -60,51 +60,47 @@
 [generate a fast random number from a seed with stable algorithm](#-generate-a-fast-random-number-from-a-seed-with-stable-algorithm) ·
 [generate random numbers without the `rand` crate](#-generate-random-numbers-without-the-rand-crate)
 
-**[Cryptography](#cryptography)**:
+**Cryptography:**
 [calculate a cryptographic content hash](#-calculate-a-cryptographic-content-hash)
 
-**[Parallelism and Concurrency](#parallelism-and-concurrency)**:
+**Parallelism and Concurrency:**
 [initialize a global value](#-initialize-a-global-value) ·
 [send messages to/from async code](#-send-messages-tofrom-async-code) ·
 [use a thread pool](#-use-a-thread-pool) ·
 [get the number of CPUs](#-get-the-number-of-cpus)
 
-**[Asynchronous I/O](#asynchronous-io)**:
+**Asynchronous I/O:**
 [set up the `tokio` event loop](#-set-up-the-tokio-event-loop) ·
 [stub an unwritten `async fn`](#-stub-an-unwritten-async-fn) ·
 [merge message streams in an event loop](#-merge-message-streams-in-an-event-loop)
 
-**[Networking and web](#networking-and-web)**:
+**Networking and web:**
 [make a synchronous HTTP request](#-make-a-synchronous-http-request) ·
 [configure a basic HTTP server](#-configure-a-basic-http-server)
 
-**[Text / unicode](#text--unicode)**
-
-**[Terminal / CLI](#terminal--cli)**:
+**Terminal / CLI:**
 [set up a simple CLI parser with subcommands](#-set-up-a-simple-cli-parser-with-subcommands) ·
 [display colors in the terminal](#-display-colors-in-the-terminal) ·
 [read line-based input from the terminal](#-read-line-based-input-from-the-terminal) ·
 [handle ctrl-](#-handle-ctrl-)
 
-**[System / OS](#system--os)**:
+**System / OS:**
 [read environment variables](#-read-environment-variables) ·
 [work with a temporary file](#-work-with-a-temporary-file) ·
 [work with multiple files in a temporary directory](#-work-with-multiple-files-in-a-temporary-directory) ·
 [copy a directory recursively](#-copy-a-directory-recursively)
 
-**[Testing](#testing)**:
+**Testing:**
 [create a custom test harness](#-create-a-custom-test-harness) ·
 [create a custom table-based test harness](#-create-a-custom-table-based-test-harness)
 
-**[Build scripts](#build-scripts)**:
+**Build scripts:**
 [write build scripts ideomatically](#-write-build-scripts-ideomatically) ·
 [link to a native static library](#-link-to-a-native-static-library) ·
 [compile and link a C source file](#-compile-and-link-a-c-source-file)
 
-**[FFI / interop](#ffi--interop)**:
+**FFI / interop:**
 [create Rust bindings to a C/C++ program](#-create-rust-bindings-to-a-cc-program)
-
-**[Procedural macros](#procedural-macros)**
 
 
 
