@@ -15,12 +15,15 @@ These are not part of Rustmax.
 ## Tier 1 - looks good
 
 - **[Rust Language Cheat Sheet](https://cheats.rs/)**.
-  This looks awesome.
+  Tons of condensed information about core Rust concepts.
 - [Rust Component History](https://rust-lang.github.io/rustup-components-history/).
   `rustup` toolchain status.
   Look here to figure out if your nightly toolchain had component build failures.
-- [The Little Book of Rust Books](https://lborb.github.io/book/)
-- ["Can I Use _?"](https://caniuse.rs/)
+- [The Little Book of Rust Books](https://lborb.github.io/book/).
+  A central location to find Rust "books".
+  The most vital are all here in the [library](../library.html).
+- ["Can I Use _?"](https://caniuse.rs/).
+  Tracking unstable Rust features.
 - [releases.rs](https://releases.rs/).
   Rust release history.
 
@@ -29,7 +32,7 @@ These are not part of Rustmax.
 
 - [Rust String Conversions Cheat Sheet](https://docs.google.com/spreadsheets/d/19vSPL6z2d50JlyzwxariaYD6EU2QQUQqIDOGbiGQC7Y/pubhtml?gid=0&single=true)
 - [Rust Iterator Cheat Sheet](https://danielkeep.github.io/itercheat_baked.html)
-- [Rust Container Cheet Sheet](https://docs.google.com/presentation/d/1q-c7UAyrUlM-eZyTo1pd8SZ0qwA_wYxmPZVOQkoDmH4/edit)
+- [Rust Container Cheat Sheet](https://docs.google.com/presentation/d/1q-c7UAyrUlM-eZyTo1pd8SZ0qwA_wYxmPZVOQkoDmH4/edit)
 - [Lib.rs](https://lib.rs)
 - [Secure Rust Guidelines](https://anssi-fr.github.io/rust-guide/).
 - [List of security-related projects](https://github.com/rust-secure-code/projects)
