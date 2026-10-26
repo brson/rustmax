@@ -5,7 +5,7 @@ mod document;
 mod scanner;
 
 pub use config::{
-    ANTHOLOGY_VERSION, BuildConfig, CollectionConfig, Config, ConfigFormat, ContentConfig,
+    FOLIO_VERSION, BuildConfig, CollectionConfig, Config, ConfigFormat, ContentConfig,
     HighlightConfig,
 };
 pub use document::{Document, Frontmatter};

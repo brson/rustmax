@@ -7,9 +7,9 @@ use std::path::PathBuf;
 use crate::{Result, Error};
 use crate::collection::Config;
 
-/// Anthology: A document publishing platform.
+/// Folio: A document publishing platform.
 #[rmx::derive(Parser, Debug)]
-#[command(name = "anthology")]
+#[command(name = "folio")]
 #[command(version, about, long_about = None)]
 pub struct Cli {
     /// Enable verbose output.
@@ -167,7 +167,7 @@ fn cmd_init(path: PathBuf) -> Result<()> {
     use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
-    let config_path = path.join("anthology.toml");
+    let config_path = path.join("folio.toml");
 
     if config_path.exists() {
         return Err(Error::config(format!(
@@ -194,7 +194,7 @@ fn cmd_init(path: PathBuf) -> Result<()> {
 
     // Write example document.
     let example_doc = r#"---
-title = "Welcome to Anthology"
+title = "Welcome to Folio"
 date = "2024-01-01"
 tags = ["welcome", "example"]
 ---

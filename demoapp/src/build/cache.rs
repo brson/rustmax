@@ -11,7 +11,7 @@ use std::time::SystemTime;
 use crate::Result;
 
 /// Cache file name.
-const CACHE_FILE: &str = ".anthology-cache.json";
+const CACHE_FILE: &str = ".folio-cache.json";
 
 /// Build cache for tracking document changes.
 #[rmx::derive(Debug, Default, Serialize, Deserialize)]

@@ -1,4 +1,4 @@
-# Anthology Roadmap
+# Folio Roadmap
 
 What is worth doing next, and why.
 Design rationale lives in [DESIGN.md](DESIGN.md);
@@ -6,7 +6,7 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 ## Where things stand
 
-Anthology builds, serves, searches and exports a collection of markdown
+Folio builds, serves, searches and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
 302 tests, no clippy warnings.
 58 of the 71 crates `rustmax` re-exports are used by a feature;
@@ -26,7 +26,7 @@ and nothing in the tree would have noticed.
 A small crate that actually writes a derive macro,
 and one that actually runs a build script,
 would cover `bindgen`, `cc`, `cxx`, `cxx-build`, `proc-macro2` and `quote`
-the way Anthology covers the rest.
+the way Folio covers the rest.
 It should be its own thing rather than a corner of this one --
 padding a site generator with an FFI layer
 is the checklist-filling that makes a demo app useless.
@@ -38,7 +38,7 @@ Attribute macros in the same class -- `tokio::test`, `tokio::main` --
 still need `use rmx::tokio;` at each use site.
 That is documented and it works,
 but the diagnostic is unhelpful (see VALIDATION.md).
-Anthology is the right place to try an `#[rmx::attr(..)]` against a real
+Folio is the right place to try an `#[rmx::attr(..)]` against a real
 test suite if `rustmax` grows one.
 
 ### 3. Finish what the reproducible-build work started
@@ -55,7 +55,7 @@ Two things still vary between builds of identical content:
 
 ### 4. Lints worth having
 
-`anthology check` parses Rust code blocks and flags unhighlightable
+`folio check` parses Rust code blocks and flags unhighlightable
 languages. The obvious next ones, in the order they would pay off:
 
 - Internal links that resolve to no document.

@@ -479,7 +479,7 @@ This is a test document.
 title = "Test Collection"
 base_url = "http://example.com"
 "#;
-        std::fs::write(dir.path().join("anthology.toml"), config_content).unwrap();
+        std::fs::write(dir.path().join("folio.toml"), config_content).unwrap();
 
         let config = Config::load(dir.path()).unwrap();
         let collection = Collection::load(dir.path(), &config).unwrap();

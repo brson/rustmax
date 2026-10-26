@@ -25,12 +25,12 @@ pub fn run_repl(collection: &Collection, config: &CollectionConfig) -> Result<()
 
     let mut stdout = StandardStream::stdout(ColorChoice::Auto);
 
-    println!("Anthology REPL - type 'help' for commands, 'quit' to exit");
+    println!("Folio REPL - type 'help' for commands, 'quit' to exit");
     println!("Collection: {} ({} documents)", config.collection.title, collection.documents.len());
     println!();
 
     loop {
-        match rl.readline("anthology> ") {
+        match rl.readline("folio> ") {
             Ok(line) => {
                 let line = line.trim();
                 if line.is_empty() {

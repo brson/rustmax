@@ -1,19 +1,19 @@
-//! Error types for Anthology.
+//! Error types for Folio.
 //!
 //! These use `derive_more` rather than `thiserror`.
 //! `thiserror` generates `::thiserror` paths,
 //! which resolve only against the extern prelude,
 //! so it is the one derive crate that cannot be reached through `rustmax`.
 //! `derive_more` covers the same ground and does work through the re-export,
-//! which lets Anthology depend on `rustmax` and nothing else.
+//! which lets Folio depend on `rustmax` and nothing else.
 
 use rmx::prelude::*;
 use std::path::PathBuf;
 
-/// The result type for Anthology operations.
+/// The result type for Folio operations.
 pub type Result<T> = std::result::Result<T, Error>;
 
-/// Errors that can occur in Anthology.
+/// Errors that can occur in Folio.
 #[rmx::derive(Debug, Display, derive_more::Error, From)]
 pub enum Error {
     #[display("IO error: {_0}")]

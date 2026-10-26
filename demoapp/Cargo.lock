@@ -120,13 +120,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anthology"
-version = "0.3.0"
-dependencies = [
- "rustmax",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1224,6 +1217,13 @@ name = "foldhash"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
+
+[[package]]
+name = "folio"
+version = "0.3.0"
+dependencies = [
+ "rustmax",
+]
 
 [[package]]
 name = "form_urlencoded"

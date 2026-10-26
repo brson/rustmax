@@ -1,12 +1,12 @@
 [package]
-name = "anthology"
+name = "folio"
 version = "0.3.0"
 edition = "2024"
 description = "A document publishing platform - rustmax demo app"
 license = "MIT OR Apache-2.0"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
 
-# Anthology takes exactly one dependency, on purpose.
+# Folio takes exactly one dependency, on purpose.
 # Everything it needs is reached through `rustmax`,
 # renamed to `rmx` the way the rustmax project template renames it,
 # so that the whole app doubles as a test that the supercrate is

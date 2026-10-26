@@ -1,6 +1,6 @@
 //! Identifier generation.
 //!
-//! Anthology wants two things from generated identifiers that pull in opposite
+//! Folio wants two things from generated identifiers that pull in opposite
 //! directions: they should not collide, and a rebuild of unchanged input should
 //! produce a byte-identical site. [`IdGenerator`] resolves that by making the
 //! randomness explicit -- seed it and the whole sequence is reproducible, on
@@ -15,7 +15,7 @@ use rmx::rand_chacha::ChaCha8Rng;
 /// The generator is `ChaCha8Rng` rather than the thread RNG because its output
 /// is a documented function of its seed: a given seed produces the same
 /// identifiers on every platform and every run, which is what makes
-/// [`Anthology's builds reproducible`](crate::build).
+/// [`Folio's builds reproducible`](crate::build).
 pub struct IdGenerator {
     rng: ChaCha8Rng,
 }

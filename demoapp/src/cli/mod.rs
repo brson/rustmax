@@ -1,4 +1,4 @@
-//! Command-line interface for Anthology.
+//! Command-line interface for Folio.
 
 mod commands;
 pub mod repl;

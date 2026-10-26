@@ -1,6 +1,6 @@
-//! Anthology: A document publishing platform.
+//! Folio: A document publishing platform.
 //!
-//! Anthology processes collections of markdown documents into publishable outputs
+//! Folio processes collections of markdown documents into publishable outputs
 //! such as static HTML sites and JSON exports. It serves as a demonstration of
 //! the rustmax crate ecosystem.
 

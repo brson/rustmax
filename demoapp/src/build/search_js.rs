@@ -11,7 +11,7 @@ pub fn generate_search_page() -> String {
 }
 
 const SEARCH_JS: &str = r#"/**
- * Anthology Client-Side Search
+ * Folio Client-Side Search
  * Provides instant search functionality for static sites.
  */
 (function() {
@@ -202,7 +202,7 @@ const SEARCH_JS: &str = r#"/**
   }
 
   // Export API.
-  window.AnthologySearch = {
+  window.FolioSearch = {
     init: initSearch,
     search: search,
     bind: bindSearchForm,
@@ -330,7 +330,7 @@ mod tests {
     #[test]
     fn test_generate_search_js() {
         let js = generate_search_js();
-        assert!(js.contains("AnthologySearch"));
+        assert!(js.contains("FolioSearch"));
         assert!(js.contains("initSearch"));
         assert!(js.contains("STOP_WORDS"));
         assert!(js.contains("stem"));

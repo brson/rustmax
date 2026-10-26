@@ -1,4 +1,4 @@
-//! Integration tests for anthology using tempfile.
+//! Integration tests for folio using tempfile.
 
 use rmx::tempfile::tempdir;
 use std::fs;
@@ -19,7 +19,7 @@ base_url = "https://test.example.com"
 [build]
 output_dir = "output"
 "#;
-    fs::write(root.join("anthology.toml"), config).unwrap();
+    fs::write(root.join("folio.toml"), config).unwrap();
 
     // Write default template. The variables here have to match what
     // TemplateEngine puts in the context, or the pages render empty.
@@ -70,10 +70,10 @@ fn test_collection_load() {
     create_test_collection(root);
     create_document(root, "hello", "Hello World", "This is a test.", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
     assert_eq!(config.collection.title, "Test Collection");
 
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
     assert_eq!(collection.documents.len(), 1);
     assert_eq!(collection.documents[0].frontmatter.title, "Hello World");
 }
@@ -88,8 +88,8 @@ fn test_collection_multiple_documents() {
     create_document(root, "second", "Second Post", "Content two.", false);
     create_document(root, "third", "Third Post", "Content three.", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     assert_eq!(collection.documents.len(), 3);
 
@@ -106,8 +106,8 @@ fn test_collection_drafts_filtered() {
     create_document(root, "published", "Published Post", "Public content.", false);
     create_document(root, "draft", "Draft Post", "Secret content.", true);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     assert_eq!(collection.documents.len(), 2);
 
@@ -143,8 +143,8 @@ tags = ["python", "programming"]
 Content"#;
     fs::write(root.join("content/python.md"), doc2).unwrap();
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let tags = collection.tags();
     assert!(tags.contains(&"rust".to_string()));
@@ -166,11 +166,11 @@ fn test_build_output() {
     create_test_collection(root);
     create_document(root, "hello", "Hello World", "This is **bold** text.", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    anthology::build::build(&collection, &config, &output_dir, false).unwrap();
+    folio::build::build(&collection, &config, &output_dir, false).unwrap();
 
     // Check output structure.
     assert!(output_dir.exists());
@@ -200,11 +200,11 @@ fn test_build_with_static_assets() {
     fs::create_dir_all(root.join("static/js")).unwrap();
     fs::write(root.join("static/js/app.js"), "console.log('hello');").unwrap();
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    anthology::build::build(&collection, &config, &output_dir, false).unwrap();
+    folio::build::build(&collection, &config, &output_dir, false).unwrap();
 
     // Check static assets copied.
     assert!(output_dir.join("style.css").exists());
@@ -223,11 +223,11 @@ fn test_build_excludes_drafts() {
     create_document(root, "published", "Published", "Public", false);
     create_document(root, "draft", "Draft", "Private", true);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    anthology::build::build(&collection, &config, &output_dir, false).unwrap();
+    folio::build::build(&collection, &config, &output_dir, false).unwrap();
 
     // Published should exist.
     assert!(output_dir.join("published/index.html").exists());
@@ -245,11 +245,11 @@ fn test_build_includes_drafts_when_requested() {
     create_document(root, "published", "Published", "Public", false);
     create_document(root, "draft", "Draft", "Private", true);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    anthology::build::build(&collection, &config, &output_dir, true).unwrap();
+    folio::build::build(&collection, &config, &output_dir, true).unwrap();
 
     // Both should exist.
     assert!(output_dir.join("published/index.html").exists());
@@ -265,10 +265,10 @@ fn test_search_index_build() {
     create_document(root, "rust", "Rust Programming", "Learn about memory safety.", false);
     create_document(root, "python", "Python Basics", "Learn about scripting.", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
-    anthology::search::build_index(&collection, root).unwrap();
+    folio::search::build_index(&collection, root).unwrap();
 
     // Check index file created.
     let index_path = root.join("search-index.json");
@@ -287,10 +287,10 @@ fn test_rss_generation() {
     create_test_collection(root);
     create_document(root, "post", "My Post", "Some content here.", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
-    let rss = anthology::build::generate_rss(&collection, &config).unwrap();
+    let rss = folio::build::generate_rss(&collection, &config).unwrap();
 
     assert!(rss.contains("<?xml version="));
     assert!(rss.contains("<rss version=\"2.0\">"));
@@ -308,10 +308,10 @@ fn test_sitemap_generation() {
     create_document(root, "page1", "Page One", "Content", false);
     create_document(root, "page2", "Page Two", "Content", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
-    let sitemap = anthology::build::generate_sitemap(&collection, &config).unwrap();
+    let sitemap = folio::build::generate_sitemap(&collection, &config).unwrap();
 
     assert!(sitemap.contains("<?xml version="));
     assert!(sitemap.contains("<urlset"));
@@ -327,8 +327,8 @@ fn test_json_export() {
     create_test_collection(root);
     create_document(root, "test", "Test Doc", "Content here.", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let export = collection.to_export();
     let json = rmx::serde_json::to_string_pretty(&export).unwrap();
@@ -345,9 +345,9 @@ fn test_config_defaults() {
     fs::create_dir_all(root.join("content")).unwrap();
 
     // Minimal config.
-    fs::write(root.join("anthology.toml"), "[collection]\n").unwrap();
+    fs::write(root.join("folio.toml"), "[collection]\n").unwrap();
 
-    let config = anthology::collection::Config::load(root).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
 
     assert_eq!(config.collection.title, "My Collection");
     assert_eq!(config.build.output_dir, "output");
@@ -362,8 +362,8 @@ fn test_document_content_hash() {
     create_test_collection(root);
     create_document(root, "doc", "Doc", "Content", false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let doc = &collection.documents[0];
 
@@ -383,8 +383,8 @@ fn test_document_reading_time() {
     let words: String = (0..400).map(|i| format!("word{} ", i)).collect();
     create_document(root, "long", "Long Post", &words, false);
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let doc = &collection.documents[0];
     assert_eq!(doc.reading_time(), 2);
@@ -398,8 +398,8 @@ fn test_empty_collection() {
     create_test_collection(root);
     // No documents created.
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     assert!(collection.documents.is_empty());
     assert!(collection.published().is_empty());
@@ -422,8 +422,8 @@ fn test_nested_documents() {
     )
     .unwrap();
 
-    let config = anthology::collection::Config::load(root).unwrap();
-    let collection = anthology::collection::Collection::load(root, &config).unwrap();
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     // Both documents should be loaded.
     assert_eq!(collection.documents.len(), 2);
@@ -433,7 +433,7 @@ fn test_nested_documents() {
     assert!(titles.contains(&&"Deep Post".to_string()));
 }
 
-/// Run `anthology init` then `anthology build` the way a user would,
+/// Run `folio init` then `folio build` the way a user would,
 /// against the templates that `init` writes.
 ///
 /// The other tests here use a stub template, so they miss anything the real
@@ -444,9 +444,9 @@ fn init_then_build_renders_with_the_generated_templates() {
 
     let dir = tempdir().unwrap();
     let root = dir.path();
-    let anthology = env!("CARGO_BIN_EXE_anthology");
+    let folio = env!("CARGO_BIN_EXE_folio");
 
-    let init = Command::new(anthology)
+    let init = Command::new(folio)
         .args(["init", "."])
         .current_dir(root)
         .output()
@@ -457,7 +457,7 @@ fn init_then_build_renders_with_the_generated_templates() {
         String::from_utf8_lossy(&init.stderr)
     );
 
-    let build = Command::new(anthology)
+    let build = Command::new(folio)
         .arg("build")
         .current_dir(root)
         .output()
@@ -502,9 +502,9 @@ fn output_snapshot(dir: &Path) -> std::collections::BTreeMap<String, Vec<u8>> {
 fn seeded_collection(root: &Path, seed: Option<u64>) {
     create_test_collection(root);
     if let Some(seed) = seed {
-        let config = fs::read_to_string(root.join("anthology.toml")).unwrap();
+        let config = fs::read_to_string(root.join("folio.toml")).unwrap();
         fs::write(
-            root.join("anthology.toml"),
+            root.join("folio.toml"),
             config.replace("output_dir = \"output\"", &format!("output_dir = \"output\"\nseed = {seed}")),
         )
         .unwrap();
@@ -522,10 +522,10 @@ fn build_twice(seed: Option<u64>) -> (
         let dir = tempdir().unwrap();
         seeded_collection(dir.path(), seed);
 
-        let config = anthology::collection::Config::load(dir.path()).unwrap();
-        let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+        let config = folio::collection::Config::load(dir.path()).unwrap();
+        let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
         let out = dir.path().join("output");
-        anthology::build::build(&collection, &config, &out, false).unwrap();
+        folio::build::build(&collection, &config, &out, false).unwrap();
 
         snapshots.push(output_snapshot(&out));
     }
@@ -596,9 +596,9 @@ fn the_search_index_does_not_depend_on_hash_order() {
 fn a_collection_can_be_configured_in_json5() {
     let dir = tempdir().unwrap();
     create_test_collection(dir.path());
-    fs::remove_file(dir.path().join("anthology.toml")).unwrap();
+    fs::remove_file(dir.path().join("folio.toml")).unwrap();
     fs::write(
-        dir.path().join("anthology.json5"),
+        dir.path().join("folio.json5"),
         r#"{
             // A collection written by another tool.
             collection: { title: "From JSON5", base_url: "https://json5.example.com" },
@@ -608,12 +608,12 @@ fn a_collection_can_be_configured_in_json5() {
     .unwrap();
     create_document(dir.path(), "one", "One", "Body text.", false);
 
-    let config = anthology::collection::Config::load(dir.path()).unwrap();
+    let config = folio::collection::Config::load(dir.path()).unwrap();
     assert_eq!(config.collection.title, "From JSON5");
 
-    let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+    let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
     let out = dir.path().join("output");
-    anthology::build::build(&collection, &config, &out, false).unwrap();
+    folio::build::build(&collection, &config, &out, false).unwrap();
 
     let index = fs::read_to_string(out.join("index.html")).unwrap();
     assert!(index.contains("From JSON5"), "{index}");
@@ -624,18 +624,18 @@ fn a_built_site_can_be_archived_and_unpacked() {
     let dir = tempdir().unwrap();
     seeded_collection(dir.path(), None);
 
-    let config = anthology::collection::Config::load(dir.path()).unwrap();
-    let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+    let config = folio::collection::Config::load(dir.path()).unwrap();
+    let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
     let out = dir.path().join("output");
-    anthology::build::build(&collection, &config, &out, false).unwrap();
+    folio::build::build(&collection, &config, &out, false).unwrap();
 
     let archive = dir.path().join("site.tar.gz");
-    let options = anthology::export::ArchiveOptions::default();
-    let stats = anthology::export::archive_directory(&out, &archive, &options).unwrap();
+    let options = folio::export::ArchiveOptions::default();
+    let stats = folio::export::archive_directory(&out, &archive, &options).unwrap();
 
     assert_eq!(stats.files, output_snapshot(&out).len());
 
-    let entries = anthology::export::list_archive(&archive).unwrap();
+    let entries = folio::export::list_archive(&archive).unwrap();
     assert!(
         entries.iter().any(|e| e.path.ends_with("index.html")),
         "{entries:?}",
@@ -661,16 +661,16 @@ fn check_reports_a_rust_code_block_that_does_not_parse() {
         false,
     );
 
-    let config = anthology::collection::Config::load(dir.path()).unwrap();
-    let collection = anthology::collection::Collection::load(dir.path(), &config).unwrap();
+    let config = folio::collection::Config::load(dir.path()).unwrap();
+    let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
 
     let lints: Vec<_> = collection
         .documents
         .iter()
-        .flat_map(anthology::lint::check_document)
+        .flat_map(folio::lint::check_document)
         .collect();
 
     assert_eq!(lints.len(), 1, "{lints:?}");
     assert!(lints[0].path.ends_with("broken.md"), "{:?}", lints[0]);
-    assert_eq!(lints[0].level, anthology::lint::Level::Error);
+    assert_eq!(lints[0].level, folio::lint::Level::Error);
 }

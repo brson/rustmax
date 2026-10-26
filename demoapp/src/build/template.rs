@@ -72,7 +72,7 @@ impl TemplateEngine {
         ctx.insert("site_author", &config.collection.author);
         ctx.insert("base_url", &config.collection.base_url);
         ctx.insert("language", &config.collection.language);
-        ctx.insert("generator", &format!("anthology {}", crate::collection::ANTHOLOGY_VERSION));
+        ctx.insert("generator", &format!("folio {}", crate::collection::FOLIO_VERSION));
         ctx.insert("build_id", &self.build_id);
     }
 

@@ -1,6 +1,6 @@
-# What Anthology found in rustmax
+# What Folio found in rustmax
 
-Anthology exists to put weight on `rustmax` until something gives.
+Folio exists to put weight on `rustmax` until something gives.
 This is what gave.
 
 Findings are kept here after they are fixed,
@@ -23,7 +23,7 @@ so the profile looked complete and was not.
 What kept it hidden is that it works under `rmx-profile-max`:
 `thiserror-impl` and `proptest` are in that graph
 and unify `syn`'s features back on.
-Anthology hit it because it reached for `syn` under `max`, where it worked,
+Folio hit it because it reached for `syn` under `max`, where it worked,
 and the bug only appeared when the profile was isolated.
 
 Fixed by `fe9cfc5`.
@@ -49,7 +49,7 @@ That leaves `comrak`, which loses `cli`, `syntect` and `bon`.
 Dropping `cli` and `syntect` is a real saving and clearly wanted.
 Dropping `bon` removes `Options::builder()`,
 so `rmx::comrak` is configured by `Options::default()` and field assignment,
-which is what Anthology does and is no hardship.
+which is what Folio does and is no hardship.
 Noted rather than filed: it is a smaller API than upstream's,
 and the guide does not say so.
 
@@ -64,7 +64,7 @@ The no-argument arm worked only because it named `core` bare
 and `core` is always in the extern prelude.
 
 Neither arm was tested and the macro had no doctest.
-Anthology hit it the first time it wrote `bug!("binary export format")`.
+Folio hit it the first time it wrote `bug!("binary export format")`.
 
 Fixed by `7961e8b`, routing both arms through `$crate::core`
 and adding a doctest over the arm that was broken.
@@ -74,7 +74,7 @@ and adding a doctest over the arm that was broken.
 Things that were expected to be hard and were not.
 
 **`#[rmx::derive]` under a renamed dependency.**
-Anthology depends on `rustmax` as `rmx` and derives
+Folio depends on `rustmax` as `rmx` and derives
 `Serialize`, `Deserialize`, `Parser`, `Subcommand`, `ValueEnum`,
 `Display`, `From`, `derive_more::Error`,
 `TryFromPrimitive` and `IntoPrimitive`

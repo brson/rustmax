@@ -1,6 +1,6 @@
-//! Content lints reported by `anthology check`.
+//! Content lints reported by `folio check`.
 //!
-//! Anthology is aimed at technical writing, where most of what goes wrong in a
+//! Folio is aimed at technical writing, where most of what goes wrong in a
 //! document is not the prose but the code around it. These lints read the
 //! parsed markdown rather than the rendered HTML, so they can point at the
 //! source line the author wrote.
@@ -160,7 +160,7 @@ pub fn check_rust_syntax(path: &Path, markdown: &str) -> Vec<Lint> {
 }
 
 /// Check that a code block that looks like it has a language actually names one
-/// Anthology can highlight.
+/// Folio can highlight.
 ///
 /// An unknown language is not an error -- it renders as plain text -- but it is
 /// usually a typo, and silently unhighlighted code is easy to miss.
