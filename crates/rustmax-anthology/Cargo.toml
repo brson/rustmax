@@ -16,7 +16,7 @@ rmx.path = "../rustmax"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
-  "rmx-profile-net",
+  "rmx-profile-tokio",
   "rmx-feature-derive",
 ]
 

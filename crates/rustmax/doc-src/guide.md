@@ -138,7 +138,8 @@ primarily through _profile_ features.
 [Profiles](#profiles) select sets of crates for common use cases:
 [`rmx-profile-portable`] is a good default for most applications,
 [`rmx-profile-std`] adds crates that require native OS features,
-and [`rmx-profile-net`] adds networking and async I/O.
+and [`rmx-profile-tokio`] adds the [`tokio`] async runtime
+and the crates that depend on it.
 
 [Ecosystem features](#ecosystem-features) provide cross-cutting control
 over individual crate features like `derive` and `serde` support.
@@ -295,10 +296,14 @@ All crates from [`rmx-profile-portable`], plus:
 - [`xshell`] - A Swiss-army knife for writing shell-style scripts in Rust.
 
 
-### Profile: `rmx-profile-net`
+### Profile: `rmx-profile-tokio`
 
-Networking crates, including the [`tokio`] async runtime.
+The [`tokio`] async runtime and crates that depend on it.
 Builds on [`rmx-profile-std`].
+
+Networking crates that do not need `tokio`,
+like [`http`], [`url`] and [`socket2`],
+are in [`rmx-profile-portable`] and [`rmx-profile-std`].
 
 - [`hyper`] - HTTP, versions 1 and 2.
 - [`reqwest`] - Simple HTTP requests, synchronous and asynchronous.
@@ -332,7 +337,7 @@ and also enables [`rmx-rustlib-proc_macro`].
 ### Profile: `rmx-profile-max`
 
 All of the above profiles:
-[`rmx-profile-net`], [`rmx-profile-build-script`]
+[`rmx-profile-tokio`], [`rmx-profile-build-script`]
 and [`rmx-profile-proc-macro`].
 
 
@@ -643,7 +648,7 @@ That is why `thiserror` and `cxx` have no workaround.
 [`rmx-profile-no-std`]: #profile-rmx-profile-no-std
 [`rmx-profile-std`]: #profile-rmx-profile-std
 [`rmx-profile-portable`]: #profile-rmx-profile-portable
-[`rmx-profile-net`]: #profile-rmx-profile-net
+[`rmx-profile-tokio`]: #profile-rmx-profile-tokio
 [`rmx-profile-build-script`]: #profile-rmx-profile-build-script
 [`rmx-profile-proc-macro`]: #profile-rmx-profile-proc-macro
 [`rmx-profile-max`]: #profile-rmx-profile-max

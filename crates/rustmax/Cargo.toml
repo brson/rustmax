@@ -97,7 +97,7 @@ rmx-crates-std = [
   "xshell",
 ]
 
-rmx-crates-net = [
+rmx-crates-tokio = [
   "rmx-crates-std",
   "hyper",
   "reqwest",
@@ -150,9 +150,9 @@ rmx-profile-std = [
   "rmx-crates-std",
 ]
 
-rmx-profile-net = [
+rmx-profile-tokio = [
   "rmx-profile-std",
-  "rmx-crates-net",
+  "rmx-crates-tokio",
 ]
 
 rmx-profile-build-script = [
@@ -168,7 +168,7 @@ rmx-profile-proc-macro = [
 
 rmx-profile-max = [
   "rmx-profile-std",
-  "rmx-profile-net",
+  "rmx-profile-tokio",
   "rmx-profile-build-script",
   "rmx-profile-proc-macro",
 ]

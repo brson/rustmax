@@ -18,7 +18,7 @@ rmx.version = "0.0.10"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
-  "rmx-profile-net",
+  "rmx-profile-tokio",
   "rmx-feature-derive",
 ]
 rustmax-doctest.path = "../rustmax-doctest"
