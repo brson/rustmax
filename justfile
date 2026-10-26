@@ -138,17 +138,15 @@ doc-build: doc-www doc-api doc-book doc-library
     cp -r work/library/* out/library/
     just doc-check-links
 
+publish_packages := "-p rustmax-macros -p rustmax -p rustmax-doctest -p rustmax-rustdoc -p rustmax-cli"
+
+# Cargo publishes these in dependency order, and the dry run verifies
+# each package against the others before any of them is on crates.io.
 publish-dry:
-    cargo publish -p rustmax --dry-run
-    cargo publish -p rustmax-doctest --dry-run
-    cargo publish -p rustmax-rustdoc --dry-run
-    cargo publish -p rustmax-cli --dry-run
+    cargo publish {{publish_packages}} --dry-run
 
 publish:
-    cargo publish -p rustmax
-    cargo publish -p rustmax-doctest
-    cargo publish -p rustmax-rustdoc
-    cargo publish -p rustmax-cli --allow-dirty
+    cargo publish {{publish_packages}}
 
 replace-version old new:
     sd "^version = \"{{old}}\"" "version = \"{{new}}\"" Cargo.toml
