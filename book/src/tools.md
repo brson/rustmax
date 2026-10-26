@@ -1,4 +1,4 @@
-# Rustmax: Tools
+# Rust Tools
 
 ---
 
