@@ -117,7 +117,7 @@ assert_eq!(port, 8080);
 | time | [`chrono`], [`jiff`] |
 | cryptography | [`blake3`], [`sha2`] |
 | concurrency and async | [`crossbeam`], [`futures`], [`rayon`], [`tokio`] |
-| networking and web | [`http`], [`hyper`], [`mime`], [`reqwest`], [`socket2`], [`tower`], [`url`] |
+| networking and web | [`http`], [`http-body-util`](http_body_util), [`hyper`], [`hyper-util`](hyper_util), [`mime`], [`reqwest`], [`socket2`], [`tower`], [`url`] |
 | convenience macros | [`cfg-if`](cfg_if), [`derive_more`], [`extension-trait`](extension_trait), [`num_enum`], [`powerletters`] |
 | terminal / CLI | [`clap`], [`ctrlc`], [`indicatif`], [`rustyline`], [`termcolor`] |
 | system / OS | [`glob`], [`ignore`], [`notify`], [`tempfile`], [`walkdir`], [`xshell`] |
@@ -305,7 +305,9 @@ Networking crates that do not need `tokio`,
 like [`http`], [`url`] and [`socket2`],
 are in [`rmx-profile-portable`] and [`rmx-profile-std`].
 
+- [`http-body-util`](http_body_util) - Body types and combinators for [`hyper`].
 - [`hyper`] - HTTP, versions 1 and 2.
+- [`hyper-util`](hyper_util) - Runtime glue, a pooling client, and server helpers for [`hyper`].
 - [`reqwest`] - Simple HTTP requests, synchronous and asynchronous.
 - [`tokio`] - An async task runtime and I/O library.
 - [`tower`] - Service request/response abstraction (HTTP middleware)

@@ -1650,6 +1650,7 @@ dependencies = [
  "http",
  "http-body",
  "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]
@@ -1731,6 +1732,7 @@ dependencies = [
  "socket2",
  "system-configuration",
  "tokio",
+ "tower-layer",
  "tower-service",
  "tracing",
  "windows-registry",
@@ -3594,7 +3596,9 @@ dependencies = [
  "glob",
  "hex",
  "http",
+ "http-body-util",
  "hyper",
+ "hyper-util",
  "ignore",
  "image",
  "indicatif",

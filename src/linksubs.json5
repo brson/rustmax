@@ -557,6 +557,40 @@
     "api/http/uri/struct.Uri.html",
     "crate::hyper::HeaderMap":
     "api/http/header/struct.HeaderMap.html",
+    "crate::hyper::body::Incoming":
+    "api/hyper/body/struct.Incoming.html",
+
+    // http-body-util
+    "crate::http_body_util":
+    "api/rustmax/http_body_util/index.html",
+    "crate::http_body_util::Full":
+    "api/http_body_util/struct.Full.html",
+    "crate::http_body_util::Empty":
+    "api/http_body_util/struct.Empty.html",
+    "crate::http_body_util::BodyExt":
+    "api/http_body_util/trait.BodyExt.html",
+    "crate::http_body_util::BodyExt::collect":
+    "api/http_body_util/trait.BodyExt.html#method.collect",
+    "crate::http_body_util::BodyExt::boxed":
+    "api/http_body_util/trait.BodyExt.html#method.boxed",
+    "crate::http_body_util::combinators::BoxBody":
+    "api/http_body_util/combinators/struct.BoxBody.html",
+    "crate::http_body_util::Limited":
+    "api/http_body_util/struct.Limited.html",
+    "crate::http_body_util::StreamBody":
+    "api/http_body_util/struct.StreamBody.html",
+
+    // hyper-util
+    "crate::hyper_util::rt::TokioIo":
+    "api/hyper_util/rt/tokio/struct.TokioIo.html",
+    "crate::hyper_util::rt::TokioExecutor":
+    "api/hyper_util/rt/tokio/struct.TokioExecutor.html",
+    "crate::hyper_util::client::legacy::Client":
+    "api/hyper_util/client/legacy/struct.Client.html",
+    "crate::hyper_util::server::conn::auto::Builder":
+    "api/hyper_util/server/conn/auto/struct.Builder.html",
+    "crate::hyper_util::service::TowerToHyperService":
+    "api/hyper_util/service/struct.TowerToHyperService.html",
 
     // reqwest
     "crate::reqwest::Client":
@@ -742,5 +776,11 @@
     "https://docs.rs/fern",
     "https://docs.rs/tracing-subscriber":
     "https://docs.rs/tracing-subscriber",
+
+    // tower, hyper and http (external links)
+    "https://docs.rs/axum":
+    "https://docs.rs/axum",
+    "https://docs.rs/axum/latest/axum/struct.Router.html#method.layer":
+    "https://docs.rs/axum/latest/axum/struct.Router.html#method.layer",
 
 }

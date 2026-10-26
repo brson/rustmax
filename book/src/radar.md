@@ -86,8 +86,6 @@ but that are not yet part of Rustmax.
 
 ### Networking and databases
 
-- [`http-body-util`](https://docs.rs/http-body-util).
-  Body combinators needed for practical use of `hyper` 1.x.
 - [`tungstenite`](https://docs.rs/tungstenite).
   WebSockets.
 - [`rustls`](https://docs.rs/rustls).

@@ -99,7 +99,9 @@ rmx-crates-std = [
 
 rmx-crates-tokio = [
   "rmx-crates-std",
+  "http-body-util",
   "hyper",
+  "hyper-util",
   "reqwest",
   "tokio",
   "tower",
@@ -329,7 +331,9 @@ rmx-feature-default = [
 ]
 
 rmx-feature-more-portable = [
+  "http-body-util?/full",
   "hyper?/full",
+  "hyper-util?/full",
   #"rand?/thread_rng",
   #"rand?/small_rng",
   "reqwest?/blocking",
@@ -342,7 +346,9 @@ rmx-feature-more-portable = [
 
 # non-default features that we turn on by default for convenience
 rmx-feature-more = [
+  "http-body-util?/full",
   "hyper?/full",
+  "hyper-util?/full",
   "rand?/thread_rng",
   "reqwest?/blocking",
   "reqwest?/json",
@@ -430,10 +436,12 @@ flate2 = { version = "1.0.36", optional = true, default-features = false, featur
 futures = { version = "0.3.31", optional = true, default-features = false }
 glob = { version = "0.3.2", optional = true, default-features = false }
 http = { version = "1.2.0", optional = true, default-features = false }
+http-body-util = { version = "0.1.5", optional = true, default-features = false }
 hex = { version = "0.4.3", optional = true, default-features = false }
 ignore = { version = "0.4.23", optional = true, default-features = false }
 image = { version = "0.25", optional = true, default-features = false }
 hyper = { version = "1.6.0", optional = true, default-features = false }
+hyper-util = { version = "0.1.21", optional = true, default-features = false }
 indicatif = { version = "0.18", optional = true, default-features = false }
 itertools = { version = "0.15.0", optional = true, default-features = false }
 jiff = { version = "0.2.1", optional = true, default-features = false }

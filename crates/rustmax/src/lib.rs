@@ -513,11 +513,25 @@ pub mod http {
     pub use ::http::*;
 }
 
+#[cfg(feature = "http-body-util")]
+pub mod http_body_util {
+    #![doc = include_str!("../doc-src/crate-http-body-util.md")]
+
+    pub use ::http_body_util::*;
+}
+
 #[cfg(feature = "hyper")]
 pub mod hyper {
     #![doc = include_str!("../doc-src/crate-hyper.md")]
 
     pub use ::hyper::*;
+}
+
+#[cfg(feature = "hyper-util")]
+pub mod hyper_util {
+    #![doc = include_str!("../doc-src/crate-hyper-util.md")]
+
+    pub use ::hyper_util::*;
 }
 
 #[cfg(feature = "itertools")]

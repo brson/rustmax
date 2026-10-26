@@ -148,9 +148,21 @@
             maintainer: "seanmonstar",
         },
         {
+            name: "http-body-util",
+            category: "web",
+            short_desc: "HTTP body types and combinators",
+            maintainer: "seanmonstar",
+        },
+        {
             name: "hyper",
             category: "web",
             short_desc: "HTTP server",
+            maintainer: "seanmonstar",
+        },
+        {
+            name: "hyper-util",
+            category: "web",
+            short_desc: "Runtime glue and HTTP client for hyper",
             maintainer: "seanmonstar",
         },
         {

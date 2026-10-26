@@ -66,6 +66,18 @@ aliases = ["http library", "HTTP implementation", "http server", "http1", "http2
 category = "crate"
 brief = "Low-level HTTP implementation"
 
+[topics.hyper-util]
+name = "hyper-util"
+aliases = ["hyper client", "hyper server", "TokioIo", "TokioExecutor", "connection pool", "http2 server"]
+category = "crate"
+brief = "Runtime glue, a pooling client, and server helpers for hyper"
+
+[topics.http-body-util]
+name = "http-body-util"
+aliases = ["http body", "request body", "response body", "Full", "Empty", "BodyExt", "BoxBody", "collect body"]
+category = "crate"
+brief = "Body types and combinators for hyper"
+
 [topics.tower]
 name = "tower"
 aliases = ["tower service", "middleware", "Service trait", "layer", "service layer", "tower-http"]
