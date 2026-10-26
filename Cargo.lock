@@ -3624,6 +3624,7 @@ dependencies = [
  "rayon",
  "regex",
  "reqwest",
+ "rustc-hash",
  "rustmax-macros",
  "rustyline",
  "semver",

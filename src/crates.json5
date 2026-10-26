@@ -287,6 +287,12 @@
             maintainer: "seanmonstar",
         },
         {
+            name: "rustc-hash",
+            category: "collections",
+            short_desc: "Fast non-cryptographic hash used by rustc",
+            maintainer: "rust-lang",
+        },
+        {
             name: "rustyline",
             category: "cli",
             short_desc: "Line reading for console apps",

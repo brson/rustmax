@@ -36,6 +36,18 @@
     "crate::ahash::AHashMap":
     "api/ahash/struct.AHashMap.html",
 
+    // rustc-hash
+    "crate::rustc_hash::FxHasher":
+    "api/rustc_hash/struct.FxHasher.html",
+    "crate::rustc_hash::FxHashMap":
+    "api/rustc_hash/type.FxHashMap.html",
+    "crate::rustc_hash::FxHashSet":
+    "api/rustc_hash/type.FxHashSet.html",
+    "crate::rustc_hash::FxBuildHasher":
+    "api/rustc_hash/struct.FxBuildHasher.html",
+    "crate::ahash":
+    "api/rustmax/ahash/index.html",
+
     // anyhow
     "crate::thiserror":
     "api/rustmax/thiserror/index.html",

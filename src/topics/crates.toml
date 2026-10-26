@@ -332,6 +332,12 @@ aliases = ["AHash", "fast hash", "hashing"]
 category = "crate"
 brief = "Fast non-cryptographic hash function"
 
+[topics.rustc-hash]
+name = "rustc-hash"
+aliases = ["FxHash", "FxHasher", "FxHashMap", "FxHashSet", "fast hash", "deterministic hash"]
+category = "crate"
+brief = "Fast non-cryptographic hash function used by rustc"
+
 [topics.bytes]
 name = "bytes"
 aliases = ["byte buffers", "Bytes", "BytesMut", "buffer", "zero-copy", "Buf", "BufMut"]

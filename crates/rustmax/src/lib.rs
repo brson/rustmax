@@ -690,6 +690,12 @@ pub mod reqwest {
     pub use ::reqwest::*;
 }
 
+#[cfg(feature = "rustc-hash")]
+pub mod rustc_hash {
+    #![doc = include_str!("../doc-src/crate-rustc-hash.md")]
+
+    pub use ::rustc_hash::*;
+}
 
 #[cfg(feature = "rustyline")]
 pub mod rustyline {

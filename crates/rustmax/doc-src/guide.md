@@ -109,7 +109,7 @@ assert_eq!(port, 8080);
 | Category | Crates |
 | --- | --- |
 | errors and logging | [`anyhow`], [`env_logger`], [`log`], [`thiserror`] |
-| collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`] |
+| collections | [`ahash`], [`bitflags`], [`bytes`], [`itertools`], [`rustc-hash`](rustc_hash) |
 | numerics and random numbers | [`libm`], [`num_bigint`], [`rand`], [`rand_chacha`], [`rand_pcg`] |
 | serialization | [`json5`], [`serde`], [`serde_json`], [`toml`] |
 | encoding and compression | [`base64`], [`flate2`], [`hex`], [`tar`], [`zip`] |
@@ -224,6 +224,7 @@ Also enables
 - [`rand`] - Random number generators.
 - [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
 - [`rand_pcg`] - The PCG non-cryptographically-secure random number generators.
+- [`rustc-hash`](rustc_hash) - A fast, non-cryptographic hash function, used by `rustc`.
 - [`semver`] - The software versioning standard used by Rust.
 - [`serde`] - The standard Rust serialization framework.
 - [`serde_json`] - JSON serialization / deserialization with [`serde`].

@@ -30,10 +30,8 @@ but that are not yet part of Rustmax.
 
 ### Hashing
 
-- [`rustc-hash`](https://docs.rs/rustc-hash).
-  The fast, non-cryptographic hasher used by `rustc`.
 - [`fnv`](https://docs.rs/fnv).
-  Another fast hasher, for small keys.
+  A fast hasher for small keys.
 
 ### Numbers
 
