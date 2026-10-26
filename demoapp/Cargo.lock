@@ -121,7 +121,7 @@ dependencies = [
 
 [[package]]
 name = "anthology"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "rustmax",
 ]
@@ -1506,6 +1506,7 @@ dependencies = [
  "http",
  "http-body",
  "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]
@@ -1587,6 +1588,7 @@ dependencies = [
  "socket2",
  "system-configuration",
  "tokio",
+ "tower-layer",
  "tower-service",
  "tracing",
  "windows-registry",
@@ -3211,7 +3213,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.10"
+version = "0.0.11"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3237,7 +3239,9 @@ dependencies = [
  "glob",
  "hex",
  "http",
+ "http-body-util",
  "hyper",
+ "hyper-util",
  "ignore",
  "image",
  "indicatif",
@@ -3263,6 +3267,7 @@ dependencies = [
  "rayon",
  "regex",
  "reqwest",
+ "rustc-hash",
  "rustmax-macros",
  "rustyline",
  "semver",
@@ -3288,7 +3293,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-macros"
-version = "0.0.10"
+version = "0.0.11"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",

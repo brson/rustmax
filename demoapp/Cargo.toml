@@ -1,6 +1,6 @@
 [package]
 name = "anthology"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "A document publishing platform - rustmax demo app"
 license = "MIT OR Apache-2.0"
@@ -14,7 +14,7 @@ authors = ["Brian Anderson <andersrb@gmail.com>"]
 [dependencies]
 rmx.package = "rustmax"
 rmx.path = "../crates/rustmax"
-rmx.version = "0.0.10"
+rmx.version = "0.0.11"
 rmx.features = ["rmx-profile-max"]
 
 # The workspace excludes this directory, so it is its own profile root and

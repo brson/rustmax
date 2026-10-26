@@ -62,7 +62,7 @@ add it to your `Cargo.toml` with a profile enabled:
 ```toml
 [dependencies]
 rmx.package = "rustmax"
-rmx.version = "0.0.10"
+rmx.version = "0.0.11"
 rmx.features = [
   "rmx-profile-portable",
 ]
@@ -73,7 +73,7 @@ Or if using a workspace, define the dependency in your workspace `Cargo.toml`:
 ```toml
 [workspace.dependencies]
 rmx.package = "rustmax"
-rmx.version = "0.0.10"
+rmx.version = "0.0.11"
 rmx.features = [
   "rmx-profile-portable",
 ]
@@ -600,7 +600,7 @@ Add the crate alongside `rustmax`:
 ```toml
 [dependencies]
 rmx.package = "rustmax"
-rmx.version = "0.0.10"
+rmx.version = "0.0.11"
 rmx.features = ["rmx-profile-portable"]
 
 thiserror = "2"
