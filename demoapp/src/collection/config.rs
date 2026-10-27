@@ -67,6 +67,7 @@ impl Config {
         let text = std::fs::read_to_string(&path)?;
         let mut config = Self::parse(&text, format, &path)?;
         config.check_version(&path)?;
+        config.check_highlight_theme(&path)?;
 
         if let Ok(epoch) = std::env::var("SOURCE_DATE_EPOCH") {
             config.build.timestamp = Some(parse_source_date_epoch(&epoch)?);
@@ -109,6 +110,21 @@ impl Config {
                 })
             }
         }
+    }
+
+    /// Check that the highlight theme is one Folio has.
+    fn check_highlight_theme(&self, path: &Path) -> Result<()> {
+        use crate::build::themes;
+
+        if themes::by_name(&self.highlight.theme).is_some() {
+            return Ok(());
+        }
+        Err(Error::config(format!(
+            "{}: unknown highlight theme `{}`, expected one of: {}",
+            path.display(),
+            self.highlight.theme,
+            themes::available().join(", "),
+        )))
     }
 
     /// Check this build of Folio against the collection's requirement.
@@ -452,6 +468,16 @@ title = "Tomlish"
 
         let err = Config::load(dir.path()).unwrap_err().to_string();
         assert!(err.contains("not a version requirement"), "{err}");
+    }
+
+    #[test]
+    fn unknown_highlight_themes_are_rejected_with_the_alternatives() {
+        let dir = tempdir().unwrap();
+        write(dir.path(), "folio.toml", "[highlight]\ntheme = \"solarised\"\n");
+
+        let err = Config::load(dir.path()).unwrap_err().to_string();
+        assert!(err.contains("unknown highlight theme `solarised`"), "{err}");
+        assert!(err.contains("solarized-dark"), "{err}");
     }
 
     #[test]

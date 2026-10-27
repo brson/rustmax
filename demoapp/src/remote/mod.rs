@@ -1,209 +1,124 @@
-//! Remote content fetching with reqwest.
+//! `folio fetch`: download markdown documents into a collection.
+//!
+//! URLs are checked with `url` before anything touches the network,
+//! responses are checked with `mime` before anything touches the disk,
+//! and several URLs are fetched concurrently with `futures`.
 
-use rmx::prelude::*;
-use rmx::reqwest;
-use rmx::url::Url;
-use rmx::mime::{self, Mime};
+use rmx::futures::future::join_all;
 use rmx::log::info;
-use std::path::Path;
+use rmx::mime::{self, Mime};
+use rmx::prelude::*;
+use rmx::reqwest::{self, header::CONTENT_TYPE};
+use rmx::url::Url;
+use std::path::{Path, PathBuf};
 
 use crate::{Error, Result};
 
-/// Fetch content from a URL.
-pub async fn fetch_content(url: &str) -> Result<String> {
-    info!("Fetching content from {}", url);
-
-    let response = reqwest::get(url)
-        .await
-        .map_err(|e| Error::remote(url, e.to_string()))?;
-
-    if !response.status().is_success() {
-        return Err(Error::remote(
-            url,
-            format!("HTTP {}", response.status()),
-        ));
+/// Parse a URL to fetch, which has to be `http` or `https`.
+pub fn parse_url(input: &str) -> Result<Url> {
+    let url = Url::parse(input).map_err(|e| Error::remote(input, format!("not a URL: {e}")))?;
+    match url.scheme() {
+        "http" | "https" => Ok(url),
+        scheme => Err(Error::remote(input, format!("cannot fetch `{scheme}` URLs"))),
     }
-
-    let content = response
-        .text()
-        .await
-        .map_err(|e| Error::remote(url, e.to_string()))?;
-
-    Ok(content)
 }
 
-/// Fetch a remote document and save it locally.
-pub async fn fetch_document(url: &str, dest: &Path) -> Result<()> {
-    let content = fetch_content(url).await?;
+/// The file name a fetched document is saved under.
+///
+/// The last segment of the URL's path, given a `.md` extension unless it
+/// already has a markdown one; `index.md` if the path has no segments.
+pub fn file_name(url: &Url) -> String {
+    let segment = url
+        .path_segments()
+        .and_then(|mut segments| segments.rfind(|s| !s.is_empty()))
+        .unwrap_or("index");
 
-    // Ensure parent directory exists.
-    if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent)?;
+    let is_markdown = Path::new(segment)
+        .extension()
+        .is_some_and(|ext| ext == "md" || ext == "markdown");
+
+    if is_markdown {
+        segment.to_string()
+    } else {
+        format!("{segment}.md")
     }
+}
 
-    std::fs::write(dest, &content)?;
-    info!("Saved remote document to {}", dest.display());
+/// Check that a response's `Content-Type` could be a markdown document.
+///
+/// Markdown is served as `text/markdown`, as `text/plain` by most raw-file
+/// hosts, or with no type at all. An HTML page is the usual mistake: the URL
+/// of a rendered page rather than of its source.
+pub fn check_content_type(content_type: Option<&str>) -> std::result::Result<(), String> {
+    let Some(content_type) = content_type else {
+        return Ok(());
+    };
 
+    let mime: Mime = content_type
+        .parse()
+        .map_err(|_| format!("unparseable Content-Type `{content_type}`"))?;
+
+    if mime.type_() != mime::TEXT {
+        return Err(format!("served as `{}`, not text", mime.essence_str()));
+    }
+    if mime.subtype() == mime::HTML {
+        return Err("served as an HTML page; fetch the raw markdown instead".to_string());
+    }
     Ok(())
 }
 
-/// Fetch a binary asset from a URL.
-pub async fn fetch_asset(url: &str) -> Result<Vec<u8>> {
-    info!("Fetching asset from {}", url);
+/// Download one document's text.
+pub async fn fetch_text(client: &reqwest::Client, url: &Url) -> Result<String> {
+    let remote = |message: String| Error::remote(url.as_str(), message);
 
-    let response = reqwest::get(url)
-        .await
-        .map_err(|e| Error::remote(url, e.to_string()))?;
-
-    if !response.status().is_success() {
-        return Err(Error::remote(
-            url,
-            format!("HTTP {}", response.status()),
-        ));
-    }
-
-    let bytes = response
-        .bytes()
-        .await
-        .map_err(|e| Error::remote(url, e.to_string()))?;
-
-    Ok(bytes.to_vec())
-}
-
-/// Fetch multiple URLs in parallel.
-pub async fn fetch_all(urls: &[&str]) -> Vec<Result<String>> {
-    use rmx::futures::future::join_all;
-
-    let fetches = urls.iter().map(|url| fetch_content(url));
-    join_all(fetches).await
-}
-
-/// Remote source configuration for a collection.
-#[rmx::derive(Debug, Clone, Deserialize, Serialize)]
-pub struct RemoteSource {
-    /// Base URL for the remote source.
-    pub url: String,
-    /// Local path to sync to.
-    pub path: String,
-    /// File patterns to fetch (glob patterns).
-    #[serde(default)]
-    pub patterns: Vec<String>,
-}
-
-/// Fetch content from a remote source and save locally.
-pub async fn sync_remote_source(source: &RemoteSource, collection_root: &Path) -> Result<usize> {
-    info!("Syncing remote source: {}", source.url);
-
-    // For now, just fetch the single URL and save it.
-    // A more complete implementation would fetch an index file
-    // listing all available documents.
-    let dest = collection_root.join(&source.path);
-    fetch_document(&source.url, &dest).await?;
-
-    Ok(1)
-}
-
-/// Check if a URL is reachable.
-pub async fn check_url(url: &str) -> Result<bool> {
-    let client = reqwest::Client::new();
     let response = client
-        .head(url)
+        .get(url.clone())
         .send()
         .await
-        .map_err(|e| Error::remote(url, e.to_string()))?;
+        .map_err(|e| remote(e.to_string()))?;
 
-    Ok(response.status().is_success())
-}
-
-/// Parse and validate a URL string.
-pub fn parse_url(url: &str) -> Result<Url> {
-    Url::parse(url).map_err(|e| Error::remote(url, format!("invalid URL: {}", e)))
-}
-
-/// Extract the filename from a URL path.
-pub fn filename_from_url(url: &Url) -> Option<String> {
-    url.path_segments()
-        .and_then(|mut segments| segments.next_back())
-        .filter(|s| !s.is_empty() && s.contains('.'))
-        .map(|s| s.to_string())
-}
-
-/// Get the domain from a URL.
-pub fn domain_from_url(url: &Url) -> Option<String> {
-    url.host_str().map(|s| s.to_string())
-}
-
-/// Guess MIME type from a file extension.
-pub fn mime_from_extension(ext: &str) -> Mime {
-    match ext.to_lowercase().as_str() {
-        "html" | "htm" => mime::TEXT_HTML,
-        "css" => mime::TEXT_CSS,
-        "js" => mime::APPLICATION_JAVASCRIPT,
-        "json" => mime::APPLICATION_JSON,
-        "xml" => mime::TEXT_XML,
-        "txt" | "md" | "markdown" => mime::TEXT_PLAIN,
-        "png" => mime::IMAGE_PNG,
-        "jpg" | "jpeg" => mime::IMAGE_JPEG,
-        "gif" => mime::IMAGE_GIF,
-        "svg" => mime::IMAGE_SVG,
-        "webp" => "image/webp".parse().unwrap_or(mime::APPLICATION_OCTET_STREAM),
-        "pdf" => mime::APPLICATION_PDF,
-        "woff" => "font/woff".parse().unwrap_or(mime::APPLICATION_OCTET_STREAM),
-        "woff2" => "font/woff2".parse().unwrap_or(mime::APPLICATION_OCTET_STREAM),
-        _ => mime::APPLICATION_OCTET_STREAM,
+    if !response.status().is_success() {
+        return Err(remote(format!("HTTP {}", response.status())));
     }
+
+    let content_type = response
+        .headers()
+        .get(CONTENT_TYPE)
+        .map(|value| value.to_str().map_err(|_| remote("non-ASCII Content-Type".to_string())))
+        .transpose()?;
+    check_content_type(content_type).map_err(remote)?;
+
+    response.text().await.map_err(|e| remote(e.to_string()))
 }
 
-/// Guess MIME type from a URL.
-pub fn mime_from_url(url: &Url) -> Mime {
-    let path = url.path();
-    if let Some(ext) = path.rsplit('.').next() {
-        mime_from_extension(ext)
-    } else {
-        mime::APPLICATION_OCTET_STREAM
+/// Download a document to `dest`, which must not already exist.
+pub async fn fetch_document(client: &reqwest::Client, url: &Url, dest: &Path) -> Result<()> {
+    if dest.exists() {
+        return Err(Error::document(dest, "already exists; not overwriting it"));
     }
-}
 
-/// Parse content type from URL for appropriate handling.
-pub fn content_type_from_url(url: &str) -> ContentType {
-    if let Ok(parsed) = Url::parse(url) {
-        let mime = mime_from_url(&parsed);
-        if mime == mime::TEXT_HTML {
-            ContentType::Html
-        } else if mime == mime::APPLICATION_JSON {
-            ContentType::Json
-        } else if mime.type_() == mime::TEXT && parsed.path().ends_with(".md") {
-            ContentType::Markdown
-        } else if parsed.path().ends_with(".toml") {
-            ContentType::Toml
-        } else {
-            ContentType::Unknown
-        }
-    } else {
-        // Fall back to extension-based detection for invalid URLs.
-        let lower = url.to_lowercase();
-        if lower.ends_with(".md") || lower.ends_with(".markdown") {
-            ContentType::Markdown
-        } else if lower.ends_with(".html") || lower.ends_with(".htm") {
-            ContentType::Html
-        } else if lower.ends_with(".json") {
-            ContentType::Json
-        } else if lower.ends_with(".toml") {
-            ContentType::Toml
-        } else {
-            ContentType::Unknown
-        }
+    let text = fetch_text(client, url).await?;
+
+    if let Some(parent) = dest.parent() {
+        std::fs::create_dir_all(parent)?;
     }
+    std::fs::write(dest, text)?;
+    info!("Fetched {url} -> {}", dest.display());
+    Ok(())
 }
 
-/// Content type for fetched content.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ContentType {
-    Markdown,
-    Html,
-    Json,
-    Toml,
-    Unknown,
+/// Download several documents concurrently.
+///
+/// Every download is attempted, and each one's outcome is returned in order,
+/// so one bad URL does not lose the others.
+pub async fn fetch_documents(downloads: &[(Url, PathBuf)]) -> Vec<Result<()>> {
+    let client = reqwest::Client::new();
+    join_all(
+        downloads
+            .iter()
+            .map(|(url, dest)| fetch_document(&client, url, dest)),
+    )
+    .await
 }
 
 #[cfg(test)]
@@ -211,85 +126,40 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parse_url() {
-        let url = parse_url("https://example.com/path/to/file.md").unwrap();
-        assert_eq!(url.host_str(), Some("example.com"));
-        assert_eq!(url.path(), "/path/to/file.md");
+    fn only_http_urls_are_fetched() {
+        assert!(parse_url("https://example.com/a.md").is_ok());
+        assert!(parse_url("http://example.com/a.md").is_ok());
+        assert!(parse_url("file:///etc/passwd").unwrap_err().to_string().contains("`file`"));
+        assert!(parse_url("not a url").unwrap_err().to_string().contains("not a URL"));
     }
 
     #[test]
-    fn test_parse_url_invalid() {
-        assert!(parse_url("not a url").is_err());
+    fn file_names_come_from_the_last_path_segment() {
+        let name = |s: &str| file_name(&Url::parse(s).unwrap());
+        assert_eq!(name("https://example.com/docs/guide.md"), "guide.md");
+        assert_eq!(name("https://example.com/notes.markdown"), "notes.markdown");
+        assert_eq!(name("https://example.com/blog/post/"), "post.md");
+        assert_eq!(name("https://example.com/readme.txt"), "readme.txt.md");
+        assert_eq!(name("https://example.com/"), "index.md");
+        assert_eq!(name("https://example.com/a.md?raw=true"), "a.md");
     }
 
     #[test]
-    fn test_filename_from_url() {
-        let url = Url::parse("https://example.com/path/file.md").unwrap();
-        assert_eq!(filename_from_url(&url), Some("file.md".to_string()));
-
-        let url = Url::parse("https://example.com/path/").unwrap();
-        assert_eq!(filename_from_url(&url), None);
-
-        let url = Url::parse("https://example.com/").unwrap();
-        assert_eq!(filename_from_url(&url), None);
+    fn markdown_and_plain_text_are_accepted() {
+        assert!(check_content_type(None).is_ok());
+        assert!(check_content_type(Some("text/markdown; charset=utf-8")).is_ok());
+        assert!(check_content_type(Some("text/plain")).is_ok());
+        assert!(check_content_type(Some("Text/X-Markdown")).is_ok());
     }
 
     #[test]
-    fn test_domain_from_url() {
-        let url = Url::parse("https://example.com/path").unwrap();
-        assert_eq!(domain_from_url(&url), Some("example.com".to_string()));
+    fn html_pages_and_binaries_are_rejected() {
+        let err = check_content_type(Some("text/html; charset=utf-8")).unwrap_err();
+        assert!(err.contains("HTML page"), "{err}");
 
-        let url = Url::parse("https://sub.example.com:8080/path").unwrap();
-        assert_eq!(domain_from_url(&url), Some("sub.example.com".to_string()));
-    }
+        let err = check_content_type(Some("image/png")).unwrap_err();
+        assert!(err.contains("image/png"), "{err}");
 
-    #[test]
-    fn test_mime_from_extension() {
-        assert_eq!(mime_from_extension("html"), mime::TEXT_HTML);
-        assert_eq!(mime_from_extension("css"), mime::TEXT_CSS);
-        assert_eq!(mime_from_extension("js"), mime::APPLICATION_JAVASCRIPT);
-        assert_eq!(mime_from_extension("json"), mime::APPLICATION_JSON);
-        assert_eq!(mime_from_extension("png"), mime::IMAGE_PNG);
-        assert_eq!(mime_from_extension("jpg"), mime::IMAGE_JPEG);
-        assert_eq!(mime_from_extension("gif"), mime::IMAGE_GIF);
-        assert_eq!(mime_from_extension("svg"), mime::IMAGE_SVG);
-        assert_eq!(mime_from_extension("pdf"), mime::APPLICATION_PDF);
-        assert_eq!(mime_from_extension("unknown"), mime::APPLICATION_OCTET_STREAM);
-    }
-
-    #[test]
-    fn test_mime_from_url() {
-        let url = Url::parse("https://example.com/style.css").unwrap();
-        assert_eq!(mime_from_url(&url), mime::TEXT_CSS);
-
-        let url = Url::parse("https://example.com/image.png").unwrap();
-        assert_eq!(mime_from_url(&url), mime::IMAGE_PNG);
-
-        let url = Url::parse("https://example.com/noext").unwrap();
-        assert_eq!(mime_from_url(&url), mime::APPLICATION_OCTET_STREAM);
-    }
-
-    #[test]
-    fn test_content_type_from_url() {
-        assert_eq!(
-            content_type_from_url("https://example.com/doc.md"),
-            ContentType::Markdown
-        );
-        assert_eq!(
-            content_type_from_url("https://example.com/page.html"),
-            ContentType::Html
-        );
-        assert_eq!(
-            content_type_from_url("https://example.com/data.json"),
-            ContentType::Json
-        );
-        assert_eq!(
-            content_type_from_url("https://example.com/config.toml"),
-            ContentType::Toml
-        );
-        assert_eq!(
-            content_type_from_url("https://example.com/file.xyz"),
-            ContentType::Unknown
-        );
+        assert!(check_content_type(Some("???")).is_err());
     }
 }

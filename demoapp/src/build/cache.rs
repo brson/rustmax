@@ -40,8 +40,6 @@ pub enum CacheStatus {
     Fresh,
     /// Document is new or changed, needs rebuild.
     Stale,
-    /// Cache is invalid (templates changed, etc.).
-    Invalid,
 }
 
 impl BuildCache {
@@ -145,11 +143,6 @@ impl BuildCache {
         }
     }
 
-    /// Get the template hash.
-    pub fn template_hash(&self) -> Option<&str> {
-        self.template_hash.as_deref()
-    }
-
     /// Set the template hash.
     pub fn set_template_hash(&mut self, hash: String) {
         self.template_hash = Some(hash);
@@ -169,25 +162,6 @@ impl BuildCache {
         self.template_hash = None;
     }
 
-    /// Get statistics about the cache.
-    pub fn stats(&self) -> CacheStats {
-        CacheStats {
-            total_entries: self.entries.len(),
-            has_template_hash: self.template_hash.is_some(),
-        }
-    }
-
-    /// Get entry for a source path.
-    pub fn get(&self, source_path: &Path) -> Option<&CacheEntry> {
-        self.entries.get(source_path)
-    }
-}
-
-/// Statistics about the build cache.
-#[derive(Debug, Clone)]
-pub struct CacheStats {
-    pub total_entries: usize,
-    pub has_template_hash: bool,
 }
 
 /// Compute a hash for the templates directory.
@@ -307,7 +281,7 @@ mod tests {
 
         let loaded = BuildCache::load(dir.path());
         assert_eq!(loaded.entries.len(), 1);
-        assert_eq!(loaded.template_hash(), Some("template-hash"));
+        assert!(!loaded.templates_changed("template-hash"));
     }
 
     #[test]
@@ -370,18 +344,4 @@ mod tests {
         assert_ne!(hash1, hash3);
     }
 
-    #[test]
-    fn test_cache_stats() {
-        let mut cache = BuildCache::new();
-        let stats = cache.stats();
-        assert_eq!(stats.total_entries, 0);
-        assert!(!stats.has_template_hash);
-
-        cache.update(PathBuf::from("a.md"), "h".to_string(), PathBuf::from("o"));
-        cache.set_template_hash("t".to_string());
-
-        let stats = cache.stats();
-        assert_eq!(stats.total_entries, 1);
-        assert!(stats.has_template_hash);
-    }
 }

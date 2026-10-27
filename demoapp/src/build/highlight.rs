@@ -85,25 +85,6 @@ pub struct ThemeColors {
 }
 
 impl Theme {
-    /// Get color for a token type.
-    pub fn color_for(&self, token_type: TokenType) -> &str {
-        match token_type {
-            TokenType::Keyword => &self.colors.keyword,
-            TokenType::String => &self.colors.string,
-            TokenType::Comment => &self.colors.comment,
-            TokenType::Number => &self.colors.number,
-            TokenType::Operator => &self.colors.operator,
-            TokenType::Punctuation => &self.colors.punctuation,
-            TokenType::Function => &self.colors.function,
-            TokenType::Type => &self.colors.r#type,
-            TokenType::Variable => &self.colors.variable,
-            TokenType::Attribute => &self.colors.attribute,
-            TokenType::Macro => &self.colors.r#macro,
-            TokenType::Constant => &self.colors.constant,
-            TokenType::Builtin => &self.colors.builtin,
-            TokenType::Plain => &self.foreground,
-        }
-    }
 
     /// Generate CSS for this theme.
     pub fn generate_css(&self) -> String {
@@ -861,11 +842,6 @@ impl Highlighter {
         self
     }
 
-    /// Get the theme.
-    pub fn theme(&self) -> &Theme {
-        &self.theme
-    }
-
     /// Highlight code for a given language.
     pub fn highlight(&self, code: &str, language: &str) -> String {
         let tokens = tokenize(code, language);
@@ -918,10 +894,6 @@ impl Highlighter {
         html
     }
 
-    /// Generate CSS for the current theme.
-    pub fn generate_css(&self) -> String {
-        self.theme.generate_css()
-    }
 }
 
 impl Default for Highlighter {
@@ -1338,14 +1310,6 @@ mod tests {
 
         assert!(html.contains("highlight"));
         assert!(html.contains("hl-kw"));
-    }
-
-    #[test]
-    fn test_highlighter_with_theme() {
-        let highlighter = Highlighter::new()
-            .with_theme(themes::monokai());
-
-        assert_eq!(highlighter.theme().name, "monokai");
     }
 
     #[test]

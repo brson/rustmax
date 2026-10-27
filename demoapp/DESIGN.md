@@ -74,10 +74,7 @@ src/
     highlight.rs     syntax highlighting
     toc.rs           table of contents, HeadingLevel
     cache.rs         incremental builds
-    images.rs        image processing
     compress.rs      gzip
-    encoding.rs      base64/hex
-    rewrite.rs       URL rewriting
     search_js.rs     client-side search bundle
     assets.rs        generated CSS/JS and their SRI hashes (sha2)
     progress.rs      progress bars
@@ -87,18 +84,28 @@ src/
   search/          BM25 index, Porter stemmer
   export/          EPUB and tar archives
   feeds/           Atom and JSON Feed
-  remote/          `fetch` (reqwest)
+  remote/          `fetch` (reqwest, url, mime, futures)
   watch/           `watch` (notify, crossbeam, ctrlc)
   util/            reproducible identifier generation
 ```
 
 Every module is reached from a command.
-An earlier version carried `crypto/`, `text/`, `time/` and `concurrency/`
-modules that nothing called,
-each a list of wrappers around one crate with unit tests of its own.
+Earlier versions carried a good deal that was not:
+`crypto/`, `text/`, `time/` and `concurrency/` modules,
+`build/images.rs`, `build/encoding.rs` and `build/rewrite.rs`,
+and most of `remote/`,
+each a list of wrappers around a crate with unit tests of its own
+and no caller.
 They were checklist-filling, the thing this app exists to avoid,
 and were deleted;
 the crates that had a real job to do were given one.
+
+The check that found them is worth repeating after any large change,
+since `lib.rs` exports every module and so hides dead code from the compiler.
+Make every module in `lib.rs` private except `cli`, run
+`cargo check --lib`, read the `never used` warnings, and put `lib.rs` back.
+What remains is a function or two the integration tests use
+to read archives back, and nothing the app could call but does not.
 
 ## Design decisions
 
@@ -244,7 +251,7 @@ on `[Document]`, and `Collection` delegates.
 
 ## Coverage
 
-Used by a feature, as of this writing: 53 of the 73 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 51 of the 73 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
@@ -256,7 +263,7 @@ Used by a feature, as of this writing: 53 of the 73 crates `rustmax` re-exports.
 | Parsing | `comrak`, `regex`, `nom`, `syn` |
 | Templates | `tera` |
 | Serialization | `serde`, `serde_json`, `toml`, `json5` |
-| Encoding | `flate2`, `base64`, `hex`, `bytes`, `zip`, `tar` |
+| Encoding | `flate2`, `base64`, `hex`, `zip`, `tar` |
 | Hashing | `blake3`, `sha2` |
 | Filesystem | `walkdir`, `ignore`, `glob`, `tempfile` |
 | Time | `jiff` |
@@ -264,7 +271,6 @@ Used by a feature, as of this writing: 53 of the 73 crates `rustmax` re-exports.
 | Collections | `itertools`, `ahash` |
 | Numbers | `semver`, `num_enum`, `bitflags` |
 | Random | `rand`, `rand_chacha` |
-| Graphics | `image` |
 | Logging | `log`, `env_logger` |
 | Errors | `derive_more`, `anyhow` |
 | Language | `extension-trait`, `rustmax-macros`, `powerletters` |
@@ -284,6 +290,8 @@ which is the failure mode this app is supposed to avoid.
 | `hyper` | `reqwest` is the layer Folio works at. Reaching past it would be pretence. |
 | `http`, `http-body-util`, `hyper-util`, `tower`, `socket2` | Used only by the dev server, which was removed when `axum` left `rustmax`. Candidates for a `folio serve`. |
 | `xshell` | Folio runs no external commands. |
+| `bytes` | `reqwest` hands back text for documents. Nothing in Folio manipulates byte buffers. |
+| `image` | Nothing in the build reads images yet. |
 | `cfg-if` | No platform-specific code. |
 | `chrono` | `jiff` covers every date Folio handles. A second date library would be decoration. |
 | `rustc-hash` | `ahash` already covers the one hash map where hashing speed matters, the search index. |
@@ -298,7 +306,7 @@ is itself worth knowing.
 
 ## Testing
 
-263 tests: 234 unit, 29 integration.
+216 tests: 186 unit, 30 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

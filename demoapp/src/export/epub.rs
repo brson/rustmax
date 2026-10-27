@@ -22,10 +22,6 @@ pub struct EpubConfig {
     pub language: String,
     /// Book description.
     pub description: Option<String>,
-    /// Publisher name.
-    pub publisher: Option<String>,
-    /// Cover image path (optional).
-    pub cover_image: Option<String>,
     /// Include draft documents.
     pub include_drafts: bool,
 }
@@ -37,8 +33,6 @@ impl Default for EpubConfig {
             author: None,
             language: "en".to_string(),
             description: None,
-            publisher: None,
-            cover_image: None,
             include_drafts: false,
         }
     }

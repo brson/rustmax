@@ -174,8 +174,10 @@ pub fn check_code_block_languages(path: &Path, markdown: &str) -> Vec<Lint> {
             line: block.line,
             level: Level::Warning,
             message: format!(
-                "code block language `{}` is not highlighted; it renders as plain text",
+                "code block language `{}` is not highlighted; it renders as plain text \
+                 (highlighted: {})",
                 block.language(),
+                crate::build::languages::supported().join(", "),
             ),
         })
         .collect()

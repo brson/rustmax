@@ -69,11 +69,6 @@ impl TemplateEngine {
         self
     }
 
-    /// The identifier stamped into pages this engine renders.
-    pub fn build_id(&self) -> &str {
-        &self.build_id
-    }
-
     /// Insert the variables every page gets, whatever kind of page it is.
     fn insert_site_context(&self, ctx: &mut Context, config: &Config) {
         ctx.insert("site_title", &config.collection.title);

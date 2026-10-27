@@ -13,7 +13,8 @@ use crate::Result;
 
 /// Compress all eligible files in a directory.
 ///
-/// Creates `.gz` versions of HTML, CSS, JS, JSON, and XML files.
+/// Writes a `.gz` beside each HTML, CSS, JS, JSON, XML, SVG and text file
+/// that is big enough to be worth it and actually gets smaller.
 pub fn compress_output(output_dir: &Path) -> Result<CompressStats> {
     let mut stats = CompressStats::default();
 
@@ -21,17 +22,14 @@ pub fn compress_output(output_dir: &Path) -> Result<CompressStats> {
         let entry = entry?;
         let path = entry.path();
 
-        if path.is_file() && should_compress(path) {
-            match compress_file(path) {
-                Ok(saved) => {
-                    stats.files_compressed += 1;
-                    stats.bytes_saved += saved;
-                    debug!("Compressed: {} (saved {} bytes)", path.display(), saved);
-                }
-                Err(e) => {
-                    debug!("Failed to compress {}: {}", path.display(), e);
-                }
-            }
+        if path.is_file()
+            && should_compress(path)
+            && let Some((original, compressed)) = compress_file(path)?
+        {
+            debug!("Compressed {} ({original} -> {compressed} bytes)", path.display());
+            stats.files_compressed += 1;
+            stats.original_size += original;
+            stats.compressed_size += compressed;
         }
     }
 
@@ -39,34 +37,25 @@ pub fn compress_output(output_dir: &Path) -> Result<CompressStats> {
         info!(
             "Compressed {} files, saved {} bytes ({:.1}%)",
             stats.files_compressed,
-            stats.bytes_saved,
-            if stats.original_size > 0 {
-                (stats.bytes_saved as f64 / stats.original_size as f64) * 100.0
-            } else {
-                0.0
-            }
+            stats.bytes_saved(),
+            stats.bytes_saved() as f64 / stats.original_size as f64 * 100.0,
         );
     }
 
     Ok(stats)
 }
 
-/// Compression statistics.
+/// Compression statistics, over the files that were compressed.
 #[derive(Debug, Default)]
 pub struct CompressStats {
     pub files_compressed: usize,
     pub original_size: u64,
     pub compressed_size: u64,
-    pub bytes_saved: u64,
 }
 
 impl CompressStats {
-    pub fn compression_ratio(&self) -> f64 {
-        if self.original_size == 0 {
-            0.0
-        } else {
-            1.0 - (self.compressed_size as f64 / self.original_size as f64)
-        }
+    pub fn bytes_saved(&self) -> u64 {
+        self.original_size - self.compressed_size
     }
 }
 
@@ -78,14 +67,14 @@ fn should_compress(path: &Path) -> bool {
 
 /// Compress a single file, creating a `.gz` version.
 ///
-/// Returns the number of bytes saved.
-fn compress_file(path: &Path) -> Result<u64> {
+/// Returns the original and compressed sizes,
+/// or `None` if the file was too small or did not shrink.
+fn compress_file(path: &Path) -> Result<Option<(u64, u64)>> {
     let content = fs::read(path)?;
     let original_size = content.len() as u64;
 
-    // Skip small files.
     if original_size < 256 {
-        return Ok(0);
+        return Ok(None);
     }
 
     let mut encoder = GzEncoder::new(Vec::new(), Compression::best());
@@ -93,43 +82,14 @@ fn compress_file(path: &Path) -> Result<u64> {
     let compressed = encoder.finish()?;
     let compressed_size = compressed.len() as u64;
 
-    // Only save if we actually achieved compression.
-    if compressed_size < original_size {
-        let gz_path = path.with_extension(format!(
-            "{}.gz",
-            path.extension().and_then(|e| e.to_str()).unwrap_or("")
-        ));
-        fs::write(&gz_path, compressed)?;
-        Ok(original_size - compressed_size)
-    } else {
-        Ok(0)
+    if compressed_size >= original_size {
+        return Ok(None);
     }
-}
 
-/// Decompress gzip content.
-pub fn decompress(data: &[u8]) -> Result<Vec<u8>> {
-    use rmx::flate2::read::GzDecoder;
-    use std::io::Read;
-
-    let mut decoder = GzDecoder::new(data);
-    let mut decompressed = Vec::new();
-    decoder.read_to_end(&mut decompressed)?;
-    Ok(decompressed)
-}
-
-/// Compress data to gzip format.
-pub fn compress(data: &[u8]) -> Result<Vec<u8>> {
-    let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
-    encoder.write_all(data)?;
-    Ok(encoder.finish()?)
-}
-
-/// Compress data with a specific compression level.
-pub fn compress_with_level(data: &[u8], level: u32) -> Result<Vec<u8>> {
-    let level = Compression::new(level);
-    let mut encoder = GzEncoder::new(Vec::new(), level);
-    encoder.write_all(data)?;
-    Ok(encoder.finish()?)
+    let mut gz_path = path.as_os_str().to_owned();
+    gz_path.push(".gz");
+    fs::write(&gz_path, compressed)?;
+    Ok(Some((original_size, compressed_size)))
 }
 
 #[cfg(test)]
@@ -137,13 +97,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_compress_decompress() {
-        let original = b"Hello, World! ".repeat(100);
-        let compressed = compress(&original).unwrap();
-        let decompressed = decompress(&compressed).unwrap();
+    fn compressed_files_round_trip_and_small_ones_are_skipped() {
+        use std::io::Read;
 
-        assert!(compressed.len() < original.len());
-        assert_eq!(decompressed, original);
+        let dir = rmx::tempfile::tempdir().unwrap();
+        let big = "Hello, World! ".repeat(100);
+        fs::write(dir.path().join("big.html"), &big).unwrap();
+        fs::write(dir.path().join("small.html"), "hi").unwrap();
+        fs::write(dir.path().join("photo.png"), big.as_bytes()).unwrap();
+
+        let stats = compress_output(dir.path()).unwrap();
+        assert_eq!(stats.files_compressed, 1);
+        assert_eq!(stats.original_size, big.len() as u64);
+        assert!(stats.bytes_saved() > 0);
+
+        let mut unpacked = String::new();
+        rmx::flate2::read::GzDecoder::new(fs::File::open(dir.path().join("big.html.gz")).unwrap())
+            .read_to_string(&mut unpacked)
+            .unwrap();
+        assert_eq!(unpacked, big);
+        assert!(!dir.path().join("small.html.gz").exists());
+        assert!(!dir.path().join("photo.png.gz").exists());
     }
 
     #[test]
@@ -156,18 +130,4 @@ mod tests {
         assert!(!should_compress(Path::new("photo.jpg")));
     }
 
-    #[test]
-    fn test_compression_levels() {
-        let data = b"Test data for compression. ".repeat(50);
-
-        let fast = compress_with_level(&data, 1).unwrap();
-        let best = compress_with_level(&data, 9).unwrap();
-
-        // Best compression should be smaller or equal to fast.
-        assert!(best.len() <= fast.len());
-
-        // Both should decompress to original.
-        assert_eq!(decompress(&fast).unwrap(), data);
-        assert_eq!(decompress(&best).unwrap(), data);
-    }
 }

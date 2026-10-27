@@ -128,12 +128,13 @@ enum Command {
         pattern: String,
     },
 
-    /// Fetch content from a remote URL.
+    /// Download markdown documents into the collection's `content/`.
     Fetch {
-        /// URL to fetch content from.
-        url: String,
+        /// URLs of markdown documents. Several are fetched concurrently.
+        #[arg(required = true)]
+        urls: Vec<String>,
 
-        /// Destination path (relative to collection root).
+        /// Destination path, relative to the collection root, for a single URL.
         #[arg(short, long)]
         output: Option<PathBuf>,
 
@@ -175,7 +176,7 @@ impl Cli {
             Command::Export { path, format, output } => cmd_export(path, format, output),
             Command::Repl { path } => cmd_repl(path),
             Command::Files { path, pattern } => cmd_files(path, pattern),
-            Command::Fetch { url, output, path } => cmd_fetch(url, output, path),
+            Command::Fetch { urls, output, path } => cmd_fetch(urls, output, path),
         }
     }
 }
@@ -512,38 +513,57 @@ fn cmd_files(path: PathBuf, pattern: String) -> Result<()> {
     Ok(())
 }
 
-fn cmd_fetch(url: String, output: Option<PathBuf>, path: PathBuf) -> Result<()> {
+fn cmd_fetch(urls: Vec<String>, output: Option<PathBuf>, path: PathBuf) -> Result<()> {
     use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};
     use std::io::Write;
 
-    info!("Fetching content from {}", url);
+    // Every URL is checked before anything is downloaded.
+    let urls = urls
+        .iter()
+        .map(|url| crate::remote::parse_url(url))
+        .collect::<Result<Vec<_>>>()?;
 
-    // Determine output path.
-    let dest = if let Some(out) = output {
-        path.join(out)
-    } else {
-        // Extract filename from URL.
-        let filename = url
-            .rsplit('/')
-            .next()
-            .filter(|s| !s.is_empty() && s.contains('.'))
-            .unwrap_or("fetched.md");
-        path.join("content").join(filename)
+    let downloads: Vec<_> = match output {
+        Some(out) => {
+            let [url] = urls.as_slice() else {
+                return Err(Error::config("--output names one file, so it takes one URL"));
+            };
+            vec![(url.clone(), path.join(out))]
+        }
+        None => urls
+            .into_iter()
+            .map(|url| {
+                let dest = path.join("content").join(crate::remote::file_name(&url));
+                (url, dest)
+            })
+            .collect(),
     };
 
-    // Run async fetch in tokio runtime.
-    let rt = rmx::tokio::runtime::Runtime::new()
-        .map_err(|e| Error::Other(e.into()))?;
-
-    rt.block_on(async {
-        crate::remote::fetch_document(&url, &dest).await
-    })?;
+    let rt = rmx::tokio::runtime::Runtime::new()?;
+    let results = rt.block_on(crate::remote::fetch_documents(&downloads));
 
     let mut stdout = StandardStream::stdout(ColorChoice::Auto);
-    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
-    write!(stdout, "Fetched")?;
-    stdout.reset()?;
-    writeln!(stdout, " {} -> {}", url, dest.display())?;
+    let mut failures = 0;
+    for ((url, dest), result) in downloads.iter().zip(results) {
+        match result {
+            Ok(()) => {
+                stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
+                write!(stdout, "Fetched")?;
+                stdout.reset()?;
+                writeln!(stdout, " {url} -> {}", dest.display())?;
+            }
+            Err(e) => {
+                stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
+                write!(stdout, "error")?;
+                stdout.reset()?;
+                writeln!(stdout, " {e}")?;
+                failures += 1;
+            }
+        }
+    }
 
+    if failures > 0 {
+        return Err(Error::check(failures));
+    }
     Ok(())
 }

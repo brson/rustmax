@@ -37,16 +37,6 @@ impl IdGenerator {
         }
     }
 
-    /// A generator seeded by hashing `content`.
-    ///
-    /// Two collections with the same content get the same identifiers without
-    /// anyone having to choose a seed.
-    pub fn from_content(content: &[u8]) -> Self {
-        let hash = rmx::blake3::hash(content);
-        let seed = u64::from_le_bytes(hash.as_bytes()[..8].try_into().expect("8 bytes"));
-        Self::from_seed(seed)
-    }
-
     /// A random alphanumeric identifier of `len` characters.
     pub fn id(&mut self, len: usize) -> String {
         (&mut self.rng)
@@ -61,51 +51,6 @@ impl IdGenerator {
         self.id(len).to_lowercase()
     }
 
-    /// A random version 4 UUID.
-    pub fn uuid(&mut self) -> String {
-        let mut bytes: [u8; 16] = self.rng.random();
-
-        // Set the version (4) and variant (RFC 4122) fields, without which
-        // this is a random string that merely looks like a UUID.
-        bytes[6] = (bytes[6] & 0x0f) | 0x40;
-        bytes[8] = (bytes[8] & 0x3f) | 0x80;
-
-        let hex = rmx::hex::encode(bytes);
-        format!(
-            "{}-{}-{}-{}-{}",
-            &hex[0..8],
-            &hex[8..12],
-            &hex[12..16],
-            &hex[16..20],
-            &hex[20..32],
-        )
-    }
-
-    /// A filename of the form `prefix-xxxxxxxx.ext`.
-    pub fn filename(&mut self, prefix: &str, extension: &str) -> String {
-        format!("{}-{}.{}", prefix, self.slug(8), extension)
-    }
-
-    /// `len` random bytes.
-    pub fn bytes(&mut self, len: usize) -> Vec<u8> {
-        let mut bytes = vec![0u8; len];
-        self.rng.fill(bytes.as_mut_slice());
-        bytes
-    }
-
-    /// One of `items`, or `None` if it is empty.
-    pub fn choice<'a, T>(&mut self, items: &'a [T]) -> Option<&'a T> {
-        if items.is_empty() {
-            return None;
-        }
-        Some(&items[self.rng.random_range(0..items.len())])
-    }
-
-    /// Shuffle `items` in place.
-    pub fn shuffle<T>(&mut self, items: &mut [T]) {
-        use rmx::rand::seq::SliceRandom;
-        items.shuffle(&mut self.rng);
-    }
 }
 
 /// The identifier stamped into a build's output.
@@ -130,8 +75,7 @@ mod tests {
         let mut b = IdGenerator::from_seed(42);
 
         assert_eq!(a.id(16), b.id(16));
-        assert_eq!(a.uuid(), b.uuid());
-        assert_eq!(a.bytes(32), b.bytes(32));
+        assert_eq!(a.slug(16), b.slug(16));
     }
 
     #[test]
@@ -139,19 +83,6 @@ mod tests {
         assert_ne!(
             IdGenerator::from_seed(1).id(16),
             IdGenerator::from_seed(2).id(16),
-        );
-    }
-
-    #[test]
-    fn identical_content_seeds_identically() {
-        let content = b"the same documents";
-        assert_eq!(
-            IdGenerator::from_content(content).id(12),
-            IdGenerator::from_content(content).id(12),
-        );
-        assert_ne!(
-            IdGenerator::from_content(content).id(12),
-            IdGenerator::from_content(b"different documents").id(12),
         );
     }
 
@@ -174,51 +105,6 @@ mod tests {
         let slug = ids.slug(8);
         assert_eq!(slug.len(), 8);
         assert!(slug.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit()));
-
-        let name = ids.filename("doc", "md");
-        assert!(name.starts_with("doc-") && name.ends_with(".md"));
-        assert_eq!(name.len(), "doc-".len() + 8 + ".md".len());
-    }
-
-    #[test]
-    fn uuids_carry_the_version_and_variant_of_a_v4() {
-        let uuid = IdGenerator::from_seed(3).uuid();
-
-        assert_eq!(uuid.len(), 36);
-        let fields: Vec<&str> = uuid.split('-').collect();
-        assert_eq!(
-            fields.iter().map(|f| f.len()).collect::<Vec<_>>(),
-            [8, 4, 4, 4, 12],
-        );
-        assert!(uuid.chars().all(|c| c == '-' || c.is_ascii_hexdigit()));
-
-        // Version nibble, then the two variant bits.
-        assert_eq!(fields[2].as_bytes()[0], b'4', "{uuid}");
-        assert!(matches!(fields[3].as_bytes()[0], b'8' | b'9' | b'a' | b'b'), "{uuid}");
-    }
-
-    #[test]
-    fn choice_returns_a_member_and_nothing_from_nothing() {
-        let mut ids = IdGenerator::from_seed(11);
-        let items = [1, 2, 3, 4, 5];
-
-        let picked = ids.choice(&items).unwrap();
-        assert!(items.contains(picked));
-
-        assert!(ids.choice::<i32>(&[]).is_none());
-    }
-
-    #[test]
-    fn shuffle_permutes_without_losing_elements() {
-        let mut ids = IdGenerator::from_seed(5);
-        let original: Vec<i32> = (1..=10).collect();
-
-        let mut items = original.clone();
-        ids.shuffle(&mut items);
-        assert_ne!(items, original, "a shuffle of ten items should reorder them");
-
-        items.sort();
-        assert_eq!(items, original);
     }
 
     #[test]

@@ -7,11 +7,6 @@ use rmx::prelude::*;
 use rmx::regex::Regex;
 use std::sync::LazyLock;
 
-/// Regex to match markdown headings.
-static HEADING_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^(#{1,6})\s+(.+?)(?:\s*\{#([a-zA-Z0-9_-]+)\})?\s*$").expect("invalid regex")
-});
-
 /// Regex to match HTML heading tags (matches each level separately since backrefs not supported).
 static HTML_H1_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h1(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h1>"#).expect("invalid regex"));
 static HTML_H2_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h2(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h2>"#).expect("invalid regex"));
@@ -161,14 +156,6 @@ impl TableOfContents {
         self.entries.is_empty()
     }
 
-    /// Get total number of entries (including nested).
-    pub fn len(&self) -> usize {
-        fn count(entries: &[TocEntry]) -> usize {
-            entries.iter().map(|e| 1 + count(&e.children)).sum()
-        }
-        count(&self.entries)
-    }
-
     /// Render TOC as HTML.
     pub fn to_html(&self) -> String {
         if self.is_empty() {
@@ -221,52 +208,6 @@ impl TableOfContents {
         html.push_str(&format!("{}</ul>\n", indent));
     }
 
-    /// Render TOC as markdown.
-    pub fn to_markdown(&self) -> String {
-        if self.is_empty() {
-            return String::new();
-        }
-
-        let mut md = String::new();
-        Self::render_entries_md(&self.entries, &mut md, 0);
-        md
-    }
-
-    /// Render entries as markdown recursively.
-    fn render_entries_md(entries: &[TocEntry], md: &mut String, depth: usize) {
-        for entry in entries {
-            let indent = "  ".repeat(depth);
-            md.push_str(&format!("{}- [{}](#{})\n", indent, entry.text, entry.id));
-            Self::render_entries_md(&entry.children, md, depth + 1);
-        }
-    }
-}
-
-/// Extract headings from markdown content.
-pub fn extract_headings(markdown: &str) -> Vec<Heading> {
-    let mut headings = Vec::new();
-    let mut seen_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
-
-    for caps in HEADING_RE.captures_iter(markdown) {
-        // The regex matches one to six `#`, so the count is always a level.
-        let hashes = caps.get(1).expect("the heading regex captures its hashes");
-        let level = HeadingLevel::try_from(hashes.as_str().len() as u8)
-            .expect("the heading regex matches at most six hashes");
-        let text = caps.get(2).map(|m| m.as_str().to_string()).unwrap_or_default();
-
-        // Use custom ID if provided, otherwise generate from text.
-        let id = caps.get(3)
-            .map(|m| m.as_str().to_string())
-            .unwrap_or_else(|| generate_id(&text));
-
-        // Ensure unique ID.
-        let unique_id = make_unique_id(&id, &seen_ids);
-        seen_ids.insert(unique_id.clone());
-
-        headings.push(Heading::new(level, strip_markdown(&text), unique_id));
-    }
-
-    headings
 }
 
 /// Extract headings from rendered HTML content.
@@ -348,20 +289,6 @@ fn make_unique_id(id: &str, seen: &std::collections::HashSet<String>) -> String 
     }
 }
 
-/// Strip markdown formatting from text.
-fn strip_markdown(text: &str) -> String {
-    // Remove bold/italic markers.
-    let text = text.replace("**", "").replace("__", "");
-    let text = text.replace(['*', '_'], "");
-    // Remove inline code.
-    let text = text.replace('`', "");
-    // Remove links [text](url) -> text.
-    static LINK_RE: LazyLock<Regex> = LazyLock::new(|| {
-        Regex::new(r"\[([^\]]+)\]\([^)]+\)").expect("invalid regex")
-    });
-    LINK_RE.replace_all(&text, "$1").to_string()
-}
-
 /// Strip HTML tags from text.
 fn strip_html(html: &str) -> String {
     static TAG_RE: LazyLock<Regex> = LazyLock::new(|| {
@@ -382,47 +309,6 @@ fn html_escape(s: &str) -> String {
         .replace('<', "&lt;")
         .replace('>', "&gt;")
         .replace('"', "&quot;")
-}
-
-/// Add anchor IDs to headings in HTML content.
-pub fn add_heading_ids(html: &str) -> String {
-    let mut result = html.to_string();
-    let mut seen_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
-
-    // Process each heading level with separate regex (backrefs not supported).
-    static H1_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h1([^>]*)>(.*?)</h1>"#).expect("regex"));
-    static H2_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h2([^>]*)>(.*?)</h2>"#).expect("regex"));
-    static H3_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h3([^>]*)>(.*?)</h3>"#).expect("regex"));
-    static H4_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h4([^>]*)>(.*?)</h4>"#).expect("regex"));
-    static H5_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h5([^>]*)>(.*?)</h5>"#).expect("regex"));
-    static H6_TAG_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h6([^>]*)>(.*?)</h6>"#).expect("regex"));
-
-    let regexes: &[(&str, &Regex)] = &[
-        ("h1", &H1_TAG_RE), ("h2", &H2_TAG_RE), ("h3", &H3_TAG_RE),
-        ("h4", &H4_TAG_RE), ("h5", &H5_TAG_RE), ("h6", &H6_TAG_RE),
-    ];
-
-    for &(tag, re) in regexes {
-        result = re.replace_all(&result, |caps: &rmx::regex::Captures| {
-            let attrs = caps.get(1).map(|m| m.as_str()).unwrap_or("");
-            let content = caps.get(2).map(|m| m.as_str()).unwrap_or("");
-
-            // Check if already has an ID.
-            if attrs.contains("id=") {
-                return caps.get(0).map(|m| m.as_str().to_string()).unwrap_or_default();
-            }
-
-            // Generate ID from content.
-            let text = strip_html(content);
-            let id = generate_id(&text);
-            let unique_id = make_unique_id(&id, &seen_ids);
-            seen_ids.insert(unique_id.clone());
-
-            format!("<{} id=\"{}\"{}>{}</{}>", tag, unique_id, attrs, content, tag)
-        }).into_owned();
-    }
-
-    result
 }
 
 /// TOC configuration options.
@@ -467,20 +353,6 @@ impl TocOptions {
             .cloned()
             .collect()
     }
-}
-
-/// Generate TOC from markdown content with options.
-pub fn generate_toc(markdown: &str, options: &TocOptions) -> TableOfContents {
-    let headings = extract_headings(markdown);
-    let filtered = options.filter_headings(&headings);
-    TableOfContents::from_headings(&filtered)
-}
-
-/// Generate TOC from HTML content with options.
-pub fn generate_toc_html(html: &str, options: &TocOptions) -> TableOfContents {
-    let headings = extract_headings_html(html);
-    let filtered = options.filter_headings(&headings);
-    TableOfContents::from_headings(&filtered)
 }
 
 /// Generate CSS for TOC styling.
@@ -535,43 +407,6 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_headings_basic() {
-        let md = "# Title\n\nSome text.\n\n## Section 1\n\nMore text.\n\n### Subsection\n\n## Section 2\n";
-        let headings = extract_headings(md);
-
-        assert_eq!(headings.len(), 4);
-        assert_eq!(headings[0].level, HeadingLevel::H1);
-        assert_eq!(headings[0].text, "Title");
-        assert_eq!(headings[1].level, HeadingLevel::H2);
-        assert_eq!(headings[1].text, "Section 1");
-        assert_eq!(headings[2].level, HeadingLevel::H3);
-        assert_eq!(headings[2].text, "Subsection");
-        assert_eq!(headings[3].level, HeadingLevel::H2);
-        assert_eq!(headings[3].text, "Section 2");
-    }
-
-    #[test]
-    fn test_extract_headings_with_custom_id() {
-        let md = "# Title {#custom-id}\n\n## Section {#my-section}\n";
-        let headings = extract_headings(md);
-
-        assert_eq!(headings.len(), 2);
-        assert_eq!(headings[0].id, "custom-id");
-        assert_eq!(headings[1].id, "my-section");
-    }
-
-    #[test]
-    fn test_extract_headings_with_formatting() {
-        let md = "# **Bold** Title\n\n## Section with `code`\n\n### [Link](http://example.com)\n";
-        let headings = extract_headings(md);
-
-        assert_eq!(headings.len(), 3);
-        assert_eq!(headings[0].text, "Bold Title");
-        assert_eq!(headings[1].text, "Section with code");
-        assert_eq!(headings[2].text, "Link");
-    }
-
-    #[test]
     fn test_generate_id() {
         assert_eq!(generate_id("Hello World"), "hello-world");
         assert_eq!(generate_id("Section 1.2"), "section-1-2");
@@ -582,8 +417,8 @@ mod tests {
 
     #[test]
     fn test_unique_ids() {
-        let md = "# Title\n\n## Title\n\n### Title\n";
-        let headings = extract_headings(md);
+        let html = "<h1>Title</h1><h2>Title</h2><h3>Title</h3>";
+        let headings = extract_headings_html(html);
 
         assert_eq!(headings.len(), 3);
         assert_eq!(headings[0].id, "title");
@@ -641,57 +476,10 @@ mod tests {
     }
 
     #[test]
-    fn test_toc_to_markdown() {
-        let headings = vec![
-            Heading::new(HeadingLevel::H1, "Title", "title"),
-            Heading::new(HeadingLevel::H2, "Section", "section"),
-        ];
-
-        let toc = TableOfContents::from_headings(&headings);
-        let md = toc.to_markdown();
-
-        assert!(md.contains("- [Title](#title)"));
-        assert!(md.contains("  - [Section](#section)"));
-    }
-
-    #[test]
-    fn test_toc_len() {
-        let headings = vec![
-            Heading::new(HeadingLevel::H1, "Title", "title"),
-            Heading::new(HeadingLevel::H2, "Section 1", "section-1"),
-            Heading::new(HeadingLevel::H3, "Sub", "sub"),
-            Heading::new(HeadingLevel::H2, "Section 2", "section-2"),
-        ];
-
-        let toc = TableOfContents::from_headings(&headings);
-
-        assert_eq!(toc.len(), 4);
-    }
-
-    #[test]
     fn test_toc_empty() {
         let toc = TableOfContents::new();
         assert!(toc.is_empty());
-        assert_eq!(toc.len(), 0);
         assert_eq!(toc.to_html(), "");
-    }
-
-    #[test]
-    fn test_add_heading_ids() {
-        let html = "<h1>Title</h1><p>Text</p><h2>Section</h2>";
-        let result = add_heading_ids(html);
-
-        assert!(result.contains("<h1 id=\"title\">Title</h1>"));
-        assert!(result.contains("<h2 id=\"section\">Section</h2>"));
-    }
-
-    #[test]
-    fn test_add_heading_ids_preserves_existing() {
-        let html = "<h1 id=\"custom\">Title</h1><h2>Section</h2>";
-        let result = add_heading_ids(html);
-
-        assert!(result.contains("<h1 id=\"custom\">Title</h1>"));
-        assert!(result.contains("<h2 id=\"section\">Section</h2>"));
     }
 
     #[test]
@@ -729,28 +517,11 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_toc() {
-        let md = "# Title\n\n## Section 1\n\n### Sub\n\n## Section 2\n";
-        let options = TocOptions::default();
-        let toc = generate_toc(md, &options);
-
-        assert_eq!(toc.len(), 4);
-    }
-
-    #[test]
     fn test_toc_css() {
         let css = generate_toc_css();
         assert!(css.contains(".toc"));
         assert!(css.contains(".toc-list"));
         assert!(css.contains(".toc-item"));
-    }
-
-    #[test]
-    fn test_strip_markdown() {
-        assert_eq!(strip_markdown("**bold**"), "bold");
-        assert_eq!(strip_markdown("*italic*"), "italic");
-        assert_eq!(strip_markdown("`code`"), "code");
-        assert_eq!(strip_markdown("[link](http://x.com)"), "link");
     }
 
     #[test]
@@ -773,7 +544,6 @@ mod tests {
 
         let toc = TableOfContents::from_headings(&headings);
 
-        assert_eq!(toc.len(), 6);
         assert_eq!(toc.entries.len(), 1);
         assert_eq!(toc.entries[0].children.len(), 1);
     }
@@ -829,11 +599,4 @@ mod heading_level_tests {
         assert_eq!(levels, [HeadingLevel::H1, HeadingLevel::H2, HeadingLevel::H3]);
     }
 
-    #[test]
-    fn seven_hashes_is_not_a_heading() {
-        // If it ever became one, the `expect` in `extract_headings` would fire
-        // rather than silently producing an out-of-range level.
-        assert!(extract_headings("####### Not a heading\n").is_empty());
-        assert_eq!(extract_headings("###### Six\n")[0].level, HeadingLevel::H6);
-    }
 }

@@ -803,3 +803,69 @@ fn watch_rebuilds_on_changes_and_stops_when_asked() {
     stop_tx.send(()).unwrap();
     watcher.join().unwrap().unwrap();
 }
+
+/// Serve fixed responses on localhost, one connection per request.
+///
+/// Returns the base URL. The thread exits after `requests` connections.
+fn serve(requests: usize) -> String {
+    use std::io::{BufRead, BufReader, Write};
+
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let base = format!("http://{}", listener.local_addr().unwrap());
+
+    std::thread::spawn(move || {
+        for stream in listener.incoming().take(requests) {
+            let mut stream = stream.unwrap();
+            let mut request_line = String::new();
+            BufReader::new(&stream).read_line(&mut request_line).unwrap();
+            let path = request_line.split_whitespace().nth(1).unwrap_or("/");
+
+            let (status, content_type, body) = match path {
+                "/notes.md" => ("200 OK", "text/markdown", "---\ntitle = \"Notes\"\n---\n\nFetched.\n"),
+                "/page" => ("200 OK", "text/html; charset=utf-8", "<html></html>"),
+                _ => ("404 Not Found", "text/plain", "missing"),
+            };
+            write!(
+                stream,
+                "HTTP/1.1 {status}\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len(),
+            )
+            .unwrap();
+        }
+    });
+
+    base
+}
+
+#[test]
+fn fetch_saves_markdown_and_reports_each_failure() {
+    let dir = tempdir().unwrap();
+    let content = dir.path().join("content");
+    let base = serve(3);
+
+    let downloads: Vec<_> = ["/notes.md", "/page", "/gone.md"]
+        .iter()
+        .map(|path| {
+            let url = folio::remote::parse_url(&format!("{base}{path}")).unwrap();
+            let dest = content.join(folio::remote::file_name(&url));
+            (url, dest)
+        })
+        .collect();
+
+    let rt = rmx::tokio::runtime::Runtime::new().unwrap();
+    let results = rt.block_on(folio::remote::fetch_documents(&downloads));
+
+    assert!(results[0].is_ok(), "{:?}", results[0]);
+    assert!(fs::read_to_string(content.join("notes.md")).unwrap().contains("Fetched."));
+
+    let html = results[1].as_ref().unwrap_err().to_string();
+    assert!(html.contains("HTML page"), "{html}");
+    assert!(!content.join("page.md").exists());
+
+    let missing = results[2].as_ref().unwrap_err().to_string();
+    assert!(missing.contains("404"), "{missing}");
+
+    // A second fetch of the same document does not overwrite it.
+    let again = rt.block_on(folio::remote::fetch_documents(&downloads[..1]));
+    assert!(again[0].as_ref().unwrap_err().to_string().contains("already exists"));
+}

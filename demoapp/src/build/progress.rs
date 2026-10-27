@@ -2,7 +2,7 @@
 //!
 //! Uses indicatif to provide visual feedback during builds.
 
-use rmx::indicatif::{ProgressBar, ProgressStyle, MultiProgress};
+use rmx::indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
 
 /// Style for main build progress bar.
@@ -83,76 +83,6 @@ pub fn compress_spinner() -> ProgressBar {
     pb
 }
 
-/// Multi-progress container for complex builds.
-pub struct BuildProgress {
-    mp: MultiProgress,
-    documents: Option<ProgressBar>,
-    current_task: Option<ProgressBar>,
-}
-
-impl BuildProgress {
-    /// Create a new build progress tracker.
-    pub fn new() -> Self {
-        Self {
-            mp: MultiProgress::new(),
-            documents: None,
-            current_task: None,
-        }
-    }
-
-    /// Start tracking document progress.
-    pub fn start_documents(&mut self, total: usize) {
-        let pb = self.mp.add(document_progress(total));
-        self.documents = Some(pb);
-    }
-
-    /// Increment document progress.
-    pub fn inc_document(&self) {
-        if let Some(ref pb) = self.documents {
-            pb.inc(1);
-        }
-    }
-
-    /// Finish document progress.
-    pub fn finish_documents(&mut self, message: &str) {
-        if let Some(ref pb) = self.documents {
-            pb.set_message(message.to_string());
-            pb.finish();
-        }
-        self.documents = None;
-    }
-
-    /// Start a spinner task.
-    pub fn start_task(&mut self, message: &str) {
-        self.finish_task();
-        let pb = ProgressBar::new_spinner();
-        pb.set_style(spinner_style());
-        pb.set_message(message.to_string());
-        pb.enable_steady_tick(Duration::from_millis(100));
-        self.current_task = Some(self.mp.add(pb));
-    }
-
-    /// Finish the current spinner task.
-    pub fn finish_task(&mut self) {
-        if let Some(ref pb) = self.current_task {
-            pb.finish_and_clear();
-        }
-        self.current_task = None;
-    }
-
-    /// Finish all progress tracking.
-    pub fn finish(&mut self) {
-        self.finish_documents("Done");
-        self.finish_task();
-    }
-}
-
-impl Default for BuildProgress {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 /// Finish a progress bar with a checkmark.
 pub fn finish_with_check(pb: &ProgressBar, message: &str) {
     pb.set_style(
@@ -201,21 +131,6 @@ mod tests {
         search.finish();
         feed.finish();
         compress.finish();
-    }
-
-    #[test]
-    fn test_build_progress() {
-        let mut bp = BuildProgress::new();
-
-        bp.start_documents(10);
-        bp.inc_document();
-        bp.inc_document();
-        bp.finish_documents("Built 2 documents");
-
-        bp.start_task("Testing...");
-        bp.finish_task();
-
-        bp.finish();
     }
 
     #[test]

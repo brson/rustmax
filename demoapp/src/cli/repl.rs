@@ -204,6 +204,14 @@ fn cmd_search(index: &SearchIndex, query: &str, stdout: &mut StandardStream) -> 
 
     if results.is_empty() {
         println!("No results for '{}'", query);
+
+        // The last word may be a typo or a fragment; show what it could complete to.
+        if let Some(word) = query.split_whitespace().last() {
+            let terms = index.suggest(word);
+            if !terms.is_empty() {
+                println!("Indexed terms beginning like '{}': {}", word, terms.join(", "));
+            }
+        }
         return Ok(());
     }
 

@@ -56,8 +56,7 @@ fn render_markdown_internal(content: &str, _base_options: &Options) -> String {
 
 /// Apply syntax highlighting to code blocks in HTML.
 pub fn apply_syntax_highlighting(html: &str, options: &HighlightOptions) -> String {
-    let theme = themes::by_name(&options.theme)
-        .unwrap_or_else(themes::github_dark);
+    let theme = themes::by_name(&options.theme).expect("the theme is checked when the config loads");
 
     let highlighter = Highlighter::new()
         .with_theme(theme)
@@ -84,8 +83,7 @@ pub fn apply_syntax_highlighting(html: &str, options: &HighlightOptions) -> Stri
 
 /// Generate CSS for syntax highlighting.
 pub fn generate_highlight_css(options: &HighlightOptions) -> String {
-    let theme = themes::by_name(&options.theme)
-        .unwrap_or_else(themes::github_dark);
+    let theme = themes::by_name(&options.theme).expect("the theme is checked when the config loads");
     theme.generate_css()
 }
 
@@ -222,16 +220,4 @@ def bar():
         assert!(html.contains("highlight"));
     }
 
-    #[test]
-    fn test_theme_fallback() {
-        let options = HighlightOptions {
-            theme: "nonexistent-theme".to_string(),
-            line_numbers: true,
-            copy_button: true,
-        };
-        let css = generate_highlight_css(&options);
-
-        // Should fall back to github-dark.
-        assert!(css.contains("#0d1117")); // github-dark background
-    }
 }

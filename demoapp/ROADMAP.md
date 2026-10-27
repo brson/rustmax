@@ -8,9 +8,9 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
-263 tests, no clippy warnings.
-53 of the 73 crates `rustmax` re-exports are used by a feature;
-the other 20 are listed with reasons in DESIGN.md
+216 tests, no clippy warnings.
+51 of the 73 crates `rustmax` re-exports are used by a feature;
+the other 22 are listed with reasons in DESIGN.md
 and are not targets.
 
 ## Next, in order

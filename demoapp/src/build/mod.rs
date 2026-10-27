@@ -3,27 +3,16 @@
 mod markdown;
 mod template;
 mod compress;
-mod rewrite;
-mod encoding;
 mod cache;
 mod highlight;
 mod toc;
 mod search_js;
 mod progress;
-mod images;
 mod assets;
 
 pub use markdown::{render_markdown, render_markdown_highlighted, apply_syntax_highlighting, generate_highlight_css};
 pub use template::TemplateEngine;
-pub use compress::{compress_output, compress, decompress, compress_with_level, CompressStats};
-pub use rewrite::{
-    UrlRewriter, make_urls_absolute, rewrite_md_links, extract_urls,
-    slugify, is_valid_slug, replace_pattern, find_internal_links, verify_links
-};
-pub use encoding::{
-    to_base64, from_base64, to_hex, from_hex, create_data_url, file_to_data_url,
-    guess_mime_type, AssetBuffer, format_hash_short, format_size
-};
+pub use compress::{compress_output, CompressStats};
 pub use cache::{BuildCache, CacheStatus, IncrementalBuildResult, hash_templates};
 pub use highlight::{
     Highlighter, Theme, ThemeColors, Token, TokenType,
@@ -32,18 +21,13 @@ pub use highlight::{
 };
 pub use toc::{
     TableOfContents, TocEntry, TocOptions, Heading, HeadingLevel,
-    extract_headings, extract_headings_html, generate_toc, generate_toc_html,
-    add_heading_ids, generate_id, generate_toc_css,
+    extract_headings_html, generate_id, generate_toc_css,
 };
 pub use search_js::{generate_search_js, generate_search_page};
 pub use progress::{
-    BuildProgress, document_progress, incremental_progress,
+    document_progress, incremental_progress,
     asset_spinner, template_spinner, search_spinner, feed_spinner, compress_spinner,
     finish_with_check,
-};
-pub use images::{
-    ImageConfig, ImageResult, ImageStats,
-    process_image, process_directory,
 };
 pub use assets::{Asset, site_assets, integrity, integrity_map};
 

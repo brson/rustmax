@@ -39,7 +39,7 @@ The site is written to `my-site/output`.
 | `index [PATH]` | Rebuild the search index. |
 | `repl [PATH]` | Query the collection interactively. |
 | `files [PATH] -p GLOB` | List files matching a glob. |
-| `fetch URL` | Download a document into `content/`. |
+| `fetch URL...` | Download markdown documents into `content/`, several at once. |
 
 ## A collection
 

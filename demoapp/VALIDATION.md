@@ -127,7 +127,7 @@ They happen to need nothing.
 
 `bindgen`, `cc`, `cxx`, `cxx-build`, `libc`, `libm`, `num-bigint`,
 `hyper`, `proc-macro2`, `quote`, `rand_pcg`, `thiserror`,
-`chrono`, `cfg-if`, `xshell`, `rustc-hash`,
+`chrono`, `cfg-if`, `xshell`, `rustc-hash`, `bytes`, `image`,
 and, until there is a `folio serve`,
 `http`, `http-body-util`, `hyper-util`, `tower`, `socket2`.
 
