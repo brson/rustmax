@@ -38,8 +38,8 @@ But there are significant downsides still:
    that is applied to the rustmax crate (on nightly), so far
    hasn't produced significant speedups.
 2. Re-exported proc macros need help. Most are handled by writing
-   `#[rmx::derive(..)]` instead of `#[derive(..)]`, but `thiserror` and
-   `cxx` still require a direct dependency. See [Macros](#macros).
+   `#[rmx::derive(..)]` instead of `#[derive(..)]`, but `thiserror`
+   still requires a direct dependency. See [Macros](#macros).
 3. Disk usage. Lots of deps to download and upgrade and build and rebuild
    even for tiny projects. I run `cargo clean` and `cargo clean-all` a lot.
    I also find `cargo sweep` useful.
@@ -123,7 +123,7 @@ assert_eq!(port, 8080);
 | system / OS | [`glob`], [`ignore`], [`notify`], [`tempfile`], [`walkdir`], [`xshell`] |
 | graphics / images | [`image`] |
 | testing | [`proptest`] |
-| FFI and build scripts | [`bindgen`], [`cc`], [`cxx`], [`cxx-build`](cxx_build), [`libc`] |
+| FFI and build scripts | [`bindgen`], [`cc`], [`libc`] |
 | procedural macros | [`proc-macro2`](proc_macro2), [`quote`], [`syn`] |
 
 
@@ -322,8 +322,6 @@ Builds on [`rmx-profile-std`].
 
 - [`bindgen`] - Generate Rust bindings to C and C++ libraries.
 - [`cc`] - A basic cross-platform C/C++ compiler driver.
-- [`cxx`] - C++ bridge runtime support; paired with [`cxx_build`].
-- [`cxx-build`](cxx_build) - C++ bridge generator; paired with [`cxx`].
 
 
 ### Profile: `rmx-profile-proc-macro`
@@ -459,12 +457,11 @@ which is why there is no single workaround:
 | [`derive_more`] | `derive_more`, relative to the use site | yes, by binding the name in scope |
 | [`tokio`] | `tokio`, relative to the use site | yes, via `#[tokio::main(crate = ..)]` |
 | [`thiserror`] | `::thiserror` | no |
-| [`cxx`] | `::cxx` | no |
 
 A leading `::` resolves only against the extern prelude,
-so for `thiserror` and `cxx` no re-export, import, or macro
+so for `thiserror` no re-export, import, or macro
 can make the generated code resolve.
-Those two need a direct dependency.
+It needs a direct dependency.
 
 
 ### `#[rmx::derive(..)]`
@@ -574,7 +571,7 @@ async fn main() {
 ```
 
 These are the only attribute macros among the re-exported crates
-that need any help.
+that need any help:
 `extension_trait` works through `rustmax` as it is,
 and the function-like macros that are proc macros underneath,
 such as `tokio::select!`, `futures::join!` and `xshell::cmd!`,
@@ -604,7 +601,7 @@ it discovers the name from the depending crate's manifest.
 
 ### Adding a direct dependency
 
-For `thiserror` and `cxx` this is the only option,
+For `thiserror` this is the only option,
 and it is a reasonable one for any of the affected crates.
 Add the crate alongside `rustmax`:
 
@@ -652,7 +649,7 @@ only an attribute that rewrites what is handed to them.
 Cargo has no mechanism for a library crate
 to add entries to its dependents' extern prelude;
 the unstable `public-dependency` feature does not do this.
-That is why `thiserror` and `cxx` have no workaround.
+That is why `thiserror` has no workaround.
 
 
 

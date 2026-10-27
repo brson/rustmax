@@ -446,12 +446,6 @@ aliases = ["C compiler", "build C code", "build.rs", "build script", "compile C"
 category = "crate"
 brief = "Compile C/C++ code in build scripts"
 
-[topics.cxx-crate]
-name = "cxx"
-aliases = ["C++ FFI", "C++ interop", "cpp", "cxxbridge", "C++ bindings"]
-category = "crate"
-brief = "Safe C++ interop"
-
 # Image
 
 [topics.image-crate]

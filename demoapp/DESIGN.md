@@ -331,7 +331,7 @@ on `[Document]`, and `Collection` delegates.
 
 ## Coverage
 
-Used by a feature, as of this writing: 57 of the 73 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 57 of the 71 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
@@ -364,7 +364,7 @@ which is the failure mode this app is supposed to avoid.
 
 | Crate | Why not |
 | --- | --- |
-| `bindgen`, `cc`, `cxx`, `cxx-build` | Folio links no C or C++. |
+| `bindgen`, `cc` | Folio links no C or C++. |
 | `libc` | Nothing here needs a raw syscall. |
 | `libm` | `no_std` math. Folio is a hosted program. |
 | `num-bigint` | No arbitrary-precision arithmetic anywhere in a site generator. |

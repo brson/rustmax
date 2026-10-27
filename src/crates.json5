@@ -76,18 +76,6 @@
             short_desc: "Handle Ctrl+C",
         },
         {
-            name: "cxx",
-            category: "ffi",
-            short_desc: "Bridging to/from C++",
-            maintainer: "dtolnay",
-        },
-        {
-            name: "cxx-build",
-            category: "ffi",
-            short_desc: "Bridging to/from C++",
-            maintainer: "dtolnay",
-        },
-        {
             name: "derive_more",
             category: "convenience",
             short_desc: "More standard trait derives",

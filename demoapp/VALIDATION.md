@@ -80,7 +80,7 @@ The workaround was `use rmx::tokio;` at each use site.
 its `crate = ".."` argument, and Folio's fetch test uses
 `#[rmx::tokio::test]` with nothing imported.
 They were the only attribute macros among the re-exported crates that needed it:
-`extension_trait` works as it is, `cxx::bridge` cannot be helped,
+`extension_trait` works as it is,
 and the function-like proc macros all sit behind `$crate`-using `macro_rules!`.
 
 Things that were expected to be hard and were not.
@@ -125,7 +125,7 @@ They happen to need nothing.
 
 ## Not covered, and why
 
-`bindgen`, `cc`, `cxx`, `cxx-build`, `libc`, `libm`, `num-bigint`,
+`bindgen`, `cc`, `libc`, `libm`, `num-bigint`,
 `proc-macro2`, `quote`, `rand_pcg`, `thiserror`,
 `chrono`, `cfg-if`, `xshell`, `rustc-hash`, `tower`, `socket2`.
 

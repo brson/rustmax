@@ -112,8 +112,6 @@ rmx-crates-build-script = [
   "rmx-crates-std",
   "bindgen",
   "cc",
-  "cxx",
-  "cxx-build",
 ]
 
 rmx-crates-proc-macro = [
@@ -205,7 +203,6 @@ rmx-feature-std-portable = [
   "chrono?/std",
   "clap?/std",
   "crossbeam?/std",
-  "cxx?/std",
   "derive_more?/std",
   "futures?/std",
   "hex?/std",
@@ -242,7 +239,6 @@ rmx-feature-std = [
   "chrono?/std",
   "clap?/std",
   "crossbeam?/std",
-  "cxx?/std",
   "derive_more?/std",
   "futures?/std",
   "hex?/std",
@@ -432,8 +428,6 @@ clap = { version = "4.5.23", optional = true, default-features = false }
 comrak = { version = "0.57.0", optional = true, default-features = false }
 ctrlc = { version = "3.4.5", optional = true, default-features = false }
 crossbeam = { version = "0.8.4", optional = true, default-features = false }
-cxx = { version = "1.0.135", optional = true, default-features = false }
-cxx-build = { version = "1.0.135", optional = true, default-features = false }
 derive_more = { version = "2.0.1", optional = true, default-features = false }
 env_logger = { version = "0.11.6", optional = true, default-features = false }
 extension-trait = { version = "1.0.2", optional = true, default-features = false }

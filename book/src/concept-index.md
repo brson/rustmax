@@ -741,15 +741,14 @@ std: [`std::ptr`](../api/core/ptr/index.html)
 The [foreign function interface](https://en.wikipedia.org/wiki/Foreign_function_interface),
 calling C from Rust through `extern "C"` blocks, and exposing Rust to C.
 `bindgen` generates Rust declarations from C headers,
-and `cxx` builds safe bridges to C++.
+and `cc` compiles C and C++ sources in build scripts.
 
 Books: [Nomicon: FFI](../library/nomicon/ffi.html),
 [Reference: External blocks](../library/reference/items/external-blocks.html)<br>
 std: [`std::ffi`](../api/std/ffi/index.html)<br>
 Crates: [`libc`](../api/rustmax/libc/index.html),
 [`bindgen`](../api/rustmax/bindgen/index.html),
-[`cc`](../api/rustmax/cc/index.html),
-[`cxx`](../api/rustmax/cxx/index.html)
+[`cc`](../api/rustmax/cc/index.html)
 
 
 ### no_std

@@ -423,24 +423,6 @@ pub mod crossbeam {
     pub use ::crossbeam::*;
 }
 
-#[cfg(feature = "cxx")]
-pub mod cxx {
-    //! C++ bridge runtime support; paired with [`cxx_build`](super::cxx_build).
-    //!
-    //! See crate [`::cxx`].
-
-    pub use ::cxx::*;
-}
-
-#[cfg(feature = "cxx-build")]
-pub mod cxx_build {
-    //! C++ bridge generator; paired with [`cxx`](super::cxx).
-    //!
-    //! See crate [`::cxx`].
-
-    pub use ::cxx::*;
-}
-
 #[cfg(feature = "derive_more")]
 pub mod derive_more {
     #![doc = include_str!("../doc-src/crate-derive_more.md")]

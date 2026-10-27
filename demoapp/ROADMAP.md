@@ -9,8 +9,8 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
 234 tests, no clippy warnings.
-57 of the 73 crates `rustmax` re-exports are used by a feature;
-the other 16 are listed with reasons in DESIGN.md
+57 of the 71 crates `rustmax` re-exports are used by a feature;
+the other 14 are listed with reasons in DESIGN.md
 and are not targets.
 
 ## Next, in order
@@ -25,7 +25,7 @@ and nothing in the tree would have noticed.
 
 A small crate that actually writes a derive macro,
 and one that actually runs a build script,
-would cover `bindgen`, `cc`, `cxx`, `cxx-build`, `proc-macro2` and `quote`
+would cover `bindgen`, `cc`, `proc-macro2` and `quote`
 the way Folio covers the rest.
 It should be its own thing rather than a corner of this one --
 padding a site generator with an FFI layer

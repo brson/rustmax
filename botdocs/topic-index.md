@@ -323,7 +323,7 @@ walkdir, ignore, notify, tempfile, glob
 libc, xshell
 
 **FFI:**
-bindgen, cc, cxx, cxx-build
+bindgen, cc
 
 **Macros:**
 proc-macro2, syn, quote, derive_more, extension-trait, cfg-if
