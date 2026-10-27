@@ -8,9 +8,9 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
-216 tests, no clippy warnings.
-51 of the 73 crates `rustmax` re-exports are used by a feature;
-the other 22 are listed with reasons in DESIGN.md
+227 tests, no clippy warnings.
+52 of the 73 crates `rustmax` re-exports are used by a feature;
+the other 21 are listed with reasons in DESIGN.md
 and are not targets.
 
 ## Next, in order
@@ -48,16 +48,12 @@ It would use `hyper`, `hyper-util` and `http-body-util`,
 replacing the dev server that left with `axum`,
 and live reload would give the watch loop a fourth event to select on.
 
-### 4. Lints worth having
+### 4. Anchors
 
-`folio check` parses Rust code blocks, flags unhighlightable
-languages and reports unknown shortcodes. The obvious next ones, in the order they would pay off:
-
-- Internal links that resolve to no document.
-- Images referencing files that are not in `static/`.
-- Frontmatter dates in the future on non-draft documents.
-
-Each is a genuine authoring mistake and none needs a new dependency.
+`folio check` knows whether a link's page exists but not whether its
+`#fragment` does. The heading ids are known once a page is rendered,
+so checking fragments means linting the rendered pages rather than the
+markdown, which `check` does not do yet.
 
 ### 5. Things deliberately not planned
 

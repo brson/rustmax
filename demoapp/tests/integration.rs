@@ -663,10 +663,11 @@ fn check_reports_a_rust_code_block_that_does_not_parse() {
     let config = folio::collection::Config::load(dir.path()).unwrap();
     let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
 
+    let context = folio::lint::LintContext::new(&collection, &config).unwrap();
     let lints: Vec<_> = collection
         .documents
         .iter()
-        .flat_map(folio::lint::check_document)
+        .flat_map(|doc| folio::lint::check_document(doc, &context))
         .collect();
 
     assert_eq!(lints.len(), 1, "{lints:?}");
@@ -868,4 +869,70 @@ fn fetch_saves_markdown_and_reports_each_failure() {
     // A second fetch of the same document does not overwrite it.
     let again = rt.block_on(folio::remote::fetch_documents(&downloads[..1]));
     assert!(again[0].as_ref().unwrap_err().to_string().contains("already exists"));
+}
+
+#[test]
+fn links_between_documents_and_local_images_are_resolved_and_checked() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    rmx::image::RgbImage::new(4, 3).save(root.join("static/chart.png")).unwrap();
+
+    create_document(
+        root,
+        "first",
+        "First",
+        "See [the second](second.md#details), ![a chart](/chart.png),\n\n[a typo](/secnod/) and ![gone](/missing.png).\n",
+        false,
+    );
+    create_document(root, "second", "Second", "Text.", false);
+
+    let out = build_test_site(root, |_| {});
+    let html = fs::read_to_string(out.join("first/index.html")).unwrap();
+    assert!(html.contains(r#"href="/second/#details""#), "{html}");
+    assert!(html.contains(r#"src="/chart.png" alt="a chart" width="4" height="3""#), "{html}");
+
+    let config = folio::collection::Config::load(root).unwrap();
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
+    let context = folio::lint::LintContext::new(&collection, &config).unwrap();
+    let lints: Vec<_> = collection
+        .documents
+        .iter()
+        .flat_map(|doc| folio::lint::check_document(doc, &context))
+        .collect();
+
+    let messages: Vec<_> = lints.iter().map(|l| l.message.as_str()).collect();
+    assert_eq!(lints.len(), 2, "{messages:?}");
+    assert!(messages[0].contains("`/secnod/` leads nowhere"), "{messages:?}");
+    assert!(messages[1].contains("`/missing.png`"), "{messages:?}");
+    assert!(lints.iter().all(|l| l.level == folio::lint::Level::Error));
+}
+
+#[test]
+fn generated_files_lists_what_the_build_writes() {
+    use folio::features::BuildFeatures;
+
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    create_document(root, "one", "One", "Text.", false);
+
+    for features in [BuildFeatures::default(), BuildFeatures::empty()] {
+        let out = build_test_site(root, |config| config.build.features = features);
+        let config = {
+            let mut config = folio::collection::Config::load(root).unwrap();
+            config.build.features = features;
+            config
+        };
+
+        let listed: std::collections::BTreeSet<_> =
+            folio::build::generated_files(&config).into_iter().map(String::from).collect();
+        let written: std::collections::BTreeSet<_> = fs::read_dir(&out)
+            .unwrap()
+            .map(|e| e.unwrap())
+            .filter(|e| e.file_type().unwrap().is_file() && e.file_name() != "index.html")
+            .map(|e| e.file_name().into_string().unwrap())
+            .collect();
+        assert_eq!(listed, written, "{features:?}");
+    }
 }

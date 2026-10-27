@@ -277,6 +277,7 @@ fn cmd_check(path: PathBuf) -> Result<()> {
 
     let config = Config::load(&path)?;
     let collection = crate::collection::Collection::load(&path, &config)?;
+    let context = crate::lint::LintContext::new(&collection, &config)?;
 
     let mut stdout = StandardStream::stdout(ColorChoice::Auto);
     let mut errors = 0;
@@ -291,7 +292,7 @@ fn cmd_check(path: PathBuf) -> Result<()> {
             errors += 1;
         }
 
-        for lint in crate::lint::check_document(doc) {
+        for lint in crate::lint::check_document(doc, &context) {
             let color = match lint.level {
                 crate::lint::Level::Error => Color::Red,
                 crate::lint::Level::Warning => Color::Yellow,

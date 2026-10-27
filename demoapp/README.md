@@ -34,7 +34,7 @@ The site is written to `my-site/output`.
 | `new TITLE` | Create a draft document dated today. |
 | `build [PATH]` | Build the site. `--drafts`, `--compress`, `--incremental`, `--progress`. |
 | `watch [PATH]` | Build, then rebuild on every change until Ctrl-C. `--drafts`, `--output`. |
-| `check [PATH]` | Validate frontmatter and lint documents. Fails on errors. |
+| `check [PATH]` | Lint documents: Rust code that does not parse, links and images that lead nowhere, unknown shortcodes and languages, future dates. Fails on errors. |
 | `export [PATH] -f FORMAT` | `json`, `rss`, `atom`, `json-feed`, `sitemap`, `epub`, or `tar` of the built output. |
 | `index [PATH]` | Rebuild the search index. |
 | `repl [PATH]` | Query the collection interactively. |
@@ -104,6 +104,20 @@ theme = "github-dark"
 
 A build with `seed` set and `SOURCE_DATE_EPOCH` in the environment is reproducible:
 the same content produces the same bytes, exports included.
+
+## Links and images
+
+Link to another document by its source file, relative to the one you are writing:
+
+```markdown
+See [the setup guide](guide/setup.md#install).
+```
+
+The build points the link at that document's page, wherever its `slug` puts it.
+Images and other files go in `static/` and are linked from the site root,
+as in `![Chart](/img/chart.png)`;
+local images get `width` and `height` attributes from the file.
+`folio check` reports links and images that lead nowhere.
 
 ## Shortcodes
 

@@ -42,6 +42,7 @@ use std::fs;
 
 use crate::collection::{Collection, Config, Document};
 use crate::features::BuildFeatures;
+use crate::site::SiteIndex;
 use crate::Result;
 
 /// Build the collection to static output.
@@ -79,7 +80,7 @@ fn build_full(collection: &Collection, config: &Config, output_dir: &Path, progr
     let results: Vec<Result<()>> = site.documents
         .par_iter()
         .map(|doc| {
-            let result = build_document(doc, config, &site.engine, output_dir);
+            let result = build_document(doc, config, &site, output_dir);
             if let Some(pb) = &doc_pb {
                 pb.set_position(doc_count.fetch_add(1, Ordering::Relaxed) as u64 + 1);
             }
@@ -157,7 +158,7 @@ fn build_incremental_inner(
                 result.lock().unwrap().skipped += 1;
                 Ok(None)
             } else {
-                build_document(doc, config, &site.engine, output_dir).map(|()| {
+                build_document(doc, config, &site, output_dir).map(|()| {
                     result.lock().unwrap().rebuilt += 1;
                     Some((
                         doc.source_path.clone(),
@@ -202,11 +203,29 @@ fn build_incremental_inner(
     Ok(result.into_inner().unwrap())
 }
 
+/// Every file a build writes other than pages and static files,
+/// relative to the output directory.
+pub fn generated_files(config: &Config) -> Vec<&'static str> {
+    let features = config.build.features;
+    let mut files: Vec<&'static str> = site_assets(config).iter().map(|asset| asset.path).collect();
+    if features.contains(BuildFeatures::SEARCH) {
+        files.push("search-index.json");
+    }
+    if features.contains(BuildFeatures::FEEDS) {
+        files.extend(["rss.xml", "atom.xml", "feed.json"]);
+    }
+    if features.contains(BuildFeatures::SITEMAP) {
+        files.push("sitemap.xml");
+    }
+    files
+}
+
 /// What every kind of build sets up before rendering documents.
 struct Site<'a> {
     engine: TemplateEngine,
     assets: Vec<Asset>,
     documents: Vec<&'a Document>,
+    index: SiteIndex,
 }
 
 impl<'a> Site<'a> {
@@ -223,7 +242,9 @@ impl<'a> Site<'a> {
             collection.published()
         };
 
-        Ok(Self { engine, assets, documents })
+        let index = SiteIndex::new(collection, config)?;
+
+        Ok(Self { engine, assets, documents, index })
     }
 
     /// Write everything that is not a document page.
@@ -282,12 +303,8 @@ fn finish(pb: Option<ProgressBar>, message: &str) {
 }
 
 /// Build a single document.
-fn build_document(
-    doc: &Document,
-    config: &Config,
-    engine: &TemplateEngine,
-    output_dir: &Path,
-) -> Result<()> {
+fn build_document(doc: &Document, config: &Config, site: &Site, output_dir: &Path) -> Result<()> {
+    let engine = &site.engine;
     debug!("Building: {}", doc.source_path.display());
 
     let expanded = config.build.features.contains(BuildFeatures::SHORTCODES)
@@ -304,6 +321,8 @@ fn build_document(
         Some(expanded) => expanded.finish(&html_content),
         None => html_content,
     };
+    let html_content = site.index.rewrite_source_links(doc, &html_content);
+    let html_content = site.index.add_image_dimensions(doc, &html_content);
 
     let template_name = doc
         .frontmatter

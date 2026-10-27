@@ -7,11 +7,13 @@
 
 use rmx::comrak::nodes::NodeValue;
 use rmx::comrak::{Arena, Options, parse_document};
+use rmx::jiff::civil::Date;
 use rmx::prelude::*;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
-use crate::collection::Document;
+use crate::collection::{Collection, Config, Document};
+use crate::site::{SiteIndex, Target};
 
 /// How seriously to take a lint.
 #[rmx::derive(Debug, Clone, Copy, PartialEq, Eq, Display)]
@@ -193,7 +195,7 @@ pub fn check_shortcodes(path: &Path, markdown: &str) -> Vec<Lint> {
         .filter(|found| !found.shortcode.is_builtin())
         .map(|found| Lint {
             path: path.to_path_buf(),
-            line: rmx::memchr::memchr_iter(b'\n', &markdown.as_bytes()[..found.span.start]).count() + 1,
+            line: line_of(markdown, found.span.start),
             level: Level::Warning,
             message: format!(
                 "unknown shortcode `{}` is left in the page as written",
@@ -203,20 +205,142 @@ pub fn check_shortcodes(path: &Path, markdown: &str) -> Vec<Lint> {
         .collect()
 }
 
+/// A link or image reference as written in a document.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Reference {
+    /// 1-based line in the document's content.
+    pub line: usize,
+    pub url: String,
+    pub is_image: bool,
+}
+
+/// Every link and image in a markdown document, in source order,
+/// including the images of `figure` shortcodes.
+pub fn references(markdown: &str) -> Vec<Reference> {
+    let arena = Arena::new();
+    let root = parse_document(&arena, markdown, &Options::default());
+
+    let mut found: Vec<Reference> = root
+        .descendants()
+        .filter_map(|node| {
+            let data = node.data.borrow();
+            let (link, is_image) = match &data.value {
+                NodeValue::Link(link) => (link, false),
+                NodeValue::Image(link) => (link, true),
+                _ => return None,
+            };
+            Some(Reference { line: data.sourcepos.start.line, url: link.url.clone(), is_image })
+        })
+        .collect();
+
+    for shortcode in crate::shortcode::find_shortcodes(markdown) {
+        if shortcode.shortcode.name == "figure"
+            && let Some(src) = shortcode.shortcode.get("src").or_else(|| shortcode.shortcode.positional(0))
+        {
+            found.push(Reference {
+                line: line_of(markdown, shortcode.span.start),
+                url: src.to_string(),
+                is_image: true,
+            });
+        }
+    }
+
+    found.sort_by_key(|reference| reference.line);
+    found
+}
+
+/// The 1-based line holding byte `offset`.
+fn line_of(text: &str, offset: usize) -> usize {
+    rmx::memchr::memchr_iter(b'\n', &text.as_bytes()[..offset]).count() + 1
+}
+
+/// Check that every link and image in a document leads somewhere the build writes.
+pub fn check_references(doc: &Document, site: &SiteIndex) -> Vec<Lint> {
+    let lint = |reference: &Reference, level, message| Lint {
+        path: doc.source_path.clone(),
+        line: reference.line,
+        level,
+        message,
+    };
+
+    references(&doc.content)
+        .iter()
+        .filter_map(|reference| {
+            let url = &reference.url;
+            match (site.resolve(doc, url), reference.is_image) {
+                (Target::External | Target::SamePage | Target::Built, false) => None,
+                (Target::Document { .. } | Target::Static(_), false) => None,
+                (Target::External | Target::Built, true) => None,
+                (Target::Static(path), true) => match rmx::image::image_dimensions(&path) {
+                    // Formats the build cannot measure, SVG among them, are still fine to link.
+                    Ok(_) | Err(rmx::image::ImageError::Unsupported(_)) => None,
+                    Err(e) => Some(lint(reference, Level::Error, format!("image `{url}` cannot be read: {e}"))),
+                },
+                (Target::Draft { url: page }, false) => Some(lint(
+                    reference,
+                    Level::Warning,
+                    format!("link to `{url}` leads to the draft {page}, which is only built with drafts"),
+                )),
+                (Target::Missing, false) => {
+                    Some(lint(reference, Level::Error, format!("link to `{url}` leads nowhere in the built site")))
+                }
+                (_, true) => Some(lint(
+                    reference,
+                    Level::Error,
+                    format!("image `{url}` is not a file in `static/` or anywhere else in the built site"),
+                )),
+            }
+        })
+        .collect()
+}
+
+/// Warn about a published document dated after `today`.
+///
+/// Folio publishes it anyway, so a date in the future is usually a typo
+/// or a post meant to stay a draft.
+pub fn check_date(doc: &Document, today: Date) -> Option<Lint> {
+    let date = doc.frontmatter.date?;
+    (date > today && !doc.frontmatter.draft).then(|| Lint {
+        path: doc.source_path.clone(),
+        // The frontmatter starts on the first line.
+        line: 1,
+        level: Level::Warning,
+        message: format!("dated {date}, after today ({today}), but not a draft; it is published now"),
+    })
+}
+
+/// What lints need to know beyond the document they are checking.
+#[derive(Debug, Clone)]
+pub struct LintContext {
+    pub site: SiteIndex,
+    pub today: Date,
+}
+
+impl LintContext {
+    pub fn new(collection: &Collection, config: &Config) -> crate::Result<Self> {
+        Ok(Self {
+            site: SiteIndex::new(collection, config)?,
+            today: config.build_time().date(),
+        })
+    }
+}
+
 /// Run every lint against a document.
 ///
 /// Lines are reported against the source file, frontmatter included, so they
 /// match what the author sees in an editor.
-pub fn check_document(doc: &Document) -> Vec<Lint> {
+pub fn check_document(doc: &Document, context: &LintContext) -> Vec<Lint> {
     let path = &doc.source_path;
     let mut lints = check_rust_syntax(path, &doc.content);
     lints.extend(check_code_block_languages(path, &doc.content));
     lints.extend(check_shortcodes(path, &doc.content));
+    lints.extend(check_references(doc, &context.site));
 
     for lint in &mut lints {
         lint.line = doc.source_line(lint.line);
     }
 
+    lints.extend(check_date(doc, context.today));
     lints.sort_by_key(|lint| lint.line);
     lints
 }
@@ -224,6 +348,35 @@ pub fn check_document(doc: &Document) -> Vec<Lint> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A context in which `doc` is the whole collection.
+    fn context_for(doc: &Document) -> LintContext {
+        let collection = Collection { root: PathBuf::from("no-such-collection"), documents: vec![doc.clone()] };
+        LintContext::new(&collection, &Config::default()).unwrap()
+    }
+
+    #[test]
+    fn references_include_links_images_and_figures() {
+        let md = "A [link](a.md) and ![img](/b.png).\n\n{{< figure src=\"/c.png\" >}}\n\n```\n[not](a link)\n```\n";
+        let found = references(md);
+        let urls: Vec<_> = found.iter().map(|r| (r.url.as_str(), r.is_image, r.line)).collect();
+        assert_eq!(urls, [("a.md", false, 1), ("/b.png", true, 1), ("/c.png", true, 3)]);
+    }
+
+    #[test]
+    fn future_dates_on_published_documents_are_warned_about() {
+        let today: Date = "2026-01-01".parse().unwrap();
+        let parse = |extra: &str| {
+            Document::parse(PathBuf::from("p.md"), &format!("---\ntitle = \"T\"\ndate = \"2026-06-01\"\n{extra}---\n")).unwrap()
+        };
+
+        let lint = check_date(&parse(""), today).unwrap();
+        assert_eq!(lint.level, Level::Warning);
+        assert!(lint.message.contains("2026-06-01"), "{lint}");
+
+        assert!(check_date(&parse("draft = true\n"), today).is_none());
+        assert!(check_date(&parse(""), "2026-06-01".parse().unwrap()).is_none());
+    }
 
     fn lints(markdown: &str) -> Vec<Lint> {
         let path = Path::new("doc.md");
@@ -352,7 +505,7 @@ mod tests {
         // The fence is on line 7 of the file and line 3 of the content.
         assert_eq!(raw.lines().nth(6), Some("```rust"));
 
-        let found = check_document(&doc);
+        let found = check_document(&doc, &context_for(&doc));
         assert_eq!(found.len(), 1, "{found:?}");
         assert_eq!(found[0].line, 7, "{}", found[0]);
     }
@@ -363,7 +516,7 @@ mod tests {
         let doc = Document::parse(PathBuf::from("post.md"), raw).unwrap();
 
         assert_eq!(doc.content_line_offset, 0);
-        assert_eq!(check_document(&doc)[0].line, 3);
+        assert_eq!(check_document(&doc, &context_for(&doc))[0].line, 3);
     }
 
     #[test]

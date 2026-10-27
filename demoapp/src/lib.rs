@@ -12,6 +12,7 @@ pub mod lint;
 pub mod remote;
 pub mod util;
 pub mod shortcode;
+pub mod site;
 pub mod features;
 pub mod feeds;
 pub mod watch;

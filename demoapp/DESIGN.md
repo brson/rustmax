@@ -80,7 +80,8 @@ src/
     progress.rs      progress bars
   features/        `[build] features` (bitflags)
   shortcode/       shortcodes (nom, memchr)
-  lint/            content lints, including Rust code block parsing
+  site/            what pages link to: `.md` links, image sizes (url, image)
+  lint/            content lints: Rust code, links, images, dates
   search/          BM25 index, Porter stemmer
   export/          EPUB and tar archives
   feeds/           Atom and JSON Feed
@@ -210,6 +211,29 @@ and reported by `folio check`.
 `toc` cannot be rendered until the heading ids exist,
 so it expands to a marker that is filled in from the rendered HTML.
 
+### Links and images
+
+`SiteIndex` knows every page and file a build writes:
+document pages, tag pages, generated files and everything in `static/`.
+It resolves a link the way a browser would,
+by joining it to the URL of the page it is on with `url`,
+except for links to `.md` files,
+which are resolved against the source file
+so that authors can link between documents as they lay them out on disk.
+The build rewrites those to the target's page,
+which is where a custom `slug` matters.
+
+The same index drives three lints in `folio check`:
+a link that leads nowhere and an image that is missing or unreadable
+are errors, and a link to a draft the build leaves out is a warning.
+A fourth warns about a published document dated in the future,
+since Folio publishes it regardless.
+
+The build also gives every local raster image its `width` and `height`,
+read from the file header with `image::image_dimensions`,
+so the browser can lay out the page before the image arrives.
+SVGs and other formats `image` cannot measure are left alone.
+
 ### Subresource Integrity
 
 The generated stylesheets and scripts are produced before any page is rendered,
@@ -251,7 +275,7 @@ on `[Document]`, and `Collection` delegates.
 
 ## Coverage
 
-Used by a feature, as of this writing: 51 of the 73 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 52 of the 73 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
@@ -265,6 +289,7 @@ Used by a feature, as of this writing: 51 of the 73 crates `rustmax` re-exports.
 | Serialization | `serde`, `serde_json`, `toml`, `json5` |
 | Encoding | `flate2`, `base64`, `hex`, `zip`, `tar` |
 | Hashing | `blake3`, `sha2` |
+| Graphics | `image` |
 | Filesystem | `walkdir`, `ignore`, `glob`, `tempfile` |
 | Time | `jiff` |
 | Text | `unicode-segmentation`, `memchr` |
@@ -291,7 +316,6 @@ which is the failure mode this app is supposed to avoid.
 | `http`, `http-body-util`, `hyper-util`, `tower`, `socket2` | Used only by the dev server, which was removed when `axum` left `rustmax`. Candidates for a `folio serve`. |
 | `xshell` | Folio runs no external commands. |
 | `bytes` | `reqwest` hands back text for documents. Nothing in Folio manipulates byte buffers. |
-| `image` | Nothing in the build reads images yet. |
 | `cfg-if` | No platform-specific code. |
 | `chrono` | `jiff` covers every date Folio handles. A second date library would be decoration. |
 | `rustc-hash` | `ahash` already covers the one hash map where hashing speed matters, the search index. |
@@ -306,7 +330,7 @@ is itself worth knowing.
 
 ## Testing
 
-216 tests: 186 unit, 30 integration.
+227 tests: 195 unit, 32 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,
