@@ -88,6 +88,7 @@ src/
   export/          EPUB and tar archives
   feeds/           Atom and JSON Feed
   remote/          `fetch` (reqwest)
+  watch/           `watch` (notify, crossbeam, ctrlc)
   util/            reproducible identifier generation
 ```
 
@@ -211,6 +212,29 @@ keyed by file name with punctuation replaced by `_`
 (`integrity.highlight_css`).
 The default template uses them on its stylesheet links.
 
+### Watching
+
+`folio watch` builds once, then rebuilds whenever the collection changes.
+It waits on three things at once with `crossbeam`'s `select!`:
+`notify` file events, a stop request from `ctrlc`,
+and a debounce timer that every event restarts,
+since an editor's save is several events in quick succession.
+
+Only `content/`, `templates/` and `static/` are watched recursively.
+The root is watched on its own, for the config file,
+because watching it recursively would see the build's own writes
+to the output directory and the cache, and rebuild forever.
+
+An edit rebuilds incrementally.
+A removal, a rename or a config change rebuilds in full,
+since an incremental build neither deletes pages whose source is gone
+nor notices that settings every page depends on have changed.
+
+Ctrl-C only sends on a channel, which the loop reads between builds,
+so stopping never interrupts a build halfway through writing its cache.
+`watch_until` takes that channel as a parameter,
+which is how the integration test drives a real watch and stops it.
+
 ### Queries belong to the documents
 
 `Collection` is not the only thing holding documents:
@@ -220,14 +244,15 @@ on `[Document]`, and `Collection` delegates.
 
 ## Coverage
 
-Used by a feature, as of this writing: 50 of the 73 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 53 of the 73 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
-| CLI | `clap`, `termcolor`, `rustyline`, `indicatif` |
+| CLI | `clap`, `termcolor`, `rustyline`, `indicatif`, `ctrlc` |
+| Files | `notify` |
 | Web | `reqwest`, `mime`, `url` |
 | Async | `tokio`, `futures` |
-| Concurrency | `rayon` |
+| Concurrency | `rayon`, `crossbeam` |
 | Parsing | `comrak`, `regex`, `nom`, `syn` |
 | Templates | `tera` |
 | Serialization | `serde`, `serde_json`, `toml`, `json5` |
@@ -257,8 +282,7 @@ which is the failure mode this app is supposed to avoid.
 | `libm` | `no_std` math. Folio is a hosted program. |
 | `num-bigint` | No arbitrary-precision arithmetic anywhere in a site generator. |
 | `hyper` | `reqwest` is the layer Folio works at. Reaching past it would be pretence. |
-| `http`, `http-body-util`, `hyper-util`, `tower`, `socket2`, `notify` | Used only by the dev server, which was removed when `axum` left `rustmax`. Candidates for a `folio serve` or `folio watch`. |
-| `ctrlc`, `crossbeam` | Nothing runs long enough to interrupt, and `rayon` covers the parallel build. Both would have a job in `folio watch`. |
+| `http`, `http-body-util`, `hyper-util`, `tower`, `socket2` | Used only by the dev server, which was removed when `axum` left `rustmax`. Candidates for a `folio serve`. |
 | `xshell` | Folio runs no external commands. |
 | `cfg-if` | No platform-specific code. |
 | `chrono` | `jiff` covers every date Folio handles. A second date library would be decoration. |
@@ -274,7 +298,7 @@ is itself worth knowing.
 
 ## Testing
 
-257 tests: 229 unit, 28 integration.
+263 tests: 234 unit, 29 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

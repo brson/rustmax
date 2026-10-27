@@ -33,6 +33,7 @@ The site is written to `my-site/output`.
 | `init [PATH]` | Create a collection: `folio.toml`, `content/`, `templates/`, `static/`. |
 | `new TITLE` | Create a draft document dated today. |
 | `build [PATH]` | Build the site. `--drafts`, `--compress`, `--incremental`, `--progress`. |
+| `watch [PATH]` | Build, then rebuild on every change until Ctrl-C. `--drafts`, `--output`. |
 | `check [PATH]` | Validate frontmatter and lint documents. Fails on errors. |
 | `export [PATH] -f FORMAT` | `json`, `rss`, `atom`, `json-feed`, `sitemap`, `epub`, or `tar` of the built output. |
 | `index [PATH]` | Rebuild the search index. |

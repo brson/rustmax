@@ -8,9 +8,9 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
-257 tests, no clippy warnings.
-50 of the 73 crates `rustmax` re-exports are used by a feature;
-the other 23 are listed with reasons in DESIGN.md
+263 tests, no clippy warnings.
+53 of the 73 crates `rustmax` re-exports are used by a feature;
+the other 20 are listed with reasons in DESIGN.md
 and are not targets.
 
 ## Next, in order
@@ -41,15 +41,12 @@ but the diagnostic is unhelpful (see VALIDATION.md).
 Folio is the right place to try an `#[rmx::attr(..)]` against a real
 test suite if `rustmax` grows one.
 
-### 3. `folio watch`
+### 3. `folio serve`
 
-Rebuild when content changes, incrementally.
-This is the honest home for three crates Folio does not use yet:
-`notify` for the file events,
-`crossbeam-channel`'s `select!` to wait on file events and a debounce timer together,
-and `ctrlc` to stop cleanly and leave the build cache consistent.
-A `folio serve` on `hyper-util` and `http-body-util` would follow naturally,
-replacing the dev server that left with `axum`.
+A local server for the output, rebuilding through `folio watch`.
+It would use `hyper`, `hyper-util` and `http-body-util`,
+replacing the dev server that left with `axum`,
+and live reload would give the watch loop a fourth event to select on.
 
 ### 4. Lints worth having
 

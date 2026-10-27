@@ -56,6 +56,21 @@ enum Command {
         progress: bool,
     },
 
+    /// Build the collection, then rebuild whenever it changes, until Ctrl-C.
+    Watch {
+        /// Collection directory (defaults to current directory).
+        #[arg(default_value = ".")]
+        path: PathBuf,
+
+        /// Output directory (defaults to 'output').
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Include draft documents.
+        #[arg(long)]
+        drafts: bool,
+    },
+
     /// Validate documents in the collection.
     Check {
         /// Collection directory (defaults to current directory).
@@ -151,6 +166,9 @@ impl Cli {
         match self.command {
             Command::Init { path } => cmd_init(path),
             Command::Build { path, output, drafts, compress, incremental, progress } => cmd_build(path, output, drafts, compress, incremental, progress),
+            Command::Watch { path, output, drafts } => {
+                crate::watch::watch(&path, &crate::watch::WatchOptions { output, drafts })
+            }
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
             Command::Index { path } => cmd_index(path),

@@ -754,3 +754,52 @@ fn page_integrity_hashes_match_the_written_assets() {
         assert!(html.contains(&expected), "{asset}: {html}");
     }
 }
+
+/// Poll until `condition` holds, failing after a generous deadline.
+fn wait_for(what: &str, mut condition: impl FnMut() -> bool) {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    while !condition() {
+        assert!(std::time::Instant::now() < deadline, "timed out waiting for {what}");
+        std::thread::sleep(std::time::Duration::from_millis(25));
+    }
+}
+
+#[test]
+fn watch_rebuilds_on_changes_and_stops_when_asked() {
+    let dir = tempdir().unwrap();
+    let root = dir.path().to_path_buf();
+    create_test_collection(&root);
+    create_document(&root, "first", "First", "Original text.", false);
+
+    let (stop_tx, stop_rx) = rmx::crossbeam::channel::bounded(1);
+    let watcher = {
+        let root = root.clone();
+        std::thread::spawn(move || {
+            folio::watch::watch_until(&root, &folio::watch::WatchOptions::default(), stop_rx)
+        })
+    };
+
+    let page = root.join("output/first/index.html");
+    let read = |path: &Path| fs::read_to_string(path).unwrap_or_default();
+    wait_for("the initial build", || read(&page).contains("Original text."));
+
+    // An edit is picked up.
+    create_document(&root, "first", "First", "Edited text.", false);
+    wait_for("the edit", || read(&page).contains("Edited text."));
+
+    // A new document is picked up.
+    create_document(&root, "second", "Second", "New.", false);
+    wait_for("the new document", || root.join("output/second/index.html").exists());
+
+    // A deleted document takes its page with it.
+    fs::remove_file(root.join("content/second.md")).unwrap();
+    wait_for("the deletion", || !root.join("output/second/index.html").exists());
+
+    // A config change rebuilds everything.
+    let config = read(&root.join("folio.toml"));
+    fs::write(root.join("folio.toml"), config.replace("Test Collection", "Renamed")).unwrap();
+    wait_for("the config change", || read(&root.join("output/index.html")).contains("Renamed"));
+
+    stop_tx.send(()).unwrap();
+    watcher.join().unwrap().unwrap();
+}

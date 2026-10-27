@@ -96,6 +96,14 @@ Its glob of `powerletters::*`, which brings
 single-uppercase-letter method names into scope,
 produced no ambiguity across twelve thousand lines.
 
+**Exported macros through the re-export.**
+`crossbeam`'s `select!` and `bitflags!` expand to paths into their own crates,
+the same thing that defeats `thiserror`,
+but both name those paths through `$crate`,
+which resolves to wherever the macro was reached from.
+`rmx::crossbeam::channel::select!` and `rmx::bitflags::bitflags!`
+work with no direct dependency.
+
 ## Rough edges, not bugs
 
 **`#[tokio::test]` needs `use rmx::tokio;`.**
@@ -120,7 +128,7 @@ They happen to need nothing.
 `bindgen`, `cc`, `cxx`, `cxx-build`, `libc`, `libm`, `num-bigint`,
 `hyper`, `proc-macro2`, `quote`, `rand_pcg`, `thiserror`,
 `chrono`, `cfg-if`, `xshell`, `rustc-hash`,
-and, until `folio watch` exists, `ctrlc`, `crossbeam`, `notify`,
+and, until there is a `folio serve`,
 `http`, `http-body-util`, `hyper-util`, `tower`, `socket2`.
 
 Reasons are in [DESIGN.md](DESIGN.md#deliberately-not-covered).

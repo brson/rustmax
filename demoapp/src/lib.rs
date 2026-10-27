@@ -14,6 +14,7 @@ pub mod util;
 pub mod shortcode;
 pub mod features;
 pub mod feeds;
+pub mod watch;
 pub mod export;
 pub mod error;
 

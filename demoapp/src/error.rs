@@ -64,6 +64,12 @@ pub enum Error {
     #[display("archive error: {_0}")]
     Zip(#[from] rmx::zip::result::ZipError),
 
+    #[display("file watch error: {_0}")]
+    Watch(#[from] rmx::notify::Error),
+
+    #[display("could not handle Ctrl-C: {_0}")]
+    Signal(#[from] rmx::ctrlc::Error),
+
     #[display("build error: {message}")]
     #[from(ignore)]
     Build { message: String },
