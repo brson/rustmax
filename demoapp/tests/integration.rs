@@ -774,7 +774,7 @@ fn watch_rebuilds_on_changes_and_stops_when_asked() {
     let watcher = {
         let root = root.clone();
         std::thread::spawn(move || {
-            folio::watch::watch_until(&root, &folio::watch::WatchOptions::default(), stop_rx)
+            folio::watch::watch_until(&root, &folio::watch::WatchOptions::default(), stop_rx, || {})
         })
     };
 
@@ -955,4 +955,92 @@ fn the_search_page_is_built_and_linked_when_search_is_enabled() {
     let out = build_test_site(root, |config| config.build.features.remove(BuildFeatures::SEARCH));
     assert!(!out.join("search").exists());
     assert!(!fs::read_to_string(out.join("one/index.html")).unwrap().contains(r#"href="/search/""#));
+}
+
+/// Send one HTTP/1.1 request and read the response head and as much body as `until` wants.
+fn http_get(addr: std::net::SocketAddr, path: &str, until: impl Fn(&str) -> bool) -> String {
+    use std::io::{Read, Write};
+
+    let mut stream = std::net::TcpStream::connect(addr).unwrap();
+    stream.set_read_timeout(Some(std::time::Duration::from_secs(20))).unwrap();
+    write!(stream, "GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n").unwrap();
+
+    let mut response = Vec::new();
+    let mut buf = [0; 4096];
+    loop {
+        let n = stream.read(&mut buf).expect("timed out reading the response");
+        response.extend_from_slice(&buf[..n]);
+        let text = String::from_utf8_lossy(&response).into_owned();
+        if n == 0 || until(&text) {
+            return text;
+        }
+    }
+}
+
+#[test]
+fn serve_serves_the_site_and_reloads_pages_after_a_rebuild() {
+    let dir = tempdir().unwrap();
+    let root = dir.path().to_path_buf();
+    create_test_collection(&root);
+    create_document(&root, "first", "First", "Original text.", false);
+
+    let (stop_tx, stop_rx) = rmx::crossbeam::channel::bounded(1);
+    let (addr_tx, addr_rx) = std::sync::mpsc::channel();
+    let server = {
+        let root = root.clone();
+        std::thread::spawn(move || {
+            let options = folio::serve::ServeOptions {
+                watch: folio::watch::WatchOptions::default(),
+                addr: "127.0.0.1:0".parse().unwrap(),
+            };
+            folio::serve::serve_until(&root, &options, stop_rx, |addr| addr_tx.send(addr).unwrap())
+        })
+    };
+    let addr = addr_rx.recv().unwrap();
+    wait_for("the initial build", || root.join("output/first/index.html").exists());
+
+    let page = http_get(addr, "/first/", |_| false);
+    assert!(page.starts_with("HTTP/1.1 200"), "{page}");
+    assert!(page.contains("content-type: text/html"), "{page}");
+    assert!(page.contains("Original text."), "{page}");
+    assert!(page.contains(folio::serve::RELOAD_PATH), "{page}");
+
+    let redirect = http_get(addr, "/first", |_| false);
+    assert!(redirect.starts_with("HTTP/1.1 301"), "{redirect}");
+    assert!(redirect.contains("location: /first/"), "{redirect}");
+
+    assert!(http_get(addr, "/nope/", |_| false).starts_with("HTTP/1.1 404"));
+    assert!(http_get(addr, "/%2e%2e/folio.toml", |_| false).starts_with("HTTP/1.1 400"));
+
+    // The served file is untouched on disk.
+    let on_disk = fs::read_to_string(root.join("output/first/index.html")).unwrap();
+    assert!(!on_disk.contains(folio::serve::RELOAD_PATH));
+
+    // A page listening for reloads hears about the next build. The edit is
+    // made only once the stream is open, so it cannot be missed.
+    {
+        use std::io::{Read, Write};
+
+        let mut stream = std::net::TcpStream::connect(addr).unwrap();
+        stream.set_read_timeout(Some(std::time::Duration::from_secs(20))).unwrap();
+        write!(stream, "GET {} HTTP/1.1\r\nHost: localhost\r\n\r\n", folio::serve::RELOAD_PATH).unwrap();
+
+        let mut events = String::new();
+        let mut read_until = |marker: &str| {
+            let mut buf = [0; 1024];
+            while !events.contains(marker) {
+                let n = stream.read(&mut buf).expect("timed out waiting for an event");
+                assert!(n > 0, "the stream closed early: {events}");
+                events.push_str(&String::from_utf8_lossy(&buf[..n]));
+            }
+        };
+
+        read_until(": connected");
+        create_document(&root, "first", "First", "Edited text.", false);
+        read_until("data: reload");
+        assert!(events.contains("text/event-stream"), "{events}");
+    }
+
+    stop_tx.send(()).unwrap();
+    server.join().unwrap().unwrap();
 }

@@ -53,7 +53,7 @@ pub fn watch(root: &Path, options: &WatchOptions) -> Result<()> {
         let _ = stop_tx.try_send(());
     })?;
 
-    watch_until(root, options, stop_rx)?;
+    watch_until(root, options, stop_rx, || {})?;
     info!("Stopped watching");
     Ok(())
 }
@@ -61,7 +61,13 @@ pub fn watch(root: &Path, options: &WatchOptions) -> Result<()> {
 /// Watch a collection until `stop` receives, rebuilding as it changes.
 ///
 /// The collection is built once up front, in full.
-pub fn watch_until(root: &Path, options: &WatchOptions, stop: Receiver<()>) -> Result<()> {
+/// `on_built` runs after every build that succeeds.
+pub fn watch_until(
+    root: &Path,
+    options: &WatchOptions,
+    stop: Receiver<()>,
+    mut on_built: impl FnMut(),
+) -> Result<()> {
     // Some platforms report events against the canonical path,
     // and `classify` compares paths by prefix.
     let root = &root.canonicalize()?;
@@ -83,7 +89,9 @@ pub fn watch_until(root: &Path, options: &WatchOptions, stop: Receiver<()>) -> R
     watcher.watch(root, RecursiveMode::NonRecursive)?;
 
     // Watching starts before the first build, so nothing saved during it is missed.
-    rebuild(root, options, Rebuild::Full);
+    if rebuild(root, options, Rebuild::Full) {
+        on_built();
+    }
     info!("Watching {} for changes", root.display());
 
     let mut pending: Option<Rebuild> = None;
@@ -105,7 +113,9 @@ pub fn watch_until(root: &Path, options: &WatchOptions, stop: Receiver<()>) -> R
             }
             recv(quiet) -> _ => {
                 let needed = pending.take().expect("the timer only runs with a rebuild pending");
-                rebuild(root, options, needed);
+                if rebuild(root, options, needed) {
+                    on_built();
+                }
             }
         }
     }
@@ -146,15 +156,22 @@ pub fn classify(root: &Path, event: &Event) -> Option<Rebuild> {
         .max()
 }
 
-/// Build the collection, reporting the outcome instead of returning it.
+/// Build the collection, reporting the outcome instead of returning it,
+/// and saying whether it succeeded.
 ///
 /// A failed build is something to fix and save again,
 /// not a reason to stop watching.
-fn rebuild(root: &Path, options: &WatchOptions, needed: Rebuild) {
+fn rebuild(root: &Path, options: &WatchOptions, needed: Rebuild) -> bool {
     let started = Instant::now();
     match build(root, options, needed) {
-        Ok(summary) => info!("{summary} in {} ms", started.elapsed().as_millis()),
-        Err(e) => error!("build failed: {e}"),
+        Ok(summary) => {
+            info!("{summary} in {} ms", started.elapsed().as_millis());
+            true
+        }
+        Err(e) => {
+            error!("build failed: {e}");
+            false
+        }
     }
 }
 

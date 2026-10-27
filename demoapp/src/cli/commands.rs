@@ -71,6 +71,25 @@ enum Command {
         drafts: bool,
     },
 
+    /// Serve the site locally, rebuilding and reloading pages as it changes.
+    Serve {
+        /// Collection directory (defaults to current directory).
+        #[arg(default_value = ".")]
+        path: PathBuf,
+
+        /// Output directory (defaults to 'output').
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Include draft documents.
+        #[arg(long)]
+        drafts: bool,
+
+        /// Port to listen on, on localhost.
+        #[arg(long, default_value_t = 8000)]
+        port: u16,
+    },
+
     /// Validate documents in the collection.
     Check {
         /// Collection directory (defaults to current directory).
@@ -170,6 +189,13 @@ impl Cli {
             Command::Watch { path, output, drafts } => {
                 crate::watch::watch(&path, &crate::watch::WatchOptions { output, drafts })
             }
+            Command::Serve { path, output, drafts, port } => crate::serve::serve(
+                &path,
+                &crate::serve::ServeOptions {
+                    watch: crate::watch::WatchOptions { output, drafts },
+                    addr: std::net::SocketAddr::from(([127, 0, 0, 1], port)),
+                },
+            ),
             Command::Check { path } => cmd_check(path),
             Command::New { title, path } => cmd_new(title, path),
             Command::Index { path } => cmd_index(path),

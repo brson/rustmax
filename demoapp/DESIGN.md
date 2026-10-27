@@ -87,6 +87,7 @@ src/
   feeds/           Atom and JSON Feed
   remote/          `fetch` (reqwest, url, mime, futures)
   watch/           `watch` (notify, crossbeam, ctrlc)
+  serve/           `serve` (hyper, hyper-util, http, http-body-util, bytes)
   util/            reproducible identifier generation
 ```
 
@@ -262,6 +263,32 @@ keyed by file name with punctuation replaced by `_`
 (`integrity.highlight_css`).
 The default template uses them on its stylesheet links.
 
+### Serving
+
+`folio serve` runs `folio watch`'s loop on its own thread
+and a `hyper` server for the output directory on a `tokio` runtime beside it,
+with `hyper-util`'s connection builder speaking HTTP/1 and HTTP/2.
+Responses are `http-body-util` bodies over `bytes::Bytes`:
+`Full` for files, `StreamBody` for live reload.
+
+Live reload is a server-sent event stream.
+The watch loop takes an `on_built` callback,
+which bumps a `tokio::sync::watch` counter;
+each open stream waits on the counter and sends `reload` when it moves.
+Pages get a one-line script that listens,
+inserted as they are served rather than when they are built,
+so `folio serve` never puts anything on disk that `folio build` would not.
+
+A directory requested without its trailing slash is redirected to it,
+because pages link relatively and would otherwise resolve against the parent.
+A path with any component other than a plain name,
+`%2e%2e` included once decoded, is refused,
+so nothing outside the output directory can be served.
+
+On Ctrl-C the watch loop returns between builds,
+the counter's sender is dropped, which ends every reload stream,
+and the accept loop is told to stop.
+
 ### Watching
 
 `folio watch` builds once, then rebuilds whenever the collection changes.
@@ -294,19 +321,19 @@ on `[Document]`, and `Collection` delegates.
 
 ## Coverage
 
-Used by a feature, as of this writing: 52 of the 73 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 57 of the 73 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
 | CLI | `clap`, `termcolor`, `rustyline`, `indicatif`, `ctrlc` |
 | Files | `notify` |
-| Web | `reqwest`, `mime`, `url` |
+| Web | `reqwest`, `mime`, `url`, `hyper`, `hyper-util`, `http`, `http-body-util` |
 | Async | `tokio`, `futures` |
 | Concurrency | `rayon`, `crossbeam` |
 | Parsing | `comrak`, `regex`, `nom`, `syn` |
 | Templates | `tera` |
 | Serialization | `serde`, `serde_json`, `toml`, `json5` |
-| Encoding | `flate2`, `base64`, `hex`, `zip`, `tar` |
+| Encoding | `flate2`, `base64`, `hex`, `bytes`, `zip`, `tar` |
 | Hashing | `blake3`, `sha2` |
 | Graphics | `image` |
 | Filesystem | `walkdir`, `ignore`, `glob`, `tempfile` |
@@ -331,10 +358,9 @@ which is the failure mode this app is supposed to avoid.
 | `libc` | Nothing here needs a raw syscall. |
 | `libm` | `no_std` math. Folio is a hosted program. |
 | `num-bigint` | No arbitrary-precision arithmetic anywhere in a site generator. |
-| `hyper` | `reqwest` is the layer Folio works at. Reaching past it would be pretence. |
-| `http`, `http-body-util`, `hyper-util`, `tower`, `socket2` | Used only by the dev server, which was removed when `axum` left `rustmax`. Candidates for a `folio serve`. |
+| `tower` | `folio serve` is a single `service_fn` with nothing to layer around it. Middleware for its own sake would be decoration. |
+| `socket2` | `tokio`'s listener already sets what a localhost dev server needs. |
 | `xshell` | Folio runs no external commands. |
-| `bytes` | `reqwest` hands back text for documents. Nothing in Folio manipulates byte buffers. |
 | `cfg-if` | No platform-specific code. |
 | `chrono` | `jiff` covers every date Folio handles. A second date library would be decoration. |
 | `rustc-hash` | `ahash` already covers the one hash map where hashing speed matters, the search index. |
@@ -349,7 +375,7 @@ is itself worth knowing.
 
 ## Testing
 
-228 tests: 195 unit, 33 integration.
+233 tests: 199 unit, 34 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

@@ -244,7 +244,7 @@ fn normalize(path: &Path) -> PathBuf {
 /// Decode `%XX` escapes in a URL path.
 ///
 /// An escape that does not decode to UTF-8 is kept as written.
-fn percent_decode(path: &str) -> String {
+pub(crate) fn percent_decode(path: &str) -> String {
     let bytes = path.as_bytes();
     let mut out = Vec::with_capacity(bytes.len());
     let mut i = 0;

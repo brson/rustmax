@@ -21,10 +21,11 @@ See [DESIGN.md](DESIGN.md) for which crates are used where, and which are not an
 cargo run -- init my-site
 cargo run -- new "First post" --path my-site
 cargo run -- check my-site
-cargo run -- build my-site --drafts
+cargo run -- serve my-site --drafts
 ```
 
-The site is written to `my-site/output`.
+`serve` builds the site to `my-site/output`, serves it at <http://localhost:8000/>
+and rebuilds and reloads as you edit; `build` writes it once.
 
 ## Commands
 
@@ -34,6 +35,7 @@ The site is written to `my-site/output`.
 | `new TITLE` | Create a draft document dated today. |
 | `build [PATH]` | Build the site. `--drafts`, `--compress`, `--incremental`, `--progress`. |
 | `watch [PATH]` | Build, then rebuild on every change until Ctrl-C. `--drafts`, `--output`. |
+| `serve [PATH]` | `watch`, and serve the site on `localhost:8000`, reloading open pages after each rebuild. `--port`. |
 | `check [PATH]` | Lint documents: Rust code that does not parse, links and images that lead nowhere, unknown shortcodes and languages, future dates. Fails on errors. |
 | `export [PATH] -f FORMAT` | `json`, `rss`, `atom`, `json-feed`, `sitemap`, `epub`, or `tar` of the built output. |
 | `index [PATH]` | Rebuild the built site's search index without rebuilding pages. |

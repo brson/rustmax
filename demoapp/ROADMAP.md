@@ -8,9 +8,9 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
-228 tests, no clippy warnings.
-52 of the 73 crates `rustmax` re-exports are used by a feature;
-the other 21 are listed with reasons in DESIGN.md
+233 tests, no clippy warnings.
+57 of the 73 crates `rustmax` re-exports are used by a feature;
+the other 16 are listed with reasons in DESIGN.md
 and are not targets.
 
 ## Next, in order
@@ -41,21 +41,14 @@ but the diagnostic is unhelpful (see VALIDATION.md).
 Folio is the right place to try an `#[rmx::attr(..)]` against a real
 test suite if `rustmax` grows one.
 
-### 3. `folio serve`
-
-A local server for the output, rebuilding through `folio watch`.
-It would use `hyper`, `hyper-util` and `http-body-util`,
-replacing the dev server that left with `axum`,
-and live reload would give the watch loop a fourth event to select on.
-
-### 4. Anchors
+### 3. Anchors
 
 `folio check` knows whether a link's page exists but not whether its
 `#fragment` does. The heading ids are known once a page is rendered,
 so checking fragments means linting the rendered pages rather than the
 markdown, which `check` does not do yet.
 
-### 5. Things deliberately not planned
+### 4. Things deliberately not planned
 
 - **Plugin system.** Named in the old roadmap for two years without a use
   case behind it. A plugin system with no plugins is architecture for its
