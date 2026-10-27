@@ -293,9 +293,9 @@ pub extern crate proc_macro;
 #[cfg(feature = "rustmax-macros")]
 pub use ::rustmax_macros::derive;
 
-/// Scope shims for derive macros that name their crate relatively.
+/// Scope shims for macros that name their crate relatively.
 ///
-/// Some derive macros expand to paths like `clap::Parser`,
+/// Some macros expand to paths like `clap::Parser`,
 /// which resolve against the scope the macro was used in.
 /// Glob-importing one of these modules binds the crate's own name there.
 /// Duplicate glob imports of the same module do not conflict,
@@ -311,6 +311,11 @@ pub mod __macro_scope {
     #[cfg(feature = "derive_more")]
     pub mod derive_more {
         pub use crate::derive_more;
+    }
+
+    #[cfg(feature = "tokio")]
+    pub mod tokio {
+        pub use crate::tokio;
     }
 }
 
@@ -787,6 +792,25 @@ pub mod tokio {
     #![doc = include_str!("../doc-src/crate-tokio.md")]
 
     pub use ::tokio::*;
+
+    // `tokio::main` and `tokio::test` name `tokio` relative to the use site,
+    // which fails through this re-export. These stand-ins tell them where it
+    // is; being explicit imports, they shadow the originals from the glob.
+    // `tokio` only has the macros with its `macros` feature, which only
+    // these rustmax features turn on.
+    #[cfg(all(
+        feature = "rustmax-macros",
+        any(feature = "rmx-feature-more", feature = "rmx-feature-more-portable"),
+    ))]
+    pub use ::rustmax_macros::{tokio_main as main, tokio_test as test};
+
+    /// The originals, for the stand-ins to forward to.
+    #[cfg(all(
+        feature = "rustmax-macros",
+        any(feature = "rmx-feature-more", feature = "rmx-feature-more-portable"),
+    ))]
+    #[doc(hidden)]
+    pub use ::tokio::{main as __main, test as __test};
 }
 
 #[cfg(feature = "tower")]

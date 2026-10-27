@@ -836,8 +836,8 @@ fn serve(requests: usize) -> String {
     base
 }
 
-#[test]
-fn fetch_saves_markdown_and_reports_each_failure() {
+#[rmx::tokio::test]
+async fn fetch_saves_markdown_and_reports_each_failure() {
     let dir = tempdir().unwrap();
     let content = dir.path().join("content");
     let base = serve(3);
@@ -851,8 +851,7 @@ fn fetch_saves_markdown_and_reports_each_failure() {
         })
         .collect();
 
-    let rt = rmx::tokio::runtime::Runtime::new().unwrap();
-    let results = rt.block_on(folio::remote::fetch_documents(&downloads));
+    let results = folio::remote::fetch_documents(&downloads).await;
 
     assert!(results[0].is_ok(), "{:?}", results[0]);
     assert!(fs::read_to_string(content.join("notes.md")).unwrap().contains("Fetched."));
@@ -865,7 +864,7 @@ fn fetch_saves_markdown_and_reports_each_failure() {
     assert!(missing.contains("404"), "{missing}");
 
     // A second fetch of the same document does not overwrite it.
-    let again = rt.block_on(folio::remote::fetch_documents(&downloads[..1]));
+    let again = folio::remote::fetch_documents(&downloads[..1]).await;
     assert!(again[0].as_ref().unwrap_err().to_string().contains("already exists"));
 }
 

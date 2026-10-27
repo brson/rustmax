@@ -71,6 +71,18 @@ and adding a doctest over the arm that was broken.
 
 ## Confirmed working
 
+**`#[rmx::tokio::test]` and `#[rmx::tokio::main]`.**
+These used to fail with a wall of `cannot find module or crate `tokio``,
+whose suggested fix was `cargo add tokio`,
+because `tokio`'s macros name `tokio` relative to the use site.
+The workaround was `use rmx::tokio;` at each use site.
+`rustmax` now shadows both with stand-ins that pass `tokio`
+its `crate = ".."` argument, and Folio's fetch test uses
+`#[rmx::tokio::test]` with nothing imported.
+They were the only attribute macros among the re-exported crates that needed it:
+`extension_trait` works as it is, `cxx::bridge` cannot be helped,
+and the function-like proc macros all sit behind `$crate`-using `macro_rules!`.
+
 Things that were expected to be hard and were not.
 
 **`#[rmx::derive]` under a renamed dependency.**
@@ -105,18 +117,6 @@ which resolves to wherever the macro was reached from.
 work with no direct dependency.
 
 ## Rough edges, not bugs
-
-**`#[tokio::test]` needs `use rmx::tokio;`.**
-Documented -- `tokio` names its crate relative to the use site,
-like `clap` and `derive_more` --
-but the failure mode is a wall of
-`cannot find module or crate `tokio``
-pointing at every test in the file,
-which does not obviously suggest the one-line fix.
-`#[rmx::derive]` handles the derives in this class;
-attribute macros like `tokio::test` and `tokio::main` are left to the reader.
-An `#[rmx::attr(tokio::test)]`, or a note in the guide's macro section
-naming the error text, would close the gap.
 
 **`tempfile` and `comrak` run with no default features.**
 Both work, but for the same structural reason `syn` did not:

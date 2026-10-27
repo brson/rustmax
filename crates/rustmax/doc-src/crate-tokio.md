@@ -25,6 +25,9 @@ allowing thousands of tasks to run concurrently on a small number of threads.
 The [`Runtime`] provides the execution environment for async code.
 Most applications will use the [`tokio::main`] macro to set up the runtime,
 though it can also be constructed manually for more control.
+Through `rustmax` it is spelled `#[rmx::tokio::main]`,
+and the test attribute `#[rmx::tokio::test]`;
+see [Macros](crate::guide#macros) in the guide.
 
 Tokio's networking primitives like [`TcpListener`] and [`TcpStream`]
 are designed to work seamlessly with async/await,

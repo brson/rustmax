@@ -414,7 +414,8 @@ simply work the way the original crate's documentation says it does.
 This section explains why, and what to write instead.
 
 The short version: use [`rmx::derive`](crate::derive)
-in place of `#[derive(..)]`.
+in place of `#[derive(..)]`,
+and write `tokio`'s attributes as `#[rmx::tokio::main]` and `#[rmx::tokio::test]`.
 
 ```rust
 # use rustmax as rmx;
@@ -456,6 +457,7 @@ which is why there is no single workaround:
 | [`num_enum`] | `::num_enum` | yes, via `#[num_enum(crate = ..)]` |
 | [`clap`] | `clap`, relative to the use site | yes, by binding the name in scope |
 | [`derive_more`] | `derive_more`, relative to the use site | yes, by binding the name in scope |
+| [`tokio`] | `tokio`, relative to the use site | yes, via `#[tokio::main(crate = ..)]` |
 | [`thiserror`] | `::thiserror` | no |
 | [`cxx`] | `::cxx` | no |
 
@@ -556,18 +558,27 @@ it binds `clap` as well as `Parser`,
 and the generated code needs the former.
 Importing only `rmx::clap::Parser` fails to compile.
 
-The same applies to attribute macros,
-which `#[rmx::derive]` does not cover:
+The same import works for `tokio`'s attribute macros,
+though it is not needed:
+`rmx::tokio::main` and `rmx::tokio::test` are stand-ins for `tokio`'s own,
+which tell them where `tokio` is
+by adding the `crate = ".."` argument `tokio` accepts for the purpose.
+Every other argument passes through unchanged.
 
-```rust,ignore
+```rust
 # use rustmax as rmx;
-use rmx::tokio;
-
-#[tokio::main]
+#[rmx::tokio::main(flavor = "current_thread")]
 async fn main() {
-    // ...
+    rmx::tokio::task::yield_now().await;
 }
 ```
+
+These are the only attribute macros among the re-exported crates
+that need any help.
+`extension_trait` works through `rustmax` as it is,
+and the function-like macros that are proc macros underneath,
+such as `tokio::select!`, `futures::join!` and `xshell::cmd!`,
+are wrapped in `macro_rules!` macros that reach them through `$crate`.
 
 For `serde`, the equivalent is its `crate` attribute,
 which takes the path to use in generated code:

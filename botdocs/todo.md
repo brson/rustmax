@@ -8,6 +8,12 @@
     `crate::__macro_scope`
   - thiserror and cxx: generate `::thiserror` / `::cxx`, which resolve only
     against the extern prelude, so a direct dependency is still required
+  - tokio::main and tokio::test: name `tokio` relatively; `rmx::tokio::{main,
+    test}` are stand-ins in `rustmax-macros` that add tokio's
+    `crate = "<rustmax>::tokio"` argument (and bind the name in scope, so a
+    bad argument reports only tokio's own error). Tested in
+    `rustmax-macros-test/tests/tokio.rs`. No other re-exported attribute macro
+    needs help; `cxx::bridge` cannot get it.
   - possible future fix: Cargo public-dependency extern prelude propagation
   - open: convert `doc-src/crate-*.md` examples to `#[rmx::derive]` and drop
     the derive crates from the generated doctest crate's direct dependencies

@@ -235,6 +235,66 @@ pub fn derive(attr: TokenStream, item: TokenStream) -> TokenStream {
     .into()
 }
 
+/// Stands in for `tokio::main` as `rmx::tokio::main`.
+///
+/// `tokio`'s entry-point macros generate code that names `tokio` relative to
+/// the use site, so through a re-export they fail unless something has bound
+/// the name. This forwards to `tokio`'s own macro, unchanged apart from a
+/// `crate = "<path to rustmax>::tokio"` argument, added unless one is given.
+#[proc_macro_attribute]
+pub fn tokio_main(attr: TokenStream, item: TokenStream) -> TokenStream {
+    tokio_entry("__main", attr.into(), item.into()).into()
+}
+
+/// Stands in for `tokio::test` as `rmx::tokio::test`. See [`tokio_main`].
+#[proc_macro_attribute]
+pub fn tokio_test(attr: TokenStream, item: TokenStream) -> TokenStream {
+    tokio_entry("__test", attr.into(), item.into()).into()
+}
+
+/// Forward to `tokio`'s `real` macro, re-exported under that hidden name.
+fn tokio_entry(real: &str, attr: TokenStream2, item: TokenStream2) -> TokenStream2 {
+    let rustmax = match rustmax_path() {
+        Ok(path) => path,
+        Err(err) => return prepend(err, item),
+    };
+    let root = &rustmax.tokens;
+
+    let names_crate = split_commas(attr.clone())
+        .iter()
+        .any(|arg| matches!(arg.first(), Some(TokenTree::Ident(ident)) if ident == "crate"));
+
+    let args = if names_crate {
+        attr
+    } else {
+        let path = Literal::string(&format!("{}::tokio", rustmax.text));
+        if attr.is_empty() {
+            quote!(crate = #path)
+        } else {
+            quote!(#attr, crate = #path)
+        }
+    };
+
+    // When `tokio` rejects its arguments, it still expands the function,
+    // with the default crate name rather than the one given. Binding that
+    // name in scope means the user sees only the real error, not a second
+    // one about `tokio` being missing. A direct dependency on `tokio`
+    // already binds it, and a glob would shadow it, so leave that alone.
+    let scope = direct_path("tokio").is_none().then(|| {
+        quote! {
+            #[allow(unused_imports)]
+            use #root::__macro_scope::tokio::*;
+        }
+    });
+
+    let real = Ident::new(real, Span::call_site());
+    quote! {
+        #scope
+        #[#root::tokio::#real(#args)]
+        #item
+    }
+}
+
 /// The crate-path attribute that tells a derive crate where its runtime is.
 fn crate_attr(krate: &str, rustmax: &RustmaxPath) -> TokenStream2 {
     let module = Ident::new(krate, Span::call_site());
