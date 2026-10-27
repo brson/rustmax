@@ -525,7 +525,7 @@ mod tests {
         assert!(html.contains("<nav class=\"toc\">"), "{html}");
         assert!(html.contains("Table of Contents"));
         // Each link must land on an id the page actually has.
-        for id in ["heading-title", "heading-section-1", "heading-section-2"] {
+        for id in ["title", "section-1", "section-2"] {
             assert!(html.contains(&format!("id=\"{id}\"")), "{id} missing: {html}");
             assert!(html.contains(&format!("href=\"#{id}\"")), "{id} not linked: {html}");
         }

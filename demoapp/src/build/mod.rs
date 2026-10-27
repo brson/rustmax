@@ -300,25 +300,33 @@ fn finish(pb: Option<ProgressBar>, message: &str) {
     }
 }
 
+/// Render a document's content to HTML: shortcodes, markdown, highlighting.
+///
+/// This is the page body before links and images are resolved against the
+/// rest of the site, and it is what `folio check` reads heading ids from.
+pub fn render_document(doc: &Document, config: &Config) -> String {
+    let expanded = config.build.features.contains(BuildFeatures::SHORTCODES)
+        .then(|| crate::shortcode::expand(&doc.content));
+    let markdown = expanded.as_ref().map_or(doc.content.as_str(), |e| e.markdown.as_str());
+
+    let html = if config.highlight.enabled {
+        render_markdown_highlighted(markdown, &config.highlight.to_options())
+    } else {
+        render_markdown(markdown)
+    };
+
+    match &expanded {
+        Some(expanded) => expanded.finish(&html),
+        None => html,
+    }
+}
+
 /// Build a single document.
 fn build_document(doc: &Document, config: &Config, site: &Site, output_dir: &Path) -> Result<()> {
     let engine = &site.engine;
     debug!("Building: {}", doc.source_path.display());
 
-    let expanded = config.build.features.contains(BuildFeatures::SHORTCODES)
-        .then(|| crate::shortcode::expand(&doc.content));
-    let markdown = expanded.as_ref().map_or(doc.content.as_str(), |e| e.markdown.as_str());
-
-    // Render markdown with optional syntax highlighting.
-    let html_content = if config.highlight.enabled {
-        render_markdown_highlighted(markdown, &config.highlight.to_options())
-    } else {
-        render_markdown(markdown)
-    };
-    let html_content = match &expanded {
-        Some(expanded) => expanded.finish(&html_content),
-        None => html_content,
-    };
+    let html_content = render_document(doc, config);
     let html_content = site.index.rewrite_source_links(doc, &html_content);
     let html_content = site.index.add_image_dimensions(doc, &html_content);
 

@@ -36,7 +36,7 @@ and rebuilds and reloads as you edit; `build` writes it once.
 | `build [PATH]` | Build the site. `--drafts`, `--compress`, `--incremental`, `--progress`. |
 | `watch [PATH]` | Build, then rebuild on every change until Ctrl-C. `--drafts`, `--output`. |
 | `serve [PATH]` | `watch`, and serve the site on `localhost:8000`, reloading open pages after each rebuild. `--port`. |
-| `check [PATH]` | Lint documents: Rust code that does not parse, links and images that lead nowhere, unknown shortcodes and languages, future dates. Fails on errors. |
+| `check [PATH]` | Lint documents: Rust code that does not parse, links, `#fragments` and images that lead nowhere, unknown shortcodes and languages, future dates. Fails on errors. |
 | `export [PATH] -f FORMAT` | `json`, `rss`, `atom`, `json-feed`, `sitemap`, `epub`, or `tar` of the built output. |
 | `index [PATH]` | Rebuild the built site's search index without rebuilding pages. |
 | `repl [PATH]` | Query the collection interactively. |

@@ -880,10 +880,12 @@ fn links_between_documents_and_local_images_are_resolved_and_checked() {
         root,
         "first",
         "First",
-        "See [the second](second.md#details), ![a chart](/chart.png),\n\n[a typo](/secnod/) and ![gone](/missing.png).\n",
+        "See [the second](second.md#details), ![a chart](/chart.png),\n\n[a typo](/secnod/) and ![gone](/missing.png).\n\n\
+         ## Notes\n\n[Up](#notes), [down](#nowhere), [their notes](/second/#second-notes), \
+         [a footnote][^1], [its target](#fn-1) and [theirs](/second/#missing).\n\n[^1]: The footnote.\n",
         false,
     );
-    create_document(root, "second", "Second", "Text.", false);
+    create_document(root, "second", "Second", "## Details\n\nText.\n\n## Second notes\n", false);
 
     let out = build_test_site(root, |_| {});
     let html = fs::read_to_string(out.join("first/index.html")).unwrap();
@@ -900,9 +902,11 @@ fn links_between_documents_and_local_images_are_resolved_and_checked() {
         .collect();
 
     let messages: Vec<_> = lints.iter().map(|l| l.message.as_str()).collect();
-    assert_eq!(lints.len(), 2, "{messages:?}");
+    assert_eq!(lints.len(), 4, "{messages:?}");
     assert!(messages[0].contains("`/secnod/` leads nowhere"), "{messages:?}");
     assert!(messages[1].contains("`/missing.png`"), "{messages:?}");
+    assert!(messages[2].contains("`#nowhere`: /first/ has no heading or anchor `nowhere`"), "{messages:?}");
+    assert!(messages[3].contains("`/second/#missing`"), "{messages:?}");
     assert!(lints.iter().all(|l| l.level == folio::lint::Level::Error));
 }
 

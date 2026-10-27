@@ -52,6 +52,8 @@ pub struct SiteIndex {
     documents: HashMap<PathBuf, DocumentPage>,
     /// Built page paths, without a trailing slash; the index page is `""`.
     pages: HashSet<String>,
+    /// Which of `pages` are documents, with their URLs.
+    document_pages: HashMap<String, String>,
     /// Pages of drafts this build leaves out, keyed like `pages`.
     draft_pages: HashSet<String>,
     /// Paths relative to the output directory of everything else written.
@@ -71,12 +73,14 @@ impl SiteIndex {
             pages.insert("/search".to_string());
         }
         let mut draft_pages = HashSet::new();
+        let mut document_pages = HashMap::new();
 
         for doc in &collection.documents {
             let url = doc.url_path();
             let built = drafts_built || !doc.frontmatter.draft;
             let key = page_key(&url).to_string();
             if built {
+                document_pages.insert(key.clone(), url.clone());
                 pages.insert(key);
                 for tag in &doc.frontmatter.tags {
                     pages.insert(format!("/tags/{tag}"));
@@ -102,7 +106,7 @@ impl SiteIndex {
             }
         }
 
-        Ok(Self { content_dir, static_dir, documents, pages, draft_pages, files })
+        Ok(Self { content_dir, static_dir, documents, pages, document_pages, draft_pages, files })
     }
 
     /// Where `href`, written in `doc`, leads.
@@ -127,16 +131,22 @@ impl SiteIndex {
         let path = percent_decode(url.path());
         let key = page_key(&path);
 
+        if let Some(url) = self.document_pages.get(key) {
+            return Target::Document { url: url.clone() };
+        }
         if self.pages.contains(key) {
             return Target::Built;
         }
         if self.draft_pages.contains(key) {
             return Target::Draft { url: format!("{key}/") };
         }
-        if let Some(dir) = key.strip_suffix("/index.html")
-            && self.pages.contains(dir)
-        {
-            return Target::Built;
+        if let Some(dir) = key.strip_suffix("/index.html") {
+            if let Some(url) = self.document_pages.get(dir) {
+                return Target::Document { url: url.clone() };
+            }
+            if self.pages.contains(dir) {
+                return Target::Built;
+            }
         }
 
         let file = path.trim_start_matches('/');
@@ -325,13 +335,14 @@ mod tests {
         let site = SiteIndex::new(&collection, &config).unwrap();
         let intro = find(&collection, "Intro");
 
-        assert_eq!(site.resolve(intro, "/getting-started/"), Target::Built);
-        assert_eq!(site.resolve(intro, "../getting-started"), Target::Built);
+        let setup = Target::Document { url: "/getting-started/".into() };
+        assert_eq!(site.resolve(intro, "/getting-started/"), setup);
+        assert_eq!(site.resolve(intro, "../getting-started#install"), setup);
         assert_eq!(site.resolve(intro, "/"), Target::Built);
         assert_eq!(site.resolve(intro, "/tags/rust/"), Target::Built);
         assert_eq!(site.resolve(intro, "/rss.xml"), Target::Built);
         assert_eq!(site.resolve(intro, "/search/"), Target::Built);
-        assert_eq!(site.resolve(intro, "/intro/index.html"), Target::Built);
+        assert_eq!(site.resolve(intro, "/intro/index.html"), Target::Document { url: "/intro/".into() });
         assert_eq!(site.resolve(intro, "/wip/"), Target::Draft { url: "/wip/".into() });
         assert_eq!(site.resolve(intro, "/nowhere/"), Target::Missing);
         assert_eq!(site.resolve(intro, "#section"), Target::SamePage);
@@ -361,7 +372,7 @@ mod tests {
         let intro = find(&collection, "Intro");
 
         assert_eq!(site.resolve(intro, "wip.md"), Target::Document { url: "/wip/".into() });
-        assert_eq!(site.resolve(intro, "/wip/"), Target::Built);
+        assert_eq!(site.resolve(intro, "/wip/"), Target::Document { url: "/wip/".into() });
     }
 
     #[test]

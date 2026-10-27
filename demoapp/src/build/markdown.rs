@@ -35,7 +35,11 @@ fn render_markdown_internal(content: &str, _base_options: &Options) -> String {
     options.extension.autolink = true;
     options.extension.tasklist = true;
     options.extension.superscript = true;
-    options.extension.header_id_prefix = Some("heading-".to_string());
+    // Heading ids are the plain slug, `## Section One` -> `section-one`.
+    // That is what comrak's own anchor links point at, what Folio's tables of
+    // contents link to and what authors write by hand. A prefix would need
+    // JavaScript to map one to the other, as GitHub's does.
+    options.extension.header_id_prefix = Some(String::new());
     options.extension.footnotes = true;
     options.extension.description_lists = true;
     options.extension.multiline_block_quotes = true;
@@ -99,6 +103,13 @@ fn html_unescape(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn heading_anchors_link_to_their_own_ids() {
+        let html = render_markdown("## Section One\n");
+        assert!(html.contains(r##"id="section-one""##), "{html}");
+        assert!(html.contains(r##"href="#section-one""##), "{html}");
+    }
 
     #[test]
     fn test_basic_markdown() {

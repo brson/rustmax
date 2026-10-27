@@ -243,11 +243,21 @@ so that authors can link between documents as they lay them out on disk.
 The build rewrites those to the target's page,
 which is where a custom `slug` matters.
 
-The same index drives three lints in `folio check`:
-a link that leads nowhere and an image that is missing or unreadable
-are errors, and a link to a draft the build leaves out is a warning.
-A fourth warns about a published document dated in the future,
+The same index drives the link lints in `folio check`:
+a link that leads nowhere, a `#fragment` that names no id on its page,
+and an image that is missing or unreadable are errors,
+and a link to a draft the build leaves out is a warning.
+Another warns about a published document dated in the future,
 since Folio publishes it regardless.
+
+Fragments are checked against the ids in each document as the build renders it,
+headings, footnotes and anchors in raw HTML alike,
+so `check` renders every document once.
+Heading ids are the plain slug of the heading, `## Section One` becoming `section-one`.
+They used to carry a `heading-` prefix,
+while comrak's own anchor link in each heading pointed at the bare slug,
+which is GitHub's arrangement and relies on GitHub's JavaScript to connect them;
+without it, every heading's anchor link was broken.
 
 The build also gives every local raster image its `width` and `height`,
 read from the file header with `image::image_dimensions`,
@@ -375,7 +385,7 @@ is itself worth knowing.
 
 ## Testing
 
-233 tests: 199 unit, 34 integration.
+234 tests: 200 unit, 34 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

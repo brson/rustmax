@@ -8,6 +8,10 @@
 use rmx::comrak::nodes::NodeValue;
 use rmx::comrak::{Arena, Options, parse_document};
 use rmx::jiff::civil::Date;
+use rmx::rayon::prelude::*;
+use rmx::regex::Regex;
+use std::collections::{HashMap, HashSet};
+use std::sync::LazyLock;
 use rmx::prelude::*;
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -254,8 +258,16 @@ fn line_of(text: &str, offset: usize) -> usize {
     rmx::memchr::memchr_iter(b'\n', &text.as_bytes()[..offset]).count() + 1
 }
 
-/// Check that every link and image in a document leads somewhere the build writes.
-pub fn check_references(doc: &Document, site: &SiteIndex) -> Vec<Lint> {
+/// The `#fragment` of a link, decoded, if it has a non-empty one.
+fn fragment(url: &str) -> Option<String> {
+    let (_, fragment) = url.split_once('#')?;
+    (!fragment.is_empty()).then(|| crate::site::percent_decode(fragment))
+}
+
+/// Check that every link and image in a document leads somewhere the build writes,
+/// and that every `#fragment` names an id on the page it leads to.
+pub fn check_references(doc: &Document, context: &LintContext) -> Vec<Lint> {
+    let site = &context.site;
     let lint = |reference: &Reference, level, message| Lint {
         path: doc.source_path.clone(),
         line: reference.line,
@@ -267,7 +279,27 @@ pub fn check_references(doc: &Document, site: &SiteIndex) -> Vec<Lint> {
         .iter()
         .filter_map(|reference| {
             let url = &reference.url;
-            match (site.resolve(doc, url), reference.is_image) {
+            let target = site.resolve(doc, url);
+
+            // The page a fragment has to be found on, if it is a document's.
+            let page = match &target {
+                Target::SamePage => Some(doc.url_path()),
+                Target::Document { url } => Some(url.clone()),
+                _ => None,
+            };
+            if !reference.is_image
+                && let Some(page) = page
+                && let Some(fragment) = fragment(url)
+                && !context.anchors.get(&page).is_some_and(|ids| ids.contains(&fragment))
+            {
+                return Some(lint(
+                    reference,
+                    Level::Error,
+                    format!("link to `{url}`: {page} has no heading or anchor `{fragment}`"),
+                ));
+            }
+
+            match (target, reference.is_image) {
                 (Target::External | Target::SamePage | Target::Built, false) => None,
                 (Target::Document { .. } | Target::Static(_), false) => None,
                 (Target::External | Target::Built, true) => None,
@@ -314,13 +346,30 @@ pub fn check_date(doc: &Document, today: Date) -> Option<Lint> {
 pub struct LintContext {
     pub site: SiteIndex,
     pub today: Date,
+    /// The ids on each document's page, by page URL: what a `#fragment` can name.
+    pub anchors: HashMap<String, HashSet<String>>,
 }
 
 impl LintContext {
     pub fn new(collection: &Collection, config: &Config) -> crate::Result<Self> {
+        static ID: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"\bid="([^"]+)""#).expect("valid regex"));
+
+        // Rendered the way the build renders them, so the ids are the ones
+        // the pages will have: heading ids, footnotes, anchors in raw HTML.
+        let anchors = collection
+            .documents
+            .par_iter()
+            .map(|doc| {
+                let html = crate::build::render_document(doc, config);
+                let ids = ID.captures_iter(&html).map(|caps| caps[1].to_string()).collect();
+                (doc.url_path(), ids)
+            })
+            .collect();
+
         Ok(Self {
             site: SiteIndex::new(collection, config)?,
             today: config.build_time().date(),
+            anchors,
         })
     }
 }
@@ -334,7 +383,7 @@ pub fn check_document(doc: &Document, context: &LintContext) -> Vec<Lint> {
     let mut lints = check_rust_syntax(path, &doc.content);
     lints.extend(check_code_block_languages(path, &doc.content));
     lints.extend(check_shortcodes(path, &doc.content));
-    lints.extend(check_references(doc, &context.site));
+    lints.extend(check_references(doc, context));
 
     for lint in &mut lints {
         lint.line = doc.source_line(lint.line);
