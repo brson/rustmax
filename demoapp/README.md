@@ -36,7 +36,7 @@ The site is written to `my-site/output`.
 | `watch [PATH]` | Build, then rebuild on every change until Ctrl-C. `--drafts`, `--output`. |
 | `check [PATH]` | Lint documents: Rust code that does not parse, links and images that lead nowhere, unknown shortcodes and languages, future dates. Fails on errors. |
 | `export [PATH] -f FORMAT` | `json`, `rss`, `atom`, `json-feed`, `sitemap`, `epub`, or `tar` of the built output. |
-| `index [PATH]` | Rebuild the search index. |
+| `index [PATH]` | Rebuild the built site's search index without rebuilding pages. |
 | `repl [PATH]` | Query the collection interactively. |
 | `files [PATH] -p GLOB` | List files matching a glob. |
 | `fetch URL...` | Download markdown documents into `content/`, several at once. |
@@ -93,7 +93,7 @@ theme = "github-dark"
 
 | Feature | |
 | --- | --- |
-| `search` | `search-index.json` and `search.js` |
+| `search` | A search page at `/search/`, with `search-index.json` and `search.js` |
 | `feeds` | `rss.xml`, `atom.xml`, `feed.json` |
 | `sitemap` | `sitemap.xml` |
 | `shortcodes` | Expand shortcodes in documents |
@@ -139,6 +139,8 @@ Templates are [Tera](https://keats.github.io/tera/).
 Document pages get `title`, `content`, `date`, `tags`, `toc`, `word_count`, `reading_time`
 and the site settings;
 the index and tag pages get `documents`.
+`search` is true when the search page is built, for linking to it,
+and a `search.html` template replaces the built-in search page.
 `integrity` holds the Subresource Integrity hash of each generated asset,
 keyed by file name with punctuation replaced by `_`:
 

@@ -13,6 +13,9 @@ use crate::Result;
 /// Name of the template used when the collection defines none.
 const BUILTIN_TEMPLATE_NAME: &str = "_builtin/default.html";
 
+/// Name of the built-in search page template.
+pub const BUILTIN_SEARCH_TEMPLATE: &str = "_builtin/search.html";
+
 /// Template engine wrapping Tera.
 pub struct TemplateEngine {
     tera: Tera,
@@ -43,6 +46,7 @@ impl TemplateEngine {
 
         // Add built-in templates as fallback.
         tera.add_raw_template(BUILTIN_TEMPLATE_NAME, BUILTIN_DEFAULT_TEMPLATE)?;
+        tera.add_raw_template(BUILTIN_SEARCH_TEMPLATE, super::SEARCH_PAGE_TEMPLATE)?;
 
         Ok(Self {
             tera,
@@ -79,6 +83,15 @@ impl TemplateEngine {
         ctx.insert("generator", &format!("folio {}", crate::collection::FOLIO_VERSION));
         ctx.insert("build_id", &self.build_id);
         ctx.insert("integrity", &self.integrity);
+        ctx.insert("search", &config.build.features.contains(crate::features::BuildFeatures::SEARCH));
+    }
+
+    /// Build template context for the search page.
+    pub fn search_context(&self, config: &Config) -> Context {
+        let mut ctx = Context::new();
+        self.insert_site_context(&mut ctx, config);
+        ctx.insert("title", "Search");
+        ctx
     }
 
     /// Render `template_name`, or the built-in template if the collection
@@ -324,7 +337,7 @@ const BUILTIN_DEFAULT_TEMPLATE: &str = r#"<!DOCTYPE html>
 </head>
 <body>
     <header>
-        <nav><a href="/">{{ site_title }}</a></nav>
+        <nav><a href="/">{{ site_title }}</a>{% if search %} <a href="/search/">Search</a>{% endif %}</nav>
     </header>
     <main>
         {% if is_index %}

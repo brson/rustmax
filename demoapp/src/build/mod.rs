@@ -11,7 +11,7 @@ mod progress;
 mod assets;
 
 pub use markdown::{render_markdown, render_markdown_highlighted, apply_syntax_highlighting, generate_highlight_css};
-pub use template::TemplateEngine;
+pub use template::{TemplateEngine, BUILTIN_SEARCH_TEMPLATE};
 pub use compress::{compress_output, CompressStats};
 pub use cache::{BuildCache, CacheStatus, IncrementalBuildResult, hash_templates};
 pub use highlight::{
@@ -23,7 +23,7 @@ pub use toc::{
     TableOfContents, TocEntry, TocOptions, Heading, HeadingLevel,
     extract_headings_html, generate_id, generate_toc_css,
 };
-pub use search_js::{generate_search_js, generate_search_page};
+pub use search_js::{generate_search_js, SEARCH_PAGE_TEMPLATE};
 pub use progress::{
     document_progress, incremental_progress,
     asset_spinner, template_spinner, search_spinner, feed_spinner, compress_spinner,
@@ -236,11 +236,7 @@ impl<'a> Site<'a> {
             .with_seed(config.build.seed)
             .with_integrity(integrity_map(&assets));
 
-        let documents = if config.build.features.contains(BuildFeatures::DRAFTS) {
-            collection.all_sorted()
-        } else {
-            collection.published()
-        };
+        let documents = collection.built(config);
 
         let index = SiteIndex::new(collection, config)?;
 
@@ -267,9 +263,11 @@ impl<'a> Site<'a> {
 
         if features.contains(BuildFeatures::SEARCH) {
             let pb = progress.then(search_spinner);
-            let search_index = crate::search::SearchIndex::build(collection);
-            let search_json = rmx::serde_json::to_string(&search_index)?;
-            fs::write(output_dir.join("search-index.json"), search_json)?;
+            let page = self.engine.render_first(&["search.html", BUILTIN_SEARCH_TEMPLATE], &self.engine.search_context(config))?;
+            fs::create_dir_all(output_dir.join("search"))?;
+            fs::write(output_dir.join("search/index.html"), page)?;
+            // Only what is built: drafts must not leak into a published index.
+            crate::search::write_index(self.documents.iter().copied(), output_dir)?;
             finish(pb, "Search index built");
         }
 

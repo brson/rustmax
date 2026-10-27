@@ -95,6 +95,16 @@ impl Collection {
         self.documents.all_sorted()
     }
 
+    /// The documents a build with `config` writes: drafts only if its
+    /// features include them.
+    pub fn built(&self, config: &Config) -> Vec<&Document> {
+        if config.build.features.contains(crate::features::BuildFeatures::DRAFTS) {
+            self.all_sorted()
+        } else {
+            self.published()
+        }
+    }
+
     /// Get documents by tag.
     pub fn by_tag(&self, tag: &str) -> Vec<&Document> {
         self.documents.by_tag(tag)

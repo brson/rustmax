@@ -5,10 +5,10 @@ pub fn generate_search_js() -> String {
     SEARCH_JS.to_string()
 }
 
-/// Generate a search page HTML template.
-pub fn generate_search_page() -> String {
-    SEARCH_PAGE.to_string()
-}
+/// The built-in search page template, rendered to `search/index.html`.
+///
+/// A collection can replace it with a `search.html` template of its own.
+pub const SEARCH_PAGE_TEMPLATE: &str = SEARCH_PAGE;
 
 const SEARCH_JS: &str = r#"/**
  * Folio Client-Side Search
@@ -17,58 +17,54 @@ const SEARCH_JS: &str = r#"/**
 (function() {
   'use strict';
 
-  // Stop words (same as server).
-  const STOP_WORDS = new Set([
-    'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
-    'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
-    'to', 'was', 'were', 'will', 'with', 'the', 'this', 'but', 'they',
-    'have', 'had', 'what', 'when', 'where', 'who', 'which', 'why', 'how'
-  ]);
-
-  // Simplified Porter stemmer for JavaScript.
-  function stem(word) {
-    word = word.toLowerCase();
-
-    // Step 1a: plurals.
-    if (word.endsWith('sses')) word = word.slice(0, -2);
-    else if (word.endsWith('ies')) word = word.slice(0, -2);
-    else if (!word.endsWith('ss') && word.endsWith('s')) word = word.slice(0, -1);
-
-    // Step 1b: -ed, -ing.
-    if (word.endsWith('eed') && word.length > 4) {
-      word = word.slice(0, -1);
-    } else if (word.endsWith('ed') && hasVowel(word.slice(0, -2))) {
-      word = word.slice(0, -2);
-    } else if (word.endsWith('ing') && hasVowel(word.slice(0, -3))) {
-      word = word.slice(0, -3);
-    }
-
-    return word;
-  }
-
-  function hasVowel(s) {
-    return /[aeiou]/.test(s);
-  }
-
-  // Tokenize and stem a query.
-  function tokenize(text) {
+  // Split a query into lowercase words, as the index splits documents.
+  function words(text) {
     return text.toLowerCase()
-      .split(/\W+/)
-      .filter(w => w.length >= 2 && !STOP_WORDS.has(w))
-      .map(stem);
+      .split(/[^\p{L}\p{N}_'’]+/u)
+      .filter(w => w.length >= 2);
   }
 
   // Search index class.
+  //
+  // There is no stemmer here. The index maps every word that appears in the
+  // documents to the stem it was indexed under (`vocabulary`, for words that
+  // differ from their stem), so a query word is looked up rather than stemmed,
+  // and the browser and `folio` cannot disagree about a stem.
   class SearchIndex {
     constructor(data) {
       this.documents = data.documents || [];
       this.wordIndex = data.word_index || {};
       this.docLengths = data.doc_lengths || [];
+      this.vocabulary = data.vocabulary || {};
+      this.surfaceWords = Object.keys(this.vocabulary).concat(Object.keys(this.wordIndex));
+    }
+
+    // The stem a word in the documents was indexed under, if it was.
+    stemOf(word) {
+      if (Object.hasOwn(this.vocabulary, word)) return this.vocabulary[word];
+      if (Object.hasOwn(this.wordIndex, word)) return word;
+      return null;
     }
 
     search(query, maxResults = 20) {
-      const terms = tokenize(query);
-      if (terms.length === 0) return [];
+      const queryWords = words(query);
+      if (queryWords.length === 0) return [];
+
+      // Weight per stem: whole words count fully. The last word may still be
+      // being typed, so words it is the start of count for half.
+      const weights = new Map();
+      queryWords.forEach((word, i) => {
+        const stem = this.stemOf(word);
+        if (stem) weights.set(stem, 1);
+        if (i === queryWords.length - 1) {
+          for (const surface of this.surfaceWords) {
+            if (surface !== word && surface.startsWith(word)) {
+              const prefixStem = this.stemOf(surface);
+              if (!weights.has(prefixStem)) weights.set(prefixStem, 0.5);
+            }
+          }
+        }
+      });
 
       const scores = new Map();
       const numDocs = this.documents.length;
@@ -76,33 +72,16 @@ const SEARCH_JS: &str = r#"/**
       const k1 = 1.2;
       const b = 0.75;
 
-      for (const term of terms) {
-        // Exact match.
-        const postings = this.wordIndex[term] || [];
-        if (postings.length > 0) {
-          const df = postings.length;
-          const idf = Math.log((numDocs - df + 0.5) / (df + 0.5) + 1);
+      for (const [stem, weight] of weights) {
+        const postings = this.wordIndex[stem] || [];
+        const df = postings.length;
+        const idf = Math.log((numDocs - df + 0.5) / (df + 0.5) + 1);
 
-          for (const [docIdx, tf] of postings) {
-            const docLen = this.docLengths[docIdx] || 1;
-            const score = idf * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * docLen / avgDocLen));
-            scores.set(docIdx, (scores.get(docIdx) || 0) + score);
-          }
-        }
-
-        // Prefix matching.
-        for (const [indexedTerm, postings] of Object.entries(this.wordIndex)) {
-          if (indexedTerm.startsWith(term) && indexedTerm !== term) {
-            const df = postings.length;
-            const idf = Math.log((numDocs - df + 0.5) / (df + 0.5) + 1);
-
-            for (const [docIdx, tf] of postings) {
-              const docLen = this.docLengths[docIdx] || 1;
-              const adjTf = tf * 0.5; // Reduced weight for prefix.
-              const score = idf * (adjTf * (k1 + 1)) / (adjTf + k1 * (1 - b + b * docLen / avgDocLen));
-              scores.set(docIdx, (scores.get(docIdx) || 0) + score);
-            }
-          }
+        for (const [docIdx, count] of postings) {
+          const tf = count * weight;
+          const docLen = this.docLengths[docIdx] || 1;
+          const score = idf * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * docLen / avgDocLen));
+          scores.set(docIdx, (scores.get(docIdx) || 0) + score);
         }
       }
 
@@ -224,7 +203,6 @@ const SEARCH_PAGE: &str = r#"<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search - {{ site_title }}</title>
-    <link rel="stylesheet" href="/highlight.css">
     <style>
         :root {
             --bg: #fff;
@@ -318,7 +296,7 @@ const SEARCH_PAGE: &str = r#"<!DOCTYPE html>
         </form>
         <div id="search-results"></div>
     </main>
-    <script src="/search.js"></script>
+    <script src="/search.js" integrity="{{ integrity.search_js }}"></script>
 </body>
 </html>
 "#;
@@ -332,13 +310,13 @@ mod tests {
         let js = generate_search_js();
         assert!(js.contains("FolioSearch"));
         assert!(js.contains("initSearch"));
-        assert!(js.contains("STOP_WORDS"));
-        assert!(js.contains("stem"));
+        assert!(js.contains("vocabulary"));
+        assert!(!js.contains("function stem"), "the browser must not stem on its own");
     }
 
     #[test]
-    fn test_generate_search_page() {
-        let html = generate_search_page();
+    fn the_search_page_has_what_the_script_binds_to() {
+        let html = SEARCH_PAGE_TEMPLATE;
         assert!(html.contains("search-form"));
         assert!(html.contains("search-results"));
         assert!(html.contains("search.js"));

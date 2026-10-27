@@ -265,19 +265,17 @@ fn test_search_index_build() {
     create_test_collection(root);
     create_document(root, "rust", "Rust Programming", "Learn about memory safety.", false);
     create_document(root, "python", "Python Basics", "Learn about scripting.", false);
+    create_document(root, "secret", "Secret Draft", "Unannounced running plans.", true);
 
-    let config = folio::collection::Config::load(root).unwrap();
-    let collection = folio::collection::Collection::load(root, &config).unwrap();
-
-    folio::search::build_index(&collection, root).unwrap();
-
-    // Check index file created.
-    let index_path = root.join("search-index.json");
-    assert!(index_path.exists());
-
-    let index_content = fs::read_to_string(&index_path).unwrap();
+    let out = build_test_site(root, |_| {});
+    let index_content = fs::read_to_string(out.join("search-index.json")).unwrap();
     assert!(index_content.contains("Rust Programming"));
     assert!(index_content.contains("Python Basics"));
+    // Drafts are not built, so they must not be findable either.
+    assert!(!index_content.contains("Secret"), "{index_content}");
+
+    let index: rmx::serde_json::Value = rmx::serde_json::from_str(&index_content).unwrap();
+    assert_eq!(index["vocabulary"]["programming"], "program");
 }
 
 #[test]
@@ -935,4 +933,26 @@ fn generated_files_lists_what_the_build_writes() {
             .collect();
         assert_eq!(listed, written, "{features:?}");
     }
+}
+
+#[test]
+fn the_search_page_is_built_and_linked_when_search_is_enabled() {
+    use folio::features::BuildFeatures;
+
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    fs::write(root.join("templates/default.html"), include_str!("../templates/default.html")).unwrap();
+    create_document(root, "one", "One", "Text.", false);
+
+    let out = build_test_site(root, |_| {});
+    let page = fs::read_to_string(out.join("search/index.html")).unwrap();
+    let script = fs::read(out.join("search.js")).unwrap();
+    assert!(page.contains(r#"id="search-form""#), "{page}");
+    assert!(page.contains(&format!(r#"src="/search.js" integrity="{}""#, folio::build::integrity(&script))), "{page}");
+    assert!(fs::read_to_string(out.join("one/index.html")).unwrap().contains(r#"href="/search/""#));
+
+    let out = build_test_site(root, |config| config.build.features.remove(BuildFeatures::SEARCH));
+    assert!(!out.join("search").exists());
+    assert!(!fs::read_to_string(out.join("one/index.html")).unwrap().contains(r#"href="/search/""#));
 }

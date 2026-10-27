@@ -67,6 +67,9 @@ impl SiteIndex {
 
         let mut documents = HashMap::new();
         let mut pages = HashSet::from([String::new()]);
+        if config.build.features.contains(BuildFeatures::SEARCH) {
+            pages.insert("/search".to_string());
+        }
         let mut draft_pages = HashSet::new();
 
         for doc in &collection.documents {
@@ -327,6 +330,7 @@ mod tests {
         assert_eq!(site.resolve(intro, "/"), Target::Built);
         assert_eq!(site.resolve(intro, "/tags/rust/"), Target::Built);
         assert_eq!(site.resolve(intro, "/rss.xml"), Target::Built);
+        assert_eq!(site.resolve(intro, "/search/"), Target::Built);
         assert_eq!(site.resolve(intro, "/intro/index.html"), Target::Built);
         assert_eq!(site.resolve(intro, "/wip/"), Target::Draft { url: "/wip/".into() });
         assert_eq!(site.resolve(intro, "/nowhere/"), Target::Missing);

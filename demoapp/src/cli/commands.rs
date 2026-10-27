@@ -88,7 +88,7 @@ enum Command {
         path: PathBuf,
     },
 
-    /// Rebuild the search index.
+    /// Rebuild the built site's search index.
     Index {
         /// Collection directory (defaults to current directory).
         #[arg(default_value = ".")]
@@ -388,10 +388,11 @@ fn cmd_index(path: PathBuf) -> Result<()> {
 
     let config = Config::load(&path)?;
     let collection = crate::collection::Collection::load(&path, &config)?;
+    let output_dir = path.join(&config.build.output_dir);
 
-    crate::search::build_index(&collection, &path)?;
+    crate::search::write_index(collection.built(&config), &output_dir)?;
 
-    info!("Index rebuilt");
+    info!("Index rebuilt in {}", output_dir.display());
     Ok(())
 }
 

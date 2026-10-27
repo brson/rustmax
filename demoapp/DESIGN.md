@@ -110,6 +110,25 @@ to read archives back, and nothing the app could call but does not.
 
 ## Design decisions
 
+### Search in the browser
+
+The search page loads `search-index.json` and searches it in the browser.
+The index is built with a Porter stemmer,
+and the script used to stem queries with a simplified one of its own,
+which disagreed with it often enough to matter:
+the index holds `run` for "running", the script looked up `runn`.
+Rather than keep two stemmers in step,
+with no way to test the JavaScript one from Rust,
+the index now carries its own vocabulary,
+every word in the documents mapped to the stem it was indexed under,
+and the script looks words up there instead of stemming them.
+The last word of a query is also completed against the vocabulary,
+since it may still be being typed.
+
+The index is built from the documents the build writes.
+It used to be built from the whole collection,
+so every published site's search index held its drafts' titles and previews.
+
 ### Reproducible builds
 
 `[build] seed` fixes every generated identifier,
@@ -330,7 +349,7 @@ is itself worth knowing.
 
 ## Testing
 
-227 tests: 195 unit, 32 integration.
+228 tests: 195 unit, 33 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

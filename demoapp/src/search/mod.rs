@@ -3,7 +3,7 @@
 use rmx::prelude::*;
 use rmx::unicode_segmentation::UnicodeSegmentation;
 use rmx::log::info;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::sync::LazyLock;
 
 /// Where a term occurs: document index and how often, per document.
@@ -23,7 +23,7 @@ static STOP_WORD_SET: LazyLock<rmx::ahash::AHashSet<&'static str>> =
     LazyLock::new(|| STOP_WORDS.iter().copied().collect());
 use std::path::Path;
 
-use crate::collection::Collection;
+use crate::collection::{Collection, Document};
 use crate::Result;
 
 /// Common English stop words to exclude from indexing.
@@ -269,6 +269,13 @@ pub struct SearchIndex {
     pub word_index: FastMap<String, Postings>,
     /// Total word count per document.
     pub doc_lengths: Vec<usize>,
+    /// The stem of every indexed word that differs from its stem.
+    ///
+    /// This is what lets the browser search without a stemmer of its own:
+    /// a query word that appears in the documents is looked up here,
+    /// so client and server can never disagree about a stem.
+    #[serde(default)]
+    pub vocabulary: BTreeMap<String, String>,
 }
 
 /// Entry for a document in the search index.
@@ -282,14 +289,20 @@ pub struct IndexEntry {
 }
 
 impl SearchIndex {
-    /// Build an index from a collection.
+    /// Build an index of every document in a collection, drafts included.
     pub fn build(collection: &Collection) -> Self {
+        Self::from_documents(&collection.documents)
+    }
+
+    /// Build an index of the given documents.
+    pub fn from_documents<'a>(docs: impl IntoIterator<Item = &'a Document>) -> Self {
         let stop_words = &*STOP_WORD_SET;
         let mut documents = Vec::new();
         let mut word_index: FastMap<String, Postings> = default();
         let mut doc_lengths = Vec::new();
+        let mut vocabulary = BTreeMap::new();
 
-        for (idx, doc) in collection.documents.iter().enumerate() {
+        for (idx, doc) in docs.into_iter().enumerate() {
             // Create entry.
             let entry = IndexEntry {
                 slug: doc.slug(),
@@ -311,6 +324,9 @@ impl SearchIndex {
                 let normalized = word.to_lowercase();
                 if normalized.len() >= 2 && !stop_words.contains(normalized.as_str()) {
                     let stemmed = PorterStemmer::stem(&normalized);
+                    if stemmed != normalized {
+                        vocabulary.insert(normalized, stemmed.clone());
+                    }
                     *term_counts.entry(stemmed).or_default() += 3; // Title boost.
                     total_words += 1;
                 }
@@ -321,6 +337,9 @@ impl SearchIndex {
                 let normalized = word.to_lowercase();
                 if normalized.len() >= 2 && !stop_words.contains(normalized.as_str()) {
                     let stemmed = PorterStemmer::stem(&normalized);
+                    if stemmed != normalized {
+                        vocabulary.insert(normalized, stemmed.clone());
+                    }
                     *term_counts.entry(stemmed).or_default() += 1;
                     total_words += 1;
                 }
@@ -340,6 +359,7 @@ impl SearchIndex {
             documents,
             word_index,
             doc_lengths,
+            vocabulary,
         }
     }
 
@@ -474,14 +494,14 @@ pub struct SearchResult {
 }
 
 /// Build and save search index for a collection.
-pub fn build_index(collection: &Collection, root: &Path) -> Result<()> {
-    info!("Building search index for {} documents", collection.documents.len());
+/// Write the search index of `documents` into a built site at `output_dir`.
+pub fn write_index<'a>(documents: impl IntoIterator<Item = &'a Document>, output_dir: &Path) -> Result<()> {
+    let index = SearchIndex::from_documents(documents);
+    info!("Indexed {} documents", index.documents.len());
 
-    let index = SearchIndex::build(collection);
-    let index_path = root.join("search-index.json");
-
-    let json = rmx::serde_json::to_string_pretty(&index)?;
-    std::fs::write(&index_path, json)?;
+    let index_path = output_dir.join("search-index.json");
+    std::fs::create_dir_all(output_dir)?;
+    std::fs::write(&index_path, rmx::serde_json::to_string(&index)?)?;
 
     info!("Search index saved to {}", index_path.display());
     Ok(())
