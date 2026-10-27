@@ -523,7 +523,10 @@ fn build_twice(seed: Option<u64>) -> (
         let dir = tempdir().unwrap();
         seeded_collection(dir.path(), seed);
 
-        let config = folio::collection::Config::load(dir.path()).unwrap();
+        let mut config = folio::collection::Config::load(dir.path()).unwrap();
+        // What `SOURCE_DATE_EPOCH` would set. Without it, two builds that
+        // straddle a second boundary stamp different times into the feeds.
+        config.build.timestamp = Some(folio::collection::parse_source_date_epoch("1700000000").unwrap());
         let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
         let out = dir.path().join("output");
         folio::build::build(&collection, &config, &out).unwrap();
@@ -544,12 +547,7 @@ fn a_seeded_build_is_reproducible() {
     );
 
     for (path, bytes) in &first {
-        // `build_time` is a wall-clock timestamp and is not seeded, so a page
-        // carrying it can still differ. Everything else must match.
-        // See ROADMAP.md: pinning it is the remaining piece.
-        if path.ends_with(".json") || !path.ends_with(".html") {
-            assert_eq!(bytes, &second[path], "{path} differs between builds");
-        }
+        assert_eq!(bytes, &second[path], "{path} differs between builds");
     }
 }
 

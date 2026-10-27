@@ -82,7 +82,7 @@ folio_version = "0.3"     # Semver requirement on the Folio that may build this.
 [build]
 output_dir = "output"
 features = ["search", "feeds", "sitemap", "shortcodes"]
-seed = 1                  # Makes builds reproducible.
+seed = 1                  # Fixes generated ids; see below.
 
 [highlight]
 theme = "github-dark"
@@ -100,6 +100,9 @@ theme = "github-dark"
 | `drafts` | Build draft documents too |
 
 `build --drafts` and `--compress` add to the configured set.
+
+A build with `seed` set and `SOURCE_DATE_EPOCH` in the environment is reproducible:
+the same content produces the same bytes, exports included.
 
 ## Shortcodes
 

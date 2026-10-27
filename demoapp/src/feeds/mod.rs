@@ -1,14 +1,13 @@
 //! Feed generation for Atom and JSON Feed formats.
 
 use rmx::prelude::*;
-use rmx::jiff::Zoned;
 use crate::collection::{Collection, Config};
 use crate::Result;
 
 /// Generate an Atom 1.0 feed.
 pub fn generate_atom(collection: &Collection, config: &Config) -> Result<String> {
     let documents = collection.published();
-    let now = Zoned::now();
+    let now = config.build_time();
     let updated = now.strftime("%Y-%m-%dT%H:%M:%SZ").to_string();
 
     let mut entries = String::new();

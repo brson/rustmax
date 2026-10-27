@@ -6,7 +6,7 @@ mod scanner;
 
 pub use config::{
     FOLIO_VERSION, BuildConfig, CollectionConfig, Config, ConfigFormat, ContentConfig,
-    HighlightConfig,
+    HighlightConfig, parse_source_date_epoch,
 };
 pub use document::{Document, Frontmatter};
 pub use scanner::Scanner;

@@ -51,7 +51,6 @@ use rmx::prelude::*;
 use rmx::rayon::prelude::*;
 use rmx::indicatif::ProgressBar;
 use rmx::log::{info, debug};
-use rmx::jiff::Zoned;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -411,7 +410,7 @@ fn copy_static(static_dir: &Path, output_dir: &Path) -> Result<()> {
 /// Generate RSS feed.
 pub fn generate_rss(collection: &Collection, config: &Config) -> Result<String> {
     let documents = collection.published();
-    let now = Zoned::now();
+    let now = config.build_time();
 
     let mut items = String::new();
     for doc in documents.iter().take(20) {

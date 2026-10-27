@@ -8,7 +8,8 @@ use rmx::flate2::Compression;
 use rmx::flate2::write::GzEncoder;
 use rmx::prelude::*;
 use std::fs::File;
-use std::io::BufWriter;
+use rmx::tar::{Header, HeaderMode};
+use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 use crate::{Error, Result};
@@ -22,6 +23,12 @@ pub struct ArchiveOptions {
     ///
     /// Unpacking then yields one directory rather than loose files.
     pub prefix: PathBuf,
+    /// Modification time to give every entry, in seconds since the epoch.
+    ///
+    /// When set, the archive records nothing about the machine that made it:
+    /// no real mtimes, owners or permission quirks, so the same site always
+    /// archives to the same bytes. When unset, entries keep their metadata.
+    pub mtime: Option<u64>,
 }
 
 impl Default for ArchiveOptions {
@@ -29,6 +36,7 @@ impl Default for ArchiveOptions {
         Self {
             gzip: true,
             prefix: PathBuf::from("site"),
+            mtime: None,
         }
     }
 }
@@ -73,13 +81,13 @@ pub fn archive_directory(source: &Path, dest: &Path, options: &ArchiveOptions) -
     if options.gzip {
         let encoder = GzEncoder::new(out, Compression::default());
         let mut builder = rmx::tar::Builder::new(encoder);
-        builder.append_dir_all(&options.prefix, source)?;
+        append_tree(&mut builder, source, options)?;
         // Both layers have to be finished in order, or the archive is
         // truncated: `into_inner` flushes the tar, `finish` the gzip stream.
         builder.into_inner()?.finish()?;
     } else {
         let mut builder = rmx::tar::Builder::new(out);
-        builder.append_dir_all(&options.prefix, source)?;
+        append_tree(&mut builder, source, options)?;
         builder.into_inner()?;
     }
 
@@ -87,6 +95,37 @@ pub fn archive_directory(source: &Path, dest: &Path, options: &ArchiveOptions) -
         files,
         archive_bytes: std::fs::metadata(dest)?.len(),
     })
+}
+
+/// Append `source` and everything under it, in sorted order.
+///
+/// `tar`'s own `append_dir_all` follows the order the filesystem lists
+/// entries in, which differs between filesystems.
+fn append_tree<W: Write>(builder: &mut rmx::tar::Builder<W>, source: &Path, options: &ArchiveOptions) -> Result<()> {
+    let mode = match options.mtime {
+        Some(_) => HeaderMode::Deterministic,
+        None => HeaderMode::Complete,
+    };
+
+    for entry in rmx::walkdir::WalkDir::new(source).sort_by_file_name() {
+        let entry = entry?;
+        let relative = entry.path().strip_prefix(source).expect("walkdir yields paths under its root");
+        let name = options.prefix.join(relative);
+
+        let mut header = Header::new_gnu();
+        header.set_metadata_in_mode(&entry.metadata()?, mode);
+        if let Some(mtime) = options.mtime {
+            header.set_mtime(mtime);
+        }
+
+        if entry.file_type().is_dir() {
+            builder.append_data(&mut header, &name, std::io::empty())?;
+        } else {
+            builder.append_data(&mut header, &name, File::open(entry.path())?)?;
+        }
+    }
+
+    Ok(())
 }
 
 /// List the files in an archive, in the order they were written.
@@ -198,6 +237,7 @@ mod tests {
             &ArchiveOptions {
                 gzip: false,
                 prefix: PathBuf::from("my-blog-1.0"),
+                mtime: None,
             },
         )
         .unwrap();
@@ -226,6 +266,40 @@ mod tests {
             gz_stats.archive_bytes < plain_stats.archive_bytes,
             "{gz_stats:?} vs {plain_stats:?}",
         );
+    }
+
+    #[test]
+    fn a_pinned_mtime_makes_the_archive_reproducible() {
+        let options = ArchiveOptions { mtime: Some(1_700_000_000), ..default() };
+        let out = tempdir().unwrap();
+
+        // Two copies of the same tree, made at different times and with
+        // their files created in different orders.
+        let first = site();
+        let second = tempdir().unwrap();
+        std::fs::write(second.path().join("index.html"), "<h1>Home</h1>").unwrap();
+        std::fs::create_dir_all(second.path().join("posts")).unwrap();
+        std::fs::write(second.path().join("posts/first.html"), "<h1>First</h1>").unwrap();
+        let old = std::time::SystemTime::UNIX_EPOCH + std::time::Duration::from_secs(1_000_000);
+        File::options().write(true).open(second.path().join("index.html")).unwrap().set_modified(old).unwrap();
+
+        let a = out.path().join("a.tar.gz");
+        let b = out.path().join("b.tar.gz");
+        archive_directory(first.path(), &a, &options).unwrap();
+        archive_directory(second.path(), &b, &options).unwrap();
+
+        assert_eq!(std::fs::read(&a).unwrap(), std::fs::read(&b).unwrap());
+    }
+
+    #[test]
+    fn entries_are_written_in_sorted_order() {
+        let source = site();
+        let out = tempdir().unwrap();
+        let path = out.path().join("s.tar");
+        archive_directory(source.path(), &path, &ArchiveOptions { gzip: false, ..default() }).unwrap();
+
+        let names: Vec<_> = list_archive(&path).unwrap().into_iter().map(|e| e.path).collect();
+        assert_eq!(names, [PathBuf::from("site/index.html"), PathBuf::from("site/posts/first.html")]);
     }
 
     #[test]

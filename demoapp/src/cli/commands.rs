@@ -393,7 +393,10 @@ fn cmd_export(path: PathBuf, format: ExportFormat, output: Option<PathBuf>) -> R
     }
 
     if format == ExportFormat::Tar {
-        let options = crate::export::ArchiveOptions::default();
+        let options = crate::export::ArchiveOptions {
+            mtime: config.build.timestamp.map(|ts| ts.as_second().max(0) as u64),
+            ..Default::default()
+        };
         let archive_path = output
             .unwrap_or_else(|| path.join(crate::export::default_archive_name(&options)));
         let built = path.join(&config.build.output_dir);

@@ -2,7 +2,6 @@
 
 use rmx::prelude::*;
 use rmx::tera::{self, Tera, Context, Kwargs, State};
-use rmx::jiff::Zoned;
 use rmx::walkdir::WalkDir;
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -158,8 +157,7 @@ impl TemplateEngine {
         ctx.insert("has_toc", &!toc.is_empty());
 
         // Build metadata.
-        let now = Zoned::now();
-        ctx.insert("build_time", &now.strftime("%Y-%m-%dT%H:%M:%S%z").to_string());
+        ctx.insert("build_time", &config.build_time().strftime("%Y-%m-%dT%H:%M:%S%z").to_string());
 
         ctx
     }

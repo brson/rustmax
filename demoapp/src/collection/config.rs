@@ -1,6 +1,7 @@
 //! Configuration file parsing for `folio.toml` and `folio.json5`.
 
 use rmx::prelude::*;
+use rmx::jiff::{Timestamp, Zoned, tz::TimeZone};
 use rmx::semver::{Version, VersionReq};
 use std::path::{Path, PathBuf};
 
@@ -64,9 +65,24 @@ impl Config {
         };
 
         let text = std::fs::read_to_string(&path)?;
-        let config = Self::parse(&text, format, &path)?;
+        let mut config = Self::parse(&text, format, &path)?;
         config.check_version(&path)?;
+
+        if let Ok(epoch) = std::env::var("SOURCE_DATE_EPOCH") {
+            config.build.timestamp = Some(parse_source_date_epoch(&epoch)?);
+        }
+
         Ok(config)
+    }
+
+    /// The time stamped into this build's output, in UTC.
+    ///
+    /// [`BuildConfig::timestamp`] if it is pinned, otherwise now.
+    pub fn build_time(&self) -> Zoned {
+        self.build
+            .timestamp
+            .unwrap_or_else(Timestamp::now)
+            .to_zoned(TimeZone::UTC)
     }
 
     /// Locate a collection's config file and the format it is written in.
@@ -187,6 +203,16 @@ pub struct BuildConfig {
     /// same output bytes. Leaving it unset draws from the OS each build.
     #[serde(default)]
     pub seed: Option<u64>,
+    /// The time stamped into pages and feeds, if pinned.
+    ///
+    /// Not read from the config file. [`Config::load`] sets it from
+    /// `SOURCE_DATE_EPOCH`, the [reproducible builds] convention,
+    /// so that together with `seed` the same sources build to the same bytes.
+    /// `None` means the current time.
+    ///
+    /// [reproducible builds]: https://reproducible-builds.org/specs/source-date-epoch/
+    #[serde(skip)]
+    pub timestamp: Option<Timestamp>,
 }
 
 impl Default for BuildConfig {
@@ -196,8 +222,23 @@ impl Default for BuildConfig {
             theme: default_theme(),
             features: BuildFeatures::default(),
             seed: None,
+            timestamp: None,
         }
     }
+}
+
+/// Parse a `SOURCE_DATE_EPOCH` value: whole seconds since the Unix epoch.
+pub fn parse_source_date_epoch(value: &str) -> Result<Timestamp> {
+    value
+        .trim()
+        .parse::<i64>()
+        .ok()
+        .and_then(|seconds| Timestamp::from_second(seconds).ok())
+        .ok_or_else(|| {
+            Error::config(format!(
+                "SOURCE_DATE_EPOCH is `{value}`, not a number of seconds since 1970"
+            ))
+        })
 }
 
 fn default_output_dir() -> String {
@@ -411,6 +452,21 @@ title = "Tomlish"
 
         let err = Config::load(dir.path()).unwrap_err().to_string();
         assert!(err.contains("not a version requirement"), "{err}");
+    }
+
+    #[test]
+    fn source_date_epoch_is_whole_seconds() {
+        let ts = parse_source_date_epoch("1700000000").unwrap();
+        assert_eq!(ts.as_second(), 1_700_000_000);
+        assert!(parse_source_date_epoch("2023-11-14").is_err());
+        assert!(parse_source_date_epoch("1.5").is_err());
+    }
+
+    #[test]
+    fn a_pinned_timestamp_fixes_the_build_time_in_utc() {
+        let mut config = Config::default();
+        config.build.timestamp = Some(parse_source_date_epoch("0").unwrap());
+        assert_eq!(config.build_time().to_string(), "1970-01-01T00:00:00+00:00[UTC]");
     }
 
     #[test]

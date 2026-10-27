@@ -8,7 +8,7 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
-253 tests, no clippy warnings.
+257 tests, no clippy warnings.
 50 of the 73 crates `rustmax` re-exports are used by a feature;
 the other 23 are listed with reasons in DESIGN.md
 and are not targets.
@@ -41,20 +41,7 @@ but the diagnostic is unhelpful (see VALIDATION.md).
 Folio is the right place to try an `#[rmx::attr(..)]` against a real
 test suite if `rustmax` grows one.
 
-### 3. Finish what the reproducible-build work started
-
-`[build] seed` fixes generated identifiers,
-and the search index now serializes deterministically.
-Two things still vary between builds of identical content:
-
-- `build_time` in the template context is `Zoned::now()`,
-  and so are the feeds' build dates now that `build` writes feeds.
-  Both should honour `SOURCE_DATE_EPOCH` when set.
-- Nothing checks the whole output, only the JSON.
-  `a_seeded_build_is_reproducible` deliberately skips HTML for this reason;
-  once the timestamp is pinned, it should compare everything.
-
-### 4. `folio watch`
+### 3. `folio watch`
 
 Rebuild when content changes, incrementally.
 This is the honest home for three crates Folio does not use yet:
@@ -64,7 +51,7 @@ and `ctrlc` to stop cleanly and leave the build cache consistent.
 A `folio serve` on `hyper-util` and `http-body-util` would follow naturally,
 replacing the dev server that left with `axum`.
 
-### 5. Lints worth having
+### 4. Lints worth having
 
 `folio check` parses Rust code blocks, flags unhighlightable
 languages and reports unknown shortcodes. The obvious next ones, in the order they would pay off:
@@ -75,7 +62,7 @@ languages and reports unknown shortcodes. The obvious next ones, in the order th
 
 Each is a genuine authoring mistake and none needs a new dependency.
 
-### 6. Things deliberately not planned
+### 5. Things deliberately not planned
 
 - **Plugin system.** Named in the old roadmap for two years without a use
   case behind it. A plugin system with no plugins is architecture for its

@@ -3,7 +3,6 @@
 //! Creates EPUB3-compatible ebooks from document collections.
 
 use rmx::zip::{ZipWriter, write::SimpleFileOptions, CompressionMethod};
-use rmx::jiff::Zoned;
 use std::io::{Write, Seek};
 use std::path::Path;
 use std::fs::File;
@@ -265,8 +264,8 @@ a { color: #0066cc; }
         let description = self.config.description.as_ref()
             .unwrap_or(&config.collection.description);
 
-        let uuid = generate_uuid();
-        let now = Zoned::now();
+        let uuid = book_uuid(&config.collection.base_url, title);
+        let now = config.build_time();
         let modified = now.strftime("%Y-%m-%dT%H:%M:%SZ").to_string();
 
         let mut manifest = String::new();
@@ -369,26 +368,27 @@ fn xml_escape(s: &str) -> String {
         .replace('\'', "&#39;")
 }
 
-/// Generate a simple UUID v4.
-fn generate_uuid() -> String {
-    use rmx::rand::RngExt;
-    let mut rng = rmx::rand::rng();
+/// The book's identifier, derived from the collection it was made from.
+///
+/// An EPUB's identifier is how a reading system tells a new edition of a book
+/// it already has from a different book, so exporting the same collection
+/// twice has to give the same one. It is a version 8 (custom) UUID over a
+/// BLAKE3 hash of the base URL and title.
+fn book_uuid(base_url: &str, title: &str) -> String {
+    let mut hasher = rmx::blake3::Hasher::new();
+    hasher.update(base_url.as_bytes());
+    hasher.update(b"\0");
+    hasher.update(title.as_bytes());
 
     let mut bytes = [0u8; 16];
-    rng.fill(&mut bytes);
+    bytes.copy_from_slice(&hasher.finalize().as_bytes()[..16]);
 
-    // Set version (4) and variant (RFC 4122).
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    // Set version (8) and variant (RFC 9562).
+    bytes[6] = (bytes[6] & 0x0f) | 0x80;
     bytes[8] = (bytes[8] & 0x3f) | 0x80;
 
-    format!(
-        "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-        bytes[0], bytes[1], bytes[2], bytes[3],
-        bytes[4], bytes[5],
-        bytes[6], bytes[7],
-        bytes[8], bytes[9],
-        bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
-    )
+    let hex = rmx::hex::encode(bytes);
+    format!("{}-{}-{}-{}-{}", &hex[..8], &hex[8..12], &hex[12..16], &hex[16..20], &hex[20..])
 }
 
 #[cfg(test)]
@@ -413,22 +413,16 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_uuid() {
-        let uuid = generate_uuid();
-        assert_eq!(uuid.len(), 36);
-        assert!(uuid.contains('-'));
+    fn book_uuid_is_stable_and_well_formed() {
+        let uuid = book_uuid("https://example.com", "Notes");
+        assert_eq!(uuid, book_uuid("https://example.com", "Notes"));
+        assert_ne!(uuid, book_uuid("https://example.com", "Other notes"));
 
-        // Verify format: xxxxxxxx-xxxx-4xxx-[89ab]xxx-xxxxxxxxxxxx
+        // xxxxxxxx-xxxx-8xxx-[89ab]xxx-xxxxxxxxxxxx
         let parts: Vec<&str> = uuid.split('-').collect();
-        assert_eq!(parts.len(), 5);
-        assert_eq!(parts[0].len(), 8);
-        assert_eq!(parts[1].len(), 4);
-        assert_eq!(parts[2].len(), 4);
-        assert_eq!(parts[3].len(), 4);
-        assert_eq!(parts[4].len(), 12);
-
-        // Check version 4 marker.
-        assert!(parts[2].starts_with('4'));
+        assert_eq!(parts.iter().map(|p| p.len()).collect::<Vec<_>>(), [8, 4, 4, 4, 12]);
+        assert!(parts[2].starts_with('8'), "{uuid}");
+        assert!(matches!(&parts[3][..1], "8" | "9" | "a" | "b"), "{uuid}");
     }
 
     #[test]

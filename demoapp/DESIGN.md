@@ -104,7 +104,12 @@ the crates that had a real job to do were given one.
 ### Reproducible builds
 
 `[build] seed` fixes every generated identifier,
-so two builds of the same content produce the same bytes.
+and `SOURCE_DATE_EPOCH`, the [reproducible builds] convention,
+fixes the time stamped into pages, feeds, EPUBs and tarballs.
+With both, two builds of the same content produce the same bytes,
+and the integration tests compare every file of two builds to check it.
+
+[reproducible builds]: https://reproducible-builds.org/specs/source-date-epoch/
 [`util::IdGenerator`](src/util/mod.rs) is `ChaCha8Rng` rather than the thread RNG
 because its output is a documented function of its seed
 on every platform and every run.
@@ -117,6 +122,21 @@ before anything else did.
 `SearchIndex::word_index` now serializes through a `BTreeMap`,
 and `suggest` sorts before truncating to ten
 so the same prefix suggests the same words every time.
+
+The exports had their own versions of the problem.
+The EPUB identifier was a fresh random UUID,
+which also told reading systems every export was a different book;
+it is now derived from the collection's base URL and title.
+`tar`'s `append_dir_all` writes entries in whatever order the filesystem lists them,
+with real owners and mtimes;
+the archive is now written from a sorted walk,
+with deterministic headers whenever the time is pinned.
+
+The time is read once, in `Config::load`, into `BuildConfig::timestamp`,
+rather than wherever a timestamp is wanted,
+so tests can pin it without touching the process environment.
+Pinned or not, it is UTC; the Atom feed used to format local time
+with a `Z` suffix, which was wrong anywhere but Greenwich.
 
 ### Two config formats
 
@@ -254,7 +274,7 @@ is itself worth knowing.
 
 ## Testing
 
-253 tests: 225 unit, 28 integration.
+257 tests: 229 unit, 28 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,
