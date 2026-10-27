@@ -181,6 +181,26 @@ pub fn check_code_block_languages(path: &Path, markdown: &str) -> Vec<Lint> {
         .collect()
 }
 
+/// Check that every shortcode in a document is one Folio renders.
+///
+/// An unknown shortcode is left in the page as written,
+/// which is rarely what the author meant.
+pub fn check_shortcodes(path: &Path, markdown: &str) -> Vec<Lint> {
+    crate::shortcode::find_shortcodes(markdown)
+        .into_iter()
+        .filter(|found| !found.shortcode.is_builtin())
+        .map(|found| Lint {
+            path: path.to_path_buf(),
+            line: rmx::memchr::memchr_iter(b'\n', &markdown.as_bytes()[..found.span.start]).count() + 1,
+            level: Level::Warning,
+            message: format!(
+                "unknown shortcode `{}` is left in the page as written",
+                found.shortcode.name,
+            ),
+        })
+        .collect()
+}
+
 /// Run every lint against a document.
 ///
 /// Lines are reported against the source file, frontmatter included, so they
@@ -189,6 +209,7 @@ pub fn check_document(doc: &Document) -> Vec<Lint> {
     let path = &doc.source_path;
     let mut lints = check_rust_syntax(path, &doc.content);
     lints.extend(check_code_block_languages(path, &doc.content));
+    lints.extend(check_shortcodes(path, &doc.content));
 
     for lint in &mut lints {
         lint.line = doc.source_line(lint.line);
@@ -206,7 +227,18 @@ mod tests {
         let path = Path::new("doc.md");
         let mut lints = check_rust_syntax(path, markdown);
         lints.extend(check_code_block_languages(path, markdown));
+        lints.extend(check_shortcodes(path, markdown));
         lints
+    }
+
+    #[test]
+    fn unknown_shortcodes_are_reported_on_their_line() {
+        let lints = lints("intro\n\n{{< note >}} {{< mystery >}}\n\n```\n{{< also_mystery >}}\n```\n");
+
+        assert_eq!(lints.len(), 1);
+        assert_eq!(lints[0].line, 3);
+        assert_eq!(lints[0].level, Level::Warning);
+        assert!(lints[0].message.contains("`mystery`"));
     }
 
     #[test]

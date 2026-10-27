@@ -13,12 +13,12 @@ static HEADING_RE: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 /// Regex to match HTML heading tags (matches each level separately since backrefs not supported).
-static HTML_H1_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h1[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h1>"#).expect("invalid regex"));
-static HTML_H2_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h2[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h2>"#).expect("invalid regex"));
-static HTML_H3_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h3[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h3>"#).expect("invalid regex"));
-static HTML_H4_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h4[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h4>"#).expect("invalid regex"));
-static HTML_H5_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h5[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h5>"#).expect("invalid regex"));
-static HTML_H6_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h6[^>]*(?:id="([^"]*)")?[^>]*>(.*?)</h6>"#).expect("invalid regex"));
+static HTML_H1_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h1(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h1>"#).expect("invalid regex"));
+static HTML_H2_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h2(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h2>"#).expect("invalid regex"));
+static HTML_H3_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h3(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h3>"#).expect("invalid regex"));
+static HTML_H4_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h4(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h4>"#).expect("invalid regex"));
+static HTML_H5_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h5(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h5>"#).expect("invalid regex"));
+static HTML_H6_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"<h6(?:[^>]*?\sid="([^"]*)")?[^>]*>(.*?)</h6>"#).expect("invalid regex"));
 
 /// A markdown heading level, `#` through `######`.
 ///
@@ -526,6 +526,13 @@ pub fn generate_toc_css() -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn html_headings_keep_their_existing_ids() {
+        let html = r##"<h2 id="heading-intro">Intro<a href="#intro" class="anchor"></a></h2><h3 class="x" id="custom">Deep</h3><h2>Bare</h2>"##;
+        let ids: Vec<_> = extract_headings_html(html).into_iter().map(|h| h.id).collect();
+        assert_eq!(ids, ["heading-intro", "custom", "bare"]);
+    }
 
     #[test]
     fn test_extract_headings_basic() {

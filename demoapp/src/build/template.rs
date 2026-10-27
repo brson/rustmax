@@ -4,6 +4,7 @@ use rmx::prelude::*;
 use rmx::tera::{self, Tera, Context, Kwargs, State};
 use rmx::jiff::Zoned;
 use rmx::walkdir::WalkDir;
+use std::collections::BTreeMap;
 use std::path::Path;
 
 use crate::collection::{Config, Document};
@@ -17,6 +18,7 @@ const BUILTIN_TEMPLATE_NAME: &str = "_builtin/default.html";
 pub struct TemplateEngine {
     tera: Tera,
     build_id: String,
+    integrity: BTreeMap<String, String>,
 }
 
 impl TemplateEngine {
@@ -46,6 +48,7 @@ impl TemplateEngine {
         Ok(Self {
             tera,
             build_id: crate::util::build_id(None),
+            integrity: BTreeMap::new(),
         })
     }
 
@@ -57,6 +60,13 @@ impl TemplateEngine {
         if let Some(seed) = seed {
             self.build_id = crate::util::build_id(Some(seed));
         }
+        self
+    }
+
+    /// Give pages the Subresource Integrity hashes of the generated assets,
+    /// as the `integrity` map, keyed as by [`Asset::key`](super::Asset::key).
+    pub fn with_integrity(mut self, integrity: BTreeMap<String, String>) -> Self {
+        self.integrity = integrity;
         self
     }
 
@@ -74,6 +84,7 @@ impl TemplateEngine {
         ctx.insert("language", &config.collection.language);
         ctx.insert("generator", &format!("folio {}", crate::collection::FOLIO_VERSION));
         ctx.insert("build_id", &self.build_id);
+        ctx.insert("integrity", &self.integrity);
     }
 
     /// Render `template_name`, or the built-in template if the collection

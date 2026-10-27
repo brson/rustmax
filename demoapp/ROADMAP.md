@@ -6,11 +6,11 @@ what this app has found in `rustmax` lives in [VALIDATION.md](VALIDATION.md).
 
 ## Where things stand
 
-Folio builds, serves, searches and exports a collection of markdown
+Folio builds, searches, lints and exports a collection of markdown
 documents, on `rustmax` as its only dependency.
-302 tests, no clippy warnings.
-58 of the 71 crates `rustmax` re-exports are used by a feature;
-the other 13 are listed with reasons in DESIGN.md
+253 tests, no clippy warnings.
+50 of the 73 crates `rustmax` re-exports are used by a feature;
+the other 23 are listed with reasons in DESIGN.md
 and are not targets.
 
 ## Next, in order
@@ -47,16 +47,27 @@ test suite if `rustmax` grows one.
 and the search index now serializes deterministically.
 Two things still vary between builds of identical content:
 
-- `build_time` in the template context is `Zoned::now()`.
-  It should honour `SOURCE_DATE_EPOCH` when set.
+- `build_time` in the template context is `Zoned::now()`,
+  and so are the feeds' build dates now that `build` writes feeds.
+  Both should honour `SOURCE_DATE_EPOCH` when set.
 - Nothing checks the whole output, only the JSON.
   `a_seeded_build_is_reproducible` deliberately skips HTML for this reason;
   once the timestamp is pinned, it should compare everything.
 
-### 4. Lints worth having
+### 4. `folio watch`
 
-`folio check` parses Rust code blocks and flags unhighlightable
-languages. The obvious next ones, in the order they would pay off:
+Rebuild when content changes, incrementally.
+This is the honest home for three crates Folio does not use yet:
+`notify` for the file events,
+`crossbeam-channel`'s `select!` to wait on file events and a debounce timer together,
+and `ctrlc` to stop cleanly and leave the build cache consistent.
+A `folio serve` on `hyper-util` and `http-body-util` would follow naturally,
+replacing the dev server that left with `axum`.
+
+### 5. Lints worth having
+
+`folio check` parses Rust code blocks, flags unhighlightable
+languages and reports unknown shortcodes. The obvious next ones, in the order they would pay off:
 
 - Internal links that resolve to no document.
 - Images referencing files that are not in `static/`.
@@ -64,7 +75,7 @@ languages. The obvious next ones, in the order they would pay off:
 
 Each is a genuine authoring mistake and none needs a new dependency.
 
-### 5. Things deliberately not planned
+### 6. Things deliberately not planned
 
 - **Plugin system.** Named in the old roadmap for two years without a use
   case behind it. A plugin system with no plugins is architecture for its

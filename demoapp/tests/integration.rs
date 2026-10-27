@@ -170,7 +170,7 @@ fn test_build_output() {
     let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    folio::build::build(&collection, &config, &output_dir, false).unwrap();
+    folio::build::build(&collection, &config, &output_dir).unwrap();
 
     // Check output structure.
     assert!(output_dir.exists());
@@ -204,7 +204,7 @@ fn test_build_with_static_assets() {
     let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    folio::build::build(&collection, &config, &output_dir, false).unwrap();
+    folio::build::build(&collection, &config, &output_dir).unwrap();
 
     // Check static assets copied.
     assert!(output_dir.join("style.css").exists());
@@ -227,7 +227,7 @@ fn test_build_excludes_drafts() {
     let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    folio::build::build(&collection, &config, &output_dir, false).unwrap();
+    folio::build::build(&collection, &config, &output_dir).unwrap();
 
     // Published should exist.
     assert!(output_dir.join("published/index.html").exists());
@@ -245,11 +245,12 @@ fn test_build_includes_drafts_when_requested() {
     create_document(root, "published", "Published", "Public", false);
     create_document(root, "draft", "Draft", "Private", true);
 
-    let config = folio::collection::Config::load(root).unwrap();
+    let mut config = folio::collection::Config::load(root).unwrap();
+    config.build.features |= folio::features::BuildFeatures::DRAFTS;
     let collection = folio::collection::Collection::load(root, &config).unwrap();
 
     let output_dir = root.join("output");
-    folio::build::build(&collection, &config, &output_dir, true).unwrap();
+    folio::build::build(&collection, &config, &output_dir).unwrap();
 
     // Both should exist.
     assert!(output_dir.join("published/index.html").exists());
@@ -525,7 +526,7 @@ fn build_twice(seed: Option<u64>) -> (
         let config = folio::collection::Config::load(dir.path()).unwrap();
         let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
         let out = dir.path().join("output");
-        folio::build::build(&collection, &config, &out, false).unwrap();
+        folio::build::build(&collection, &config, &out).unwrap();
 
         snapshots.push(output_snapshot(&out));
     }
@@ -613,7 +614,7 @@ fn a_collection_can_be_configured_in_json5() {
 
     let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
     let out = dir.path().join("output");
-    folio::build::build(&collection, &config, &out, false).unwrap();
+    folio::build::build(&collection, &config, &out).unwrap();
 
     let index = fs::read_to_string(out.join("index.html")).unwrap();
     assert!(index.contains("From JSON5"), "{index}");
@@ -627,7 +628,7 @@ fn a_built_site_can_be_archived_and_unpacked() {
     let config = folio::collection::Config::load(dir.path()).unwrap();
     let collection = folio::collection::Collection::load(dir.path(), &config).unwrap();
     let out = dir.path().join("output");
-    folio::build::build(&collection, &config, &out, false).unwrap();
+    folio::build::build(&collection, &config, &out).unwrap();
 
     let archive = dir.path().join("site.tar.gz");
     let options = folio::export::ArchiveOptions::default();
@@ -673,4 +674,85 @@ fn check_reports_a_rust_code_block_that_does_not_parse() {
     assert_eq!(lints.len(), 1, "{lints:?}");
     assert!(lints[0].path.ends_with("broken.md"), "{:?}", lints[0]);
     assert_eq!(lints[0].level, folio::lint::Level::Error);
+}
+
+fn build_test_site(root: &Path, configure: impl FnOnce(&mut folio::collection::Config)) -> std::path::PathBuf {
+    let mut config = folio::collection::Config::load(root).unwrap();
+    configure(&mut config);
+    let collection = folio::collection::Collection::load(root, &config).unwrap();
+    let output_dir = root.join("output");
+    folio::build::build(&collection, &config, &output_dir).unwrap();
+    output_dir
+}
+
+#[test]
+fn default_features_write_search_feeds_and_sitemap() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    create_document(root, "one", "One", "Text.", false);
+
+    let out = build_test_site(root, |_| {});
+
+    for file in ["search-index.json", "search.js", "rss.xml", "atom.xml", "feed.json", "sitemap.xml"] {
+        assert!(out.join(file).exists(), "{file} missing");
+    }
+    assert!(!out.join("one/index.html.gz").exists());
+}
+
+#[test]
+fn features_can_be_turned_off_and_on() {
+    use folio::features::BuildFeatures;
+
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    create_document(root, "one", "One", "Text with enough words to be worth compressing. ".repeat(20).as_str(), false);
+
+    let out = build_test_site(root, |config| config.build.features = BuildFeatures::COMPRESS);
+
+    for file in ["search-index.json", "search.js", "rss.xml", "atom.xml", "feed.json", "sitemap.xml"] {
+        assert!(!out.join(file).exists(), "{file} written");
+    }
+    assert!(out.join("one/index.html.gz").exists());
+}
+
+#[test]
+fn shortcodes_are_expanded_unless_disabled() {
+    use folio::features::BuildFeatures;
+
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    create_document(root, "one", "One", "{{% note %}}Careful.{{% /note %}}\n\n`{{< note >}}` is the syntax.\n", false);
+
+    let out = build_test_site(root, |_| {});
+    let html = fs::read_to_string(out.join("one/index.html")).unwrap();
+    assert!(html.contains("<div class=\"admonition note\">"), "{html}");
+    assert!(html.contains("<code>{{&lt; note &gt;}}</code>"), "{html}");
+
+    let out = build_test_site(root, |config| config.build.features.remove(BuildFeatures::SHORTCODES));
+    let html = fs::read_to_string(out.join("one/index.html")).unwrap();
+    assert!(!html.contains("admonition"), "{html}");
+}
+
+/// The default template carries an integrity hash for each stylesheet,
+/// and the hash has to match the file the build wrote.
+#[test]
+fn page_integrity_hashes_match_the_written_assets() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    create_test_collection(root);
+    fs::remove_file(root.join("templates/default.html")).unwrap();
+    fs::write(root.join("templates/default.html"), include_str!("../templates/default.html")).unwrap();
+    create_document(root, "one", "One", "Text.", false);
+
+    let out = build_test_site(root, |_| {});
+    let html = fs::read_to_string(out.join("one/index.html")).unwrap();
+
+    for asset in ["highlight.css", "toc.css"] {
+        let bytes = fs::read(out.join(asset)).unwrap();
+        let expected = format!(r#"href="/{asset}" integrity="{}""#, folio::build::integrity(&bytes));
+        assert!(html.contains(&expected), "{asset}: {html}");
+    }
 }

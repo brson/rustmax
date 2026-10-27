@@ -118,7 +118,10 @@ They happen to need nothing.
 ## Not covered, and why
 
 `bindgen`, `cc`, `cxx`, `cxx-build`, `libc`, `libm`, `num-bigint`,
-`hyper`, `proc-macro2`, `quote`, `rand_pcg`, `thiserror`.
+`hyper`, `proc-macro2`, `quote`, `rand_pcg`, `thiserror`,
+`chrono`, `cfg-if`, `xshell`, `rustc-hash`,
+and, until `folio watch` exists, `ctrlc`, `crossbeam`, `notify`,
+`http`, `http-body-util`, `hyper-util`, `tower`, `socket2`.
 
 Reasons are in [DESIGN.md](DESIGN.md#deliberately-not-covered).
 The short version is that a static site generator

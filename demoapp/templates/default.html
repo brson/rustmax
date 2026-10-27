@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if generator %}<meta name="generator" content="{{ generator }}" data-build="{{ build_id }}">{% endif %}
     <title>{% if title %}{{ title }} - {% endif %}{{ site_title }}</title>
-    <link rel="stylesheet" href="/highlight.css">
-    <link rel="stylesheet" href="/toc.css">
+    {% if integrity.highlight_css is defined %}<link rel="stylesheet" href="/highlight.css" integrity="{{ integrity.highlight_css }}">{% endif %}
+    <link rel="stylesheet" href="/toc.css" integrity="{{ integrity.toc_css }}">
     <style>
         :root {
             --bg: #fff;

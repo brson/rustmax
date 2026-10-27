@@ -4,6 +4,7 @@ use rmx::prelude::*;
 use rmx::semver::{Version, VersionReq};
 use std::path::{Path, PathBuf};
 
+use crate::features::BuildFeatures;
 use crate::{Error, Result};
 
 /// The version of Folio reading the config.
@@ -177,12 +178,9 @@ pub struct BuildConfig {
     /// Theme directory name.
     #[serde(default = "default_theme")]
     pub theme: String,
-    /// Whether to include drafts in builds.
+    /// Optional outputs the build produces.
     #[serde(default)]
-    pub drafts: bool,
-    /// Minify HTML output.
-    #[serde(default)]
-    pub minify: bool,
+    pub features: BuildFeatures,
     /// Seed for generated identifiers.
     ///
     /// Setting it makes a build reproducible: the same content produces the
@@ -196,8 +194,7 @@ impl Default for BuildConfig {
         Self {
             output_dir: default_output_dir(),
             theme: default_theme(),
-            drafts: false,
-            minify: false,
+            features: BuildFeatures::default(),
             seed: None,
         }
     }

@@ -1,154 +1,98 @@
-//! Feature flags using bitflags.
+//! Optional build outputs, as bitflags.
 //!
-//! Controls optional build and rendering features.
+//! A collection chooses them with `[build] features` in its config,
+//! written as a list of lowercase names:
+//!
+//! ```toml
+//! [build]
+//! features = ["search", "feeds", "sitemap", "shortcodes"]
+//! ```
+//!
+//! `folio build --drafts` and `--compress` add to whatever the config enables.
 
 use rmx::prelude::*;
 use rmx::bitflags::bitflags;
+use rmx::serde::de::{self, Deserializer, SeqAccess, Visitor};
+use rmx::serde::ser::{SerializeSeq, Serializer};
+use rmx::serde::{Deserialize, Serialize};
+use std::fmt;
 
 bitflags! {
-    /// Build feature flags.
+    /// What a build produces beyond the document pages themselves.
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-    pub struct BuildFeatures: u32 {
-        /// Include draft documents in output.
+    pub struct BuildFeatures: u8 {
+        /// Build draft documents too.
         const DRAFTS = 1 << 0;
-        /// Generate gzip-compressed versions of files.
+        /// Write a `.gz` alongside every compressible file.
         const COMPRESS = 1 << 1;
-        /// Generate search index.
-        const SEARCH_INDEX = 1 << 2;
-        /// Generate RSS feed.
-        const RSS = 1 << 3;
-        /// Generate sitemap.
+        /// Write the search index and client-side search script.
+        const SEARCH = 1 << 2;
+        /// Write RSS, Atom and JSON feeds.
+        const FEEDS = 1 << 3;
+        /// Write `sitemap.xml`.
         const SITEMAP = 1 << 4;
-        /// Process shortcodes in content.
+        /// Expand shortcodes in documents.
         const SHORTCODES = 1 << 5;
-        /// Minify HTML output.
-        const MINIFY = 1 << 6;
-        /// Inline small images as data URLs.
-        const INLINE_IMAGES = 1 << 7;
-        /// Generate table of contents.
-        const TOC = 1 << 8;
-        /// Enable syntax highlighting.
-        const SYNTAX_HIGHLIGHT = 1 << 9;
-
-        /// Default features for production builds.
-        const PRODUCTION = Self::SEARCH_INDEX.bits()
-            | Self::RSS.bits()
-            | Self::SITEMAP.bits()
-            | Self::SHORTCODES.bits()
-            | Self::COMPRESS.bits();
-
-        /// Default features for development.
-        const DEVELOPMENT = Self::DRAFTS.bits()
-            | Self::SHORTCODES.bits()
-            | Self::SYNTAX_HIGHLIGHT.bits();
-
-        /// All features enabled.
-        const ALL = Self::DRAFTS.bits()
-            | Self::COMPRESS.bits()
-            | Self::SEARCH_INDEX.bits()
-            | Self::RSS.bits()
-            | Self::SITEMAP.bits()
-            | Self::SHORTCODES.bits()
-            | Self::MINIFY.bits()
-            | Self::INLINE_IMAGES.bits()
-            | Self::TOC.bits()
-            | Self::SYNTAX_HIGHLIGHT.bits();
-    }
-}
-
-impl BuildFeatures {
-    /// Parse features from a comma-separated string.
-    pub fn from_str_list(s: &str) -> Self {
-        let mut features = Self::empty();
-
-        for part in s.split(',') {
-            let part = part.trim().to_lowercase();
-            match part.as_str() {
-                "drafts" => features |= Self::DRAFTS,
-                "compress" => features |= Self::COMPRESS,
-                "search" | "search_index" => features |= Self::SEARCH_INDEX,
-                "rss" => features |= Self::RSS,
-                "sitemap" => features |= Self::SITEMAP,
-                "shortcodes" => features |= Self::SHORTCODES,
-                "minify" => features |= Self::MINIFY,
-                "inline_images" => features |= Self::INLINE_IMAGES,
-                "toc" => features |= Self::TOC,
-                "syntax" | "syntax_highlight" => features |= Self::SYNTAX_HIGHLIGHT,
-                "production" => features |= Self::PRODUCTION,
-                "development" | "dev" => features |= Self::DEVELOPMENT,
-                "all" => features |= Self::ALL,
-                _ => {}
-            }
-        }
-
-        features
-    }
-
-    /// Convert to a list of feature names.
-    pub fn to_names(&self) -> Vec<&'static str> {
-        let mut names = Vec::new();
-        if self.contains(Self::DRAFTS) { names.push("drafts"); }
-        if self.contains(Self::COMPRESS) { names.push("compress"); }
-        if self.contains(Self::SEARCH_INDEX) { names.push("search_index"); }
-        if self.contains(Self::RSS) { names.push("rss"); }
-        if self.contains(Self::SITEMAP) { names.push("sitemap"); }
-        if self.contains(Self::SHORTCODES) { names.push("shortcodes"); }
-        if self.contains(Self::MINIFY) { names.push("minify"); }
-        if self.contains(Self::INLINE_IMAGES) { names.push("inline_images"); }
-        if self.contains(Self::TOC) { names.push("toc"); }
-        if self.contains(Self::SYNTAX_HIGHLIGHT) { names.push("syntax_highlight"); }
-        names
     }
 }
 
 impl Default for BuildFeatures {
     fn default() -> Self {
-        Self::SHORTCODES | Self::SYNTAX_HIGHLIGHT
+        Self::SEARCH | Self::FEEDS | Self::SITEMAP | Self::SHORTCODES
     }
 }
 
-bitflags! {
-    /// Content processing flags.
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-    pub struct ContentFlags: u16 {
-        /// Document is a draft.
-        const DRAFT = 1 << 0;
-        /// Document is featured/pinned.
-        const FEATURED = 1 << 1;
-        /// Document is hidden from listings.
-        const HIDDEN = 1 << 2;
-        /// Document should not be indexed.
-        const NO_INDEX = 1 << 3;
-        /// Document has math content.
-        const HAS_MATH = 1 << 4;
-        /// Document has code blocks.
-        const HAS_CODE = 1 << 5;
-        /// Document has images.
-        const HAS_IMAGES = 1 << 6;
-        /// Document has shortcodes.
-        const HAS_SHORTCODES = 1 << 7;
+impl BuildFeatures {
+    /// The config name of every feature, in declaration order.
+    pub fn names() -> impl Iterator<Item = String> {
+        Self::all().iter_names().map(|(name, _)| name.to_lowercase())
+    }
+
+    /// Look up a feature by its config name.
+    pub fn from_config_name(name: &str) -> Option<Self> {
+        // Flag names are upper case, and config names are their lower case.
+        if name.bytes().any(|b| b.is_ascii_uppercase()) {
+            return None;
+        }
+        Self::from_name(&name.to_ascii_uppercase())
     }
 }
 
-impl ContentFlags {
-    /// Analyze content and return appropriate flags.
-    pub fn analyze(content: &str) -> Self {
-        let mut flags = Self::empty();
+impl Serialize for BuildFeatures {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut seq = serializer.serialize_seq(None)?;
+        for (name, _) in self.iter_names() {
+            seq.serialize_element(&name.to_lowercase())?;
+        }
+        seq.end()
+    }
+}
 
-        if content.contains("```") || content.contains("~~~") {
-            flags |= Self::HAS_CODE;
-        }
-        if content.contains("![") || content.contains("<img") {
-            flags |= Self::HAS_IMAGES;
-        }
-        if content.contains("{{<") || content.contains("{{%") {
-            flags |= Self::HAS_SHORTCODES;
-        }
-        if content.contains("$") || content.contains("\\(") || content.contains("\\[") {
-            flags |= Self::HAS_MATH;
+impl<'de> Deserialize<'de> for BuildFeatures {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct FeatureList;
+
+        impl<'de> Visitor<'de> for FeatureList {
+            type Value = BuildFeatures;
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "a list of build features")
+            }
+
+            fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<BuildFeatures, A::Error> {
+                let mut features = BuildFeatures::empty();
+                while let Some(name) = seq.next_element::<String>()? {
+                    let feature = BuildFeatures::from_config_name(&name).ok_or_else(|| {
+                        let known = BuildFeatures::names().collect::<Vec<_>>().join(", ");
+                        de::Error::custom(format!("unknown build feature `{name}`, expected one of: {known}"))
+                    })?;
+                    features |= feature;
+                }
+                Ok(features)
+            }
         }
 
-        flags
+        deserializer.deserialize_seq(FeatureList)
     }
 }
 
@@ -156,68 +100,50 @@ impl ContentFlags {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_build_features_default() {
-        let features = BuildFeatures::default();
-        assert!(features.contains(BuildFeatures::SHORTCODES));
-        assert!(features.contains(BuildFeatures::SYNTAX_HIGHLIGHT));
-        assert!(!features.contains(BuildFeatures::DRAFTS));
+    #[rmx::derive(Debug, Serialize, Deserialize)]
+    struct Wrapper {
+        features: BuildFeatures,
+    }
+
+    fn parse(toml: &str) -> Result<BuildFeatures, rmx::toml::de::Error> {
+        rmx::toml::from_str::<Wrapper>(toml).map(|w| w.features)
     }
 
     #[test]
-    fn test_build_features_production() {
-        let features = BuildFeatures::PRODUCTION;
-        assert!(features.contains(BuildFeatures::COMPRESS));
-        assert!(features.contains(BuildFeatures::SEARCH_INDEX));
-        assert!(features.contains(BuildFeatures::RSS));
-        assert!(features.contains(BuildFeatures::SITEMAP));
-        assert!(!features.contains(BuildFeatures::DRAFTS));
+    fn parses_a_list_of_names() {
+        let features = parse(r#"features = ["drafts", "sitemap"]"#).unwrap();
+        assert_eq!(features, BuildFeatures::DRAFTS | BuildFeatures::SITEMAP);
     }
 
     #[test]
-    fn test_build_features_from_str() {
-        let features = BuildFeatures::from_str_list("drafts, compress, rss");
-        assert!(features.contains(BuildFeatures::DRAFTS));
-        assert!(features.contains(BuildFeatures::COMPRESS));
-        assert!(features.contains(BuildFeatures::RSS));
-        assert!(!features.contains(BuildFeatures::SITEMAP));
+    fn an_empty_list_disables_everything() {
+        assert_eq!(parse("features = []").unwrap(), BuildFeatures::empty());
     }
 
     #[test]
-    fn test_build_features_to_names() {
-        let features = BuildFeatures::DRAFTS | BuildFeatures::RSS;
-        let names = features.to_names();
-        assert!(names.contains(&"drafts"));
-        assert!(names.contains(&"rss"));
+    fn unknown_names_are_rejected_with_the_alternatives() {
+        let err = parse(r#"features = ["minify"]"#).unwrap_err().to_string();
+        assert!(err.contains("unknown build feature `minify`"), "{err}");
+        assert!(err.contains("shortcodes"), "{err}");
     }
 
     #[test]
-    fn test_content_flags_analyze() {
-        let content = "Some text with ```code``` and ![image](url)";
-        let flags = ContentFlags::analyze(content);
-        assert!(flags.contains(ContentFlags::HAS_CODE));
-        assert!(flags.contains(ContentFlags::HAS_IMAGES));
-        assert!(!flags.contains(ContentFlags::HAS_MATH));
+    fn names_are_case_sensitive() {
+        assert!(parse(r#"features = ["SEARCH"]"#).is_err());
     }
 
     #[test]
-    fn test_content_flags_shortcodes() {
-        let content = "Text with {{< youtube >}} shortcode";
-        let flags = ContentFlags::analyze(content);
-        assert!(flags.contains(ContentFlags::HAS_SHORTCODES));
+    fn round_trips_through_toml() {
+        let original = Wrapper { features: BuildFeatures::all() };
+        let text = rmx::toml::to_string(&original).unwrap();
+        assert_eq!(parse(&text).unwrap(), BuildFeatures::all());
     }
 
     #[test]
-    fn test_bitflags_operations() {
-        let mut features = BuildFeatures::empty();
-        features |= BuildFeatures::DRAFTS;
-        features |= BuildFeatures::COMPRESS;
-
-        assert!(features.contains(BuildFeatures::DRAFTS));
-        assert!(features.contains(BuildFeatures::COMPRESS));
-
-        features.remove(BuildFeatures::DRAFTS);
-        assert!(!features.contains(BuildFeatures::DRAFTS));
-        assert!(features.contains(BuildFeatures::COMPRESS));
+    fn every_flag_has_a_config_name() {
+        assert_eq!(BuildFeatures::names().count(), BuildFeatures::all().iter().count());
+        for name in BuildFeatures::names() {
+            assert!(BuildFeatures::from_config_name(&name).is_some(), "{name}");
+        }
     }
 }

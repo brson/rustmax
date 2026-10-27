@@ -1,10 +1,16 @@
-//! Shortcode parsing using nom.
+//! Shortcodes: small directives embedded in markdown, parsed with nom.
 //!
-//! Shortcodes allow embedding dynamic content in markdown:
-//! - `{{< name arg1="value" >}}` - inline shortcode
-//! - `{{% name %}}content{{% /name %}}` - block shortcode
+//! - `{{< name arg="value" >}}` is an inline shortcode.
+//! - `{{% name %}}content{{% /name %}}` is a block shortcode.
+//!
+//! Shortcodes are expanded to HTML before the markdown is rendered.
+//! Anything inside a fenced code block or an inline code span is left alone,
+//! so a document can show shortcode syntax without running it.
+//! A shortcode Folio does not know is also left as written,
+//! and `folio check` reports it.
 
 use rmx::prelude::*;
+use rmx::memchr::{memchr_iter, memmem, memrchr};
 use rmx::nom::{
     IResult, Parser,
     bytes::complete::{tag, take_until, take_while1, take_while},
@@ -15,6 +21,12 @@ use rmx::nom::{
     branch::alt,
 };
 use std::collections::HashMap;
+use std::ops::Range;
+
+use crate::build::{extract_headings_html, html_escape, render_markdown, TableOfContents, TocOptions};
+
+/// The shortcodes Folio renders.
+pub const BUILTIN: &[&str] = &["youtube", "figure", "note", "warning", "tip", "code", "toc"];
 
 /// A parsed shortcode.
 #[derive(Debug, Clone, PartialEq)]
@@ -40,6 +52,11 @@ impl Shortcode {
     /// Get a positional argument by index.
     pub fn positional(&self, index: usize) -> Option<&str> {
         self.positional.get(index).map(|s| s.as_str())
+    }
+
+    /// Whether Folio knows how to render this shortcode.
+    pub fn is_builtin(&self) -> bool {
+        BUILTIN.contains(&self.name.as_str())
     }
 }
 
@@ -127,11 +144,11 @@ fn parse_inline_shortcode(input: &str) -> IResult<&str, Shortcode> {
     }))
 }
 
-/// Parse block shortcode opening: `{{% name args %}}`
 /// A parsed block-shortcode opening tag: name, named arguments, positional
 /// arguments.
 type BlockOpen<'a> = (&'a str, HashMap<String, String>, Vec<String>);
 
+/// Parse block shortcode opening: `{{% name args %}}`
 fn parse_block_open(input: &str) -> IResult<&str, BlockOpen<'_>> {
     let (remaining, (_, _, name, args, _, _)) = (
         tag("{{%"),
@@ -149,36 +166,25 @@ fn parse_block_open(input: &str) -> IResult<&str, BlockOpen<'_>> {
 fn parse_block_shortcode(input: &str) -> IResult<&str, Shortcode> {
     let (after_open, (name, args, positional)) = parse_block_open(input)?;
 
-    // Build close tag patterns.
-    let close_with_spaces = format!("{{{{% /{} %}}}}", name);
-    let close_no_spaces = format!("{{{{%/{}}}}}", name);
+    // The closing tag may be written with or without spaces around the slash.
+    let closes = [
+        format!("{{{{% /{} %}}}}", name),
+        format!("{{{{%/{}%}}}}", name),
+    ];
 
-    // Try with spaces around slash.
-    if let Some(close_pos) = after_open.find(&close_with_spaces) {
-        let content = &after_open[..close_pos];
-        let remaining = &after_open[close_pos + close_with_spaces.len()..];
+    for close in &closes {
+        if let Some(close_pos) = memmem::find(after_open.as_bytes(), close.as_bytes()) {
+            let content = &after_open[..close_pos];
+            let remaining = &after_open[close_pos + close.len()..];
 
-        return Ok((remaining, Shortcode {
-            name: name.to_string(),
-            args,
-            positional,
-            content: Some(content.to_string()),
-            is_block: true,
-        }));
-    }
-
-    // Try without spaces.
-    if let Some(close_pos) = after_open.find(&close_no_spaces) {
-        let content = &after_open[..close_pos];
-        let remaining = &after_open[close_pos + close_no_spaces.len()..];
-
-        return Ok((remaining, Shortcode {
-            name: name.to_string(),
-            args,
-            positional,
-            content: Some(content.to_string()),
-            is_block: true,
-        }));
+            return Ok((remaining, Shortcode {
+                name: name.to_string(),
+                args,
+                positional,
+                content: Some(content.to_string()),
+                is_block: true,
+            }));
+        }
     }
 
     Err(rmx::nom::Err::Error(rmx::nom::error::Error::new(
@@ -192,148 +198,216 @@ pub fn parse_shortcode(input: &str) -> IResult<&str, Shortcode> {
     alt((parse_block_shortcode, parse_inline_shortcode)).parse(input)
 }
 
-/// Find and extract all shortcodes from content.
-pub fn extract_shortcodes(content: &str) -> Vec<(usize, Shortcode, usize)> {
-    let mut results = Vec::new();
+/// A shortcode found in a document.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Found {
+    /// Byte range of the shortcode in the source, tags included.
+    pub span: Range<usize>,
+    pub shortcode: Shortcode,
+}
+
+/// Find every shortcode in a markdown document, in source order.
+///
+/// Shortcodes inside fenced code blocks and inline code spans are skipped.
+pub fn find_shortcodes(markdown: &str) -> Vec<Found> {
+    let bytes = markdown.as_bytes();
+    let fences = fenced_ranges(markdown);
+    let finder = memmem::Finder::new("{{");
+
+    let mut found = Vec::new();
     let mut pos = 0;
 
-    while pos < content.len() {
-        let remaining = &content[pos..];
+    while let Some(offset) = finder.find(&bytes[pos..]) {
+        let start = pos + offset;
+        // `{` is ASCII, so `start + 1` is always a char boundary.
+        pos = start + 1;
 
-        // Look for shortcode start.
-        if (remaining.starts_with("{{<") || remaining.starts_with("{{%"))
-            && let Ok((after, shortcode)) = parse_shortcode(remaining)
-        {
-            let end_pos = pos + (remaining.len() - after.len());
-            results.push((pos, shortcode, end_pos));
-            pos = end_pos;
+        if fences.iter().any(|fence| fence.contains(&start)) || in_inline_code(bytes, start) {
             continue;
         }
 
-        pos += 1;
+        if let Ok((rest, shortcode)) = parse_shortcode(&markdown[start..]) {
+            let end = markdown.len() - rest.len();
+            found.push(Found { span: start..end, shortcode });
+            pos = end;
+        }
     }
 
-    results
+    found
 }
 
-/// Process content, replacing shortcodes with rendered output.
-pub fn process_shortcodes<F>(content: &str, mut renderer: F) -> String
-where
-    F: FnMut(&Shortcode) -> String,
-{
-    let shortcodes = extract_shortcodes(content);
+/// Byte ranges of the fenced code blocks in a markdown document.
+///
+/// An unclosed fence runs to the end of the document, as in CommonMark.
+fn fenced_ranges(markdown: &str) -> Vec<Range<usize>> {
+    let mut ranges = Vec::new();
+    // Start offset, fence character and fence length of the open block.
+    let mut open: Option<(usize, u8, usize)> = None;
+    let mut offset = 0;
 
-    if shortcodes.is_empty() {
-        return content.to_string();
+    for line in markdown.split_inclusive('\n') {
+        let trimmed = line.trim_start_matches(' ');
+        let indent = line.len() - trimmed.len();
+        let fence = if indent <= 3 { fence_run(trimmed) } else { None };
+
+        match (open, fence) {
+            (None, Some((ch, len))) => open = Some((offset, ch, len)),
+            (Some((start, ch, len)), Some((close_ch, close_len)))
+                if close_ch == ch && close_len >= len && trimmed[close_len..].trim().is_empty() =>
+            {
+                ranges.push(start..offset + line.len());
+                open = None;
+            }
+            _ => {}
+        }
+
+        offset += line.len();
     }
 
-    let mut result = String::with_capacity(content.len());
+    if let Some((start, _, _)) = open {
+        ranges.push(start..markdown.len());
+    }
+
+    ranges
+}
+
+/// The fence character and run length if `line` opens or closes a code fence.
+fn fence_run(line: &str) -> Option<(u8, usize)> {
+    let ch = *line.as_bytes().first()?;
+    if ch != b'`' && ch != b'~' {
+        return None;
+    }
+    let len = line.bytes().take_while(|&b| b == ch).count();
+    (len >= 3).then_some((ch, len))
+}
+
+/// Whether `pos` falls inside an inline code span on its line.
+///
+/// An odd number of backticks earlier on the line means a span is open.
+fn in_inline_code(bytes: &[u8], pos: usize) -> bool {
+    let line_start = memrchr(b'\n', &bytes[..pos]).map_or(0, |i| i + 1);
+    memchr_iter(b'`', &bytes[line_start..pos]).count() % 2 == 1
+}
+
+/// Markdown with its shortcodes expanded.
+///
+/// A `toc` shortcode cannot be rendered until the markdown has been, since it
+/// has to link to the heading ids the renderer assigns. It is left as a marker
+/// for [`Expanded::finish`] to fill in.
+#[derive(Debug, Clone)]
+pub struct Expanded {
+    pub markdown: String,
+    tocs: Vec<TocOptions>,
+}
+
+impl Expanded {
+    /// Fill in the tables of contents in the rendered HTML.
+    pub fn finish(&self, html: &str) -> String {
+        if self.tocs.is_empty() {
+            return html.to_string();
+        }
+
+        let headings = extract_headings_html(html);
+        let mut html = html.to_string();
+
+        for (index, options) in self.tocs.iter().enumerate() {
+            let toc = TableOfContents::from_headings(&options.filter_headings(&headings));
+            // The title is not a heading, so it does not end up in the page's
+            // own table of contents.
+            let rendered = if toc.is_empty() {
+                String::new()
+            } else if options.include_title {
+                format!(
+                    "<nav class=\"toc\">\n<p class=\"toc-title\">{}</p>\n{}</nav>\n",
+                    html_escape(&options.title),
+                    toc.to_html_list(),
+                )
+            } else {
+                format!("<nav class=\"toc\">\n{}</nav>\n", toc.to_html_list())
+            };
+            html = html.replace(&toc_marker(index), &rendered);
+        }
+
+        html
+    }
+}
+
+fn toc_marker(index: usize) -> String {
+    format!("<!--folio:toc:{index}-->")
+}
+
+/// Expand every shortcode in a markdown document.
+pub fn expand(markdown: &str) -> Expanded {
+    let mut tocs = Vec::new();
+    let mut out = String::with_capacity(markdown.len());
     let mut last_end = 0;
 
-    for (start, shortcode, end) in shortcodes {
-        result.push_str(&content[last_end..start]);
-        result.push_str(&renderer(&shortcode));
-        last_end = end;
+    for Found { span, shortcode } in find_shortcodes(markdown) {
+        out.push_str(&markdown[last_end..span.start]);
+
+        let rendered = if shortcode.name == "toc" {
+            tocs.push(toc_options(&shortcode));
+            Some(toc_marker(tocs.len() - 1))
+        } else {
+            render(&shortcode)
+        };
+
+        match rendered {
+            Some(html) => out.push_str(&html),
+            None => out.push_str(&markdown[span.clone()]),
+        }
+        last_end = span.end;
     }
 
-    result.push_str(&content[last_end..]);
-    result
+    out.push_str(&markdown[last_end..]);
+    Expanded { markdown: out, tocs }
 }
 
-/// Built-in shortcode renderer.
-pub fn render_builtin(shortcode: &Shortcode) -> Option<String> {
+fn toc_options(shortcode: &Shortcode) -> TocOptions {
+    let defaults = TocOptions::default();
+    TocOptions {
+        min_level: shortcode.get("min").and_then(|s| s.parse().ok()).unwrap_or(defaults.min_level),
+        max_level: shortcode.get("max").and_then(|s| s.parse().ok()).unwrap_or(defaults.max_level),
+        include_title: shortcode.get("title") != Some("false"),
+        title: shortcode.get("heading").map(str::to_string).unwrap_or(defaults.title),
+    }
+}
+
+/// Render a built-in shortcode, other than `toc`, to HTML.
+///
+/// Returns `None` for a shortcode Folio does not know,
+/// or one missing an argument it needs.
+pub fn render(shortcode: &Shortcode) -> Option<String> {
     match shortcode.name.as_str() {
         "youtube" => {
-            let id = shortcode.get("id").or_else(|| shortcode.positional(0))?;
+            let id = html_escape(shortcode.get("id").or_else(|| shortcode.positional(0))?);
             Some(format!(
                 r#"<div class="video-container"><iframe src="https://www.youtube.com/embed/{id}" frameborder="0" allowfullscreen></iframe></div>"#
             ))
         }
         "figure" => {
-            let src = shortcode.get("src").or_else(|| shortcode.positional(0))?;
-            let alt = shortcode.get("alt").unwrap_or("");
-            let caption = shortcode.get("caption").unwrap_or("");
-            Some(format!(
-                r#"<figure><img src="{src}" alt="{alt}"><figcaption>{caption}</figcaption></figure>"#
-            ))
+            let src = html_escape(shortcode.get("src").or_else(|| shortcode.positional(0))?);
+            let alt = html_escape(shortcode.get("alt").unwrap_or(""));
+            let caption = match shortcode.get("caption") {
+                Some(caption) => format!("<figcaption>{}</figcaption>", html_escape(caption)),
+                None => String::new(),
+            };
+            Some(format!(r#"<figure><img src="{src}" alt="{alt}">{caption}</figure>"#))
         }
         "note" | "warning" | "tip" => {
             let class = &shortcode.name;
-            let content = shortcode.content.as_deref().unwrap_or("");
-            Some(format!(r#"<div class="admonition {class}">{content}</div>"#))
+            // The body is markdown in its own right, shortcodes and all.
+            let body = expand(shortcode.content.as_deref().unwrap_or(""));
+            let html = body.finish(&render_markdown(&body.markdown));
+            Some(format!("<div class=\"admonition {class}\">\n{html}</div>\n"))
         }
         "code" => {
-            let lang = shortcode.get("lang").unwrap_or("text");
-            let content = shortcode.content.as_deref().unwrap_or("");
+            let lang = html_escape(shortcode.get("lang").unwrap_or("text"));
+            let content = html_escape(shortcode.content.as_deref().unwrap_or("").trim_matches('\n'));
             Some(format!(r#"<pre><code class="language-{lang}">{content}</code></pre>"#))
         }
         _ => None,
     }
-}
-
-/// Built-in shortcode renderer with document context.
-///
-/// Some shortcodes (like `toc`) need access to the full document content.
-pub fn render_builtin_with_context(shortcode: &Shortcode, markdown: &str) -> Option<String> {
-    use crate::build::{extract_headings, TableOfContents, TocOptions};
-
-    match shortcode.name.as_str() {
-        "toc" => {
-            // Parse options from shortcode args.
-            let min_level = shortcode.get("min")
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(1);
-            let max_level = shortcode.get("max")
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(6);
-
-            let options = TocOptions {
-                min_level,
-                max_level,
-                include_title: shortcode.get("title").map(|s| s != "false").unwrap_or(true),
-                title: shortcode.get("heading").unwrap_or("Table of Contents").to_string(),
-            };
-
-            // Extract headings from the markdown.
-            let headings = extract_headings(markdown);
-            let filtered = options.filter_headings(&headings);
-            let toc = TableOfContents::from_headings(&filtered);
-
-            if options.include_title {
-                Some(toc.to_html())
-            } else {
-                Some(toc.to_html_list())
-            }
-        }
-        // Fall back to basic renderer for other shortcodes.
-        _ => render_builtin(shortcode),
-    }
-}
-
-/// Process content with context-aware shortcode rendering.
-pub fn process_shortcodes_with_context(content: &str) -> String {
-    let shortcodes = extract_shortcodes(content);
-
-    if shortcodes.is_empty() {
-        return content.to_string();
-    }
-
-    let mut result = String::with_capacity(content.len());
-    let mut last_end = 0;
-
-    for (start, shortcode, end) in shortcodes {
-        result.push_str(&content[last_end..start]);
-
-        // Try context-aware rendering first, then fall back to basic.
-        let rendered = render_builtin_with_context(&shortcode, content)
-            .unwrap_or_else(|| format!("<!-- unknown shortcode: {} -->", shortcode.name));
-
-        result.push_str(&rendered);
-        last_end = end;
-    }
-
-    result.push_str(&content[last_end..]);
-    result
 }
 
 #[cfg(test)]
@@ -364,113 +438,117 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_shortcodes() {
+    fn finds_shortcodes_with_their_spans() {
         let content = r#"Hello {{< youtube id="xyz" >}} world {{% note %}}test{{% /note %}}"#;
-        let codes = extract_shortcodes(content);
-        assert_eq!(codes.len(), 2);
-        assert_eq!(codes[0].1.name, "youtube");
-        assert_eq!(codes[1].1.name, "note");
+        let found = find_shortcodes(content);
+        assert_eq!(found.len(), 2);
+        assert_eq!(found[0].shortcode.name, "youtube");
+        assert_eq!(&content[found[0].span.clone()], r#"{{< youtube id="xyz" >}}"#);
+        assert_eq!(found[1].shortcode.name, "note");
     }
 
     #[test]
-    fn test_process_shortcodes() {
-        let content = r#"Watch: {{< youtube id="abc" >}}"#;
-        let result = process_shortcodes(content, |sc| {
-            if sc.name == "youtube" {
-                format!("[VIDEO:{}]", sc.get("id").unwrap_or("?"))
-            } else {
-                String::new()
-            }
-        });
-        assert_eq!(result, "Watch: [VIDEO:abc]");
+    fn non_ascii_text_around_shortcodes_does_not_panic() {
+        let content = "Ünïcødé — {{< youtube abc >}} …and {{ not one }} ✓";
+        let found = find_shortcodes(content);
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0].shortcode.positional(0), Some("abc"));
     }
 
     #[test]
-    fn test_render_builtin_youtube() {
-        let sc = Shortcode {
-            name: "youtube".to_string(),
-            args: [("id".to_string(), "xyz123".to_string())].into_iter().collect(),
-            positional: vec![],
-            content: None,
-            is_block: false,
-        };
-        let html = render_builtin(&sc).unwrap();
+    fn shortcodes_in_fenced_code_are_left_alone() {
+        let content = "```markdown\n{{< youtube abc >}}\n```\n\n~~~~\n{{< youtube def >}}\n~~~~\n\n{{< youtube ghi >}}\n";
+        let found = find_shortcodes(content);
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0].shortcode.positional(0), Some("ghi"));
+    }
+
+    #[test]
+    fn a_shorter_fence_does_not_close_a_longer_one() {
+        let content = "````\n```\n{{< youtube abc >}}\n```\n````\n";
+        assert!(find_shortcodes(content).is_empty());
+    }
+
+    #[test]
+    fn shortcodes_in_inline_code_are_left_alone() {
+        let content = "Write `{{< youtube id >}}` to embed, like {{< youtube abc >}}.";
+        let found = find_shortcodes(content);
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0].shortcode.positional(0), Some("abc"));
+    }
+
+    #[test]
+    fn unknown_shortcodes_are_left_as_written() {
+        let content = "before {{< mystery x=1 >}} after";
+        assert_eq!(expand(content).markdown, content);
+    }
+
+    #[test]
+    fn render_youtube() {
+        let (_, sc) = parse_shortcode(r#"{{< youtube id="xyz123" >}}"#).unwrap();
+        let html = render(&sc).unwrap();
         assert!(html.contains("youtube.com/embed/xyz123"));
     }
 
     #[test]
-    fn test_render_builtin_note() {
-        let sc = Shortcode {
-            name: "note".to_string(),
-            args: HashMap::new(),
-            positional: vec![],
-            content: Some("Important!".to_string()),
-            is_block: true,
-        };
-        let html = render_builtin(&sc).unwrap();
+    fn arguments_are_escaped() {
+        let (_, sc) = parse_shortcode(r#"{{< figure src="a.png" alt='say "hi"' caption="<b>" >}}"#).unwrap();
+        let html = render(&sc).unwrap();
+        assert!(html.contains(r#"alt="say &quot;hi&quot;""#), "{html}");
+        assert!(html.contains("<figcaption>&lt;b&gt;</figcaption>"), "{html}");
+    }
+
+    #[test]
+    fn admonition_bodies_are_rendered_as_markdown() {
+        let (_, sc) = parse_shortcode("{{% note %}}This is **important**.{{% /note %}}").unwrap();
+        let html = render(&sc).unwrap();
         assert!(html.contains("admonition note"));
-        assert!(html.contains("Important!"));
+        assert!(html.contains("<strong>important</strong>"), "{html}");
     }
 
     #[test]
-    fn test_toc_shortcode() {
-        let md = r#"# Title
+    fn code_bodies_are_escaped() {
+        let (_, sc) = parse_shortcode("{{% code lang=\"rust\" %}}\nlet v: Vec<u8> = vec![];\n{{% /code %}}").unwrap();
+        let html = render(&sc).unwrap();
+        assert_eq!(html, r#"<pre><code class="language-rust">let v: Vec&lt;u8&gt; = vec![];</code></pre>"#);
+    }
 
-{{< toc >}}
-
-## Section 1
-
-Some content.
-
-## Section 2
-
-More content.
-"#;
-        let result = process_shortcodes_with_context(md);
-
-        assert!(result.contains("<nav class=\"toc\">"));
-        assert!(result.contains("Table of Contents"));
-        assert!(result.contains("#title"));
-        assert!(result.contains("#section-1"));
-        assert!(result.contains("#section-2"));
+    fn render_page(markdown: &str) -> String {
+        let expanded = expand(markdown);
+        expanded.finish(&render_markdown(&expanded.markdown))
     }
 
     #[test]
-    fn test_toc_shortcode_with_options() {
-        let md = r#"# Title
+    fn toc_links_to_the_rendered_heading_ids() {
+        let html = render_page("# Title\n\n{{< toc >}}\n\n## Section 1\n\nSome content.\n\n## Section 2\n");
 
-{{< toc min="2" max="3" >}}
-
-## Section 1
-
-### Subsection
-
-## Section 2
-
-#### Deep
-"#;
-        let result = process_shortcodes_with_context(md);
-
-        // Should include h2 and h3, not h1 or h4.
-        assert!(result.contains("#section-1"));
-        assert!(result.contains("#subsection"));
-        assert!(result.contains("#section-2"));
-        assert!(!result.contains("#title\">Title"));
-        assert!(!result.contains("#deep"));
+        assert!(html.contains("<nav class=\"toc\">"), "{html}");
+        assert!(html.contains("Table of Contents"));
+        // Each link must land on an id the page actually has.
+        for id in ["heading-title", "heading-section-1", "heading-section-2"] {
+            assert!(html.contains(&format!("id=\"{id}\"")), "{id} missing: {html}");
+            assert!(html.contains(&format!("href=\"#{id}\"")), "{id} not linked: {html}");
+        }
+        assert!(!html.contains("folio:toc"));
     }
 
     #[test]
-    fn test_toc_shortcode_no_title() {
-        let md = r#"# Title
+    fn toc_respects_level_bounds() {
+        let html = render_page("# Title\n\n{{< toc min=\"2\" max=\"3\" >}}\n\n## Section 1\n\n### Subsection\n\n#### Deep\n");
+        let nav = &html[html.find("<nav").unwrap()..html.find("</nav>").unwrap()];
 
-{{< toc title="false" >}}
+        assert!(nav.contains("Section 1"));
+        assert!(nav.contains("Subsection"));
+        assert!(!nav.contains("Title"));
+        assert!(!nav.contains("Deep"));
+    }
 
-## Section 1
-"#;
-        let result = process_shortcodes_with_context(md);
+    #[test]
+    fn toc_title_can_be_renamed_or_dropped() {
+        let html = render_page("{{< toc heading=\"Contents\" >}}\n\n## A\n");
+        assert!(html.contains("<p class=\"toc-title\">Contents</p>"), "{html}");
 
-        // Should not have the toc-title header.
-        assert!(!result.contains("<h2 class=\"toc-title\">"));
-        assert!(result.contains("#section-1"));
+        let html = render_page("{{< toc title=\"false\" >}}\n\n## A\n");
+        assert!(!html.contains("toc-title"), "{html}");
     }
 }

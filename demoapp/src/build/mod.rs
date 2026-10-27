@@ -11,6 +11,7 @@ mod toc;
 mod search_js;
 mod progress;
 mod images;
+mod assets;
 
 pub use markdown::{render_markdown, render_markdown_highlighted, apply_syntax_highlighting, generate_highlight_css};
 pub use template::TemplateEngine;
@@ -44,9 +45,11 @@ pub use images::{
     ImageConfig, ImageResult, ImageStats,
     process_image, process_directory,
 };
+pub use assets::{Asset, site_assets, integrity, integrity_map};
 
 use rmx::prelude::*;
 use rmx::rayon::prelude::*;
+use rmx::indicatif::ProgressBar;
 use rmx::log::{info, debug};
 use rmx::jiff::Zoned;
 use std::path::{Path, PathBuf};
@@ -55,159 +58,58 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::fs;
 
 use crate::collection::{Collection, Config, Document};
+use crate::features::BuildFeatures;
 use crate::Result;
 
 /// Build the collection to static output.
-pub fn build(
-    collection: &Collection,
-    config: &Config,
-    output_dir: &Path,
-    include_drafts: bool,
-) -> Result<()> {
-    // Clean and create output directory.
-    if output_dir.exists() {
-        fs::remove_dir_all(output_dir)?;
-    }
-    fs::create_dir_all(output_dir)?;
-
-    // Initialize template engine.
-    let templates_dir = collection.root.join("templates");
-    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
-
-    // Filter documents.
-    let documents: Vec<&Document> = if include_drafts {
-        collection.all_sorted()
-    } else {
-        collection.published()
-    };
-
-    info!("Building {} documents", documents.len());
-
-    // Build documents in parallel.
-    let results: Vec<Result<()>> = documents
-        .par_iter()
-        .map(|doc| build_document(doc, config, &engine, output_dir))
-        .collect();
-
-    // Check for errors.
-    for result in results {
-        result?;
-    }
-
-    // Build index page.
-    build_index(&documents, config, &engine, output_dir)?;
-
-    // Build tag pages.
-    build_tag_pages(collection, config, &engine, output_dir, include_drafts)?;
-
-    // Copy static assets.
-    let static_dir = collection.root.join("static");
-    if static_dir.exists() {
-        copy_static(&static_dir, output_dir)?;
-    }
-
-    // Generate syntax highlighting CSS if enabled.
-    if config.highlight.enabled {
-        let css = generate_highlight_css(&config.highlight.to_options());
-        fs::write(output_dir.join("highlight.css"), css)?;
-    }
-
-    // Generate TOC CSS.
-    fs::write(output_dir.join("toc.css"), generate_toc_css())?;
-
-    // Generate client-side search assets.
-    fs::write(output_dir.join("search.js"), generate_search_js())?;
-
-    // Build and write search index.
-    let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rmx::serde_json::to_string(&search_index)?;
-    fs::write(output_dir.join("search-index.json"), search_json)?;
-
-    Ok(())
+///
+/// What is built beyond the document pages is decided by
+/// `config.build.features`.
+pub fn build(collection: &Collection, config: &Config, output_dir: &Path) -> Result<()> {
+    build_full(collection, config, output_dir, false)
 }
 
 /// Build the collection with progress bars.
-pub fn build_with_progress(
-    collection: &Collection,
-    config: &Config,
-    output_dir: &Path,
-    include_drafts: bool,
-) -> Result<()> {
-    use progress::finish_with_check;
+pub fn build_with_progress(collection: &Collection, config: &Config, output_dir: &Path) -> Result<()> {
+    build_full(collection, config, output_dir, true)
+}
 
+fn build_full(collection: &Collection, config: &Config, output_dir: &Path, progress: bool) -> Result<()> {
     // Clean and create output directory.
     if output_dir.exists() {
         fs::remove_dir_all(output_dir)?;
     }
     fs::create_dir_all(output_dir)?;
 
-    // Initialize template engine with spinner.
-    let template_pb = template_spinner();
+    let template_pb = progress.then(template_spinner);
     let templates_dir = collection.root.join("templates");
-    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
-    finish_with_check(&template_pb, "Templates compiled");
+    let site = Site::new(collection, config, &templates_dir)?;
+    finish(template_pb, "Templates compiled");
 
-    // Filter documents.
-    let documents: Vec<&Document> = if include_drafts {
-        collection.all_sorted()
-    } else {
-        collection.published()
-    };
+    if !progress {
+        info!("Building {} documents", site.documents.len());
+    }
 
-    // Build documents in parallel with progress bar.
-    let doc_pb = document_progress(documents.len());
+    let doc_pb = progress.then(|| document_progress(site.documents.len()));
     let doc_count = AtomicUsize::new(0);
 
-    let results: Vec<Result<()>> = documents
+    let results: Vec<Result<()>> = site.documents
         .par_iter()
         .map(|doc| {
-            let result = build_document(doc, config, &engine, output_dir);
-            doc_count.fetch_add(1, Ordering::Relaxed);
-            doc_pb.set_position(doc_count.load(Ordering::Relaxed) as u64);
+            let result = build_document(doc, config, &site.engine, output_dir);
+            if let Some(pb) = &doc_pb {
+                pb.set_position(doc_count.fetch_add(1, Ordering::Relaxed) as u64 + 1);
+            }
             result
         })
         .collect();
 
-    // Check for errors.
     for result in results {
         result?;
     }
-    finish_with_check(&doc_pb, &format!("Built {} documents", documents.len()));
+    finish(doc_pb, &format!("Built {} documents", site.documents.len()));
 
-    // Build index page.
-    build_index(&documents, config, &engine, output_dir)?;
-
-    // Build tag pages.
-    build_tag_pages(collection, config, &engine, output_dir, include_drafts)?;
-
-    // Copy static assets with spinner.
-    let static_dir = collection.root.join("static");
-    if static_dir.exists() {
-        let asset_pb = asset_spinner();
-        copy_static(&static_dir, output_dir)?;
-        finish_with_check(&asset_pb, "Static assets copied");
-    }
-
-    // Generate syntax highlighting CSS if enabled.
-    if config.highlight.enabled {
-        let css = generate_highlight_css(&config.highlight.to_options());
-        fs::write(output_dir.join("highlight.css"), css)?;
-    }
-
-    // Generate TOC CSS.
-    fs::write(output_dir.join("toc.css"), generate_toc_css())?;
-
-    // Generate client-side search assets.
-    fs::write(output_dir.join("search.js"), generate_search_js())?;
-
-    // Build and write search index with spinner.
-    let search_pb = search_spinner();
-    let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rmx::serde_json::to_string(&search_index)?;
-    fs::write(output_dir.join("search-index.json"), search_json)?;
-    finish_with_check(&search_pb, "Search index built");
-
-    Ok(())
+    site.finish(collection, config, output_dir, progress)
 }
 
 /// Build the collection with incremental support.
@@ -215,117 +117,10 @@ pub fn build_incremental(
     collection: &Collection,
     config: &Config,
     output_dir: &Path,
-    include_drafts: bool,
 ) -> Result<IncrementalBuildResult> {
-    // Load existing cache.
-    let mut cache = BuildCache::load(&collection.root);
-
-    // Check if templates have changed.
-    let templates_dir = collection.root.join("templates");
-    let template_hash = hash_templates(&templates_dir)?;
-    let templates_changed = cache.templates_changed(&template_hash);
-
-    if templates_changed {
-        info!("Templates changed, forcing full rebuild");
-        cache.clear();
-    }
-
-    // Ensure output directory exists.
-    fs::create_dir_all(output_dir)?;
-
-    // Initialize template engine.
-    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
-
-    // Filter documents.
-    let documents: Vec<&Document> = if include_drafts {
-        collection.all_sorted()
-    } else {
-        collection.published()
-    };
-
-    // Track build results.
-    let result = Mutex::new(IncrementalBuildResult::new());
-    result.lock().unwrap().total = documents.len();
-
-    // Build documents in parallel, checking cache.
-    let build_results: Vec<Result<Option<(PathBuf, String, String)>>> = documents
-        .par_iter()
-        .map(|doc| {
-            let output_path = output_dir.join(doc.slug()).join("index.html");
-
-            // Check cache.
-            let status = cache.check(
-                &doc.source_path,
-                &doc.content_hash,
-                &output_path,
-            );
-
-            if status == CacheStatus::Fresh {
-                debug!("Skipping (cached): {}", doc.source_path.display());
-                result.lock().unwrap().skipped += 1;
-                return Ok(None);
-            }
-
-            // Build the document.
-            build_document(doc, config, &engine, output_dir)?;
-            result.lock().unwrap().rebuilt += 1;
-
-            Ok(Some((
-                doc.source_path.clone(),
-                doc.content_hash.clone(),
-                output_path.to_string_lossy().to_string(),
-            )))
-        })
-        .collect();
-
-    // Check for errors and update cache.
-    for res in build_results {
-        if let Some((source_path, content_hash, output_path)) = res? {
-            cache.update(source_path, content_hash, output_path.into());
-        }
-    }
-
-    // Build index page (always, since document list may have changed).
-    build_index(&documents, config, &engine, output_dir)?;
-
-    // Build tag pages.
-    build_tag_pages(collection, config, &engine, output_dir, include_drafts)?;
-
-    // Copy static assets.
-    let static_dir = collection.root.join("static");
-    if static_dir.exists() {
-        copy_static(&static_dir, output_dir)?;
-    }
-
-    // Generate syntax highlighting CSS if enabled.
-    if config.highlight.enabled {
-        let css = generate_highlight_css(&config.highlight.to_options());
-        fs::write(output_dir.join("highlight.css"), css)?;
-    }
-
-    // Generate TOC CSS.
-    fs::write(output_dir.join("toc.css"), generate_toc_css())?;
-
-    // Generate client-side search assets.
-    fs::write(output_dir.join("search.js"), generate_search_js())?;
-
-    // Build and write search index.
-    let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rmx::serde_json::to_string(&search_index)?;
-    fs::write(output_dir.join("search-index.json"), search_json)?;
-
-    // Prune deleted documents from cache.
-    let source_paths: Vec<_> = documents.iter().map(|d| d.source_path.clone()).collect();
-    cache.prune(&source_paths);
-
-    // Update template hash and save cache.
-    cache.set_template_hash(template_hash);
-    cache.save(&collection.root)?;
-
-    let final_result = result.into_inner().unwrap();
-    final_result.log();
-
-    Ok(final_result)
+    let result = build_incremental_inner(collection, config, output_dir, false)?;
+    result.log();
+    Ok(result)
 }
 
 /// Build the collection with incremental support and progress bars.
@@ -333,77 +128,65 @@ pub fn build_incremental_with_progress(
     collection: &Collection,
     config: &Config,
     output_dir: &Path,
-    include_drafts: bool,
 ) -> Result<IncrementalBuildResult> {
-    use progress::finish_with_check;
+    build_incremental_inner(collection, config, output_dir, true)
+}
 
+fn build_incremental_inner(
+    collection: &Collection,
+    config: &Config,
+    output_dir: &Path,
+    progress: bool,
+) -> Result<IncrementalBuildResult> {
     // Load existing cache.
     let mut cache = BuildCache::load(&collection.root);
 
     // Check if templates have changed.
-    let template_pb = template_spinner();
+    let template_pb = progress.then(template_spinner);
     let templates_dir = collection.root.join("templates");
     let template_hash = hash_templates(&templates_dir)?;
-    let templates_changed = cache.templates_changed(&template_hash);
 
-    if templates_changed {
+    if cache.templates_changed(&template_hash) {
         info!("Templates changed, forcing full rebuild");
         cache.clear();
     }
 
-    // Ensure output directory exists.
     fs::create_dir_all(output_dir)?;
 
-    // Initialize template engine.
-    let engine = TemplateEngine::new(&templates_dir)?.with_seed(config.build.seed);
-    finish_with_check(&template_pb, "Templates compiled");
+    let site = Site::new(collection, config, &templates_dir)?;
+    finish(template_pb, "Templates compiled");
 
-    // Filter documents.
-    let documents: Vec<&Document> = if include_drafts {
-        collection.all_sorted()
-    } else {
-        collection.published()
-    };
-
-    // Track build results.
     let result = Mutex::new(IncrementalBuildResult::new());
-    result.lock().unwrap().total = documents.len();
+    result.lock().unwrap().total = site.documents.len();
 
-    // Progress bar for document processing.
-    let doc_pb = incremental_progress(documents.len());
+    let doc_pb = progress.then(|| incremental_progress(site.documents.len()));
     let doc_count = AtomicUsize::new(0);
 
     // Build documents in parallel, checking cache.
-    let build_results: Vec<Result<Option<(PathBuf, String, String)>>> = documents
+    let build_results: Vec<Result<Option<(PathBuf, String, String)>>> = site.documents
         .par_iter()
         .map(|doc| {
             let output_path = output_dir.join(doc.slug()).join("index.html");
-
-            // Check cache.
-            let status = cache.check(
-                &doc.source_path,
-                &doc.content_hash,
-                &output_path,
-            );
+            let status = cache.check(&doc.source_path, &doc.content_hash, &output_path);
 
             let res = if status == CacheStatus::Fresh {
                 debug!("Skipping (cached): {}", doc.source_path.display());
                 result.lock().unwrap().skipped += 1;
                 Ok(None)
             } else {
-                // Build the document.
-                build_document(doc, config, &engine, output_dir)?;
-                result.lock().unwrap().rebuilt += 1;
-
-                Ok(Some((
-                    doc.source_path.clone(),
-                    doc.content_hash.clone(),
-                    output_path.to_string_lossy().to_string(),
-                )))
+                build_document(doc, config, &site.engine, output_dir).map(|()| {
+                    result.lock().unwrap().rebuilt += 1;
+                    Some((
+                        doc.source_path.clone(),
+                        doc.content_hash.clone(),
+                        output_path.to_string_lossy().to_string(),
+                    ))
+                })
             };
 
-            doc_count.fetch_add(1, Ordering::Relaxed);
-            doc_pb.set_position(doc_count.load(Ordering::Relaxed) as u64);
+            if let Some(pb) = &doc_pb {
+                pb.set_position(doc_count.fetch_add(1, Ordering::Relaxed) as u64 + 1);
+            }
             res
         })
         .collect();
@@ -415,56 +198,104 @@ pub fn build_incremental_with_progress(
         }
     }
 
-    let interim = result.lock().unwrap();
-    finish_with_check(
-        &doc_pb,
-        &format!("Rebuilt {}, skipped {} documents", interim.rebuilt, interim.skipped)
-    );
-    drop(interim);
-
-    // Build index page (always, since document list may have changed).
-    build_index(&documents, config, &engine, output_dir)?;
-
-    // Build tag pages.
-    build_tag_pages(collection, config, &engine, output_dir, include_drafts)?;
-
-    // Copy static assets with spinner.
-    let static_dir = collection.root.join("static");
-    if static_dir.exists() {
-        let asset_pb = asset_spinner();
-        copy_static(&static_dir, output_dir)?;
-        finish_with_check(&asset_pb, "Static assets copied");
+    {
+        let interim = result.lock().unwrap();
+        finish(
+            doc_pb,
+            &format!("Rebuilt {}, skipped {} documents", interim.rebuilt, interim.skipped),
+        );
     }
 
-    // Generate syntax highlighting CSS if enabled.
-    if config.highlight.enabled {
-        let css = generate_highlight_css(&config.highlight.to_options());
-        fs::write(output_dir.join("highlight.css"), css)?;
-    }
-
-    // Generate TOC CSS.
-    fs::write(output_dir.join("toc.css"), generate_toc_css())?;
-
-    // Generate client-side search assets.
-    fs::write(output_dir.join("search.js"), generate_search_js())?;
-
-    // Build and write search index with spinner.
-    let search_pb = search_spinner();
-    let search_index = crate::search::SearchIndex::build(collection);
-    let search_json = rmx::serde_json::to_string(&search_index)?;
-    fs::write(output_dir.join("search-index.json"), search_json)?;
-    finish_with_check(&search_pb, "Search index built");
+    site.finish(collection, config, output_dir, progress)?;
 
     // Prune deleted documents from cache.
-    let source_paths: Vec<_> = documents.iter().map(|d| d.source_path.clone()).collect();
+    let source_paths: Vec<_> = site.documents.iter().map(|d| d.source_path.clone()).collect();
     cache.prune(&source_paths);
 
     // Update template hash and save cache.
     cache.set_template_hash(template_hash);
     cache.save(&collection.root)?;
 
-    let final_result = result.into_inner().unwrap();
-    Ok(final_result)
+    Ok(result.into_inner().unwrap())
+}
+
+/// What every kind of build sets up before rendering documents.
+struct Site<'a> {
+    engine: TemplateEngine,
+    assets: Vec<Asset>,
+    documents: Vec<&'a Document>,
+}
+
+impl<'a> Site<'a> {
+    fn new(collection: &'a Collection, config: &Config, templates_dir: &Path) -> Result<Self> {
+        // Assets are generated up front so pages can carry their hashes.
+        let assets = site_assets(config);
+        let engine = TemplateEngine::new(templates_dir)?
+            .with_seed(config.build.seed)
+            .with_integrity(integrity_map(&assets));
+
+        let documents = if config.build.features.contains(BuildFeatures::DRAFTS) {
+            collection.all_sorted()
+        } else {
+            collection.published()
+        };
+
+        Ok(Self { engine, assets, documents })
+    }
+
+    /// Write everything that is not a document page.
+    fn finish(&self, collection: &Collection, config: &Config, output_dir: &Path, progress: bool) -> Result<()> {
+        let features = config.build.features;
+
+        build_index(&self.documents, config, &self.engine, output_dir)?;
+        build_tag_pages(collection, config, &self.engine, output_dir, features.contains(BuildFeatures::DRAFTS))?;
+
+        let static_dir = collection.root.join("static");
+        if static_dir.exists() {
+            let pb = progress.then(asset_spinner);
+            copy_static(&static_dir, output_dir)?;
+            finish(pb, "Static assets copied");
+        }
+
+        for asset in &self.assets {
+            fs::write(output_dir.join(asset.path), &asset.contents)?;
+        }
+
+        if features.contains(BuildFeatures::SEARCH) {
+            let pb = progress.then(search_spinner);
+            let search_index = crate::search::SearchIndex::build(collection);
+            let search_json = rmx::serde_json::to_string(&search_index)?;
+            fs::write(output_dir.join("search-index.json"), search_json)?;
+            finish(pb, "Search index built");
+        }
+
+        if features.contains(BuildFeatures::FEEDS) {
+            let pb = progress.then(feed_spinner);
+            fs::write(output_dir.join("rss.xml"), generate_rss(collection, config)?)?;
+            fs::write(output_dir.join("atom.xml"), crate::feeds::generate_atom(collection, config)?)?;
+            fs::write(output_dir.join("feed.json"), crate::feeds::generate_json_feed(collection, config)?)?;
+            finish(pb, "Feeds written");
+        }
+
+        if features.contains(BuildFeatures::SITEMAP) {
+            fs::write(output_dir.join("sitemap.xml"), generate_sitemap(collection, config)?)?;
+        }
+
+        // Last, so it sees every other file.
+        if features.contains(BuildFeatures::COMPRESS) {
+            let pb = progress.then(compress_spinner);
+            compress_output(output_dir)?;
+            finish(pb, "Output compressed");
+        }
+
+        Ok(())
+    }
+}
+
+fn finish(pb: Option<ProgressBar>, message: &str) {
+    if let Some(pb) = pb {
+        finish_with_check(&pb, message);
+    }
 }
 
 /// Build a single document.
@@ -476,11 +307,19 @@ fn build_document(
 ) -> Result<()> {
     debug!("Building: {}", doc.source_path.display());
 
+    let expanded = config.build.features.contains(BuildFeatures::SHORTCODES)
+        .then(|| crate::shortcode::expand(&doc.content));
+    let markdown = expanded.as_ref().map_or(doc.content.as_str(), |e| e.markdown.as_str());
+
     // Render markdown with optional syntax highlighting.
     let html_content = if config.highlight.enabled {
-        render_markdown_highlighted(&doc.content, &config.highlight.to_options())
+        render_markdown_highlighted(markdown, &config.highlight.to_options())
     } else {
-        render_markdown(&doc.content)
+        render_markdown(markdown)
+    };
+    let html_content = match &expanded {
+        Some(expanded) => expanded.finish(&html_content),
+        None => html_content,
     };
 
     let template_name = doc
@@ -649,7 +488,7 @@ pub fn generate_sitemap(collection: &Collection, config: &Config) -> Result<Stri
     Ok(sitemap)
 }
 
-fn html_escape(s: &str) -> String {
+pub(crate) fn html_escape(s: &str) -> String {
     s.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")

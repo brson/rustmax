@@ -79,16 +79,25 @@ src/
     encoding.rs      base64/hex
     rewrite.rs       URL rewriting
     search_js.rs     client-side search bundle
+    assets.rs        generated CSS/JS and their SRI hashes (sha2)
     progress.rs      progress bars
+  features/        `[build] features` (bitflags)
+  shortcode/       shortcodes (nom, memchr)
   lint/            content lints, including Rust code block parsing
   search/          BM25 index, Porter stemmer
   export/          EPUB and tar archives
   feeds/           Atom and JSON Feed
-  shortcode/       nom-parsed shortcodes
-  concurrency/     crossbeam pipelines
+  remote/          `fetch` (reqwest)
   util/            reproducible identifier generation
-  crypto/ text/ time/ remote/ features/
 ```
+
+Every module is reached from a command.
+An earlier version carried `crypto/`, `text/`, `time/` and `concurrency/`
+modules that nothing called,
+each a list of wrappers around one crate with unit tests of its own.
+They were checklist-filling, the thing this app exists to avoid,
+and were deleted;
+the crates that had a real job to do were given one.
 
 ## Design decisions
 
@@ -138,6 +147,50 @@ not a deep heading.
 `HeadingLevel` (`num_enum`) makes that unrepresentable
 and replaced an `unwrap_or(1)` that silently papered over it.
 
+### Build features
+
+`[build] features` lists what a build writes beyond the document pages:
+`search`, `feeds`, `sitemap`, `shortcodes`, `compress` and `drafts`.
+The default is the first four.
+`folio build --drafts` and `--compress` add to the configured set.
+`BuildFeatures` is a `bitflags` type,
+and its config form is a list of lowercase flag names,
+read and written through `from_name` and `iter_names`
+so that adding a flag adds its config name with it.
+An unknown name is a config error that lists the known ones.
+
+Every flag is honoured by the build.
+The earlier set included `minify` and `inline_images`,
+which nothing implemented; they were removed rather than left to mislead.
+
+### Shortcodes
+
+`{{< name args >}}` and `{{% name %}}body{{% /name %}}`
+are parsed with `nom` and expanded before the markdown is rendered.
+The built-ins are `youtube`, `figure`, `note`, `warning`, `tip`, `code` and `toc`.
+
+Because Folio is for technical writing,
+documents routinely show shortcode syntax rather than use it,
+so anything inside a fenced code block or an inline code span is left alone.
+Candidates are found with `memchr::memmem`,
+which also fixed a panic:
+the scanner used to step through the text one byte at a time
+and sliced through the middle of any multibyte character.
+
+An unknown shortcode is left in the page as written
+and reported by `folio check`.
+`toc` cannot be rendered until the heading ids exist,
+so it expands to a marker that is filled in from the rendered HTML.
+
+### Subresource Integrity
+
+The generated stylesheets and scripts are produced before any page is rendered,
+so every page can carry their SHA-384 hashes (`sha2`, `base64`)
+in the `integrity` template map,
+keyed by file name with punctuation replaced by `_`
+(`integrity.highlight_css`).
+The default template uses them on its stylesheet links.
+
 ### Queries belong to the documents
 
 `Collection` is not the only thing holding documents:
@@ -147,21 +200,21 @@ on `[Document]`, and `Collection` delegates.
 
 ## Coverage
 
-Used by a feature, as of this writing: 53 of the 70 crates `rustmax` re-exports.
+Used by a feature, as of this writing: 50 of the 73 crates `rustmax` re-exports.
 
 | Area | Crates |
 | --- | --- |
-| CLI | `clap`, `termcolor`, `rustyline`, `ctrlc`, `indicatif`, `xshell` |
+| CLI | `clap`, `termcolor`, `rustyline`, `indicatif` |
 | Web | `reqwest`, `mime`, `url` |
 | Async | `tokio`, `futures` |
-| Concurrency | `rayon`, `crossbeam` |
+| Concurrency | `rayon` |
 | Parsing | `comrak`, `regex`, `nom`, `syn` |
 | Templates | `tera` |
 | Serialization | `serde`, `serde_json`, `toml`, `json5` |
 | Encoding | `flate2`, `base64`, `hex`, `bytes`, `zip`, `tar` |
-| Crypto | `blake3`, `sha2` |
+| Hashing | `blake3`, `sha2` |
 | Filesystem | `walkdir`, `ignore`, `glob`, `tempfile` |
-| Time | `jiff`, `chrono` |
+| Time | `jiff` |
 | Text | `unicode-segmentation`, `memchr` |
 | Collections | `itertools`, `ahash` |
 | Numbers | `semver`, `num_enum`, `bitflags` |
@@ -169,7 +222,7 @@ Used by a feature, as of this writing: 53 of the 70 crates `rustmax` re-exports.
 | Graphics | `image` |
 | Logging | `log`, `env_logger` |
 | Errors | `derive_more`, `anyhow` |
-| Language | `cfg-if`, `extension-trait`, `rustmax-macros` |
+| Language | `extension-trait`, `rustmax-macros`, `powerletters` |
 | Testing | `proptest` |
 
 ### Deliberately not covered
@@ -184,7 +237,12 @@ which is the failure mode this app is supposed to avoid.
 | `libm` | `no_std` math. Folio is a hosted program. |
 | `num-bigint` | No arbitrary-precision arithmetic anywhere in a site generator. |
 | `hyper` | `reqwest` is the layer Folio works at. Reaching past it would be pretence. |
-| `http`, `tower`, `socket2`, `notify` | Used only by the dev server, which was removed when `axum` left `rustmax`. |
+| `http`, `http-body-util`, `hyper-util`, `tower`, `socket2`, `notify` | Used only by the dev server, which was removed when `axum` left `rustmax`. Candidates for a `folio serve` or `folio watch`. |
+| `ctrlc`, `crossbeam` | Nothing runs long enough to interrupt, and `rayon` covers the parallel build. Both would have a job in `folio watch`. |
+| `xshell` | Folio runs no external commands. |
+| `cfg-if` | No platform-specific code. |
+| `chrono` | `jiff` covers every date Folio handles. A second date library would be decoration. |
+| `rustc-hash` | `ahash` already covers the one hash map where hashing speed matters, the search index. |
 | `proc-macro2`, `quote` | Only meaningful inside a proc-macro crate. `syn` is here because parsing Rust is a real feature; generating it is not. |
 | `rand_pcg` | `rand_chacha` already covers the reproducibility requirement. A second PRNG would be decoration. |
 | `thiserror` | Deliberately avoided, and that is the finding. See [One dependency](#one-dependency). |
@@ -196,7 +254,7 @@ is itself worth knowing.
 
 ## Testing
 
-278 tests: 254 unit, 24 integration.
+253 tests: 225 unit, 28 integration.
 
 Reproducibility is tested by building the same collection twice
 and comparing the output byte for byte,

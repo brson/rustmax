@@ -215,11 +215,19 @@ This is your first document. Edit or delete it and start writing!
 }
 
 fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: bool, incremental: bool, progress: bool) -> Result<()> {
+    use crate::features::BuildFeatures;
+
     if !progress {
         info!("Building collection at {}", path.display());
     }
 
-    let config = Config::load(&path)?;
+    let mut config = Config::load(&path)?;
+    if drafts {
+        config.build.features |= BuildFeatures::DRAFTS;
+    }
+    if compress {
+        config.build.features |= BuildFeatures::COMPRESS;
+    }
     let output_dir = output.unwrap_or_else(|| path.join(&config.build.output_dir));
 
     let collection = crate::collection::Collection::load(&path, &config)?;
@@ -227,29 +235,11 @@ fn cmd_build(path: PathBuf, output: Option<PathBuf>, drafts: bool, compress: boo
         info!("Found {} documents", collection.documents.len());
     }
 
-    if incremental {
-        if progress {
-            crate::build::build_incremental_with_progress(&collection, &config, &output_dir, drafts)?;
-        } else {
-            crate::build::build_incremental(&collection, &config, &output_dir, drafts)?;
-        }
-    } else {
-        if progress {
-            crate::build::build_with_progress(&collection, &config, &output_dir, drafts)?;
-        } else {
-            crate::build::build(&collection, &config, &output_dir, drafts)?;
-        }
-    }
-
-    if compress {
-        if progress {
-            let compress_pb = crate::build::compress_spinner();
-            crate::build::compress_output(&output_dir)?;
-            crate::build::finish_with_check(&compress_pb, "Output compressed");
-        } else {
-            info!("Compressing output files...");
-            crate::build::compress_output(&output_dir)?;
-        }
+    match (incremental, progress) {
+        (true, true) => { crate::build::build_incremental_with_progress(&collection, &config, &output_dir)?; }
+        (true, false) => { crate::build::build_incremental(&collection, &config, &output_dir)?; }
+        (false, true) => crate::build::build_with_progress(&collection, &config, &output_dir)?,
+        (false, false) => crate::build::build(&collection, &config, &output_dir)?,
     }
 
     if !progress {
