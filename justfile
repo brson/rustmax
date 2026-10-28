@@ -87,7 +87,7 @@ doc-clean:
 install-nightly:
     rustup toolchain install {{nightly}} --profile minimal --component rust-docs-json
 
-doc-api: prebuild install-nightly
+doc-api: install-nightly
     # Generate JSON for rustmax and all dependencies.
     RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +{{nightly}} doc -p rustmax --features rmx-profile-max
     # Copy std library JSON files from the rust-docs-json component.
@@ -101,7 +101,7 @@ doc-book:
     rm -rf book/book
     cargo run --release -- rmxbook book book/book
 
-doc-library: prebuild
+doc-library:
     @if [ -n "${RUSTMAX_CI:-}" ]; then \
         cargo run --release -- refresh-library; \
     fi
@@ -118,7 +118,7 @@ search query: export-search-index
 gen-search-corpus:
     node crates/rustmax-cli/tests/gen-search-corpus.js
 
-doc-www: doc-library export-search-index
+doc-www: prebuild doc-library export-search-index
     mkdir -p out/
     cp -r www/* out/
     cp work/crates.html out/

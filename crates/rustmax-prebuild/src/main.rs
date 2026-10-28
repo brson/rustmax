@@ -12,8 +12,6 @@
 
 */
 
-#![allow(unused)]
-
 mod highlight;
 mod news;
 
@@ -21,17 +19,14 @@ use anyhow::Context;
 use anyhow::Result as AnyResult;
 use anyhow::anyhow as A;
 use std::collections::BTreeMap;
-use std::path::Path;
 use std::process::Command;
 use std::{env, fs};
 
 const CRATES_META: &str = "src/crates.json5";
-const TOOLS_META: &str = "src/tools.json5";
 const MAINTAINERS_META: &str = "src/maintainers.json5";
 const RMX_MANIFEST: &str = "crates/rustmax/Cargo.toml";
 const EXAMPLES_DIR: &str = "crates/rustmax/doc-src";
 const LINK_SUBS: &str = "src/linksubs.json5";
-const CLI_DIR: &str = "crates/rustmax-cli";
 const POSTS_DIR: &str = "src/posts";
 const NEWS_DIR: &str = "src/news";
 const WWW_DIR: &str = "www";
@@ -51,7 +46,6 @@ const ICON_USER: &str = "<svg class='icon icon-user' viewBox='0 0 24 24' aria-hi
 #[derive(Debug)]
 struct CrateInfo {
     name: String,
-    category: String,
     version: String,
     short_desc: String,
     example: String,
@@ -62,7 +56,6 @@ struct CrateInfo {
 struct MaintainerInfo {
     id: String,
     display_name: String,
-    url: String,
 }
 
 mod meta {
@@ -83,18 +76,6 @@ mod meta {
     }
 
     #[derive(Serialize, Deserialize, Clone, Debug)]
-    pub struct Tools {
-        pub tools: Vec<Tool>,
-    }
-
-    #[derive(Serialize, Deserialize, Clone, Debug)]
-    pub struct Tool {
-        pub name: String,
-        pub category: String,
-        pub short_desc: String,
-    }
-
-    #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Maintainers {
         pub maintainers: Vec<Maintainer>,
     }
@@ -112,32 +93,27 @@ fn main() -> AnyResult<()> {
     let workspace_dir = env::current_dir()?;
 
     let crates_meta_file = workspace_dir.join(CRATES_META);
-    let tools_meta_file = workspace_dir.join(TOOLS_META);
     let maintainers_meta_file = workspace_dir.join(MAINTAINERS_META);
     let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
     let examples_dir = workspace_dir.join(EXAMPLES_DIR);
     let link_subs_file = workspace_dir.join(LINK_SUBS);
-    let cli_dir = workspace_dir.join(CLI_DIR);
 
     let crates_meta_str =
         fs::read_to_string(&crates_meta_file).context(crates_meta_file.display().to_string())?;
-    let tools_meta_str =
-        fs::read_to_string(&tools_meta_file).context(tools_meta_file.display().to_string())?;
     let maintainers_meta_str =
         fs::read_to_string(&maintainers_meta_file).context(maintainers_meta_file.display().to_string())?;
     let rmx_manifest_str =
         fs::read_to_string(&rmx_manifest_file).context(rmx_manifest_file.display().to_string())?;
     let link_subs_str =
-        fs::read_to_string(&link_subs_file).context(tools_meta_file.display().to_string())?;
+        fs::read_to_string(&link_subs_file).context(link_subs_file.display().to_string())?;
 
     let crates_meta: meta::Crates = json5::from_str(&crates_meta_str).context("crates meta")?;
-    let tools_meta: meta::Tools = json5::from_str(&tools_meta_str).context("tools meta")?;
     let maintainers_meta: meta::Maintainers = json5::from_str(&maintainers_meta_str).context("maintainers meta")?;
     let rmx_manifest: toml::Value =
         toml::from_str(&rmx_manifest_str).context("rmx manifest meta")?;
     let examples_dir = fs::read_dir(&examples_dir).context(examples_dir.display().to_string())?;
     let link_subs: BTreeMap<String, String> =
-        json5::from_str(&link_subs_str).context("crates meta")?;
+        json5::from_str(&link_subs_str).context("link subs")?;
 
     let crate_info = build_crate_info(&crates_meta, &maintainers_meta, &rmx_manifest, examples_dir)?;
 
@@ -170,8 +146,6 @@ fn main() -> AnyResult<()> {
         &tera,
         &workspace_dir.join(OUT_LATEST_POST),
     )?;
-
-    copy_cli_assets(&workspace_dir, &cli_dir);
 
     Ok(())
 }
@@ -214,14 +188,12 @@ fn build_crate_info(
                 MaintainerInfo {
                     id: m.id.clone(),
                     display_name: m.display_name.clone(),
-                    url: m.url.clone(),
                 }
             })
         });
 
         infos.push(CrateInfo {
             name: crate_.name.to_string(),
-            category: meta.category.to_string(),
             version: crate_.version.to_string(),
             short_desc: meta.short_desc.to_string(),
             example,
@@ -299,7 +271,7 @@ struct CrateExample {
     text: String,
 }
 
-fn get_examples(mut examples_dir: fs::ReadDir) -> AnyResult<Vec<CrateExample>> {
+fn get_examples(examples_dir: fs::ReadDir) -> AnyResult<Vec<CrateExample>> {
     let crate_name_regex = regex::Regex::new(r"^crate-(?<name>[a-zA-Z0-9_-]+)\.md$").expect(".");
 
     let mut examples = Vec::new();
@@ -498,25 +470,6 @@ fn substitute_versions(md: &str, crates: &[CrateInfo]) -> String {
 
 fn find_crate<'c>(crates: &'c [CrateInfo], name: &str) -> Option<&'c CrateInfo> {
     crates.iter().find(|c| c.name == name)
-}
-
-fn copy_cli_assets(workspace_dir: &Path, cli_dir: &Path) -> AnyResult<()> {
-    let asset_dir = cli_dir.join("assets");
-    fs::create_dir_all(&asset_dir)?;
-
-    let rustfmt_cfg_in = workspace_dir.join("rustfmt.toml");
-    let deny_cfg_in = workspace_dir.join("deny.toml");
-    let control_cfg_in = workspace_dir.join("clippy-control.toml");
-
-    let rustfmt_cfg_out = asset_dir.join("rustfmt.toml");
-    let deny_cfg_out = asset_dir.join("deny.toml");
-    let control_cfg_out = asset_dir.join("clippy-control.toml");
-
-    fs::copy(&rustfmt_cfg_in, rustfmt_cfg_out)?;
-    fs::copy(&deny_cfg_in, deny_cfg_out)?;
-    fs::copy(&control_cfg_in, control_cfg_out)?;
-
-    Ok(())
 }
 
 fn make_build_info() -> AnyResult<String> {

@@ -38,6 +38,20 @@ fn main() {
         let syntax_dst = assets_dir.join("rustmax-syntax.css");
         fs::copy(&syntax_src, &syntax_dst).expect("failed to copy rustmax-syntax.css");
     }
+
+    // Copy the workspace's tool configs for the write-*-config commands.
+    let workspace_dir = manifest_dir.join("../..");
+
+    // Only copy if building from the repo, not from a published or vendored crate.
+    if workspace_dir.join("clippy-control.toml").exists() {
+        fs::create_dir_all(&assets_dir).expect("failed to create assets directory");
+
+        for name in ["rustfmt.toml", "deny.toml", "clippy-control.toml"] {
+            println!("cargo::rerun-if-changed=../../{name}");
+            fs::copy(workspace_dir.join(name), assets_dir.join(name))
+                .unwrap_or_else(|e| panic!("failed to copy {name}: {e}"));
+        }
+    }
 }
 
 fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
