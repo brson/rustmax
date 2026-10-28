@@ -1,7 +1,7 @@
 //! Metadata structures for blog posts.
 
 use rmx::prelude::*;
-use rmx::std::path::{Path, PathBuf};
+use rmx::std::path::Path;
 use serde::{Serialize, Deserialize};
 
 /// Metadata for a single blog post.

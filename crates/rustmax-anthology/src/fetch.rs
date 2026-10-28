@@ -1,7 +1,7 @@
 //! HTTP fetching infrastructure.
 
 use rmx::prelude::*;
-use rmx::std::path::{Path, PathBuf};
+use rmx::std::path::Path;
 use crate::metadata::{FetchInfo, Post};
 
 /// Fetch a blog post from its URL.

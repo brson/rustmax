@@ -2,7 +2,7 @@
 
 use rmx::prelude::*;
 use rmx::std::collections::BTreeMap;
-use rmx::std::path::{Path, PathBuf};
+use rmx::std::path::Path;
 use crate::metadata::{Post, PostCollection};
 
 /// Check if a post is ready for inclusion in the book.

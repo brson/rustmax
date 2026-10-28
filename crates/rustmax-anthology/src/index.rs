@@ -1,8 +1,8 @@
 //! Generate HTML index for the fetched directory.
 
 use rmx::prelude::*;
-use rmx::std::path::{Path, PathBuf};
-use crate::metadata::{Post, PostCollection};
+use rmx::std::path::Path;
+use crate::metadata::PostCollection;
 
 /// Generate an HTML index for the fetched directory.
 pub fn generate_index(
