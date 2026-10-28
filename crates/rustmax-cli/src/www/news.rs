@@ -1,8 +1,9 @@
 //! The news posts, built by megaspace-pipeliner so megaspace.dev can syndicate them.
 
-use anyhow::{Context, Result as AnyResult, anyhow as A};
 use megaspace_pipeliner::{DocSet, PostsConfig, Site};
-use serde::Deserialize;
+use rmx::prelude::*;
+use rmx::serde::Deserialize;
+use rmx::{serde_json, tera};
 use std::fs;
 use std::path::Path;
 
@@ -70,7 +71,7 @@ pub fn generate_latest_post(posts_json: &Path, tera: &tera::Tera, out_path: &Pat
     context.insert("date", date);
     context.insert("name", &latest.megaspace.name);
 
-    let rendered = tera.render("latest-post.template.html", &context)?;
+    let rendered = tera.render("latest-post", &context)?;
     fs::write(out_path, rendered)?;
     eprintln!("wrote {}", out_path.display());
 

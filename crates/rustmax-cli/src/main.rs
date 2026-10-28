@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 mod books;
+mod highlight;
 mod impls;
 mod library_gen;
 mod linkcheck;
@@ -9,6 +10,7 @@ mod rmxbook;
 mod search;
 mod tools;
 mod topics;
+mod www;
 
 use include_dir::{include_dir, Dir};
 use rmx::prelude::*;
@@ -99,6 +101,9 @@ enum CliCmd {
 
     /// Search the topic index from the command line.
     Search(CliCmdSearch),
+
+    /// Build the rustmax.net home page, run from the repo root.
+    BuildWww(CliCmdBuildWww),
 }
 
 #[derive(clap::Args)]
@@ -252,6 +257,13 @@ struct CliCmdExportSearchIndex {
 }
 
 #[derive(clap::Args)]
+struct CliCmdBuildWww {
+    /// Output directory.
+    #[arg(default_value = "out")]
+    output: std::path::PathBuf,
+}
+
+#[derive(clap::Args)]
 struct CliCmdSearch {
     /// Search query.
     query: Vec<String>,
@@ -319,6 +331,7 @@ impl CliOpts {
             CliCmd::SummarizeTopics(cmd) => cmd.run(),
             CliCmd::ExportSearchIndex(cmd) => cmd.run(),
             CliCmd::Search(cmd) => cmd.run(),
+            CliCmd::BuildWww(cmd) => cmd.run(),
         }
     }
 }
@@ -610,6 +623,12 @@ impl CliCmdSummarizeTopics {
         let index = topics::TopicIndex::load(path)?;
         index.print_summary(self.verbose);
         Ok(())
+    }
+}
+
+impl CliCmdBuildWww {
+    fn run(&self) -> AnyResult<()> {
+        www::build(&self.output)
     }
 }
 

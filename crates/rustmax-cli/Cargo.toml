@@ -35,3 +35,4 @@ syntect.version = "5.3"
 syntect.default-features = false
 syntect.features = ["default-syntaxes", "default-themes", "html", "regex-onig"]
 include_dir.version = "0.7"
+megaspace-pipeliner.version = "0.6.0"

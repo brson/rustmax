@@ -3577,6 +3577,7 @@ dependencies = [
  "comrak 0.57.0",
  "enum-iterator",
  "include_dir",
+ "megaspace-pipeliner",
  "regex",
  "rustmax",
  "rustmax-doctest",
@@ -3609,23 +3610,6 @@ version = "0.0.11"
 dependencies = [
  "rustmax",
  "thiserror",
-]
-
-[[package]]
-name = "rustmax-prebuild"
-version = "0.0.11"
-dependencies = [
- "anyhow",
- "clap",
- "comrak 0.57.0",
- "json5",
- "megaspace-pipeliner",
- "regex",
- "serde",
- "serde_json",
- "syntect",
- "tera",
- "toml",
 ]
 
 [[package]]
@@ -4134,9 +4118,7 @@ version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "61e0cadeeb54426080b4c5395d59769ce8293f542cc25511c167c742b2175809"
 dependencies = [
- "globset",
  "serde",
- "walkdir",
 ]
 
 [[package]]

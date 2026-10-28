@@ -12,8 +12,8 @@ fixable from this repo without dropping functionality.
 
 ## RUSTSEC-2025-0141 - bincode 1.3.3 unmaintained
 
-Path: `syntect 5.3` -> `bincode 1`, pulled in by `rustmax-cli`,
-`rustmax-prebuild`, and `rustmax-rustdoc`.
+Path: `syntect 5.3` -> `bincode 1`, pulled in by `rustmax-cli`
+and `rustmax-rustdoc`.
 
 We already build syntect with `default-features = false`, but the
 `default-syntaxes` and `default-themes` features load syntect's packed dumps,

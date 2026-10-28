@@ -1,26 +1,18 @@
-/*
-# ideas
+//! The rustmax.net home page.
+//!
+//! Copies `www/` and generates the parts of the page that come from the
+//! repo's metadata: the crate table, the news posts, and the build info.
 
-- crate table for readme.md
-- crate table for index.html
-- crate table for crate docs
-- crate list for rustdoc-script whitelist
-- examples for readme.md
-- examples for index.html
-- examples for crate docs
-- various parts of crate docs
-
-*/
-
-mod highlight;
 mod news;
 
-use anyhow::Context;
-use anyhow::Result as AnyResult;
-use anyhow::anyhow as A;
+use rmx::prelude::*;
+use rmx::{json5, serde, serde_json, tera};
 use std::collections::BTreeMap;
+use std::fs;
+use std::path::Path;
 use std::process::Command;
-use std::{env, fs};
+
+use crate::highlight::{HighlightAdapter, Highlighter};
 
 const CRATES_META: &str = "src/crates.json5";
 const MAINTAINERS_META: &str = "src/maintainers.json5";
@@ -31,11 +23,10 @@ const POSTS_DIR: &str = "src/posts";
 const NEWS_DIR: &str = "src/news";
 const WWW_DIR: &str = "www";
 
-const OUT_DIR: &str = "work";
-const OUT_CRATES_HTML: &str = "work/crates.html";
-const OUT_BUILD_INFO: &str = "work/build-info.json";
-const OUT_NEWS_DIR: &str = "work/news";
-const OUT_LATEST_POST: &str = "work/latest-post.html";
+const LATEST_POST_TEMPLATE: &str = "src/latest-post.template.html";
+
+// Pipeliner clears its output directory, so the news is staged here.
+const NEWS_STAGING_DIR: &str = "work/news";
 
 // Monochrome inline icons, drawn in `currentColor` so CSS can theme them.
 // Shapes are from Lucide (ISC license).
@@ -59,7 +50,7 @@ struct MaintainerInfo {
 }
 
 mod meta {
-    use serde::{Deserialize, Serialize};
+    use rmx::serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Crates {
@@ -89,73 +80,46 @@ mod meta {
     }
 }
 
-fn main() -> AnyResult<()> {
-    let workspace_dir = env::current_dir()?;
-
-    let crates_meta_file = workspace_dir.join(CRATES_META);
-    let maintainers_meta_file = workspace_dir.join(MAINTAINERS_META);
-    let rmx_manifest_file = workspace_dir.join(RMX_MANIFEST);
-    let examples_dir = workspace_dir.join(EXAMPLES_DIR);
-    let link_subs_file = workspace_dir.join(LINK_SUBS);
-
-    let crates_meta_str =
-        fs::read_to_string(&crates_meta_file).context(crates_meta_file.display().to_string())?;
-    let maintainers_meta_str =
-        fs::read_to_string(&maintainers_meta_file).context(maintainers_meta_file.display().to_string())?;
-    let rmx_manifest_str =
-        fs::read_to_string(&rmx_manifest_file).context(rmx_manifest_file.display().to_string())?;
-    let link_subs_str =
-        fs::read_to_string(&link_subs_file).context(link_subs_file.display().to_string())?;
-
-    let crates_meta: meta::Crates = json5::from_str(&crates_meta_str).context("crates meta")?;
-    let maintainers_meta: meta::Maintainers = json5::from_str(&maintainers_meta_str).context("maintainers meta")?;
-    let rmx_manifest: toml::Value =
-        toml::from_str(&rmx_manifest_str).context("rmx manifest meta")?;
-    let examples_dir = fs::read_dir(&examples_dir).context(examples_dir.display().to_string())?;
-    let link_subs: BTreeMap<String, String> =
-        json5::from_str(&link_subs_str).context("link subs")?;
+/// Build the home page into `out_dir`, run from the repo root.
+pub fn build(out_dir: &Path) -> AnyResult<()> {
+    let crates_meta: meta::Crates = read_json5(CRATES_META)?;
+    let maintainers_meta: meta::Maintainers = read_json5(MAINTAINERS_META)?;
+    let link_subs: BTreeMap<String, String> = read_json5(LINK_SUBS)?;
+    let rmx_manifest: toml::Value = toml::from_str(&read(RMX_MANIFEST)?)
+        .with_context(|| format!("parsing {RMX_MANIFEST}"))?;
+    let examples_dir = fs::read_dir(EXAMPLES_DIR).with_context(|| format!("reading {EXAMPLES_DIR}"))?;
 
     let crate_info = build_crate_info(&crates_meta, &maintainers_meta, &rmx_manifest, examples_dir)?;
+    let highlighter = Highlighter::new();
 
-    // Create syntax highlighter for code examples.
-    let highlighter = highlight::Highlighter::new();
+    fs::create_dir_all(out_dir)?;
+    crate::books::copy_dir_contents(Path::new(WWW_DIR), out_dir)?;
 
-    let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
-    let out_build_info_file = workspace_dir.join(OUT_BUILD_INFO);
+    write(&out_dir.join("crates.html"), &make_crate_table(&crate_info, &link_subs, &highlighter))?;
+    write(&out_dir.join("build-info.json"), &make_build_info()?)?;
 
-    let out_crates_html_str = make_crate_table(&crate_info, &link_subs, &highlighter);
-
-    let build_info_str = make_build_info()?;
-
-    fs::create_dir_all(OUT_DIR)?;
-    write(out_crates_html_file, &out_crates_html_str)?;
-    write(out_build_info_file, &build_info_str)?;
-
-    let out_news_dir = workspace_dir.join(OUT_NEWS_DIR);
-    news::build_posts(
-        &workspace_dir.join(NEWS_DIR),
-        &workspace_dir.join(POSTS_DIR),
-        &workspace_dir.join(WWW_DIR),
-        &out_news_dir,
-    )?;
+    let news_dir = Path::new(NEWS_STAGING_DIR);
+    news::build_posts(Path::new(NEWS_DIR), Path::new(POSTS_DIR), Path::new(WWW_DIR), news_dir)?;
+    crate::books::copy_dir_contents(news_dir, out_dir)?;
 
     let mut tera = tera::Tera::new();
-    tera.load_from_glob("src/*.template.*")?;
-    news::generate_latest_post(
-        &out_news_dir.join("posts.json"),
-        &tera,
-        &workspace_dir.join(OUT_LATEST_POST),
-    )?;
+    tera.add_template_file(LATEST_POST_TEMPLATE, Some("latest-post"))?;
+    news::generate_latest_post(&news_dir.join("posts.json"), &tera, &out_dir.join("latest-post.html"))?;
 
     Ok(())
 }
 
-fn write<P>(p: P, c: &str) -> AnyResult<()>
-where
-    P: AsRef<std::path::Path>,
-{
-    fs::write(&p, c)?;
-    eprintln!("wrote {}", p.as_ref().display());
+fn read(path: &str) -> AnyResult<String> {
+    fs::read_to_string(path).with_context(|| format!("reading {path}"))
+}
+
+fn read_json5<T: serde::de::DeserializeOwned>(path: &str) -> AnyResult<T> {
+    json5::from_str(&read(path)?).with_context(|| format!("parsing {path}"))
+}
+
+fn write(path: &Path, contents: &str) -> AnyResult<()> {
+    fs::write(path, contents)?;
+    eprintln!("wrote {}", path.display());
     Ok(())
 }
 
@@ -304,7 +268,7 @@ fn get_examples(examples_dir: fs::ReadDir) -> AnyResult<Vec<CrateExample>> {
 fn make_crate_table(
     crates: &[CrateInfo],
     link_subs: &BTreeMap<String, String>,
-    highlighter: &highlight::Highlighter,
+    highlighter: &Highlighter,
 ) -> String {
     let mut html = String::new();
 
@@ -380,13 +344,13 @@ fn render_example(
     krate: &CrateInfo,
     link_subs: &BTreeMap<String, String>,
     crates: &[CrateInfo],
-    highlighter: &highlight::Highlighter,
+    highlighter: &Highlighter,
 ) -> Option<String> {
     if !krate.example.is_empty() {
         let md = process_md(&krate.example, link_subs, crates);
 
         // Use comrak with syntax highlighting.
-        let adapter = highlight::HighlightAdapter { highlighter };
+        let adapter = HighlightAdapter { highlighter };
         let plugins = comrak::options::Plugins {
             render: comrak::options::RenderPlugins {
                 codefence_syntax_highlighter: Some(&adapter),

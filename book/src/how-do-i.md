@@ -315,7 +315,6 @@ Available recipes:
     maint-lock-minimum-versions # useful prior to running `cargo audit`
     maint-outdated
     maint-upgrade
-    prebuild
     publish
     publish-dry
     replace-version old new

@@ -7,8 +7,8 @@ Use prior posts as style reference.
 Posts are `src/posts/YYYYMMDDx-{slug}.md`,
 where `x` is a lowercase letter ordering same-day posts.
 They are built by megaspace-pipeliner (from brson/megaspace-one)
-during `just prebuild`, with templates in `src/news/`,
-into `work/news/`: `posts.html`, a page per post,
+during `rustmax build-www` (`just doc-www`), with templates in `src/news/`,
+into `work/news/` and then the site: `posts.html`, a page per post,
 `posts.xml` for readers, and `posts.json`, which megaspace.dev syndicates.
 
 

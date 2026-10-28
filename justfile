@@ -77,10 +77,6 @@ maint-audit:
 
 
 
-prebuild:
-    cargo run -p rustmax-prebuild
-
-
 doc-clean:
     rm -rf out
 
@@ -118,13 +114,8 @@ search query: export-search-index
 gen-search-corpus:
     node crates/rustmax-cli/tests/gen-search-corpus.js
 
-doc-www: prebuild doc-library export-search-index
-    mkdir -p out/
-    cp -r www/* out/
-    cp work/crates.html out/
-    cp work/build-info.json out/
-    cp work/latest-post.html out/
-    cp -r work/news/* out/
+doc-www: doc-library export-search-index
+    cargo run -p rustmax-cli --release -- build-www out
     cp work/search-index.json out/
 
 # Requires a built site; run after doc-api.

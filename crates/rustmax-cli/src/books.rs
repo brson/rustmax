@@ -394,7 +394,7 @@ fn collect_summary(
     Ok(())
 }
 
-fn copy_dir_contents(from: &Path, to: &Path) -> AnyResult<()> {
+pub fn copy_dir_contents(from: &Path, to: &Path) -> AnyResult<()> {
     for entry in fs::read_dir(from)? {
         let entry = entry?;
         let ref dest = to.join(entry.file_name());
