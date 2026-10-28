@@ -37,7 +37,6 @@ const NEWS_DIR: &str = "src/news";
 const WWW_DIR: &str = "www";
 
 const OUT_DIR: &str = "work";
-const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
 const OUT_BUILD_INFO: &str = "work/build-info.json";
 const OUT_NEWS_DIR: &str = "work/news";
@@ -145,17 +144,14 @@ fn main() -> AnyResult<()> {
     // Create syntax highlighter for code examples.
     let highlighter = highlight::Highlighter::new();
 
-    let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
     let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
     let out_build_info_file = workspace_dir.join(OUT_BUILD_INFO);
 
-    let (out_crates_json_str, out_crates_html_str) =
-        make_crate_lists(&crate_info, &link_subs, &highlighter);
+    let out_crates_html_str = make_crate_table(&crate_info, &link_subs, &highlighter);
 
     let build_info_str = make_build_info()?;
 
     fs::create_dir_all(OUT_DIR)?;
-    write(out_crates_json_file, &out_crates_json_str)?;
     write(out_crates_html_file, &out_crates_html_str)?;
     write(out_build_info_file, &build_info_str)?;
 
@@ -333,15 +329,13 @@ fn get_examples(mut examples_dir: fs::ReadDir) -> AnyResult<Vec<CrateExample>> {
     Ok(examples)
 }
 
-fn make_crate_lists(
+fn make_crate_table(
     crates: &[CrateInfo],
     link_subs: &BTreeMap<String, String>,
     highlighter: &highlight::Highlighter,
-) -> (String, String) {
-    let mut json = String::new();
+) -> String {
     let mut html = String::new();
 
-    json.push_str("[\n");
     html.push_str("<table id='rmx-crate-table'>\n");
     html.push_str("<thead>\n");
     html.push_str("<th></th>\n");
@@ -356,12 +350,6 @@ fn make_crate_lists(
             krate.name.replace("-", "_"),
         );
         let example_html = render_example(krate, link_subs, crates, highlighter);
-
-        if i + 1 < crates.len() {
-            json.push_str(&format!("\"{}\",\n", krate.name,));
-        } else {
-            json.push_str(&format!("\"{}\"\n", krate.name,));
-        }
 
         html.push_str(&format!(
             "<tr class='{}'>\n",
@@ -411,10 +399,9 @@ fn make_crate_lists(
         }
     }
 
-    json.push_str("]");
     html.push_str("</thead>\n");
 
-    (json, html)
+    html
 }
 
 fn render_example(
