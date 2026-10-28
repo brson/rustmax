@@ -301,7 +301,8 @@ fn print_build_summary(results: &[BookBuildResult]) {
     if failed > 0 {
         println!("\nFailed books:");
         for result in results.iter().filter(|r| !r.success) {
-            println!("  - {}", result.book.slug);
+            let error_message = result.error_message.as_deref().expect("failed build has an error");
+            println!("  - {}: {}", result.book.slug, error_message);
         }
     }
 }

@@ -157,11 +157,6 @@ impl Tool {
                 display_name: "mold",
                 impl_complete: true,
             },
-
-            _ => ToolAttrs {
-                display_name: "<unknown>",
-                impl_complete: false,
-            },
         }
     }
 }

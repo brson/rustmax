@@ -138,7 +138,6 @@ fn find_src_dir(input: &Path) -> AnyResult<PathBuf> {
 
 fn parse_summary(content: &str) -> AnyResult<Vec<Chapter>> {
     let mut chapters = Vec::new();
-    let mut current_indent = 0;
     let mut stack: Vec<(usize, Vec<Chapter>)> = vec![(0, Vec::new())];
 
     for line in content.lines() {
@@ -172,8 +171,6 @@ fn parse_summary(content: &str) -> AnyResult<Vec<Chapter>> {
             if let Some((_, children)) = stack.last_mut() {
                 children.push(chapter);
             }
-
-            current_indent = level;
         }
     }
 
@@ -229,7 +226,7 @@ fn render_book(book: &Book, src_dir: &Path, output: &Path, spec: Option<&Spec>) 
     let flat_chapters = flatten_chapters(&book.chapters);
 
     for (i, chapter) in flat_chapters.iter().enumerate() {
-        if let Some(ref path) = chapter.path {
+        if chapter.path.is_some() {
             let prev = if i > 0 { flat_chapters.get(i - 1) } else { None };
             let next = flat_chapters.get(i + 1);
 

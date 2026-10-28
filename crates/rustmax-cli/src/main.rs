@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 mod books;
 mod highlight;
 mod impls;

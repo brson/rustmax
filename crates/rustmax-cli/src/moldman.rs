@@ -1,5 +1,5 @@
 use rmx::prelude::*;
-use rmx::{reqwest, serde_json, tempfile::TempDir, toml, xshell};
+use rmx::{reqwest, serde_json, tempfile::TempDir, toml};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};

@@ -15,7 +15,7 @@ use rmx::serde::Deserialize;
 use rmx::serde_json;
 use std::collections::BTreeMap;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 /// Why a link target was rejected.
 #[derive(Debug)]
@@ -207,6 +207,7 @@ fn has_anchor(page: &Path, anchor: &str) -> AnyResult<bool> {
 mod tests {
     use super::*;
     use rmx::tempfile;
+    use std::path::PathBuf;
 
     /// Build a site and a linksubs file to check against it.
     fn fixture(pages: &[(&str, &str)], linksubs: &str) -> (tempfile::TempDir, PathBuf, PathBuf) {
