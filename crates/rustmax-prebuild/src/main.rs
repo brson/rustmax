@@ -37,12 +37,17 @@ const NEWS_DIR: &str = "src/news";
 const WWW_DIR: &str = "www";
 
 const OUT_DIR: &str = "work";
-const OUT_CRATES_MD: &str = "work/crates.md";
 const OUT_CRATES_JSON: &str = "work/crates.json";
 const OUT_CRATES_HTML: &str = "work/crates.html";
 const OUT_BUILD_INFO: &str = "work/build-info.json";
 const OUT_NEWS_DIR: &str = "work/news";
 const OUT_LATEST_POST: &str = "work/latest-post.html";
+
+// Monochrome inline icons, drawn in `currentColor` so CSS can theme them.
+// Shapes are from Lucide (ISC license).
+const ICON_BOOK_CLOSED: &str = "<svg class='icon icon-book-closed' viewBox='0 0 24 24' aria-hidden='true'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/></svg>";
+const ICON_BOOK_OPEN: &str = "<svg class='icon icon-book-open' viewBox='0 0 24 24' aria-hidden='true'><path d='M12 7v14'/><path d='M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z'/></svg>";
+const ICON_USER: &str = "<svg class='icon icon-user' viewBox='0 0 24 24' aria-hidden='true'><circle cx='12' cy='8' r='5'/><path d='M20 21a8 8 0 0 0-16 0'/></svg>";
 
 #[derive(Debug)]
 struct CrateInfo {
@@ -140,18 +145,16 @@ fn main() -> AnyResult<()> {
     // Create syntax highlighter for code examples.
     let highlighter = highlight::Highlighter::new();
 
-    let out_crates_md_file = workspace_dir.join(OUT_CRATES_MD);
     let out_crates_json_file = workspace_dir.join(OUT_CRATES_JSON);
     let out_crates_html_file = workspace_dir.join(OUT_CRATES_HTML);
     let out_build_info_file = workspace_dir.join(OUT_BUILD_INFO);
 
-    let (out_crates_md_str, out_crates_json_str, out_crates_html_str) =
+    let (out_crates_json_str, out_crates_html_str) =
         make_crate_lists(&crate_info, &link_subs, &highlighter);
 
     let build_info_str = make_build_info()?;
 
     fs::create_dir_all(OUT_DIR)?;
-    write(out_crates_md_file, &out_crates_md_str)?;
     write(out_crates_json_file, &out_crates_json_str)?;
     write(out_crates_html_file, &out_crates_html_str)?;
     write(out_build_info_file, &build_info_str)?;
@@ -334,13 +337,10 @@ fn make_crate_lists(
     crates: &[CrateInfo],
     link_subs: &BTreeMap<String, String>,
     highlighter: &highlight::Highlighter,
-) -> (String, String, String) {
-    let mut md = String::new();
+) -> (String, String) {
     let mut json = String::new();
     let mut html = String::new();
 
-    md.push_str("| Crate | Feature | |\n");
-    md.push_str("|-|-|-|\n");
     json.push_str("[\n");
     html.push_str("<table id='rmx-crate-table'>\n");
     html.push_str("<thead>\n");
@@ -357,11 +357,6 @@ fn make_crate_lists(
         );
         let example_html = render_example(krate, link_subs, crates, highlighter);
 
-        md.push_str(&format!(
-            "| `{} = \"{}\"` | {} | [📖]({}) |\n",
-            krate.name, krate.version, krate.short_desc, api_link,
-        ));
-
         if i + 1 < crates.len() {
             json.push_str(&format!("\"{}\",\n", krate.name,));
         } else {
@@ -375,8 +370,8 @@ fn make_crate_lists(
 
         let maintainer_badge = if let Some(ref maintainer) = krate.maintainer {
             format!(
-                "<span class='maintainer-badge'><a href='book/maintainers.html#{}' title='Trusted maintainer: {}'>👤</a></span>",
-                maintainer.id, maintainer.display_name
+                "<span class='maintainer-badge'><a href='book/maintainers.html#{}' title='Trusted maintainer: {}' aria-label='Trusted maintainer: {}'>{}</a></span>",
+                maintainer.id, maintainer.display_name, maintainer.display_name, ICON_USER,
             )
         } else {
             String::new()
@@ -390,9 +385,12 @@ fn make_crate_lists(
         html.push_str(&format!("<td>{}</td>\n", krate.short_desc));
         if example_html.is_some() {
             html.push_str(&format!(
-                "<td><button id='button-{}' class='example-button' data-name='{}' type='button'>📘</button></td>\n",
+                "<td><button id='button-{}' class='example-button' data-name='{}' type='button' aria-expanded='false' aria-label='Toggle {} example'>{}{}</button></td>\n",
                 krate.name,
                 krate.name,
+                krate.name,
+                ICON_BOOK_CLOSED,
+                ICON_BOOK_OPEN,
             ));
         } else {
             html.push_str("<td></td>");
@@ -413,11 +411,10 @@ fn make_crate_lists(
         }
     }
 
-    md.push_str("");
     json.push_str("]");
     html.push_str("</thead>\n");
 
-    (md, json, html)
+    (json, html)
 }
 
 fn render_example(

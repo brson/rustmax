@@ -22,19 +22,14 @@ function setupExampleButtons() {
         const isExpanded = getExpandedState(name);
         if (isExpanded) {
             exampleRow.classList.add("example-row-visible");
-            button.innerText = "📖";
+            button.setAttribute("aria-expanded", "true");
         }
 
         button.addEventListener("click", () => {
             exampleRow.classList.toggle("example-row-visible");
             const isVisible = exampleRow.classList.contains("example-row-visible");
-            if (isVisible) {
-                button.innerText = "📖";
-                saveExpandedState(name, true);
-            } else {
-                button.innerText = "📘";
-                saveExpandedState(name, false);
-            }
+            button.setAttribute("aria-expanded", isVisible ? "true" : "false");
+            saveExpandedState(name, isVisible);
         });
     }
 }
