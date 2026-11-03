@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-TOOLCHAIN=1.90.0
+TOOLCHAIN=1.97.1
 rustup default $TOOLCHAIN
 
 # The pinned nightly for API docs is installed by the justfile's doc-api recipe.
