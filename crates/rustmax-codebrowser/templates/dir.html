@@ -3,7 +3,8 @@
 {% if is_root %}
 <section class="summary">
     <h1>{{ workspace_name }}</h1>
-    <p>{{ packages | length }} packages, {{ file_count }} files, {{ symbol_count }} symbols defined.</p>
+    <p>{{ packages | length }} packages, {{ file_count }} files, {{ symbol_count }} symbols defined. <a href="_rmx/deps.html">Dependency usage</a></p>
+    <div class="rb-graph-box">{{ graph | safe }}</div>
     <table class="packages">
         <thead><tr><th>Package</th><th>Version</th><th>Rust lines</th><th>Description</th></tr></thead>
         <tbody>
@@ -15,6 +16,16 @@
 </section>
 {% endif %}
 {% if package %}{% include "package.html" %}{% endif %}
+{% if package_files %}
+<table class="rb-files">
+    <thead><tr><th>Rust source</th><th>Lines</th><th>Types</th><th>Traits</th><th>Functions</th><th>Consts</th><th>Macros</th></tr></thead>
+    <tbody>
+    {% for f in package_files %}
+        <tr><td><a href="{{ f.url }}">{{ f.name }}</a></td><td class="num">{{ f.lines }}</td><td class="num">{{ f.defs.types }}</td><td class="num">{{ f.defs.traits }}</td><td class="num">{{ f.defs.functions }}</td><td class="num">{{ f.defs.constants }}</td><td class="num">{{ f.defs.macros }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
 <table class="listing">
     <tbody>
     {% for d in subdirs %}

@@ -1,9 +1,11 @@
 //! Page generation.
 
 use crate::files::SourceFile;
+use crate::graph;
 use crate::highlight::{Highlighter, Link, escape};
 use crate::index::{Document, Index, SymId, Target};
 use crate::metadata::{Metadata, Package};
+use crate::summary::{self, DefCounts, Owners};
 use rmx::prelude::*;
 use rmx::rayon::prelude::*;
 use rmx::serde_json::{self, json};
@@ -33,6 +35,7 @@ const SEARCHABLE_KINDS: &[&str] = &[
 const BASE_TEMPLATE: &str = include_str!("../templates/base.html");
 const SOURCE_TEMPLATE: &str = include_str!("../templates/source.html");
 const DIR_TEMPLATE: &str = include_str!("../templates/dir.html");
+const DEPS_TEMPLATE: &str = include_str!("../templates/deps.html");
 const PACKAGE_TEMPLATE: &str = include_str!("../templates/package.html");
 const BROWSE_CSS: &str = include_str!("../assets/browse.css");
 const BROWSE_JS: &str = include_str!("../assets/browse.js");
@@ -59,7 +62,9 @@ struct Renderer<'a> {
     highlighter: Highlighter,
     workspace_name: String,
     rendered: HashSet<&'a str>,
+    /// Workspace member packages by directory.
     packages: BTreeMap<String, PackageView>,
+    owners: Owners,
 }
 
 /// A package as shown on its directory page and manifest page.
@@ -115,6 +120,16 @@ struct DirEntry {
     lines: Option<usize>,
 }
 
+/// A Rust source file in a package's file table.
+#[derive(Serialize)]
+struct FileRow {
+    /// The path relative to the package directory.
+    name: String,
+    url: String,
+    lines: usize,
+    defs: DefCounts,
+}
+
 #[derive(Serialize)]
 struct PackageRow {
     name: String,
@@ -130,6 +145,7 @@ pub fn render(site: &Site) -> AnyResult<Stats> {
     tera.add_raw_template("package.html", PACKAGE_TEMPLATE)?;
     tera.add_raw_template("source.html", SOURCE_TEMPLATE)?;
     tera.add_raw_template("dir.html", DIR_TEMPLATE)?;
+    tera.add_raw_template("deps.html", DEPS_TEMPLATE)?;
 
     let workspace_name = site
         .metadata
@@ -146,8 +162,10 @@ pub fn render(site: &Site) -> AnyResult<Stats> {
         workspace_name,
         rendered,
         packages: BTreeMap::new(),
+        owners: Owners::new([]),
     };
     renderer.packages = renderer.package_views()?;
+    renderer.owners = Owners::new(renderer.packages.values().map(|p| (p.dir.as_str(), p.name.as_str())));
 
     let assets = site.output.join(ASSET_DIR);
     fs::create_dir_all(assets.join("sym"))?;
@@ -161,6 +179,7 @@ pub fn render(site: &Site) -> AnyResult<Stats> {
         .filter(|f| f.text.is_some())
         .try_for_each(|f| renderer.write_source_page(f))?;
     let directories = renderer.write_dir_pages()?;
+    renderer.write_deps_page()?;
     renderer.write_symbol_shards()?;
     renderer.write_search_index()?;
 
@@ -374,6 +393,7 @@ impl<'a> Renderer<'a> {
     }
 
     fn write_dir_pages(&self) -> AnyResult<usize> {
+        let def_counts = summary::def_counts(self.site.index);
         let mut dirs: BTreeMap<&str, (BTreeSet<&str>, Vec<&SourceFile>)> = BTreeMap::new();
         dirs.entry("").or_default();
         for file in self.site.files {
@@ -413,9 +433,14 @@ impl<'a> Renderer<'a> {
                 .collect();
             ctx.insert("subdirs", &subdirs);
             ctx.insert("files", &files);
-            ctx.insert("package", &self.packages.get(*dir));
+            let package = self.packages.get(*dir);
+            ctx.insert("package", &package);
+            if let Some(package) = package {
+                ctx.insert("package_files", &self.package_files(package, &def_counts));
+            }
             ctx.insert("is_root", &dir.is_empty());
             if dir.is_empty() {
+                ctx.insert("graph", &self.crate_graph());
                 ctx.insert("packages", &self.package_rows());
                 ctx.insert("file_count", &self.site.files.len());
                 ctx.insert("symbol_count", &self.site.index.symbols.iter().filter(|s| s.is_local_to_workspace()).count());
@@ -431,12 +456,8 @@ impl<'a> Renderer<'a> {
         self.packages
             .values()
             .map(|p| {
-                let prefix = if p.dir.is_empty() { String::new() } else { format!("{}/", p.dir) };
                 let rust_lines = self
-                    .site
-                    .files
-                    .iter()
-                    .filter(|f| f.path.starts_with(&prefix) && f.path.ends_with(".rs"))
+                    .rust_files_of(p)
                     .filter_map(|f| f.text.as_ref())
                     .map(|t| t.lines().count())
                     .sum();
@@ -444,11 +465,69 @@ impl<'a> Renderer<'a> {
                     name: p.name.clone(),
                     version: p.version.clone(),
                     description: p.description.clone(),
-                    url: format!("{prefix}index.html"),
+                    url: dir_index(&p.dir),
                     rust_lines,
                 }
             })
             .collect()
+    }
+
+    /// The rendered Rust files owned by a package, excluding nested packages.
+    fn rust_files_of<'s>(&'s self, package: &'s PackageView) -> impl Iterator<Item = &'s SourceFile> {
+        self.site.files.iter().filter(move |f| {
+            f.text.is_some() && f.path.ends_with(".rs") && self.owners.owner(&f.path) == Some(package.name.as_str())
+        })
+    }
+
+    fn package_files(&self, package: &PackageView, def_counts: &HashMap<&str, DefCounts>) -> Vec<FileRow> {
+        let prefix_len = if package.dir.is_empty() { 0 } else { package.dir.len() + 1 };
+        self.rust_files_of(package)
+            .map(|f| FileRow {
+                name: f.path[prefix_len..].to_string(),
+                url: format!("{}.html", &f.path[prefix_len..]),
+                lines: f.text.as_ref().map(|t| t.lines().count()).unwrap_or(0),
+                defs: def_counts.get(f.path.as_str()).cloned().unwrap_or_default(),
+            })
+            .collect()
+    }
+
+    /// The SVG graph of dependencies among workspace members, for the root page.
+    fn crate_graph(&self) -> String {
+        let packages: Vec<&PackageView> = self.packages.values().collect();
+        let index_of: HashMap<&str, usize> =
+            packages.iter().enumerate().map(|(i, p)| (p.dir.as_str(), i)).collect();
+        let nodes: Vec<graph::Node> = packages
+            .iter()
+            .map(|p| graph::Node { name: p.name.clone(), href: dir_index(&p.dir) })
+            .collect();
+        // One edge per pair, dev only if every dependency between them is dev.
+        let mut pairs: BTreeMap<(usize, usize), bool> = BTreeMap::new();
+        for (from, p) in packages.iter().enumerate() {
+            for d in &p.deps {
+                let Some(to) = d.member_dir.as_deref().and_then(|dir| index_of.get(dir)) else { continue };
+                let dev = d.kind.starts_with("dev");
+                let entry = pairs.entry((from, *to)).or_insert(dev);
+                *entry &= dev;
+            }
+        }
+        let edges: Vec<graph::Edge> =
+            pairs.into_iter().map(|((from, to), dev)| graph::Edge { from, to, dev }).collect();
+        graph::render_svg(&nodes, &edges)
+    }
+
+    fn write_deps_page(&self) -> AnyResult<()> {
+        let members: BTreeSet<&str> = self.packages.values().map(|p| p.name.as_str()).collect();
+        let usage = summary::dependency_usage(self.site.index, &self.owners, &members);
+        let page = format!("{ASSET_DIR}/deps.html");
+        let mut ctx = self.base_context(&page, false);
+        ctx.insert("crumbs", &[
+            Crumb { name: self.workspace_name.clone(), url: Some("../index.html".to_string()) },
+            Crumb { name: "dependency usage".to_string(), url: None },
+        ]);
+        ctx.insert("title", "dependency usage");
+        ctx.insert("deps", &usage);
+        let html = self.tera.render("deps.html", &ctx)?;
+        self.write_page(&page, &html)
     }
 
     /// Write per-symbol data, sharded, as JS files so pages work from `file://` URLs.
@@ -539,6 +618,11 @@ impl<'a> Renderer<'a> {
         fs::write(&path, format!("rmxSearchIndex({json});\n"))
             .with_context(|| format!("failed to write {}", path.display()))
     }
+}
+
+/// The listing page of a directory, relative to the output root.
+fn dir_index(dir: &str) -> String {
+    if dir.is_empty() { "index.html".to_string() } else { format!("{dir}/index.html") }
 }
 
 fn truncate(s: &str, max: usize) -> &str {

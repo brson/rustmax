@@ -12,10 +12,12 @@
 //! so pages stay small and the site works from `file://` URLs.
 
 mod files;
+mod graph;
 mod highlight;
 mod index;
 mod metadata;
 mod render;
+mod summary;
 mod symbol;
 
 use rmx::prelude::*;

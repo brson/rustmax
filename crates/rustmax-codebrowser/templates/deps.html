@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="rb-deps">
+    <h1>Dependency usage</h1>
+    <p>
+        References from workspace code to items defined outside it, grouped by the crate that defines each item.
+        Re-exported items count toward the crate they come from,
+        so a facade crate is listed under the crates it re-exports.
+        Expand a crate to see its items; select an item to list its references.
+    </p>
+    {% for d in deps %}
+    <details>
+        <summary>
+            <span class="rb-dep-name">{{ d.package }}</span>
+            {% if d.version %}<span class="rb-kind">{{ d.version }}</span>{% endif %}
+            <span class="rb-dep-count">{{ d.refs }} references, {{ d.symbols | length }} items, {{ d.files }} files</span>
+            <span class="rb-dep-users">{% for u in d.users %}{{ u.package }} {{ u.refs }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+        </summary>
+        <p><a href="{{ d.docs_url }}">{{ d.package }} docs</a></p>
+        <table class="rb-dep-items">
+        {% for s in d.symbols %}
+            <tr><td class="num">{{ s.refs }}</td><td><button data-refs="{{ s.id }}">{{ s.path }}</button></td></tr>
+        {% endfor %}
+        </table>
+    </details>
+    {% endfor %}
+</section>
+{% endblock content %}

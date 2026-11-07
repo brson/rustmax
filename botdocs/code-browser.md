@@ -1,7 +1,7 @@
 # Code browser
 
 A static, cross-referenced Rust source browser, built as part of rustmax.
-Phases 1 and 2 below are implemented in `crates/rustmax-codebrowser`,
+Phases 1 to 3 below are implemented in `crates/rustmax-codebrowser`,
 run as `rustmax browse [WORKSPACE] [-o OUT] [--scip INDEX]` or `just browse`.
 The rest of this file is the original investigation and design.
 
@@ -16,7 +16,17 @@ The rest of this file is the original investigation and design.
   turns SCIP into symbols, occurrences, and per-file locals), `symbol`
   (parses SCIP symbol strings, builds docs.rs / doc.rust-lang.org search
   URLs), `highlight` (syntect plus link overlay), `files` (walks the
-  workspace with `ignore`), `render` (tera pages, symbol shards, search).
+  workspace with `ignore`), `graph` (layered crate graph layout and SVG),
+  `summary` (dependency usage, per-file definition counts, file
+  ownership by package), `render` (tera pages, symbol shards, search).
+- Summary pages: the root page embeds the member crate graph (dev edges
+  dashed, laid out in-house since graphviz is not assumed). Package pages
+  list their Rust files with definition counts. `_rmx/deps.html` groups
+  references to external items by defining crate; its item buttons open
+  the same references panel as source pages.
+- Dependency usage is grouped by the crate rust-analyzer says defines an
+  item, so re-exports through a facade (rmx, serde) are attributed to the
+  underlying crate, and std items mostly show up under `core` and `alloc`.
 - Symbol data goes to `_rmx/sym/N.js` (256 symbols per shard) and the
   search index to `_rmx/search.js`. They are JS callbacks, not JSON,
   because `fetch` does not work from `file://` URLs.
@@ -185,7 +195,7 @@ search is out of scope for a static site; Searchfox needs a server for it.
 
 ## Phases
 
-Phases 1 and 2 are done.
+Phases 1 to 3 are done.
 
 1. Mirror tree: `cargo metadata` plus SCIP to highlighted source pages with
    go-to-definition, line anchors, directory listings, manifest pages.
