@@ -13,6 +13,14 @@ pub use types::{ModuleTree, RenderableItem};
 pub use render::RenderContext;
 pub use output::write_docs;
 
+/// Stylesheets shared by the rustmax HTML frontends.
+pub mod assets {
+    /// Fonts and colors, copied from `www/` at build time.
+    pub const THEMES_CSS: &str = include_str!("../assets/rustmax-themes.css");
+    /// Colors for syntect's spaced CSS classes, copied from `www/` at build time.
+    pub const SYNTAX_CSS: &str = include_str!("../assets/rustmax-syntax.css");
+}
+
 use rayon::prelude::*;
 use rmx::prelude::*;
 use std::collections::{BTreeMap, HashMap};

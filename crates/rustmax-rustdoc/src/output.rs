@@ -181,9 +181,8 @@ fn write_sidebar(ctx: &RenderContext) -> AnyResult<()> {
 
 fn write_css(output_dir: &Path) -> AnyResult<()> {
     // Copy shared theme CSS (colors and fonts).
-    let themes_css = include_str!("../assets/rustmax-themes.css");
     let themes_path = output_dir.join("rustmax-themes.css");
-    fs::write(&themes_path, themes_css)
+    fs::write(&themes_path, crate::assets::THEMES_CSS)
         .with_context(|| format!("Failed to write themes CSS to {}", themes_path.display()))?;
 
     // Write main rustdoc CSS.
@@ -193,9 +192,8 @@ fn write_css(output_dir: &Path) -> AnyResult<()> {
         .with_context(|| format!("Failed to write CSS to {}", path.display()))?;
 
     // Copy shared syntax highlighting CSS.
-    let syntax_css = include_str!("../assets/rustmax-syntax.css");
     let syntax_path = output_dir.join("rustmax-syntax.css");
-    fs::write(&syntax_path, syntax_css)
+    fs::write(&syntax_path, crate::assets::SYNTAX_CSS)
         .with_context(|| format!("Failed to write syntax CSS to {}", syntax_path.display()))
 }
 

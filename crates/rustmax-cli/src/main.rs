@@ -85,6 +85,9 @@ enum CliCmd {
     /// Generate documentation from rustdoc JSON.
     Rustdoc(CliCmdRustdoc),
 
+    /// Build a static cross-referenced source browser for a cargo workspace.
+    Browse(CliCmdBrowse),
+
     /// Validate the topic index.
     ValidateTopics(CliCmdValidateTopics),
 
@@ -272,6 +275,19 @@ struct CliCmdSearch {
 }
 
 #[derive(clap::Args)]
+struct CliCmdBrowse {
+    /// A directory in the workspace to browse.
+    #[arg(default_value = ".")]
+    workspace: std::path::PathBuf,
+    /// Output directory. Defaults to `rmxbrowse` in the target directory.
+    #[arg(short, long)]
+    output: Option<std::path::PathBuf>,
+    /// Use an existing SCIP index instead of running `rust-analyzer scip`.
+    #[arg(long)]
+    scip: Option<std::path::PathBuf>,
+}
+
+#[derive(clap::Args)]
 struct CliCmdRustdoc {
     #[command(subcommand)]
     action: RustdocAction,
@@ -324,6 +340,7 @@ impl CliOpts {
 
             CliCmd::RunAllChecks(cmd) => cmd.run(),
             CliCmd::Rustdoc(cmd) => cmd.run(),
+            CliCmd::Browse(cmd) => cmd.run(),
             CliCmd::ValidateTopics(cmd) => cmd.run(),
             CliCmd::ValidateLinks(cmd) => cmd.run(),
             CliCmd::SummarizeTopics(cmd) => cmd.run(),
@@ -723,6 +740,23 @@ impl CliCmdSearch {
 
         print!("{}", toml_str);
 
+        Ok(())
+    }
+}
+
+impl CliCmdBrowse {
+    fn run(&self) -> AnyResult<()> {
+        let config = rustmax_codebrowser::Config {
+            workspace: self.workspace.clone(),
+            output: self.output.clone(),
+            scip: self.scip.clone(),
+        };
+        let (output, stats) = rustmax_codebrowser::build(&config)?;
+        println!(
+            "Wrote {} files and {} directories, {} symbols ({} defined in the workspace).",
+            stats.files, stats.directories, stats.symbols, stats.workspace_symbols,
+        );
+        println!("Open {}/index.html to view.", output.display());
         Ok(())
     }
 }

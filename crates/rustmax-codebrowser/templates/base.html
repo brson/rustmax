@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} - {{ workspace_name }}</title>
+    <link rel="stylesheet" href="{{ assets }}rustmax-themes.css">
+    <link rel="stylesheet" href="{{ assets }}rustmax-syntax.css">
+    <link rel="stylesheet" href="{{ assets }}browse.css">
+</head>
+<body data-root="{{ root }}">
+    <header class="top">
+        <nav class="crumbs">
+            {% for crumb in crumbs %}{% if crumb.url %}<a href="{{ crumb.url }}">{{ crumb.name }}</a>{% else %}<span>{{ crumb.name }}</span>{% endif %}{% if not loop.last %}<span class="sep">/</span>{% endif %}{% endfor %}
+        </nav>
+        <div class="search">
+            <input id="search" type="search" placeholder="Search symbols and files" autocomplete="off" spellcheck="false">
+            <ol id="search-results" hidden></ol>
+        </div>
+    </header>
+    <main>
+{% block content %}{% endblock content %}
+    </main>
+    <aside id="refs" hidden></aside>
+    <div id="card" hidden></div>
+    <script src="{{ assets }}browse.js"></script>
+</body>
+</html>

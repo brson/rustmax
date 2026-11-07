@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+{% if is_root %}
+<section class="summary">
+    <h1>{{ workspace_name }}</h1>
+    <p>{{ packages | length }} packages, {{ file_count }} files, {{ symbol_count }} symbols defined.</p>
+    <table class="packages">
+        <thead><tr><th>Package</th><th>Version</th><th>Rust lines</th><th>Description</th></tr></thead>
+        <tbody>
+        {% for p in packages %}
+            <tr><td><a href="{{ p.url }}">{{ p.name }}</a></td><td>{{ p.version }}</td><td class="num">{{ p.rust_lines }}</td><td>{% if p.description %}{{ p.description }}{% endif %}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
+{% if package %}{% include "package.html" %}{% endif %}
+<table class="listing">
+    <tbody>
+    {% for d in subdirs %}
+        <tr class="dir"><td><a href="{{ d.url }}">{{ d.name }}</a></td><td></td><td></td></tr>
+    {% endfor %}
+    {% for f in files %}
+        <tr><td>{% if f.url %}<a href="{{ f.url }}">{{ f.name }}</a>{% else %}<span class="unrendered">{{ f.name }}</span>{% endif %}</td><td class="num">{% if f.lines %}{{ f.lines }} lines{% endif %}</td><td class="num">{{ f.size }} B</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

@@ -1,0 +1,35 @@
+<section class="package">
+    <h2>{{ package.name }} <span class="version">{{ package.version }}</span></h2>
+    {% if package.description %}<p>{{ package.description }}</p>{% endif %}
+    <div class="package-grid">
+        <div>
+            <h3>Targets</h3>
+            <ul>
+            {% for t in package.targets %}
+                <li>{% if t.path %}<a href="{{ root }}{{ t.path }}.html">{{ t.name }}</a>{% else %}{{ t.name }}{% endif %} <span class="rb-kind">{{ t.kind }}</span></li>
+            {% endfor %}
+            </ul>
+            {% if package.features %}
+            <h3>Features</h3>
+            <ul class="features">
+            {% for f in package.features %}
+                <li><span class="feature">{{ f.name }}</span>{% if f.enables %} = {{ f.enables | join(sep=", ") }}{% endif %}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div>
+            <h3>Dependencies</h3>
+            <table class="deps">
+            {% for d in package.deps %}
+                <tr>
+                    <td>{% if d.member_dir is not none %}<a href="{{ root }}{% if d.member_dir %}{{ d.member_dir }}/{% endif %}index.html">{{ d.name }}</a>{% elif d.docs_url %}<a href="{{ d.docs_url }}">{{ d.name }}</a>{% else %}{{ d.name }}{% endif %}</td>
+                    <td>{{ d.req }}</td>
+                    <td>{% if d.resolved %}{{ d.resolved }}{% endif %}</td>
+                    <td class="rb-kind">{{ d.kind }}{% if d.optional %}, optional{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+</section>

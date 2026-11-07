@@ -27,8 +27,13 @@ test:
     cargo test -p rustmax --features rmx-profile-max --lib --tests --bins
     cargo test -p rustmax-macros-test
     cargo test -p rustmax-cli
+    cargo test -p rustmax-codebrowser
     cargo check -p rustmax --features=rmx-profile-portable --target=wasm32-unknown-unknown
     cargo run -p rustmax-cli -- doctest
+
+# Build the cross-referenced source browser for this workspace.
+browse:
+    cargo run -p rustmax-cli -- browse
 
 test-rustdoc:
     cargo test -p rustmax --features rmx-profile-max --doc

@@ -1,0 +1,183 @@
+/* rustmax code browser */
+
+:root {
+    --top-height: 2.6rem;
+    --code-font: 10.5pt/1.45 "Source Code Pro", ui-monospace, monospace;
+    --hl-bg: oklch(93% 0.06 95);
+    --target-bg: oklch(95% 0.05 250);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --hl-bg: oklch(35% 0.06 95);
+        --target-bg: oklch(30% 0.06 250);
+    }
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font: 11pt/1.5 system-ui, sans-serif;
+    color: var(--rmx-color-fg);
+    background: var(--rmx-color-bg);
+}
+
+a { color: var(--rmx-color-links); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header.top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: var(--top-height);
+    padding: 0 1rem;
+    background: var(--rmx-color-bg-alt);
+    border-bottom: 1px solid var(--rmx-color-border);
+}
+
+.crumbs { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: ui-monospace, monospace; }
+.crumbs .sep { margin: 0 0.3em; color: var(--rmx-color-border); }
+
+.search { position: relative; width: min(28rem, 45vw); }
+.search input {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font: inherit;
+    color: inherit;
+    background: var(--rmx-color-bg);
+    border: 1px solid var(--rmx-color-border);
+    border-radius: 4px;
+}
+#search-results {
+    position: absolute;
+    right: 0;
+    width: max(100%, 36rem);
+    max-height: 70vh;
+    overflow-y: auto;
+    margin: 0.2rem 0 0;
+    padding: 0;
+    list-style: none;
+    background: var(--rmx-color-bg);
+    border: 1px solid var(--rmx-color-border);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+}
+#search-results li a { display: block; padding: 0.2rem 0.6rem; color: inherit; }
+#search-results li.active a, #search-results li a:hover { background: var(--target-bg); text-decoration: none; }
+#search-results .rb-name { font-family: ui-monospace, monospace; font-weight: bold; }
+#search-results .rb-path { display: block; font-size: 85%; opacity: 0.7; font-family: ui-monospace, monospace; }
+
+.rb-kind { font-size: 85%; opacity: 0.7; }
+
+main { padding: 0.5rem 1rem 3rem; }
+
+.file-info { display: flex; gap: 1.5rem; font-size: 90%; opacity: 0.8; margin: 0.3rem 0 0.6rem; }
+.file-info .indexed { color: var(--rmx-color-accents); }
+
+/* Source */
+
+pre.code {
+    margin: 0;
+    font: var(--code-font);
+    tab-size: 4;
+}
+pre.code code { font: inherit; }
+pre.code .rb-line { display: block; min-height: 1.45em; padding-right: 1rem; scroll-margin-top: calc(var(--top-height) + 4rem); }
+pre.code .rb-line:target { background: var(--target-bg); }
+pre.code .rb-ln {
+    display: inline-block;
+    width: 6ch;
+    margin-right: 1.5ch;
+    text-align: right;
+    color: var(--rmx-color-border);
+    user-select: none;
+}
+pre.code .rb-ln::before { content: attr(data-n); }
+pre.code .rb-ln:hover { color: var(--rmx-color-links); text-decoration: none; }
+pre.code a.r, pre.code a.x, pre.code a.d, pre.code a.v { color: inherit; }
+pre.code a.r:hover, pre.code a.x:hover { text-decoration: underline; }
+pre.code a.x:hover { text-decoration-style: dashed; }
+pre.code a.d { text-decoration: underline dotted var(--rmx-color-border); cursor: pointer; }
+pre.code a.v:hover { text-decoration: none; }
+pre.code a.hl { background: var(--hl-bg); border-radius: 2px; }
+
+/* Listings */
+
+table { border-collapse: collapse; }
+table.listing td, table.packages td, table.packages th, table.deps td { padding: 0.15rem 1rem 0.15rem 0; vertical-align: top; }
+table.packages th { text-align: left; border-bottom: 1px solid var(--rmx-color-border); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; opacity: 0.8; }
+table.listing td:first-child { font-family: ui-monospace, monospace; }
+tr.dir a { font-weight: bold; }
+.unrendered { opacity: 0.6; }
+
+section.summary h1 { margin: 0.5rem 0; }
+section.package {
+    margin: 0.5rem 0 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--rmx-color-bg-alt);
+    border: 1px solid var(--rmx-color-border);
+    border-radius: 4px;
+}
+section.package h2 { margin: 0.2rem 0; }
+section.package h3 { margin: 0.6rem 0 0.2rem; font-size: 100%; }
+section.package ul { margin: 0; padding-left: 1.2rem; }
+section.package .version { font-weight: normal; opacity: 0.7; }
+.package-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 2rem; }
+.feature { font-family: ui-monospace, monospace; }
+table.deps td:first-child { font-family: ui-monospace, monospace; }
+
+/* Hover card */
+
+#card {
+    position: absolute;
+    z-index: 20;
+    max-width: min(48rem, 90vw);
+    max-height: 50vh;
+    overflow: auto;
+    padding: 0.5rem 0.8rem;
+    background: var(--rmx-color-bg);
+    border: 1px solid var(--rmx-color-border);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+    font-size: 95%;
+}
+#card pre { margin: 0.3rem 0; white-space: pre-wrap; font: var(--code-font); }
+#card .rb-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 90%; }
+#card .rb-path { font-family: ui-monospace, monospace; font-size: 90%; opacity: 0.8; }
+#card .rb-doc { border-top: 1px solid var(--rmx-color-border); margin-top: 0.3rem; }
+#card .rb-doc p { margin: 0.4rem 0; }
+#card button, #refs button {
+    font: inherit;
+    color: var(--rmx-color-links);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* References panel */
+
+#refs {
+    position: fixed;
+    z-index: 15;
+    top: var(--top-height);
+    right: 0;
+    bottom: 0;
+    width: min(40rem, 50vw);
+    overflow-y: auto;
+    padding: 0.5rem 1rem;
+    background: var(--rmx-color-bg-alt);
+    border-left: 1px solid var(--rmx-color-border);
+    box-shadow: -4px 0 12px rgb(0 0 0 / 0.1);
+}
+#refs h2 { margin: 0.2rem 0; font-size: 110%; font-family: ui-monospace, monospace; word-break: break-all; }
+#refs h3 { margin: 0.8rem 0 0.2rem; font-size: 95%; font-family: ui-monospace, monospace; }
+#refs ol { margin: 0; padding: 0; list-style: none; }
+#refs li a { display: flex; gap: 1ch; color: inherit; font: var(--code-font); white-space: pre; overflow: hidden; }
+#refs li a:hover { background: var(--target-bg); text-decoration: none; }
+#refs .rb-lnum { flex: none; width: 6ch; text-align: right; color: var(--rmx-color-border); }
+#refs .rb-close { float: right; }
