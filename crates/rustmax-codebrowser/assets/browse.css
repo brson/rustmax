@@ -147,6 +147,9 @@ tr.dir a { font-weight: bold; }
 .unrendered { opacity: 0.6; }
 
 section.summary h1 { margin: 0.5rem 0; }
+section.summary { margin-bottom: 1.5rem; }
+table.listing th { text-align: left; padding-right: 1rem; border-bottom: 1px solid var(--rmx-color-border); }
+table.listing th:not(:first-child) { text-align: right; }
 section.package {
     margin: 0.5rem 0 1rem;
     padding: 0.5rem 1rem;

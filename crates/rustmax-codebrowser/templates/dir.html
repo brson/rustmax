@@ -27,12 +27,13 @@
 </table>
 {% endif %}
 <table class="listing">
+    <thead><tr><th>Name</th><th>Lines</th><th>Size</th></tr></thead>
     <tbody>
     {% for d in subdirs %}
         <tr class="dir"><td><a href="{{ d.url }}">{{ d.name }}</a></td><td></td><td></td></tr>
     {% endfor %}
     {% for f in files %}
-        <tr><td>{% if f.url %}<a href="{{ f.url }}">{{ f.name }}</a>{% else %}<span class="unrendered">{{ f.name }}</span>{% endif %}</td><td class="num">{% if f.lines %}{{ f.lines }} lines{% endif %}</td><td class="num">{{ f.size }} B</td></tr>
+        <tr><td>{% if f.url %}<a href="{{ f.url }}">{{ f.name }}</a>{% else %}<span class="unrendered">{{ f.name }}</span>{% endif %}</td><td class="num">{% if f.lines %}{{ f.lines }}{% endif %}</td><td class="num">{{ f.size }} B</td></tr>
     {% endfor %}
     </tbody>
 </table>
