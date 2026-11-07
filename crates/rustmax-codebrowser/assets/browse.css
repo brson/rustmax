@@ -104,6 +104,38 @@ pre.code a.d { text-decoration: underline dotted var(--rmx-color-border); cursor
 pre.code a.v:hover { text-decoration: none; }
 pre.code a.hl { background: var(--hl-bg); border-radius: 2px; }
 
+/* Outline */
+
+.rb-source { display: flex; align-items: flex-start; gap: 1rem; }
+.rb-source pre.code { flex: 1; min-width: 0; overflow-x: auto; }
+.rb-outline {
+    flex: none;
+    position: sticky;
+    top: calc(var(--top-height) + 0.5rem);
+    max-width: 22rem;
+    max-height: calc(100vh - var(--top-height) - 1rem);
+    overflow: auto;
+    padding: 0.2rem 0.6rem 0.4rem 0.2rem;
+    font: 10pt/1.5 ui-monospace, monospace;
+    background: var(--rmx-color-bg-alt);
+    border: 1px solid var(--rmx-color-border);
+    border-radius: 4px;
+}
+.rb-outline > summary { cursor: pointer; font: 90% system-ui, sans-serif; opacity: 0.8; white-space: nowrap; }
+.rb-outline ul { margin: 0; padding-left: 1.1rem; list-style: none; }
+.rb-outline > ul { padding-left: 0.2rem; }
+.rb-outline li { white-space: nowrap; }
+.rb-outline li > a { margin-left: 1.1em; }
+.rb-outline li details > summary { cursor: pointer; }
+.rb-outline a { color: inherit; }
+.rb-outline a:hover { color: var(--rmx-color-links); }
+.rb-outline .rb-kw { opacity: 0.55; }
+@media (max-width: 60rem) {
+    .rb-source { flex-direction: column; }
+    .rb-source pre.code { width: 100%; }
+    .rb-outline { position: static; max-width: none; max-height: 40vh; }
+}
+
 /* Listings */
 
 table { border-collapse: collapse; }

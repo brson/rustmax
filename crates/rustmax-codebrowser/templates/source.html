@@ -7,6 +7,9 @@
     {% if indexed %}<span class="indexed">cross-referenced</span>{% endif %}
 </div>
 {% if package %}{% include "package.html" %}{% endif %}
+<div class="rb-source">
+{% if outline is not none %}<details class="rb-outline" open><summary title="Toggle outline (o)">Outline</summary>{{ outline | safe }}</details>{% endif %}
 <pre class="code"><code>{{ code | safe }}</code></pre>
+</div>
 <script type="application/json" id="locals">{{ locals | safe }}</script>
 {% endblock content %}

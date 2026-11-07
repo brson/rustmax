@@ -18,6 +18,7 @@ mod graph;
 mod highlight;
 mod index;
 mod metadata;
+mod outline;
 mod render;
 mod rustdoc;
 mod summary;

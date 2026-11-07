@@ -38,6 +38,11 @@ The rest of this file is the original investigation and design.
   trait method they implement. Blanket and auto-trait impls are skipped.
   Derived impls point at the `#[derive]` line, so several derives on one
   line collapse to one entry.
+- Source pages have a collapsible outline sidebar (`outline.rs`, toggled
+  with `o`, state kept in localStorage). It lists definition occurrences
+  of item kinds, without fields or variants, nested by SCIP descriptors.
+  SCIP has no impl block definitions, so impl entries are synthesized at
+  their first member, and adjacent impls of the same type and trait merge.
 - Dependency usage is grouped by the crate rust-analyzer says defines an
   item, so re-exports through a facade (rmx, serde) are attributed to the
   underlying crate, and std items mostly show up under `core` and `alloc`.

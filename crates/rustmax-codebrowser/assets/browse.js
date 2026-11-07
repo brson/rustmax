@@ -271,8 +271,22 @@
         }
     });
 
+    // Outline, open or closed as last left.
+
+    const outline = document.querySelector('.rb-outline');
+    if (outline) {
+        if (localStorage.getItem('rb-outline') === 'closed') outline.open = false;
+        outline.addEventListener('toggle', () => {
+            localStorage.setItem('rb-outline', outline.open ? 'open' : 'closed');
+        });
+    }
+
     document.addEventListener('keydown', e => {
         if (e.target === input) return;
+        if (e.key === 'o' && outline && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            outline.open = !outline.open;
+            return;
+        }
         if (e.key === '/' || e.key === 's') {
             input.focus();
             e.preventDefault();

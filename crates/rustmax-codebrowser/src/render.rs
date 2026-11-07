@@ -5,6 +5,7 @@ use crate::graph;
 use crate::highlight::{Highlighter, Link, escape};
 use crate::index::{Document, Index, Location, SymId, Target};
 use crate::metadata::{Metadata, Package};
+use crate::outline;
 use crate::summary::{self, DefCounts, Owners};
 use rmx::prelude::*;
 use rmx::rayon::prelude::*;
@@ -331,10 +332,16 @@ impl<'a> Renderer<'a> {
         // Escape `<` so the JSON cannot close the script element.
         let locals = serde_json::to_string(&locals)?.replace('<', "\\u003c");
 
+        let outline = document
+            .map(|d| outline::build(d, &self.site.index.symbols))
+            .filter(|items| !items.is_empty())
+            .map(|items| outline::render_html(&items));
+
         let package = (file.name() == "Cargo.toml").then(|| self.packages.get(file.dir())).flatten();
 
         ctx.insert("code", &code);
         ctx.insert("locals", &locals);
+        ctx.insert("outline", &outline);
         ctx.insert("syntax", &syntax.name);
         ctx.insert("line_count", &lines.len());
         ctx.insert("size", &file.size);

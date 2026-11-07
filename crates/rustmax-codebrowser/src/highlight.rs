@@ -133,8 +133,11 @@ impl Highlighter {
             if a_open {
                 html.push_str("</a>");
             }
-            // Ops at the newline are applied on the next iteration's stack,
-            // but none can produce text, so applying them here is equivalent.
+            for _ in 0..open.len() {
+                html.push_str("</span>");
+            }
+            // Ops at the newline, like the end of a line comment, produce no text,
+            // so they only change which scopes the next line reopens.
             for (_, op) in ops {
                 stack.apply_with_hook(op, |basic, _| match basic {
                     BasicScopeStackOp::Push(scope) => open.push(scope_classes(scope)),
@@ -142,9 +145,6 @@ impl Highlighter {
                         open.pop();
                     }
                 })?;
-            }
-            for _ in 0..open.len() {
-                html.push_str("</span>");
             }
             out.push(html);
         }
@@ -235,6 +235,18 @@ mod tests {
         for html in &lines {
             assert!(balanced(html), "{html}");
         }
+    }
+
+    #[test]
+    fn scopes_ending_at_newlines_are_closed() {
+        let h = Highlighter::new();
+        let src = "// one\n/// two\nfn x() {}\n";
+        let syntax = h.syntax_for("a.rs", src);
+        let lines = h.highlight_lines(src, syntax, &[]).unwrap();
+        for html in &lines {
+            assert!(balanced(html), "{html}");
+        }
+        assert!(!lines[2].contains("comment"), "{}", lines[2]);
     }
 
     #[test]
