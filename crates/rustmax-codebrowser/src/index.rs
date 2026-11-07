@@ -27,6 +27,13 @@ pub struct Symbol {
     pub docs: Option<String>,
     pub def: Option<Location>,
     pub refs: Vec<Location>,
+    /// Impl blocks for a type, from rustdoc JSON.
+    pub impls: Vec<Location>,
+    /// Impl blocks of a trait, or the implementing methods of a trait method,
+    /// from rustdoc JSON.
+    pub implementations: Vec<Location>,
+    /// The trait method an impl method implements, from rustdoc JSON.
+    pub implements: Option<SymId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -104,7 +111,7 @@ impl Index {
         Ok(Index::from_scip(&scip))
     }
 
-    fn from_scip(scip: &ScipIndex) -> Index {
+    pub(crate) fn from_scip(scip: &ScipIndex) -> Index {
         let mut builder = Builder::default();
 
         // Symbol information first, so occurrences can find it.
@@ -215,6 +222,9 @@ impl Builder {
             docs: None,
             def: None,
             refs: Vec::new(),
+            impls: Vec::new(),
+            implementations: Vec::new(),
+            implements: None,
         });
         self.ids.insert(symbol.to_string(), id);
         id

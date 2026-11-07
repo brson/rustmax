@@ -175,7 +175,8 @@ table.deps td:first-child { font-family: ui-monospace, monospace; }
     box-shadow: -4px 0 12px rgb(0 0 0 / 0.1);
 }
 #refs h2 { margin: 0.2rem 0; font-size: 110%; font-family: ui-monospace, monospace; word-break: break-all; }
-#refs h3 { margin: 0.8rem 0 0.2rem; font-size: 95%; font-family: ui-monospace, monospace; }
+#refs h3.rb-section { margin: 1rem 0 0.2rem; font-size: 100%; border-bottom: 1px solid var(--rmx-color-border); }
+#refs h4 { margin: 0.6rem 0 0.2rem; font-size: 95%; font-family: ui-monospace, monospace; }
 #refs ol { margin: 0; padding: 0; list-style: none; }
 #refs li a { display: flex; gap: 1ch; color: inherit; font: var(--code-font); white-space: pre; overflow: hidden; }
 #refs li a:hover { background: var(--target-bg); text-decoration: none; }

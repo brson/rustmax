@@ -3,7 +3,7 @@
 use crate::files::SourceFile;
 use crate::graph;
 use crate::highlight::{Highlighter, Link, escape};
-use crate::index::{Document, Index, SymId, Target};
+use crate::index::{Document, Index, Location, SymId, Target};
 use crate::metadata::{Metadata, Package};
 use crate::summary::{self, DefCounts, Owners};
 use rmx::prelude::*;
@@ -562,27 +562,27 @@ impl<'a> Renderer<'a> {
             None => None,
         };
         let docs = symbol.docs.as_deref().map(markdown_to_html);
-        let def = symbol
-            .def
-            .as_ref()
-            .filter(|d| self.rendered.contains(d.path.as_str()))
-            .map(|d| format!("{}.html#L{}", d.path, d.line + 1));
+        let def = symbol.def.as_ref().and_then(|d| self.def_href(d));
         let docs_url = match (&symbol.def, &symbol.scip) {
             (None, Some(scip)) => Some(scip.docs_url()),
             _ => None,
         };
-        let refs: Vec<serde_json::Value> = symbol
-            .refs
-            .iter()
-            .map(|r| {
-                let snippet = lines
-                    .get(r.path.as_str())
-                    .and_then(|l| l.get(r.line as usize))
-                    .map(|l| truncate(l.trim(), MAX_SNIPPET))
-                    .unwrap_or("");
-                json!([r.path, r.line + 1, snippet])
-            })
-            .collect();
+        let locations = |locs: &[Location]| -> Vec<serde_json::Value> {
+            locs.iter()
+                .map(|r| {
+                    let snippet = lines
+                        .get(r.path.as_str())
+                        .and_then(|l| l.get(r.line as usize))
+                        .map(|l| truncate(l.trim(), MAX_SNIPPET))
+                        .unwrap_or("");
+                    json!([r.path, r.line + 1, snippet])
+                })
+                .collect()
+        };
+        let implements = symbol.implements.map(|t| {
+            let t = &self.site.index.symbols[t as usize];
+            json!({ "p": t.display_path(), "def": t.def.as_ref().and_then(|d| self.def_href(d)) })
+        });
         let package = symbol.scip.as_ref().map(|s| {
             if s.version.contains('/') { s.package.clone() } else { format!("{} {}", s.package, s.version) }
         });
@@ -595,8 +595,16 @@ impl<'a> Renderer<'a> {
             "doc": docs,
             "def": def,
             "url": docs_url,
-            "refs": refs,
+            "refs": locations(&symbol.refs),
+            "impls": locations(&symbol.impls),
+            "imps": locations(&symbol.implementations),
+            "implements": implements,
         }))
+    }
+
+    /// The root-relative href of a definition, if its file was rendered.
+    fn def_href(&self, def: &Location) -> Option<String> {
+        self.rendered.contains(def.path.as_str()).then(|| format!("{}.html#L{}", def.path, def.line + 1))
     }
 
     /// Write the symbol and file name search index.

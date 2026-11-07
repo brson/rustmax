@@ -285,6 +285,9 @@ struct CliCmdBrowse {
     /// Use an existing SCIP index instead of running `rust-analyzer scip`.
     #[arg(long)]
     scip: Option<std::path::PathBuf>,
+    /// Add trait and impl navigation from rustdoc JSON. Needs the pinned nightly.
+    #[arg(long)]
+    rustdoc: bool,
 }
 
 #[derive(clap::Args)]
@@ -750,6 +753,7 @@ impl CliCmdBrowse {
             workspace: self.workspace.clone(),
             output: self.output.clone(),
             scip: self.scip.clone(),
+            rustdoc: self.rustdoc,
         };
         let (output, stats) = rustmax_codebrowser::build(&config)?;
         println!(

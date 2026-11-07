@@ -52,6 +52,28 @@
     let hideTimer = null;
     let cardFor = null;
 
+    function linkOrText(text, href) {
+        if (!href) return escapeHtml(text);
+        return '<a href="' + escapeHtml(root + href) + '">' + escapeHtml(text) + '</a>';
+    }
+
+    // A titled list of locations, grouped by file.
+    function locationsHtml(title, locations) {
+        if (!locations.length) return '';
+        let html = '<h3 class="rb-section">' + escapeHtml(title) + ' (' + locations.length + ')</h3>';
+        let currentFile = null;
+        for (const [path, line, snippet] of locations) {
+            if (path !== currentFile) {
+                if (currentFile !== null) html += '</ol>';
+                html += '<h4><a href="' + escapeHtml(root + path) + '.html">' + escapeHtml(path) + '</a></h4><ol>';
+                currentFile = path;
+            }
+            html += '<li><a href="' + escapeHtml(root + path) + '.html#L' + line + '">'
+                + '<span class="rb-lnum">' + line + '</span><span>' + escapeHtml(snippet) + '</span></a></li>';
+        }
+        return html + '</ol>';
+    }
+
     function cardHtml(id, s) {
         let meta = '';
         if (s.k) meta += '<span class="rb-kind">' + escapeHtml(s.k) + '</span>';
@@ -59,7 +81,10 @@
         if (s.def) meta += '<a href="' + escapeHtml(root + s.def) + '">definition</a>';
         if (s.url) meta += '<a href="' + escapeHtml(s.url) + '">docs</a>';
         meta += '<button data-refs="' + id + '">' + s.refs.length + ' references</button>';
+        if (s.imps.length) meta += '<button data-refs="' + id + '">' + s.imps.length + ' implementations</button>';
+        if (s.impls.length) meta += '<button data-refs="' + id + '">' + s.impls.length + ' impls</button>';
         let html = '<div class="rb-meta">' + meta + '</div>';
+        if (s.implements) html += '<div class="rb-path">implements ' + linkOrText(s.implements.p, s.implements.def) + '</div>';
         html += '<div class="rb-path">' + escapeHtml(s.p) + '</div>';
         if (s.sig) html += '<pre><code>' + s.sig + '</code></pre>';
         if (s.doc) html += '<div class="rb-doc">' + s.doc + '</div>';
@@ -138,22 +163,15 @@
             if (!s) return;
             let html = '<button class="rb-close" title="Close (Esc)">close</button>';
             html += '<h2>' + escapeHtml(s.p) + '</h2>';
-            let meta = s.k ? escapeHtml(s.k) + ', ' : '';
-            meta += s.refs.length + ' references';
+            let meta = s.k ? escapeHtml(s.k) : '';
             if (s.def) meta += ', <a href="' + escapeHtml(root + s.def) + '">definition</a>';
             if (s.url) meta += ', <a href="' + escapeHtml(s.url) + '">docs</a>';
+            if (s.implements) meta += ', implements ' + linkOrText(s.implements.p, s.implements.def);
             html += '<div class="rb-kind">' + meta + '</div>';
-            let currentFile = null;
-            for (const [path, line, snippet] of s.refs) {
-                if (path !== currentFile) {
-                    if (currentFile !== null) html += '</ol>';
-                    html += '<h3><a href="' + escapeHtml(root + path) + '.html">' + escapeHtml(path) + '</a></h3><ol>';
-                    currentFile = path;
-                }
-                html += '<li><a href="' + escapeHtml(root + path) + '.html#L' + line + '">'
-                    + '<span class="rb-lnum">' + line + '</span><span>' + escapeHtml(snippet) + '</span></a></li>';
-            }
-            if (currentFile !== null) html += '</ol>';
+            html += locationsHtml('Implementations', s.imps);
+            html += locationsHtml('Impls', s.impls);
+            html += locationsHtml('References', s.refs);
+            if (!s.refs.length && !s.imps.length && !s.impls.length) html += '<p>No references.</p>';
             panel.innerHTML = html;
             panel.hidden = false;
             panel.scrollTop = 0;

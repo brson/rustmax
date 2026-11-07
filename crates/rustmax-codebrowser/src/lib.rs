@@ -10,6 +10,8 @@
 //! and workspace structure from `cargo metadata`.
 //! Per-symbol data is written to sharded files loaded on demand,
 //! so pages stay small and the site works from `file://` URLs.
+//! Optionally, rustdoc JSON adds trait and impl navigation,
+//! which SCIP does not provide.
 
 mod files;
 mod graph;
@@ -17,6 +19,7 @@ mod highlight;
 mod index;
 mod metadata;
 mod render;
+mod rustdoc;
 mod summary;
 mod symbol;
 
@@ -34,6 +37,8 @@ pub struct Config {
     pub output: Option<PathBuf>,
     /// An existing SCIP index to use instead of running rust-analyzer.
     pub scip: Option<PathBuf>,
+    /// Add trait and impl relations from rustdoc JSON, which needs the pinned nightly.
+    pub rustdoc: bool,
 }
 
 /// Build the browser site, returning where it was written and what it contains.
@@ -51,7 +56,12 @@ pub fn build(config: &Config) -> AnyResult<(PathBuf, Stats)> {
             path
         }
     };
-    let index = index::Index::load(&scip_path)?;
+    let mut index = index::Index::load(&scip_path)?;
+    if config.rustdoc {
+        rustdoc::check_toolchain(root)?;
+        let relations = rustdoc::add_relations(&metadata, &mut index)?;
+        eprintln!("Added {relations} trait and impl relations from rustdoc JSON.");
+    }
 
     let excludes = [output.clone(), metadata.target_directory.clone()];
     let files = files::walk(root, &excludes)?;

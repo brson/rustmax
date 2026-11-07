@@ -1,5 +1,6 @@
 # The nightly used for rustdoc JSON, which is unstable.
-# Bump deliberately, together with the rustdoc-types version in rustmax-rustdoc.
+# Bump deliberately, together with the rustdoc-types version and
+# `JSON_TOOLCHAIN` in rustmax-rustdoc.
 nightly := "nightly-2026-10-09"
 
 default:
@@ -31,9 +32,10 @@ test:
     cargo check -p rustmax --features=rmx-profile-portable --target=wasm32-unknown-unknown
     cargo run -p rustmax-cli -- doctest
 
+# `--rustdoc` adds trait and impl navigation, which needs the pinned nightly.
 # Build the cross-referenced source browser for this workspace.
-browse:
-    cargo run -p rustmax-cli -- browse
+browse *args:
+    cargo run -p rustmax-cli -- browse {{args}}
 
 test-rustdoc:
     cargo test -p rustmax --features rmx-profile-max --doc

@@ -1,8 +1,9 @@
 # Code browser
 
 A static, cross-referenced Rust source browser, built as part of rustmax.
-Phases 1 to 3 below are implemented in `crates/rustmax-codebrowser`,
-run as `rustmax browse [WORKSPACE] [-o OUT] [--scip INDEX]` or `just browse`.
+Phases 1 to 4 below are implemented in `crates/rustmax-codebrowser`,
+run as `rustmax browse [WORKSPACE] [-o OUT] [--scip INDEX] [--rustdoc]`
+or `just browse`.
 The rest of this file is the original investigation and design.
 
 
@@ -24,6 +25,19 @@ The rest of this file is the original investigation and design.
   list their Rust files with definition counts. `_rmx/deps.html` groups
   references to external items by defining crate; its item buttons open
   the same references panel as source pages.
+- `--rustdoc` runs `cargo +JSON_TOOLCHAIN rustdoc --document-private-items`
+  with JSON output once per lib, proc-macro, and bin target, into
+  `target/rmxbrowse-rustdoc/`, reading each JSON immediately because
+  `rustmax-cli`'s bin and `rustmax`'s lib both write `rustmax.json`. The
+  toolchain pin is `rustmax_rustdoc::JSON_TOOLCHAIN`, kept in sync with the
+  justfile's `nightly`. The first run here took about 90 s.
+- rustdoc items are joined to SCIP symbols by span (the SCIP definition
+  with the item's name inside the item's span), or by display path for
+  items from other workspace crates. This gives types their impl blocks,
+  traits and trait methods their implementations, and impl methods the
+  trait method they implement. Blanket and auto-trait impls are skipped.
+  Derived impls point at the `#[derive]` line, so several derives on one
+  line collapse to one entry.
 - Dependency usage is grouped by the crate rust-analyzer says defines an
   item, so re-exports through a facade (rmx, serde) are attributed to the
   underlying crate, and std items mostly show up under `core` and `alloc`.
@@ -195,7 +209,9 @@ search is out of scope for a static site; Searchfox needs a server for it.
 
 ## Phases
 
-Phases 1 to 3 are done.
+Phases 1 to 4 are done, except that phase 4 does not link to
+rustmax-rustdoc pages: those cover public items only and would need a
+hosting arrangement between the two sites.
 
 1. Mirror tree: `cargo metadata` plus SCIP to highlighted source pages with
    go-to-definition, line anchors, directory listings, manifest pages.

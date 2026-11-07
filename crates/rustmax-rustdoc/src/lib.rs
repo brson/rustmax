@@ -13,6 +13,14 @@ pub use types::{ModuleTree, RenderableItem};
 pub use render::RenderContext;
 pub use output::write_docs;
 
+/// The `rustdoc-types` version this crate parses, for consumers of [`load_json`].
+pub use rustdoc_types;
+
+/// The nightly toolchain whose rustdoc JSON matches the `rustdoc-types` version used here.
+///
+/// Keep in sync with `nightly` in the justfile.
+pub const JSON_TOOLCHAIN: &str = "nightly-2026-10-09";
+
 /// Stylesheets shared by the rustmax HTML frontends.
 pub mod assets {
     /// Fonts and colors, copied from `www/` at build time.
