@@ -235,7 +235,7 @@ pub mod extras {
         Ok(())
     }
 
-    /// Use in constant contexts to assert a type is `Sync + Sync`.p
+    /// Use in constant contexts to assert a type is `Send + Sync`.
     ///
     /// ```
     /// # use rustmax as rmx;

@@ -220,7 +220,7 @@ Also enables
 - [`nom`] - An efficient parser combinator.
 - [`num_bigint`] - Arbitrary-sized integers.
 - [`num_enum`] - Conversions between numbers and enums.
-- [`powerletters`] - Superscript and subscript Unicode text conversion.
+- [`powerletters`] - Concise single-letter methods for common operations: `.C()` for `clone`, `.S()` for `to_string`, `.X()` for `expect`.
 - [`rand`] - Random number generators.
 - [`rand_chacha`] - The ChaCha cryptographically-secure random number generators.
 - [`rand_pcg`] - The PCG non-cryptographically-secure random number generators.
