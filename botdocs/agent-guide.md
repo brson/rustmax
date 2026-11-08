@@ -244,27 +244,18 @@ summary.
 Profiles turn on a curated set of each crate's own features. When you
 need one that is not on, add a direct dependency that exists only to
 enable it, with a version range compatible with the one rustmax
-uses. Cargo unifies the two into one build, so `rmx::rand` gains the
-feature and nothing is duplicated:
+uses. Cargo unifies the two into one build, so `rmx::serde_json`
+gains the feature and nothing is duplicated:
 
 ```toml
 [dependencies]
 rmx.workspace = true
-# Feature-only: adds thread_rng to the rand that rmx re-exports.
-rand = { version = "0.10", default-features = false, features = ["thread_rng"] }
+# Feature-only: keeps serde_json object keys in insertion order.
+serde_json = { version = "1", default-features = false, features = ["preserve_order"] }
 ```
 
-Keep using `rmx::rand::..` paths in code. Check the version rustmax
-uses with `cargo tree -i rand` before writing the range.
-
-Known cases under `rmx-profile-portable`:
-
-- rand: `rmx::rand::rng()` (the thread-local generator) is not
-  available, while `StdRng` is. Seed one explicitly with
-  `StdRng::seed_from_u64(..)`, or enable `rand/thread_rng` as above.
-  `rmx-profile-std` enables it.
-- serde: `rc` (serializing `Rc` and `Arc`) is not enabled by any
-  profile.
+Keep using `rmx::serde_json::..` paths in code. Check the version
+rustmax uses with `cargo tree -i serde_json` before writing the range.
 
 
 ## Versions and outdated APIs
@@ -425,9 +416,11 @@ even if nothing calls them.
   `derive_more::Error`.
 - `cannot find 'foo' in 'rmx'` (E0433): the crate is not enabled. Add it to
   `rmx.features` (see "Profiles").
-- `cannot find function 'rng' in module 'rmx::rand'`: the thread-local
-  generator is not enabled in this profile. Use a seeded `StdRng`, or
-  enable `rand/thread_rng`.
+- `cannot find function 'rng' in module 'rmx::rand'`: the project is
+  on rustmax 0.0.12 or older with `rmx-profile-portable`, which lacks
+  the thread-local generator. Use a seeded `StdRng`, or enable
+  `rand/thread_rng` with a feature-only dependency (see "Enabling a
+  feature of a re-exported crate").
 - A method from an extension trait is missing (`.sorted()`,
   `.random_range()`, `.context()`): add `use rmx::prelude::*;`.
 

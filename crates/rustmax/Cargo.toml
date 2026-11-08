@@ -334,7 +334,7 @@ rmx-feature-more-portable = [
   "http-body-util?/full",
   "hyper?/full",
   "hyper-util?/full",
-  #"rand?/thread_rng",
+  "rand?/thread_rng",
   #"rand?/small_rng",
   "reqwest?/blocking",
   "reqwest?/json",
