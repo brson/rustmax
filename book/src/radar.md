@@ -203,6 +203,9 @@ but that are not yet part of Rustmax.
   Code coverage.
 - [`delta`](https://crates.io/crates/git-delta).
   Improved `git diff` plugin.
+- [`ferritin`](https://crates.io/crates/ferritin).
+  Crate API docs in the terminal, with a condensed format for coding agents.
+  Young and mostly one maintainer.
 - [`flamegraph`](https://crates.io/crates/flamegraph)
   and [`inferno`](https://crates.io/crates/inferno).
   Flame graph profiling.
