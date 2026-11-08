@@ -3,7 +3,6 @@
 //! Provides regex-based tokenization for multiple programming languages
 //! with configurable color themes.
 
-use rmx::prelude::*;
 use std::sync::LazyLock;
 
 /// Token types for syntax highlighting.

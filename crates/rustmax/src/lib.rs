@@ -26,37 +26,6 @@ pub mod guide {
 pub mod prelude {
     //! The `rmx` prelude.
 
-    /* standard library preludes */
-
-    #[cfg(all(feature = "rmx-rustlib-core", not(feature = "rmx-rustlib-std")))]
-    pub use ::core::prelude::rust_2021::*;
-
-    #[cfg(feature = "rmx-rustlib-std")]
-    pub use ::std::prelude::rust_2021::*;
-
-    /* standard library macros */
-
-    #[cfg(feature = "rmx-rustlib-alloc")]
-    pub use ::alloc::{format, vec};
-
-    #[cfg(feature = "rmx-rustlib-alloc")]
-    pub use crate::extras::fmt;
-
-    /* standard library exports that aren't in its prelude */
-
-    // Ordering is recommended by
-    // `clippy::comparison_chain` and if it's
-    // important enough that the compiler suggests
-    // using it instead of comparison operator syntax,
-    // let's put it in the prelude.
-    #[cfg(feature = "rmx-rustlib-core")]
-    pub use ::core::cmp::Ordering;
-
-    /* other preludes */
-
-    #[cfg(feature = "futures")]
-    pub use ::futures::prelude::*;
-
     /* common non-std imports */
 
     #[cfg(feature = "anyhow")]
@@ -92,6 +61,9 @@ pub mod prelude {
     /* extras */
 
     pub use crate::extras::default;
+
+    #[cfg(feature = "rmx-rustlib-alloc")]
+    pub use crate::extras::fmt;
 
     #[cfg(feature = "rmx-rustlib-core")]
     pub use crate::bug;

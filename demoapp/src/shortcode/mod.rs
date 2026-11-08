@@ -9,7 +9,6 @@
 //! A shortcode Folio does not know is also left as written,
 //! and `folio check` reports it.
 
-use rmx::prelude::*;
 use rmx::memchr::{memchr_iter, memmem, memrchr};
 use rmx::nom::{
     IResult, Parser,

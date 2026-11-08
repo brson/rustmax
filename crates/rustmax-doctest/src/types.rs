@@ -1,4 +1,3 @@
-use rmx::prelude::*;
 use std::path::PathBuf;
 
 /// A single doctest example extracted from a markdown file.

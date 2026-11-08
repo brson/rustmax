@@ -2,7 +2,6 @@
 //!
 //! Tracks content hashes to skip rebuilding unchanged documents.
 
-use rmx::prelude::*;
 use rmx::log::{debug, info};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

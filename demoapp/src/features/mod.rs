@@ -10,7 +10,6 @@
 //!
 //! `folio build --drafts` and `--compress` add to whatever the config enables.
 
-use rmx::prelude::*;
 use rmx::bitflags::bitflags;
 use rmx::serde::de::{self, Deserializer, SeqAccess, Visitor};
 use rmx::serde::ser::{SerializeSeq, Serializer};

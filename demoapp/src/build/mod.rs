@@ -31,7 +31,6 @@ pub use progress::{
 };
 pub use assets::{Asset, site_assets, integrity, integrity_map};
 
-use rmx::prelude::*;
 use rmx::rayon::prelude::*;
 use rmx::indicatif::ProgressBar;
 use rmx::log::{info, debug};

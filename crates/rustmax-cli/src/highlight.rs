@@ -1,6 +1,5 @@
 //! Syntax highlighting of markdown code blocks, with syntect's CSS classes.
 
-use rmx::prelude::*;
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt::{self, Write};

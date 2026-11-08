@@ -12,7 +12,6 @@ use rmx::rayon::prelude::*;
 use rmx::regex::Regex;
 use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
-use rmx::prelude::*;
 use std::fmt;
 use std::path::{Path, PathBuf};
 

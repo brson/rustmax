@@ -1,6 +1,5 @@
 //! Interactive REPL for collection queries.
 
-use rmx::prelude::*;
 use rmx::rustyline::error::ReadlineError;
 use rmx::rustyline::{DefaultEditor, Config, EditMode};
 use rmx::termcolor::{ColorChoice, StandardStream, WriteColor, ColorSpec, Color};

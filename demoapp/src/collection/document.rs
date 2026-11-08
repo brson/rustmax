@@ -1,6 +1,5 @@
 //! Document model and frontmatter parsing.
 
-use rmx::prelude::*;
 use rmx::jiff::civil::Date;
 use rmx::blake3;
 use std::path::{Path, PathBuf};

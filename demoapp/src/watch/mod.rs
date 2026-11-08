@@ -12,7 +12,6 @@
 use rmx::crossbeam::channel::{self, Receiver, after, never, select};
 use rmx::log::{error, info, warn};
 use rmx::notify::{self, Event, EventKind, RecursiveMode, Watcher};
-use rmx::prelude::*;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 

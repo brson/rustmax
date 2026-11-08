@@ -5,7 +5,6 @@
 //! by a CDN or anything else in between, then fails to load
 //! instead of running.
 
-use rmx::prelude::*;
 use rmx::base64::{Engine, engine::general_purpose::STANDARD};
 use rmx::sha2::{Digest, Sha384};
 use std::collections::BTreeMap;

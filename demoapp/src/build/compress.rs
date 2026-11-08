@@ -1,6 +1,5 @@
 //! Asset compression using flate2.
 
-use rmx::prelude::*;
 use rmx::flate2::write::GzEncoder;
 use rmx::flate2::Compression;
 use rmx::walkdir::WalkDir;

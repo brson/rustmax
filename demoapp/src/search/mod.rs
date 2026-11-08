@@ -463,7 +463,6 @@ impl SearchIndex {
 /// needs to be pinned down.
 mod sorted_word_index {
     use super::{FastMap, Postings};
-    use rmx::prelude::*;
     use rmx::serde::{Deserialize, Deserializer, Serialize, Serializer};
     use std::collections::BTreeMap;
 

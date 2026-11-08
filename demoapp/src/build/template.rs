@@ -1,6 +1,5 @@
 //! Template rendering with Tera.
 
-use rmx::prelude::*;
 use rmx::tera::{self, Tera, Context, Kwargs, State};
 use rmx::walkdir::WalkDir;
 use std::collections::BTreeMap;

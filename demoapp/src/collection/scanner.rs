@@ -1,6 +1,5 @@
 //! Directory scanning for document discovery.
 
-use rmx::prelude::*;
 use rmx::ignore::WalkBuilder;
 use rmx::rayon::prelude::*;
 use rmx::log::debug;

@@ -3,7 +3,6 @@
 //! Extracts headings from markdown content and generates hierarchical
 //! table of contents with anchor links.
 
-use rmx::prelude::*;
 use rmx::regex::Regex;
 use std::sync::LazyLock;
 

@@ -7,7 +7,6 @@
 use rmx::futures::future::join_all;
 use rmx::log::info;
 use rmx::mime::{self, Mime};
-use rmx::prelude::*;
 use rmx::reqwest::{self, header::CONTENT_TYPE};
 use rmx::url::Url;
 use std::path::{Path, PathBuf};

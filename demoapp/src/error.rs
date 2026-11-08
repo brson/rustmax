@@ -7,7 +7,6 @@
 //! `derive_more` covers the same ground and does work through the re-export,
 //! which lets Folio depend on `rustmax` and nothing else.
 
-use rmx::prelude::*;
 use std::path::PathBuf;
 
 /// The result type for Folio operations.

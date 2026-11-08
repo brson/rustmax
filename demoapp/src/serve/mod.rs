@@ -20,7 +20,6 @@ use rmx::hyper_util::rt::{TokioExecutor, TokioIo};
 use rmx::hyper_util::server::conn::auto;
 use rmx::log::{debug, info};
 use rmx::mime::{self, Mime};
-use rmx::prelude::*;
 use rmx::tokio::{self, net::TcpListener, sync::watch};
 use std::convert::Infallible;
 use std::net::SocketAddr;

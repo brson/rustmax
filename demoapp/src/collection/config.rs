@@ -1,6 +1,5 @@
 //! Configuration file parsing for `folio.toml` and `folio.json5`.
 
-use rmx::prelude::*;
 use rmx::jiff::{Timestamp, Zoned, tz::TimeZone};
 use rmx::semver::{Version, VersionReq};
 use std::path::{Path, PathBuf};

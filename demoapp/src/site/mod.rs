@@ -7,7 +7,6 @@
 //! other document's page and to give local images their dimensions;
 //! `folio check` uses it to report links and images that go nowhere.
 
-use rmx::prelude::*;
 use rmx::regex::{Captures, Regex};
 use rmx::url::Url;
 use std::collections::{HashMap, HashSet};

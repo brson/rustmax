@@ -162,8 +162,8 @@ The Rust standard libraries are reexported the same way,
 as [`core`], [`alloc`], [`std`] and [`proc_macro`] modules.
 See [Rust standard libraries](#rust-standard-libraries).
 
-The [`prelude`](crate::prelude) module combines the standard prelude
-with commonly-used items from the enabled crates,
+The [`prelude`](crate::prelude) module holds
+commonly-used items from the enabled crates,
 like `anyhow`'s `bail!` and `Context`,
 `log`'s logging macros,
 and extension traits like `Itertools` and `Rng`.

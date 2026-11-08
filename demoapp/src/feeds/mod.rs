@@ -1,6 +1,5 @@
 //! Feed generation for Atom and JSON Feed formats.
 
-use rmx::prelude::*;
 use crate::collection::{Collection, Config};
 use crate::Result;
 
@@ -195,6 +194,7 @@ fn xml_escape(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rmx::prelude::*;
     use crate::collection::Document;
     use std::path::PathBuf;
 

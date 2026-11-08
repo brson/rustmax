@@ -6,7 +6,6 @@
 
 use rmx::flate2::Compression;
 use rmx::flate2::write::GzEncoder;
-use rmx::prelude::*;
 use std::fs::File;
 use rmx::tar::{Header, HeaderMode};
 use std::io::{BufWriter, Write};
@@ -170,6 +169,7 @@ fn count_files(dir: &Path) -> Result<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rmx::prelude::*;
     use rmx::tempfile::tempdir;
 
     fn site() -> rmx::tempfile::TempDir {
