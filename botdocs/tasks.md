@@ -78,6 +78,22 @@ Report on the keepers and non-keepers.
 
 The `just maint-outdated` rule may help.
 
+**bindgen and prettyplease:**
+bindgen is held at 0.72 until rust-lang/rust-bindgen#3506 is fixed;
+recheck it each time this task runs.
+bindgen 0.73 accepts syn 2 or 3 and prettyplease 0.2 or 0.3
+as independent ranges (rust-lang/rust-bindgen#3506, open as of 2026-11-08).
+A fresh resolve picks syn 3 with prettyplease 0.3 and works,
+but a lockfile that already has prettyplease 0.2 keeps it
+next to syn 3, and bindgen fails to compile
+(`syn::file::File: ParseQuote` is not satisfied).
+Fix it with `cargo update -p prettyplease --precise 0.3.0`
+or a full `cargo update`, in both the root and `demoapp`.
+Adding a direct prettyplease 0.3 dependency does not help:
+cargo still keeps the locked 0.2 for bindgen.
+Downstream users upgrading rustmax from 0.0.11 or earlier can hit this too,
+so mention it in the release notes.
+
 
 # Task: task-security-audit
 

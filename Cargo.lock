@@ -634,9 +634,9 @@ dependencies = [
 
 [[package]]
 name = "comrak"
-version = "0.57.0"
+version = "0.59.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5ef59c72b988dfc7c73ec58ec0dc50f95dd87d7f1f39f428902bc379cea8507"
+checksum = "3adf553d37681e21753316065ad5a763d9513f81c910e250576c572114a8eb06"
 dependencies = [
  "caseless",
  "entities",
@@ -3514,7 +3514,7 @@ dependencies = [
  "cfg-if",
  "chrono",
  "clap",
- "comrak 0.57.0",
+ "comrak 0.59.0",
  "crossbeam",
  "ctrlc",
  "derive_more",
@@ -3593,7 +3593,7 @@ dependencies = [
 name = "rustmax-cli"
 version = "0.0.11"
 dependencies = [
- "comrak 0.57.0",
+ "comrak 0.59.0",
  "enum-iterator",
  "include_dir",
  "megaspace-pipeliner",
@@ -3648,7 +3648,7 @@ dependencies = [
 name = "rustmax-rustdoc"
 version = "0.0.11"
 dependencies = [
- "comrak 0.57.0",
+ "comrak 0.59.0",
  "include_dir",
  "rayon",
  "rustdoc-types",
