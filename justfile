@@ -136,7 +136,7 @@ doc-build: doc-www doc-api doc-book doc-library
     cp -r work/library/* out/library/
     just doc-check-links
 
-publish_packages := "-p rustmax-macros -p rustmax -p rustmax-doctest -p rustmax-rustdoc -p rustmax-cli"
+publish_packages := "-p rustmax-macros -p rustmax -p rustmax-doctest -p rustmax-rustdoc -p rustmax-codebrowser -p rustmax-cli"
 
 # Cargo publishes these in dependency order, and the dry run verifies
 # each package against the others before any of them is on crates.io.
