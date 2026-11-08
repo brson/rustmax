@@ -3522,6 +3522,7 @@ dependencies = [
  "extension-trait",
  "flate2",
  "futures",
+ "getrandom 0.4.3",
  "glob",
  "hex",
  "http",
