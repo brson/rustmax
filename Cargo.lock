@@ -3501,7 +3501,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3580,7 +3580,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-anthology"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "clap",
  "html2md",
@@ -3591,7 +3591,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-cli"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "comrak 0.59.0",
  "enum-iterator",
@@ -3609,7 +3609,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-codebrowser"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "protobuf",
  "rustmax",
@@ -3621,7 +3621,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-doctest"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "pulldown-cmark",
  "rustmax",
@@ -3629,7 +3629,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-macros"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -3638,7 +3638,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-macros-test"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "rustmax",
  "thiserror 2.0.21",
@@ -3646,7 +3646,7 @@ dependencies = [
 
 [[package]]
 name = "rustmax-rustdoc"
-version = "0.0.11"
+version = "0.0.12"
 dependencies = [
  "comrak 0.59.0",
  "include_dir",

@@ -10,7 +10,7 @@ include = ["src/**/*", "assets/**/*", "templates/**/*", "Cargo.toml"]
 
 [dependencies]
 rmx.path = "../rustmax"
-rmx.version = "0.0.11"
+rmx.version = "0.0.12"
 rmx.package = "rustmax"
 rmx.default-features = false
 rmx.features = [
@@ -20,7 +20,7 @@ rmx.features = [
 ]
 
 rustmax-rustdoc.path = "../rustmax-rustdoc"
-rustmax-rustdoc.version = "0.0.11"
+rustmax-rustdoc.version = "0.0.12"
 
 serde.version = "1"
 serde.features = ["derive"]
