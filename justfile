@@ -91,14 +91,8 @@ install-nightly:
     rustup toolchain install {{nightly}} --profile minimal --component rust-docs-json
 
 doc-api: install-nightly
-    # Generate JSON for rustmax and all dependencies.
-    RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +{{nightly}} doc -p rustmax --features rmx-profile-max
-    # Copy std library JSON files from the rust-docs-json component.
-    cp "$(rustup +{{nightly}} which rustc | sed 's|/bin/rustc|/share/doc/rust/json|')"/*.json target/doc/
-    # Build HTML docs with rustmax-rustdoc.
     rm -rf out/api
-    mkdir -p out/api
-    cargo run -p rustmax-cli --release -- rustdoc build target/doc/ -o out/api
+    cargo run -p rustmax-cli --release -- rmxdoc -p rustmax --features rmx-profile-max --std -o out/api
 
 doc-book:
     rm -rf book/book

@@ -59,7 +59,7 @@ pub fn build(config: &Config) -> AnyResult<(PathBuf, Stats)> {
     };
     let mut index = index::Index::load(&scip_path)?;
     if config.rustdoc {
-        rustdoc::check_toolchain(root)?;
+        rustmax_rustdoc::check_json_toolchain()?;
         let relations = rustdoc::add_relations(&metadata, &mut index)?;
         eprintln!("Added {relations} trait and impl relations from rustdoc JSON.");
     }

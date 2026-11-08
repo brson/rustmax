@@ -5,6 +5,7 @@ mod library_gen;
 mod linkcheck;
 mod moldman;
 mod rmxbook;
+mod rmxdoc;
 mod search;
 mod tools;
 mod topics;
@@ -88,8 +89,8 @@ enum CliCmd {
     /// Run all code quality checks.
     RunAllChecks(CliCmdRunAllChecks),
 
-    /// Generate documentation from rustdoc JSON.
-    Rustdoc(CliCmdRustdoc),
+    /// Generate HTML API docs for the current workspace with rustmax's rustdoc renderer.
+    Rmxdoc(CliCmdRmxdoc),
 
     /// Build a static cross-referenced source browser for a cargo workspace.
     Browse(CliCmdBrowse),
@@ -300,24 +301,43 @@ struct CliCmdBrowse {
 }
 
 #[derive(clap::Args)]
-struct CliCmdRustdoc {
-    #[command(subcommand)]
-    action: RustdocAction,
-}
-
-#[derive(clap::Subcommand)]
-enum RustdocAction {
-    /// Build docs from rustdoc JSON file or directory.
-    Build {
-        /// Path to rustdoc JSON file or directory containing JSON files.
-        ///
-        /// If a file, builds docs for a single crate.
-        /// If a directory, builds docs for all crates with cross-crate linking.
-        json_path: std::path::PathBuf,
-        /// Output directory.
-        #[arg(short, long, default_value = "target/rmxdoc")]
-        output: std::path::PathBuf,
-    },
+struct CliCmdRmxdoc {
+    /// Render existing rustdoc JSON instead of generating it.
+    ///
+    /// A file renders one crate.
+    /// A directory renders every `*.json` file in it, with cross-crate links.
+    #[arg(long, value_name = "PATH", conflicts_with_all = [
+        "package", "features", "all_features", "no_default_features", "no_deps", "std",
+    ])]
+    json: Option<std::path::PathBuf>,
+    /// Output directory.
+    ///
+    /// Defaults to `rmxdoc` in the workspace's target directory,
+    /// or `target/rmxdoc` with `--json`.
+    #[arg(short, long)]
+    output: Option<std::path::PathBuf>,
+    /// Package to document. May be repeated. Defaults to the whole workspace.
+    #[arg(short, long, value_name = "SPEC")]
+    package: Vec<String>,
+    /// Features to enable, space or comma separated.
+    #[arg(short = 'F', long)]
+    features: Vec<String>,
+    /// Enable all features of the selected packages.
+    #[arg(long)]
+    all_features: bool,
+    /// Do not enable the default features.
+    #[arg(long)]
+    no_default_features: bool,
+    /// Document only the selected packages, not their dependencies.
+    #[arg(long)]
+    no_deps: bool,
+    /// Also render the standard libraries, so that links to them work.
+    ///
+    /// Without this, references to std, core and alloc items are not links.
+    /// `core` alone renders to about 1 GB.
+    /// Needs the `rust-docs-json` component of the pinned nightly.
+    #[arg(long)]
+    std: bool,
 }
 
 impl CliOpts {
@@ -353,7 +373,7 @@ impl CliOpts {
             CliCmd::WriteClippyControlConfig(cmd) => cmd.run(),
 
             CliCmd::RunAllChecks(cmd) => cmd.run(),
-            CliCmd::Rustdoc(cmd) => cmd.run(),
+            CliCmd::Rmxdoc(cmd) => cmd.run(),
             CliCmd::Browse(cmd) => cmd.run(),
             CliCmd::ValidateTopics(cmd) => cmd.run(),
             CliCmd::ValidateLinks(cmd) => cmd.run(),
@@ -783,39 +803,69 @@ impl CliCmdBrowse {
     }
 }
 
-impl CliCmdRustdoc {
+impl CliCmdRmxdoc {
     fn run(&self) -> AnyResult<()> {
-        match &self.action {
-            RustdocAction::Build {
-                json_path,
-                output,
-            } => {
+        match &self.json {
+            Some(json_path) => {
+                let output = self.output.clone().unwrap_or_else(|| "target/rmxdoc".into());
                 if json_path.is_dir() {
-                    // Directory mode: load all JSON files and render with cross-crate linking.
                     println!("Loading rustdoc JSON files from {}...", json_path.display());
-
                     let doc_set = rustmax_rustdoc::RustDocSet::from_json_dir(json_path)?
                         .output_dir(output.clone());
-
-                    println!("Found {} crates.", doc_set.crates.len());
-                    println!("Rendering to {}...", output.display());
-                    doc_set.render()?;
-
-                    println!("Done. Open {}/index.html to view.", output.display());
+                    render_doc_set(&doc_set, &output)?;
+                    println!("Done. Each crate's docs start at {}/<crate>/index.html.", output.display());
+                    Ok(())
                 } else {
-                    // Single file mode: load one JSON file.
                     println!("Loading rustdoc JSON from {}...", json_path.display());
-
                     let doc = rustmax_rustdoc::RustDoc::from_json(json_path)?
                         .output_dir(output.clone());
-
                     println!("Rendering to {}...", output.display());
                     doc.render()?;
-
                     println!("Done. Open {}/index.html to view.", output.display());
+                    Ok(())
+                }
+            }
+            None => {
+                rustmax_rustdoc::check_json_toolchain()?;
+                let std_json = if self.std {
+                    rustmax_rustdoc::std_json_files()?
+                } else {
+                    vec![]
+                };
+                let workspace = rmxdoc::workspace()?;
+                let target_dir = &workspace.target_directory;
+                let output = self.output.clone().unwrap_or_else(|| target_dir.join("rmxdoc"));
+
+                let selection = rmxdoc::Selection {
+                    packages: &self.package,
+                    features: &self.features,
+                    all_features: self.all_features,
+                    no_default_features: self.no_default_features,
+                    no_deps: self.no_deps,
+                };
+                let mut json = rmxdoc::generate_json(&selection, &target_dir.join("rmxdoc-json"))?;
+                json.extend(std_json);
+
+                println!("Loading {} rustdoc JSON files...", json.len());
+                let doc_set = rustmax_rustdoc::RustDocSet::from_json_files(&json)?
+                    .output_dir(output.clone());
+                render_doc_set(&doc_set, &output)?;
+
+                println!("Done. Open:");
+                for name in &workspace.member_crates {
+                    if doc_set.crates.contains_key(name) {
+                        println!("  {}", output.join(name).join("index.html").display());
+                    }
                 }
                 Ok(())
             }
         }
     }
+}
+
+fn render_doc_set(doc_set: &rustmax_rustdoc::RustDocSet, output: &Path) -> AnyResult<()> {
+    println!("Found {} crates.", doc_set.crates.len());
+    println!("Rendering to {}...", output.display());
+    doc_set.render()?;
+    Ok(())
 }

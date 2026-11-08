@@ -8,7 +8,7 @@ mod types;
 mod render;
 mod output;
 
-pub use parse::{load_json, load_json_dir};
+pub use parse::{load_json, load_json_dir, load_json_files};
 pub use types::{ModuleTree, RenderableItem};
 pub use render::RenderContext;
 pub use output::write_docs;
@@ -20,6 +20,56 @@ pub use rustdoc_types;
 ///
 /// Keep in sync with `nightly` in the justfile.
 pub const JSON_TOOLCHAIN: &str = "nightly-2026-10-09";
+
+/// Fail with installation instructions unless [`JSON_TOOLCHAIN`] is installed.
+///
+/// Call this before a long run, so a missing toolchain is reported up front.
+pub fn check_json_toolchain() -> AnyResult<()> {
+    let output = std::process::Command::new("rustup")
+        .args(["run", JSON_TOOLCHAIN, "rustdoc", "--version"])
+        .output()
+        .context("failed to run `rustup`")?;
+    if !output.status.success() {
+        bail!(
+            "toolchain {JSON_TOOLCHAIN} is required for rustdoc JSON; \
+             install it with `rustup toolchain install {JSON_TOOLCHAIN} --profile minimal`",
+        );
+    }
+    Ok(())
+}
+
+/// The rustdoc JSON files for the standard libraries of [`JSON_TOOLCHAIN`].
+///
+/// These come from the toolchain's `rust-docs-json` component.
+pub fn std_json_files() -> AnyResult<Vec<PathBuf>> {
+    let output = std::process::Command::new("rustup")
+        .args(["run", JSON_TOOLCHAIN, "rustc", "--print", "sysroot"])
+        .output()
+        .context("failed to run `rustup`")?;
+    if !output.status.success() {
+        bail!(
+            "failed to find the sysroot of {JSON_TOOLCHAIN}:\n{}",
+            String::from_utf8_lossy(&output.stderr),
+        );
+    }
+    let sysroot = PathBuf::from(String::from_utf8(output.stdout)?.trim());
+    let dir = sysroot.join("share/doc/rust/json");
+    if !dir.is_dir() {
+        bail!(
+            "standard library rustdoc JSON is missing from {JSON_TOOLCHAIN}; \
+             install it with `rustup component add rust-docs-json --toolchain {JSON_TOOLCHAIN}`",
+        );
+    }
+    let mut paths = Vec::new();
+    for entry in std::fs::read_dir(&dir).with_context(|| format!("reading {}", dir.display()))? {
+        let path = entry?.path();
+        if path.extension().is_some_and(|e| e == "json") {
+            paths.push(path);
+        }
+    }
+    paths.sort();
+    Ok(paths)
+}
 
 /// Stylesheets shared by the rustmax HTML frontends.
 pub mod assets {
@@ -149,6 +199,15 @@ impl RustDocSet {
     /// `RUSTDOCFLAGS="-Z unstable-options --output-format json" cargo +nightly doc`.
     pub fn from_json_dir(path: &Path) -> AnyResult<Self> {
         let crates = parse::load_json_dir(path)?;
+        Ok(Self {
+            crates,
+            config: RenderConfig::default(),
+        })
+    }
+
+    /// Load documentation from the given rustdoc JSON files.
+    pub fn from_json_files(paths: &[PathBuf]) -> AnyResult<Self> {
+        let crates = parse::load_json_files(paths)?;
         Ok(Self {
             crates,
             config: RenderConfig::default(),

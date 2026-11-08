@@ -12,7 +12,6 @@ use crate::metadata::{Metadata, path_to_slash};
 use rmx::prelude::*;
 use rustmax_rustdoc::rustdoc_types::{Crate, Id, ItemEnum, Type};
 use std::collections::HashMap;
-use std::path::Path;
 use std::process::Command;
 
 /// Generate rustdoc JSON for each workspace target and add its relations to the index.
@@ -186,22 +185,6 @@ fn relations(index: &Index, krate: &Crate) -> Vec<Edit> {
         }
     }
     edits
-}
-
-/// Whether the pinned nightly is installed, for a clear error before a long run.
-pub fn check_toolchain(workspace_root: &Path) -> AnyResult<()> {
-    let output = Command::new("rustup")
-        .args(["run", rustmax_rustdoc::JSON_TOOLCHAIN, "rustdoc", "--version"])
-        .current_dir(workspace_root)
-        .output()
-        .context("failed to run `rustup`")?;
-    if !output.status.success() {
-        bail!(
-            "toolchain {0} is required for --rustdoc; install it with `rustup toolchain install {0} --profile minimal`",
-            rustmax_rustdoc::JSON_TOOLCHAIN,
-        );
-    }
-    Ok(())
 }
 
 #[cfg(test)]

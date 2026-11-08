@@ -4,7 +4,7 @@ use rmx::prelude::*;
 use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// Load and parse rustdoc JSON from a file path.
 pub fn load_json(path: &Path) -> AnyResult<rustdoc_types::Crate> {
@@ -26,28 +26,35 @@ pub fn load_bytes(json: &[u8]) -> AnyResult<rustdoc_types::Crate> {
 /// Any file that fails to parse is an error,
 /// since it usually means the JSON format has drifted from `rustdoc-types`.
 pub fn load_json_dir(dir: &Path) -> AnyResult<BTreeMap<String, rustdoc_types::Crate>> {
-    let mut crates = BTreeMap::new();
-
+    let mut paths = Vec::new();
     for entry in fs::read_dir(dir)
         .with_context(|| format!("Failed to read directory {}", dir.display()))?
     {
-        let entry = entry?;
-        let path = entry.path();
-
+        let path = entry?.path();
         if path.extension().map(|e| e == "json").unwrap_or(false) {
-            let krate = load_json(&path)
-                .with_context(|| format!("Failed to load {}", path.display()))?;
-            let name = krate.index.get(&krate.root)
-                .and_then(|item| item.name.clone())
-                .unwrap_or_else(|| {
-                    path.file_stem()
-                        .map(|s| s.to_string_lossy().into_owned())
-                        .unwrap_or_default()
-                });
-            crates.insert(name, krate);
+            paths.push(path);
         }
     }
+    load_json_files(&paths)
+}
 
+/// Load the given rustdoc JSON files.
+///
+/// Returns a map from crate name to parsed crate data.
+pub fn load_json_files(paths: &[PathBuf]) -> AnyResult<BTreeMap<String, rustdoc_types::Crate>> {
+    let mut crates = BTreeMap::new();
+    for path in paths {
+        let krate = load_json(path)
+            .with_context(|| format!("Failed to load {}", path.display()))?;
+        let name = krate.index.get(&krate.root)
+            .and_then(|item| item.name.clone())
+            .unwrap_or_else(|| {
+                path.file_stem()
+                    .map(|s| s.to_string_lossy().into_owned())
+                    .unwrap_or_default()
+            });
+        crates.insert(name, krate);
+    }
     Ok(crates)
 }
 
