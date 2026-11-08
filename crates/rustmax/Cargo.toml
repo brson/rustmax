@@ -489,10 +489,8 @@ xshell = { version = "0.2.7", optional = true, default-features = false }
 zip = { version = "9.0", optional = true, default-features = false }
 
 
-# Indirect dependencies we want to control versions for
+# Indirect dependencies we want to control versions or features of
 
-# cargo audit
-_thread_local = { package = "thread_local", version = "1.1.4", optional = true, default-features = false }
 # rand's thread_rng on wasm32-unknown-unknown, enabled by the portable profile.
 # The wasm_js backend is inert on every other target.
 _getrandom = { package = "getrandom", version = "0.4", optional = true, default-features = false }

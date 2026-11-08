@@ -31,6 +31,21 @@ off image's `exr` and `avif` support would silence it but would remove formats
 that rustmax deliberately exposes. `paste` is a proc macro with no known
 vulnerability; leave it.
 
+## RUSTSEC-2022-0006 - thread_local < 1.1.4, minimal versions only
+
+The normal lockfile has no thread_local at all. Under `just
+maint-lock-minimum-versions` it resolves to thread_local 0.3.2 through
+regex 0.2.0, whose lower bound comes from `caseless 0.2.0` (a build
+dependency of comrak, reached from `rustmax` and from megaspace-pipeliner
+in `rustmax-cli`) and from `html2md 0.2.0` (in `rustmax-anthology`).
+
+No pin in this repo can fix this: thread_local 0.3 and 1.x are
+semver-incompatible, so requiring `>= 1.1.4` adds a second copy rather
+than replacing the old one. A `_thread_local` pin that did exactly that
+was removed on 2026-11-08; it dated from 2025, when the normal lockfile
+still had thread_local 1.0.0. The fix belongs upstream, in caseless and
+html2md raising their regex lower bounds.
+
 ## cargo deny
 
 With cargo-deny 0.20.2 the advisory database loads again. `cargo deny check
