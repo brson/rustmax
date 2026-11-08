@@ -33,6 +33,9 @@ struct CliOpts {
 
 #[derive(clap::Subcommand)]
 enum CliCmd {
+    /// Print a guide to rustmax for coding agents.
+    Agents(CliCmdAgents),
+
     /// List all available tools.
     ListTools(CliCmdListTools),
 
@@ -106,6 +109,9 @@ enum CliCmd {
     /// Build the rustmax.net home page, run from the repo root.
     BuildWww(CliCmdBuildWww),
 }
+
+#[derive(clap::Args)]
+struct CliCmdAgents {}
 
 #[derive(clap::Args)]
 struct CliCmdListTools {}
@@ -314,6 +320,8 @@ enum RustdocAction {
 impl CliOpts {
     fn run(&self) -> AnyResult<()> {
         match &self.cmd {
+            CliCmd::Agents(cmd) => cmd.run(),
+
             CliCmd::ListTools(cmd) => cmd.run(),
 
             CliCmd::InstallTools(cmd) => cmd.run(),
@@ -351,6 +359,13 @@ impl CliOpts {
             CliCmd::Search(cmd) => cmd.run(),
             CliCmd::BuildWww(cmd) => cmd.run(),
         }
+    }
+}
+
+impl CliCmdAgents {
+    fn run(&self) -> AnyResult<()> {
+        print!("{}", include_str!("../assets/agent-guide.md"));
+        Ok(())
     }
 }
 
