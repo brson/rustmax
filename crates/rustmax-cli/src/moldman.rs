@@ -66,11 +66,14 @@ fn install_release(version: &str) -> AnyResult<()> {
 
     println!("Mold binary installed to: {}", install_path.display());
 
-    // Configure cargo to use mold
-    backup_cargo_config().context("Failed to backup existing cargo config")?;
-    update_cargo_config().context("Failed to update cargo configuration")?;
-
-    println!("Cargo configured to use mold linker");
+    let config_path = get_cargo_config_path()?;
+    if let CargoConfigStatus::Configured = check_cargo_config_status(&config_path)? {
+        println!("Cargo is already configured to use mold linker");
+    } else {
+        backup_cargo_config().context("Failed to backup existing cargo config")?;
+        update_cargo_config().context("Failed to update cargo configuration")?;
+        println!("Cargo configured to use mold linker");
+    }
     println!("Installation complete! You can now use mold for faster linking.");
 
     Ok(())
