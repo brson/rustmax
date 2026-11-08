@@ -8,7 +8,21 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub fn install() -> AnyResult<()> {
-    println!("Installing mold linker...");
+    if mold_install_path()?.exists() {
+        println!(
+            "mold {} is already installed, use 'rustmax update-tool mold' to update it",
+            installed_semver()?
+        );
+        return Ok(());
+    }
+
+    let version = get_current_release().context("Failed to get latest mold release")?;
+    install_release(&version)
+}
+
+/// Download and install the mold release with the given tag, and configure cargo to use it.
+fn install_release(version: &str) -> AnyResult<()> {
+    println!("Installing mold {version}...");
 
     // Check if we're on a supported platform
     let target = get_target().context("Unsupported platform")?;
@@ -20,16 +34,12 @@ pub fn install() -> AnyResult<()> {
         );
     }
 
-    // Get the latest release version
-    let version = get_current_release().context("Failed to get latest mold release")?;
-    println!("Latest mold version: {}", version);
-
     // Create temporary directory for download
     let tempdir = TempDir::with_prefix_in("mold-install", env::current_dir()?)?;
     let temp_path = tempdir.path();
 
     // Download and extract mold
-    let url = get_url(&version, &target).context("Failed to build download URL")?;
+    let url = get_url(version, &target).context("Failed to build download URL")?;
     println!("Downloading from: {}", url);
 
     let tarball_path =
@@ -67,30 +77,28 @@ pub fn install() -> AnyResult<()> {
 }
 
 pub fn update() -> AnyResult<()> {
-    println!("Checking for mold updates...");
-
-    // Check current installed version
-    let current_version = get_installed_version();
-    let latest_version = get_current_release().context("Failed to get latest mold release")?;
-
-    match current_version {
-        Ok(current) if current == latest_version => {
-            println!("Mold is already up to date ({})", current);
-            return Ok(());
-        }
-        Ok(current) => {
-            println!("Updating mold from {} to {}", current, latest_version);
-        }
-        Err(_) => {
-            println!(
-                "Mold not currently installed, installing {}",
-                latest_version
-            );
-        }
+    if !mold_install_path()?.exists() {
+        println!("mold is not installed, use 'rustmax install-tool mold' to install it");
+        return Ok(());
     }
 
-    // Run installation (which will overwrite existing binary)
-    install()
+    let installed = installed_semver()?;
+    let latest_tag = get_current_release().context("Failed to get latest mold release")?;
+    let latest = parse_tag(&latest_tag)?;
+    if installed >= latest {
+        println!("mold {installed} is up to date");
+        return Ok(());
+    }
+
+    println!("Updating mold {installed} -> {latest}");
+    install_release(&latest_tag)?;
+
+    let updated = installed_semver()?;
+    if updated != latest {
+        bail!("Installed mold {updated}, expected {latest}");
+    }
+    println!("Updated mold to {latest}");
+    Ok(())
 }
 
 pub fn uninstall() -> AnyResult<()> {
@@ -571,4 +579,16 @@ fn remove_mold_from_cargo_config() -> AnyResult<bool> {
     }
 
     Ok(config_modified)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_release_tags() {
+        assert_eq!(parse_tag("v2.40.4").unwrap(), Version::new(2, 40, 4));
+        assert_eq!(parse_tag("3.0.0").unwrap(), Version::new(3, 0, 0));
+        assert!(parse_tag("vnext").is_err());
+    }
 }
