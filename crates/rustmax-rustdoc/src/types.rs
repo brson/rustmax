@@ -29,17 +29,17 @@ pub struct ModuleTree<'a> {
     pub items: Vec<RenderableItem<'a>>,
     /// Submodules.
     pub submodules: Vec<ModuleTree<'a>>,
-    /// Glob re-exports from external crates (crate name -> target ID).
+    /// Glob re-exports from external crates.
     pub glob_reexports: Vec<GlobReexport>,
+    /// Targets of re-exports `as _`, which bring a trait's methods into scope without its name.
+    pub unnamed_reexports: Vec<&'a Id>,
 }
 
-/// A glob re-export from an external crate.
+/// A glob re-export of a module in another crate.
 #[derive(Debug, Clone)]
 pub struct GlobReexport {
-    /// The source path of the glob import (e.g., "::tokio").
-    pub source: String,
-    /// The target crate name (e.g., "tokio").
-    pub target_crate: String,
+    /// The canonical path of the globbed module (e.g., `["std", "prelude", "rust_2021"]`).
+    pub target_path: Vec<String>,
 }
 
 /// Builds a module tree from the rustdoc crate data.
@@ -91,6 +91,7 @@ fn build_tree_recursive<'a>(
     let mut items = Vec::new();
     let mut submodules = Vec::new();
     let mut glob_reexports = Vec::new();
+    let mut unnamed_reexports = Vec::new();
 
     let newly_expanding = expanding.insert(module_id);
 
@@ -102,6 +103,7 @@ fn build_tree_recursive<'a>(
         &mut items,
         &mut submodules,
         &mut glob_reexports,
+        &mut unnamed_reexports,
         expanding,
     )?;
 
@@ -140,6 +142,7 @@ fn build_tree_recursive<'a>(
         items,
         submodules,
         glob_reexports,
+        unnamed_reexports,
     })
 }
 
@@ -189,6 +192,7 @@ fn collect_module_children<'a>(
     items: &mut Vec<RenderableItem<'a>>,
     submodules: &mut Vec<ModuleTree<'a>>,
     glob_reexports: &mut Vec<GlobReexport>,
+    unnamed_reexports: &mut Vec<&'a Id>,
     expanding: &mut HashSet<&'a Id>,
 ) -> AnyResult<()> {
     for child_id in child_ids {
@@ -222,6 +226,7 @@ fn collect_module_children<'a>(
                             items,
                             submodules,
                             glob_reexports,
+                            unnamed_reexports,
                             expanding,
                         )?;
                         expanding.remove(target_id);
@@ -229,20 +234,21 @@ fn collect_module_children<'a>(
                     continue;
                 }
 
-                // Extract crate name from source (e.g., "::tokio" -> "tokio").
-                let target_crate = use_item.source
-                    .trim_start_matches("::")
-                    .split("::")
-                    .next()
-                    .unwrap_or("")
-                    .to_string();
+                let target_path = use_item.id.as_ref()
+                    .and_then(|target_id| krate.paths.get(target_id))
+                    .filter(|summary| summary.kind == ItemKind::Module)
+                    .map(|summary| summary.path.clone());
 
-                if !target_crate.is_empty() {
-                    glob_reexports.push(GlobReexport {
-                        source: use_item.source.clone(),
-                        target_crate,
-                    });
+                // Globs of enums bring in variants, which have no listing of their own.
+                if let Some(target_path) = target_path {
+                    glob_reexports.push(GlobReexport { target_path });
                 }
+                continue;
+            }
+
+            // `as _` binds no name, so it has no path and no page of its own.
+            if use_item.name == "_" {
+                unnamed_reexports.extend(use_item.id.as_ref());
                 continue;
             }
         }
@@ -286,16 +292,7 @@ fn collect_module_children<'a>(
             }
             _ => {
                 // Regular item. For re-exports, determine kind from target.
-                let kind = match &child_item.inner {
-                    ItemEnum::Use(use_item) => {
-                        use_item.id.as_ref().and_then(|target_id| {
-                            krate.index.get(target_id)
-                                .and_then(|t| item_kind(&t.inner))
-                                .or_else(|| krate.paths.get(target_id).map(|s| s.kind))
-                        })
-                    }
-                    other => item_kind(other),
-                };
+                let kind = item_or_target_kind(krate, child_item);
                 let html_path = path_to_html(&child_path, kind);
                 items.push(RenderableItem {
                     id: child_id,
@@ -350,7 +347,7 @@ fn path_to_html(path: &[String], kind: Option<ItemKind>) -> PathBuf {
     result
 }
 
-fn item_kind(inner: &ItemEnum) -> Option<ItemKind> {
+pub(crate) fn item_kind(inner: &ItemEnum) -> Option<ItemKind> {
     match inner {
         ItemEnum::Module(_) => Some(ItemKind::Module),
         ItemEnum::Struct(_) => Some(ItemKind::Struct),
@@ -368,6 +365,20 @@ fn item_kind(inner: &ItemEnum) -> Option<ItemKind> {
         }),
         ItemEnum::Union(_) => Some(ItemKind::Union),
         _ => None,
+    }
+}
+
+/// The kind of an item, or for a re-export, of its target.
+pub(crate) fn item_or_target_kind(krate: &Crate, item: &Item) -> Option<ItemKind> {
+    match &item.inner {
+        ItemEnum::Use(use_item) => {
+            use_item.id.as_ref().and_then(|target_id| {
+                krate.index.get(target_id)
+                    .and_then(|t| item_kind(&t.inner))
+                    .or_else(|| krate.paths.get(target_id).map(|s| s.kind))
+            })
+        }
+        other => item_kind(other),
     }
 }
 
@@ -516,14 +527,6 @@ mod tests {
         })
     }
 
-    fn external_glob(source: &str) -> ItemEnum {
-        ItemEnum::Use(Use {
-            source: source.to_string(),
-            name: source.to_string(),
-            id: None,
-            is_glob: true,
-        })
-    }
 
     fn empty_struct() -> ItemEnum {
         ItemEnum::Struct(Struct {
@@ -716,14 +719,44 @@ mod tests {
 
         let (id, i) = item(0, "mycrate", module(true, vec![1]));
         index.insert(id, i);
-        let (id, i) = item(1, "clap_builder", external_glob("clap_builder"));
+        let (id, i) = item(1, "clap_builder", glob("::clap_builder", 9));
         index.insert(id, i);
+        krate.paths.insert(Id(9), ItemSummary {
+            crate_id: 1,
+            path: vec!["clap_builder".to_string()],
+            kind: ItemKind::Module,
+        });
 
         let tree = build_module_tree(&krate).unwrap();
 
         assert!(tree.items.is_empty());
         assert_eq!(tree.glob_reexports.len(), 1);
-        assert_eq!(tree.glob_reexports[0].target_crate, "clap_builder");
+        assert_eq!(tree.glob_reexports[0].target_path, ["clap_builder"]);
+    }
+
+    /// A re-export `as _` binds no name, so it gets no item or page,
+    /// but is recorded for the module page to list.
+    #[test]
+    fn unnamed_reexport_is_not_an_item() {
+        let mut krate = empty_crate(0);
+        let index = &mut krate.index;
+
+        let (id, i) = item(0, "mycrate", module(true, vec![1, 2]));
+        index.insert(id, i);
+        let (id, i) = item(1, "Ext", ItemEnum::Use(Use {
+            source: "other::Ext".to_string(),
+            name: "_".to_string(),
+            id: Some(Id(9)),
+            is_glob: false,
+        }));
+        index.insert(id, i);
+        let (id, i) = item(2, "thing", empty_struct());
+        index.insert(id, i);
+
+        let tree = build_module_tree(&krate).unwrap();
+
+        assert_eq!(item_names(&tree), ["thing"]);
+        assert_eq!(tree.unnamed_reexports, [&Id(9)]);
     }
 
     /// The `alloc` shape: a public module defined inside a private one

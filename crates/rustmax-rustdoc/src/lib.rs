@@ -4,6 +4,7 @@
 //! providing an alternative frontend to the standard rustdoc output.
 
 mod parse;
+mod glob;
 mod types;
 mod render;
 mod output;
@@ -347,8 +348,8 @@ impl RustDocSet {
         // Now walk all items and find Use items.
         for (id, item) in &krate.index {
             if let ItemEnum::Use(use_item) = &item.inner {
-                // Skip glob imports and primitive re-exports.
-                if use_item.is_glob || use_item.id.is_none() {
+                // Skip glob imports, primitive re-exports, and `as _`, which binds no name.
+                if use_item.is_glob || use_item.id.is_none() || use_item.name == "_" {
                     continue;
                 }
 

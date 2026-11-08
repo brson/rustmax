@@ -2,10 +2,12 @@
 
 use rmx::prelude::*;
 use rmx::tera::Context;
-use rustdoc_types::ItemEnum;
+use rustdoc_types::{ItemEnum, ItemKind};
+use std::collections::HashSet;
 
 use super::{RenderContext, ReexportTarget};
-use crate::types::ModuleTree;
+use crate::glob::{GlobResolver, Namespace};
+use crate::types::{ModuleTree, item_or_target_kind};
 
 /// Render a module page to HTML.
 pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String> {
@@ -177,58 +179,87 @@ pub fn render_module(ctx: &RenderContext, tree: &ModuleTree) -> AnyResult<String
         }
     }
 
-    // Add items from glob re-exports, linking to original crate location.
+    // Items from globs of other crates' modules, except where the module binds
+    // the same name itself, which shadows the glob.
     if let Some(all_crates) = ctx.all_crates {
+        let mut bound: HashSet<(Namespace, String)> = tree.submodules.iter()
+            .map(|submodule| (Namespace::Type, submodule.name.clone()))
+            .collect();
+        for item in &tree.items {
+            let name = match &item.item.inner {
+                ItemEnum::Use(use_item) => use_item.name.clone(),
+                _ => item.item.name.clone().unwrap_or_default(),
+            };
+            if let Some(kind) = item_or_target_kind(ctx.krate, item.item) {
+                bound.insert((Namespace::of(kind), name));
+            }
+        }
+
+        let mut resolver = GlobResolver::new(all_crates);
         for glob in &tree.glob_reexports {
-            if let Some(target_krate) = all_crates.get(&glob.target_crate) {
-                // Get the target crate's root module items.
-                if let Some(root_item) = target_krate.index.get(&target_krate.root) {
-                    if let ItemEnum::Module(module) = &root_item.inner {
-                        for child_id in &module.items {
-                            if let Some(child_item) = target_krate.index.get(child_id) {
-                                // Skip private and unnamed items.
-                                if child_item.visibility != rustdoc_types::Visibility::Public {
-                                    continue;
-                                }
-
-                                let item_name = child_item.name.clone().unwrap_or_default();
-                                if item_name.is_empty() {
-                                    continue;
-                                }
-
-                                // Link to the original crate's item page.
-                                let item_path = format!(
-                                    "{}{}",
-                                    path_to_root,
-                                    build_original_crate_path(&glob.target_crate, &item_name, &child_item.inner)
-                                );
-
-                                let summary = ItemSummary {
-                                    name: item_name,
-                                    path: item_path,
-                                    short_doc: child_item.docs.as_ref()
-                                        .map(|d| ctx.render_short_doc(d, depth))
-                                        .unwrap_or_default(),
-                                };
-
-                                match &child_item.inner {
-                                    ItemEnum::Module(_) => modules.push(summary),
-                                    ItemEnum::Struct(_) => structs.push(summary),
-                                    ItemEnum::Union(_) => unions.push(summary),
-                                    ItemEnum::Enum(_) => enums.push(summary),
-                                    ItemEnum::Trait(_) => traits.push(summary),
-                                    ItemEnum::Function(_) => functions.push(summary),
-                                    ItemEnum::TypeAlias(_) => types.push(summary),
-                                    ItemEnum::Constant { .. } => constants.push(summary),
-                                    ItemEnum::Static(_) => statics.push(summary),
-                                    ItemEnum::Macro(_) | ItemEnum::ProcMacro(_) => macros.push(summary),
-                                    _ => {}
-                                }
-                            }
-                        }
-                    }
+            for glob_item in resolver.glob_items(&glob.target_path) {
+                if !bound.insert((Namespace::of(glob_item.kind), glob_item.name.clone())) {
+                    continue;
+                }
+                let Some(url) = ctx.canonical_item_url(&glob_item.path, glob_item.kind, depth) else {
+                    continue;
+                };
+                let summary = ItemSummary {
+                    name: glob_item.name,
+                    path: url,
+                    short_doc: glob_item.item
+                        .and_then(|item| item.docs.as_ref())
+                        .map(|d| ctx.render_short_doc(d, depth))
+                        .unwrap_or_default(),
+                };
+                match glob_item.kind {
+                    ItemKind::Module => modules.push(summary),
+                    ItemKind::Struct => structs.push(summary),
+                    ItemKind::Union => unions.push(summary),
+                    ItemKind::Enum => enums.push(summary),
+                    ItemKind::Trait => traits.push(summary),
+                    ItemKind::Function => functions.push(summary),
+                    ItemKind::TypeAlias => types.push(summary),
+                    ItemKind::Constant => constants.push(summary),
+                    ItemKind::Static => statics.push(summary),
+                    ItemKind::Macro | ItemKind::ProcAttribute | ItemKind::ProcDerive => macros.push(summary),
+                    _ => {}
                 }
             }
+        }
+    }
+
+    // Imports `as _`, usually of traits for their methods, are listed by the item's own name.
+    for target_id in &tree.unnamed_reexports {
+        let Some(summary) = ctx.krate.paths.get(target_id) else {
+            continue;
+        };
+        let Some(name) = summary.path.last() else {
+            continue;
+        };
+        let target_links_docs = ctx.krate.index.get(target_id)
+            .and_then(|target| target.docs.as_ref().map(|d| (d, &target.links)));
+        let entry = ItemSummary {
+            name: format!("{name} as _"),
+            path: ctx.resolve_item_url(target_id, depth).unwrap_or_default(),
+            short_doc: target_links_docs
+                .map(|(d, links)| {
+                    let links = ctx.resolve_item_links(links, depth);
+                    ctx.render_short_doc_with_item_links(d, depth, &links)
+                })
+                .unwrap_or_default(),
+        };
+        match summary.kind {
+            ItemKind::Struct => structs.push(entry),
+            ItemKind::Union => unions.push(entry),
+            ItemKind::Enum => enums.push(entry),
+            ItemKind::Trait => traits.push(entry),
+            ItemKind::Function => functions.push(entry),
+            ItemKind::TypeAlias => types.push(entry),
+            ItemKind::Constant => constants.push(entry),
+            ItemKind::Static => statics.push(entry),
+            ItemKind::Macro | ItemKind::ProcAttribute | ItemKind::ProcDerive => macros.push(entry),
+            _ => {}
         }
     }
 
@@ -268,28 +299,4 @@ struct ItemSummary {
     name: String,
     path: String,
     short_doc: String,
-}
-
-/// Build HTML path to an item in its original crate.
-fn build_original_crate_path(crate_name: &str, item_name: &str, inner: &ItemEnum) -> String {
-    let prefix = match inner {
-        ItemEnum::Module(_) => "",
-        ItemEnum::Struct(_) => "struct.",
-        ItemEnum::Enum(_) => "enum.",
-        ItemEnum::Trait(_) => "trait.",
-        ItemEnum::Function(_) => "fn.",
-        ItemEnum::TypeAlias(_) => "type.",
-        ItemEnum::Constant { .. } => "constant.",
-        ItemEnum::Static(_) => "static.",
-        ItemEnum::Macro(_) => "macro.",
-        ItemEnum::Union(_) => "union.",
-        _ => "",
-    };
-
-    // Build path: crate_name/prefix.name.html
-    if matches!(inner, ItemEnum::Module(_)) {
-        format!("{}/{}/index.html", crate_name, item_name)
-    } else {
-        format!("{}/{}{}.html", crate_name, prefix, item_name)
-    }
 }

@@ -170,6 +170,17 @@ impl<'a> RenderContext<'a> {
         Some(url)
     }
 
+    /// Build a URL to an item in a crate being rendered, given its canonical path.
+    ///
+    /// The global index maps a canonical path that goes through private modules
+    /// to where the item is presented.
+    pub fn canonical_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
+        match self.global_index.and_then(|index| index.items.get(&path.join("::"))) {
+            Some(location) => self.build_item_url(&location.path, location.kind, current_depth),
+            None => self.build_item_url(path, kind, current_depth),
+        }
+    }
+
     /// Build a URL for an item given its path and kind.
     pub fn build_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
         let item_path = item_url_path(path, kind)?;
