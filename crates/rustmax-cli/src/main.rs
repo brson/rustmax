@@ -19,6 +19,9 @@ use tools::Tool;
 
 static TEMPLATE_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/assets/template");
 
+/// The guide printed by `rustmax agents` and published as `/agent-guide.md`.
+const AGENT_GUIDE: &str = include_str!("../assets/agent-guide.md");
+
 fn main() -> AnyResult<()> {
     let opts = <CliOpts as clap::Parser>::parse();
     opts.run()
@@ -364,7 +367,7 @@ impl CliOpts {
 
 impl CliCmdAgents {
     fn run(&self) -> AnyResult<()> {
-        print!("{}", include_str!("../assets/agent-guide.md"));
+        print!("{AGENT_GUIDE}");
         Ok(())
     }
 }

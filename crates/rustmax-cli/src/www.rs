@@ -97,6 +97,7 @@ pub fn build(out_dir: &Path) -> AnyResult<()> {
 
     write(&out_dir.join("crates.html"), &make_crate_table(&crate_info, &link_subs, &highlighter))?;
     write(&out_dir.join("build-info.json"), &make_build_info()?)?;
+    write(&out_dir.join("agent-guide.md"), crate::AGENT_GUIDE)?;
 
     let news_dir = Path::new(NEWS_STAGING_DIR);
     news::build_posts(Path::new(NEWS_DIR), Path::new(POSTS_DIR), Path::new(WWW_DIR), news_dir)?;

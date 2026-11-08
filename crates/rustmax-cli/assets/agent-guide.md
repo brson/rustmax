@@ -1,7 +1,8 @@
 # Rustmax for coding agents
 
 This guide is for coding agents working in a Rust project that uses
-`rustmax`. It describes rustmax 0.0.12.
+`rustmax`. It describes rustmax 0.0.12. The same text is printed by
+`rustmax agents` and published at <https://rustmax.net/agent-guide.md>.
 
 `rustmax` is a single crate that re-exports a curated set of
 crates.io crates (serde, clap, anyhow, rand, rayon, tokio and about
