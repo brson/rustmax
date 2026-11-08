@@ -89,7 +89,9 @@ use std::path::{Path, PathBuf};
 pub struct RenderConfig {
     /// Output directory for generated HTML.
     pub output_dir: PathBuf,
-    /// Base URL for external crate documentation (e.g., "https://docs.rs").
+    /// Base URL for docs of crates that are not rendered and have no `html_root_url`.
+    ///
+    /// Links go to `<base>/<crate>/latest/`, the docs.rs layout.
     pub external_base_url: String,
     /// Crate version to display.
     pub crate_version: Option<String>,

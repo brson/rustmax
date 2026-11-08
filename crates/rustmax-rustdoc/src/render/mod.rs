@@ -128,62 +128,52 @@ impl<'a> RenderContext<'a> {
         self.resolve_reexport_url(id, current_depth)
     }
 
-    /// Resolve a cross-crate item path to a URL using the global index.
-    fn resolve_cross_crate_url(&self, path: &[String], current_depth: usize) -> Option<String> {
-        let global_index = self.global_index?;
+    /// Resolve a cross-crate item path to a URL.
+    ///
+    /// Items in crates we are rendering get relative links through the global index.
+    /// Anything else links to the crate's published docs, see [`Self::external_item_url`].
+    fn resolve_cross_crate_url(
+        &self,
+        path: &[String],
+        kind: ItemKind,
+        crate_id: u32,
+        current_depth: usize,
+    ) -> Option<String> {
         let path_str = path.join("::");
-        let location = global_index.items.get(&path_str)?;
+        if let Some(location) = self.global_index.and_then(|index| index.items.get(&path_str)) {
+            return self.build_item_url(&location.path, location.kind, current_depth);
+        }
+        self.external_item_url(path, kind, crate_id)
+    }
 
-        self.build_item_url(&location.path, location.kind, current_depth)
+    /// Build an absolute URL to an item in another crate's published docs.
+    ///
+    /// The base is the crate's `html_root_url`, which cargo sets to the
+    /// dependency's versioned docs.rs page and rustdoc sets for the standard library.
+    /// Without one it is [`RenderConfig::external_base_url`] with the latest version.
+    /// The path is the item's definition path, which may go through private modules;
+    /// rustdoc writes redirect pages at those paths.
+    fn external_item_url(&self, path: &[String], kind: ItemKind, crate_id: u32) -> Option<String> {
+        let external = self.krate.external_crates.get(&crate_id)?;
+        let mut url = match &external.html_root_url {
+            Some(root) => root.clone(),
+            None => format!(
+                "{}/{}/latest/",
+                self.config.external_base_url.trim_end_matches('/'),
+                external.name,
+            ),
+        };
+        if !url.ends_with('/') {
+            url.push('/');
+        }
+        url.push_str(&item_url_path(path, kind)?);
+        Some(url)
     }
 
     /// Build a URL for an item given its path and kind.
     pub fn build_item_url(&self, path: &[String], kind: ItemKind, current_depth: usize) -> Option<String> {
-        let kind_prefix = match kind {
-            ItemKind::Struct => "struct.",
-            ItemKind::Union => "union.",
-            ItemKind::Enum => "enum.",
-            ItemKind::Trait => "trait.",
-            ItemKind::Function => "fn.",
-            ItemKind::TypeAlias => "type.",
-            ItemKind::Constant => "constant.",
-            ItemKind::Static => "static.",
-            ItemKind::Macro => "macro.",
-            ItemKind::ProcDerive => "derive.",
-            ItemKind::ProcAttribute => "attr.",
-            ItemKind::Module => "",
-            _ => return None, // Don't link to other kinds.
-        };
-
-        if path.is_empty() {
-            return None;
-        }
-
-        // Build the path to root from current depth.
-        let path_to_root = if current_depth == 0 {
-            String::new()
-        } else {
-            "../".repeat(current_depth)
-        };
-
-        // Build the URL.
-        let (dir_parts, name) = path.split_at(path.len() - 1);
-        let mut url = path_to_root;
-        for part in dir_parts {
-            url.push_str(part);
-            url.push('/');
-        }
-
-        if kind == ItemKind::Module {
-            url.push_str(&name[0]);
-            url.push_str("/index.html");
-        } else {
-            url.push_str(kind_prefix);
-            url.push_str(&name[0]);
-            url.push_str(".html");
-        }
-
-        Some(url)
+        let item_path = item_url_path(path, kind)?;
+        Some(format!("{}{item_path}", "../".repeat(current_depth)))
     }
 
     /// Pre-resolve an item's `links` field into a URL map.
@@ -232,7 +222,12 @@ impl<'a> RenderContext<'a> {
                 return self.build_item_url(&summary.path, summary.kind, current_depth);
             } else {
                 // Cross-crate item.
-                return self.resolve_cross_crate_url(&summary.path, current_depth);
+                return self.resolve_cross_crate_url(
+                    &summary.path,
+                    summary.kind,
+                    summary.crate_id,
+                    current_depth,
+                );
             }
         }
 
@@ -273,8 +268,7 @@ impl<'a> RenderContext<'a> {
                 self.build_item_url(enum_path, ItemKind::Enum, current_depth)?
             }
         } else {
-            self.resolve_cross_crate_url(enum_path, current_depth)
-                .or_else(|| self.build_item_url(enum_path, ItemKind::Enum, current_depth))?
+            self.resolve_cross_crate_url(enum_path, ItemKind::Enum, crate_id, current_depth)?
         };
 
         Some(format!("{}#variant.{}", enum_url, variant_name))
@@ -536,6 +530,35 @@ fn build_id_to_path<'a>(krate: &'a Crate) -> HashMap<&'a Id, Vec<String>> {
         map.insert(id, summary.path.clone());
     }
     map
+}
+
+/// The URL of an item's page relative to the docs root, as rustdoc lays them out.
+///
+/// Returns `None` for kinds that have no page of their own.
+fn item_url_path(path: &[String], kind: ItemKind) -> Option<String> {
+    let (name, dirs) = path.split_last()?;
+    let file = match kind {
+        ItemKind::Module => format!("{name}/index.html"),
+        ItemKind::Struct => format!("struct.{name}.html"),
+        ItemKind::Union => format!("union.{name}.html"),
+        ItemKind::Enum => format!("enum.{name}.html"),
+        ItemKind::Trait => format!("trait.{name}.html"),
+        ItemKind::Function => format!("fn.{name}.html"),
+        ItemKind::TypeAlias => format!("type.{name}.html"),
+        ItemKind::Constant => format!("constant.{name}.html"),
+        ItemKind::Static => format!("static.{name}.html"),
+        ItemKind::Macro => format!("macro.{name}.html"),
+        ItemKind::ProcDerive => format!("derive.{name}.html"),
+        ItemKind::ProcAttribute => format!("attr.{name}.html"),
+        _ => return None,
+    };
+    let mut url = String::new();
+    for dir in dirs {
+        url.push_str(dir);
+        url.push('/');
+    }
+    url.push_str(&file);
+    Some(url)
 }
 
 fn path_to_html_file(path: &[String]) -> PathBuf {
@@ -843,6 +866,43 @@ mod tests {
         assert_eq!(
             url,
             Some("../../mycrate/thread/trait.MyTrait.html#method.do_stuff".to_string()),
+        );
+    }
+
+    #[test]
+    fn test_resolve_external_item_url() {
+        const CORE: u32 = 1;
+        const NOROOT: u32 = 2;
+        const OPTION: u32 = 100;
+        const SOME: u32 = 101;
+        const BUFFER: u32 = 102;
+
+        let mut krate = test_crate();
+        krate.external_crates.insert(CORE, ExternalCrate {
+            name: "core".to_string(),
+            html_root_url: Some("https://doc.rust-lang.org/nightly/".to_string()),
+        });
+        krate.external_crates.insert(NOROOT, ExternalCrate {
+            name: "itoa".to_string(),
+            html_root_url: None,
+        });
+        krate.paths.insert(Id(OPTION), path_entry(CORE, &["core", "option", "Option"], ItemKind::Enum));
+        krate.paths.insert(Id(SOME), path_entry(CORE, &["core", "option", "Option", "Some"], ItemKind::Variant));
+        krate.paths.insert(Id(BUFFER), path_entry(NOROOT, &["itoa", "Buffer"], ItemKind::Struct));
+        let config = test_config();
+        let ctx = RenderContext::new(&krate, &config).unwrap();
+
+        assert_eq!(
+            ctx.resolve_item_url(&Id(OPTION), 2).as_deref(),
+            Some("https://doc.rust-lang.org/nightly/core/option/enum.Option.html"),
+        );
+        assert_eq!(
+            ctx.resolve_item_url(&Id(SOME), 2).as_deref(),
+            Some("https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some"),
+        );
+        assert_eq!(
+            ctx.resolve_item_url(&Id(BUFFER), 0).as_deref(),
+            Some("https://docs.rs/itoa/latest/itoa/struct.Buffer.html"),
         );
     }
 
