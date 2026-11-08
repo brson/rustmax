@@ -1,3 +1,23 @@
+## How `rustmax` manages tools
+
+Code: `crates/rustmax-cli/src/{tools,impls,cargo_install,moldman}.rs`.
+
+Every tool except mold is a crates.io package installed with `cargo install`.
+Installed versions are read from `.crates2.json` in the install root
+(`$CARGO_INSTALL_ROOT`, else `$CARGO_HOME`; the `install.root` config key is ignored),
+never by running `<tool> --version`, which is unreliable
+(gist exits 1, jsonxf has no flag, rg prints build info).
+Latest versions come from the crates.io sparse index,
+newest stable unyanked release.
+`update-tool` installs `<pkg>@<latest>` only when the installed version is older,
+and reinstalls with `--force` when cargo records binaries that are gone.
+Packages installed from git or a path are reported and left alone.
+
+Tests: unit tests in `cargo_install.rs` and `impls.rs` run with `cargo test`.
+`just test-tools` runs an ignored end-to-end test that installs, updates and uninstalls
+`jsonxf` into a temporary `CARGO_INSTALL_ROOT`; it needs the network.
+
+
 ### todo
 
 - [cargo-deny](https://crates.io/crates/cargo-deny) - disallow specific crates, licenses, etc

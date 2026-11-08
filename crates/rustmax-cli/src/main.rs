@@ -1,4 +1,5 @@
 mod books;
+mod cargo_install;
 mod highlight;
 mod impls;
 mod library_gen;
@@ -443,13 +444,10 @@ impl CliCmdUninstallTools {
 
 impl CliCmdToolsStatus {
     fn run(&self) -> AnyResult<()> {
-        for tool in enum_iterator::all::<Tool>() {
-            if !tool.attrs().impl_complete {
-                continue;
-            }
-            tool.status()?;
-        }
-        Ok(())
+        let tools: Vec<Tool> = enum_iterator::all::<Tool>()
+            .filter(|tool| tool.attrs().impl_complete)
+            .collect();
+        impls::print_reports(&impls::status_all(&tools)?)
     }
 }
 
@@ -473,7 +471,7 @@ impl CliCmdUninstallTool {
 
 impl CliCmdToolStatus {
     fn run(&self) -> AnyResult<()> {
-        self.tool.status()
+        impls::print_reports(&impls::status_all(&[self.tool.clone()])?)
     }
 }
 

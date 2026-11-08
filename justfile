@@ -32,6 +32,10 @@ test:
     cargo check -p rustmax --features=rmx-profile-portable --target=wasm32-unknown-unknown
     cargo run -p rustmax-cli -- doctest
 
+# Exercise tool install, update and uninstall against crates.io.
+test-tools:
+    cargo test -p rustmax-cli --test tools -- --ignored
+
 # `--rustdoc` adds trait and impl navigation, which needs the pinned nightly.
 # Build the cross-referenced source browser for this workspace.
 browse *args:

@@ -1,5 +1,7 @@
+use crate::cargo_install::{Assessment, assess_version, cargo_home};
+use crate::impls::ToolReport;
 use rmx::prelude::*;
-use rmx::{reqwest, serde_json, tempfile::TempDir, toml};
+use rmx::{reqwest, semver::Version, serde_json, tempfile::TempDir, toml};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -120,59 +122,51 @@ pub fn uninstall() -> AnyResult<()> {
     Ok(())
 }
 
-pub fn status() -> AnyResult<()> {
-    println!("Mold linker status:");
-
-    // Check binary installation
-    let install_path = mold_install_path()?;
-    let binary_installed = install_path.exists();
-
-    if binary_installed {
-        match get_installed_version() {
-            Ok(version) => println!("  Binary: Installed ({})", version),
-            Err(_) => println!("  Binary: Installed (version unknown)"),
-        }
-        println!("  Location: {}", install_path.display());
+/// Report the mold binary, its cargo configuration, and whether it is current.
+pub fn status() -> AnyResult<ToolReport> {
+    let installed = if mold_install_path()?.exists() {
+        Some(installed_semver()?)
     } else {
-        println!("  Binary: Not installed");
-    }
+        None
+    };
 
-    // Check cargo configuration
-    let config_path = get_cargo_config_path()?;
-    let config_status = check_cargo_config_status(&config_path)?;
-
-    match config_status {
-        CargoConfigStatus::Configured => println!("  Cargo: Configured to use mold"),
-        CargoConfigStatus::NotConfigured => println!("  Cargo: Not configured"),
-        CargoConfigStatus::NoConfigFile => println!("  Cargo: No config file"),
-    }
-
-    // Check dependencies
-    if check_clang_available() {
-        println!("  Dependencies: clang available");
-    } else {
-        println!("  Dependencies: clang missing (required for mold integration)");
-    }
-
-    // Check latest version
-    match get_current_release() {
-        Ok(latest) => {
-            if binary_installed {
-                match get_installed_version() {
-                    Ok(current) if current == latest => println!("  Status: Up to date"),
-                    Ok(current) => {
-                        println!("  Status: Update available ({} -> {})", current, latest)
-                    }
-                    Err(_) => println!("  Status: Latest version is {}", latest),
-                }
-            } else {
-                println!("  Latest available: {}", latest);
-            }
+    let mut notes = Vec::new();
+    match check_cargo_config_status(&get_cargo_config_path()?)? {
+        CargoConfigStatus::Configured => {}
+        CargoConfigStatus::NotConfigured => {
+            notes.push("cargo not configured to use mold".to_string())
         }
-        Err(_) => println!("  Status: Could not check for updates"),
+        CargoConfigStatus::NoConfigFile => notes.push("no cargo config file".to_string()),
+    }
+    if !check_clang_available() {
+        notes.push("clang missing (required for mold integration)".to_string());
     }
 
-    Ok(())
+    let assessment = match &installed {
+        None => Assessment::NotInstalled,
+        Some(installed) => {
+            let latest = get_current_release()
+                .and_then(|tag| parse_tag(&tag))
+                .map_err(|e| format!("{e:#}"));
+            assess_version(installed, &latest)
+        }
+    };
+
+    Ok(ToolReport {
+        name: "mold",
+        installed,
+        assessment,
+        notes,
+    })
+}
+
+fn parse_tag(tag: &str) -> AnyResult<Version> {
+    let version = tag.strip_prefix('v').unwrap_or(tag);
+    Version::parse(version).with_context(|| format!("Bad mold version {tag:?}"))
+}
+
+fn installed_semver() -> AnyResult<Version> {
+    parse_tag(&get_installed_version()?)
 }
 
 #[derive(Debug)]
@@ -237,27 +231,11 @@ fn get_url(version: &str, target: &MoldTarget) -> AnyResult<String> {
 }
 
 fn get_cargo_bin_dir() -> AnyResult<PathBuf> {
-    let cargo_home = match env::var("CARGO_HOME") {
-        Ok(home) => PathBuf::from(home),
-        Err(_) => {
-            let home_dir = env::var("HOME").context("Could not determine home directory")?;
-            PathBuf::from(home_dir).join(".cargo")
-        }
-    };
-
-    Ok(cargo_home.join("bin"))
+    Ok(cargo_home()?.join("bin"))
 }
 
 fn get_cargo_config_path() -> AnyResult<PathBuf> {
-    let cargo_home = match env::var("CARGO_HOME") {
-        Ok(home) => PathBuf::from(home),
-        Err(_) => {
-            let home_dir = env::var("HOME").context("Could not determine home directory")?;
-            PathBuf::from(home_dir).join(".cargo")
-        }
-    };
-
-    Ok(cargo_home.join("config.toml"))
+    Ok(cargo_home()?.join("config.toml"))
 }
 
 fn download_release_tarball(temp_dir: &Path, url: &str) -> AnyResult<PathBuf> {

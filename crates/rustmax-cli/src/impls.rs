@@ -1,6 +1,15 @@
 use rmx::prelude::*;
 
 use super::tools::*;
+use crate::cargo_install::{
+    Assessment, CratesIo, InstalledPackage, Installs, assess, cargo_home, install_root,
+    missing_bins, read_default_installs, read_installs,
+};
+use rmx::semver::Version;
+use rmx::termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+use std::io::{IsTerminal, Write};
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
 impl Tool {
     pub fn attrs(&self) -> ToolAttrs {
@@ -161,814 +170,345 @@ impl Tool {
     }
 }
 
+/// How rustmax installs a tool.
+enum Installer {
+    /// `cargo install` of a crates.io package.
+    Cargo(&'static str),
+    Mold,
+}
+
 impl Tool {
+    fn installer(&self) -> Installer {
+        use Tool::*;
+        let package = match self {
+            Mold => return Installer::Mold,
+            CargoAudit => "cargo-audit",
+            CargoCleanAll => "cargo-clean-all",
+            CargoDeny => "cargo-deny",
+            CargoDuplicates => "cargo-duplicates",
+            CargoEdit => "cargo-edit",
+            CargoGenerate => "cargo-generate",
+            CargoOutdated => "cargo-outdated",
+            // `cargo-sweep` keeps no state outside the `target` directories it cleans:
+            // the `--stamp` timestamp file lives in the project being swept,
+            // so there is nothing to remove on uninstall.
+            CargoSweep => "cargo-sweep",
+            BasicHttpServer => "basic-http-server",
+            DuDust => "du-dust",
+            FdFind => "fd-find",
+            Gist => "gist",
+            Jsonxf => "jsonxf",
+            Jaq => "jaq",
+            Just => "just",
+            Mdbook => "mdbook",
+            Ripgrep => "ripgrep",
+            Sd => "sd",
+            Tokei => "tokei",
+            _ => todo!("rustmax does not manage {} yet", self.attrs().display_name),
+        };
+        Installer::Cargo(package)
+    }
+
+    /// The name of the tool as written on the rustmax command line.
+    fn cli_name(&self) -> String {
+        let value = rmx::clap::ValueEnum::to_possible_value(self).expect("tool has a CLI name");
+        value.get_name().to_string()
+    }
+
     pub fn install(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::install(),
-            Tool::CargoAudit => cargo_plugin_install(&CARGO_AUDIT_CONFIG),
-            Tool::CargoCleanAll => cargo_plugin_install(&CARGO_CLEAN_ALL_CONFIG),
-            Tool::CargoDeny => cargo_plugin_install(&CARGO_DENY_CONFIG),
-            Tool::CargoDuplicates => cargo_plugin_install(&CARGO_DUPLICATES_CONFIG),
-            Tool::CargoEdit => cargo_plugin_install(&CARGO_EDIT_CONFIG),
-            Tool::CargoGenerate => cargo_plugin_install(&CARGO_GENERATE_CONFIG),
-            Tool::CargoOutdated => cargo_plugin_install(&CARGO_OUTDATED_CONFIG),
-            Tool::CargoSweep => cargo_plugin_install(&CARGO_SWEEP_CONFIG),
-            Tool::BasicHttpServer => cargo_tool_install(&BASIC_HTTP_SERVER_CONFIG),
-            Tool::DuDust => cargo_tool_install(&DU_DUST_CONFIG),
-            Tool::FdFind => cargo_tool_install(&FD_FIND_CONFIG),
-            Tool::Gist => cargo_tool_install(&GIST_CONFIG),
-            Tool::Jsonxf => cargo_tool_install(&JSONXF_CONFIG),
-            Tool::Jaq => cargo_tool_install(&JAQ_CONFIG),
-            Tool::Just => cargo_tool_install(&JUST_CONFIG),
-            Tool::Mdbook => cargo_tool_install(&MDBOOK_CONFIG),
-            Tool::Ripgrep => cargo_tool_install(&RIPGREP_CONFIG),
-            Tool::Sd => cargo_tool_install(&SD_CONFIG),
-            Tool::Tokei => cargo_tool_install(&TOKEI_CONFIG),
-            _ => todo!(),
+        match self.installer() {
+            Installer::Mold => crate::moldman::install(),
+            Installer::Cargo(package) => cargo_install(self, package),
         }
     }
-}
 
-impl Tool {
     pub fn update(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::update(),
-            Tool::CargoAudit => cargo_plugin_update(&CARGO_AUDIT_CONFIG),
-            Tool::CargoCleanAll => cargo_plugin_update(&CARGO_CLEAN_ALL_CONFIG),
-            Tool::CargoDeny => cargo_plugin_update(&CARGO_DENY_CONFIG),
-            Tool::CargoDuplicates => cargo_plugin_update(&CARGO_DUPLICATES_CONFIG),
-            Tool::CargoEdit => cargo_plugin_update(&CARGO_EDIT_CONFIG),
-            Tool::CargoGenerate => cargo_plugin_update(&CARGO_GENERATE_CONFIG),
-            Tool::CargoOutdated => cargo_plugin_update(&CARGO_OUTDATED_CONFIG),
-            Tool::CargoSweep => cargo_plugin_update(&CARGO_SWEEP_CONFIG),
-            Tool::BasicHttpServer => cargo_tool_update(&BASIC_HTTP_SERVER_CONFIG),
-            Tool::DuDust => cargo_tool_update(&DU_DUST_CONFIG),
-            Tool::FdFind => cargo_tool_update(&FD_FIND_CONFIG),
-            Tool::Gist => cargo_tool_update(&GIST_CONFIG),
-            Tool::Jsonxf => cargo_tool_update(&JSONXF_CONFIG),
-            Tool::Jaq => cargo_tool_update(&JAQ_CONFIG),
-            Tool::Just => cargo_tool_update(&JUST_CONFIG),
-            Tool::Mdbook => cargo_tool_update(&MDBOOK_CONFIG),
-            Tool::Ripgrep => cargo_tool_update(&RIPGREP_CONFIG),
-            Tool::Sd => cargo_tool_update(&SD_CONFIG),
-            Tool::Tokei => cargo_tool_update(&TOKEI_CONFIG),
-            _ => todo!(),
+        match self.installer() {
+            Installer::Mold => crate::moldman::update(),
+            Installer::Cargo(package) => cargo_update(self, package),
         }
     }
-}
 
-impl Tool {
     pub fn uninstall(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::uninstall(),
-            Tool::CargoAudit => cargo_plugin_uninstall(&CARGO_AUDIT_CONFIG),
-            Tool::CargoCleanAll => cargo_plugin_uninstall(&CARGO_CLEAN_ALL_CONFIG),
-            Tool::CargoDeny => cargo_plugin_uninstall(&CARGO_DENY_CONFIG),
-            Tool::CargoDuplicates => cargo_plugin_uninstall(&CARGO_DUPLICATES_CONFIG),
-            Tool::CargoEdit => cargo_plugin_uninstall(&CARGO_EDIT_CONFIG),
-            Tool::CargoGenerate => cargo_plugin_uninstall(&CARGO_GENERATE_CONFIG),
-            Tool::CargoOutdated => cargo_plugin_uninstall(&CARGO_OUTDATED_CONFIG),
-            Tool::CargoSweep => cargo_plugin_uninstall(&CARGO_SWEEP_CONFIG),
-            Tool::BasicHttpServer => cargo_tool_uninstall(&BASIC_HTTP_SERVER_CONFIG),
-            Tool::DuDust => cargo_tool_uninstall(&DU_DUST_CONFIG),
-            Tool::FdFind => cargo_tool_uninstall(&FD_FIND_CONFIG),
-            Tool::Gist => cargo_tool_uninstall(&GIST_CONFIG),
-            Tool::Jsonxf => cargo_tool_uninstall(&JSONXF_CONFIG),
-            Tool::Jaq => cargo_tool_uninstall(&JAQ_CONFIG),
-            Tool::Just => cargo_tool_uninstall(&JUST_CONFIG),
-            Tool::Mdbook => cargo_tool_uninstall(&MDBOOK_CONFIG),
-            Tool::Ripgrep => cargo_tool_uninstall(&RIPGREP_CONFIG),
-            Tool::Sd => cargo_tool_uninstall(&SD_CONFIG),
-            Tool::Tokei => cargo_tool_uninstall(&TOKEI_CONFIG),
-            _ => todo!(),
+        match self.installer() {
+            Installer::Mold => crate::moldman::uninstall(),
+            Installer::Cargo(package) => cargo_uninstall(self, package),
         }
+    }
+
+    fn status(
+        &self,
+        crates_io: &CratesIo,
+        installs: &Installs,
+        root: &Path,
+    ) -> AnyResult<ToolReport> {
+        let package = match self.installer() {
+            Installer::Mold => return crate::moldman::status(),
+            Installer::Cargo(package) => package,
+        };
+
+        let installed = installs.get(package);
+        let missing = installed.map(|p| missing_bins(root, p)).unwrap_or_default();
+        let assessment = assess(installed, &missing, || {
+            crates_io
+                .latest_version(package)
+                .map_err(|e| format!("{e:#}"))
+        });
+
+        let mut notes = Vec::new();
+        if let Tool::CargoAudit = self
+            && installed.is_some()
+            && !advisory_db_path()?.exists()
+        {
+            notes.push("advisory db missing, run 'cargo audit' to fetch it".to_string());
+        }
+
+        Ok(ToolReport {
+            name: self.attrs().display_name,
+            installed: installed.map(|p| p.version.clone()),
+            assessment,
+            notes,
+        })
     }
 }
 
-impl Tool {
-    pub fn status(&self) -> AnyResult<()> {
-        match self {
-            Tool::Mold => crate::moldman::status(),
-            Tool::CargoAudit => cargo_plugin_status(&CARGO_AUDIT_CONFIG),
-            Tool::CargoCleanAll => cargo_plugin_status(&CARGO_CLEAN_ALL_CONFIG),
-            Tool::CargoDeny => cargo_plugin_status(&CARGO_DENY_CONFIG),
-            Tool::CargoDuplicates => cargo_plugin_status(&CARGO_DUPLICATES_CONFIG),
-            Tool::CargoEdit => cargo_plugin_status(&CARGO_EDIT_CONFIG),
-            Tool::CargoGenerate => cargo_plugin_status(&CARGO_GENERATE_CONFIG),
-            Tool::CargoOutdated => cargo_plugin_status(&CARGO_OUTDATED_CONFIG),
-            Tool::CargoSweep => cargo_plugin_status(&CARGO_SWEEP_CONFIG),
-            Tool::BasicHttpServer => cargo_tool_status(&BASIC_HTTP_SERVER_CONFIG),
-            Tool::DuDust => cargo_tool_status(&DU_DUST_CONFIG),
-            Tool::FdFind => cargo_tool_status(&FD_FIND_CONFIG),
-            Tool::Gist => cargo_tool_status(&GIST_CONFIG),
-            Tool::Jsonxf => cargo_tool_status(&JSONXF_CONFIG),
-            Tool::Jaq => cargo_tool_status(&JAQ_CONFIG),
-            Tool::Just => cargo_tool_status(&JUST_CONFIG),
-            Tool::Mdbook => cargo_tool_status(&MDBOOK_CONFIG),
-            Tool::Ripgrep => cargo_tool_status(&RIPGREP_CONFIG),
-            Tool::Sd => cargo_tool_status(&SD_CONFIG),
-            Tool::Tokei => cargo_tool_status(&TOKEI_CONFIG),
-            _ => todo!(),
-        }
-    }
+/// One line of `tools-status` output.
+pub struct ToolReport {
+    pub name: &'static str,
+    pub installed: Option<Version>,
+    pub assessment: Assessment,
+    pub notes: Vec<String>,
 }
 
-struct CargoPluginConfig {
-    tool_name: &'static str,
-    package_name: &'static str,
-    subcommand: &'static str,
-    post_install_note: Option<&'static str>,
-    post_install_action: Option<fn() -> AnyResult<()>>,
-    post_status_action: Option<fn() -> AnyResult<()>>,
-    post_uninstall_action: Option<fn() -> AnyResult<()>>,
+/// Check the status of several tools, looking up their latest versions in parallel.
+pub fn status_all(tools: &[Tool]) -> AnyResult<Vec<ToolReport>> {
+    let root = install_root()?;
+    let installs = read_installs(&root)?;
+    let crates_io = CratesIo::new()?;
+    std::thread::scope(|s| {
+        let handles: Vec<_> = tools
+            .iter()
+            .map(|tool| s.spawn(|| tool.status(&crates_io, &installs, &root)))
+            .collect();
+        handles
+            .into_iter()
+            .map(|h| h.join().expect("status thread panicked"))
+            .collect()
+    })
 }
 
-const CARGO_AUDIT_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-audit",
-    package_name: "cargo-audit",
-    subcommand: "audit",
-    post_install_note: None,
-    post_install_action: Some(cargo_audit_download_db),
-    post_status_action: Some(cargo_audit_status_db),
-    post_uninstall_action: Some(cargo_audit_remove_db),
-};
+pub fn print_reports(reports: &[ToolReport]) -> AnyResult<()> {
+    let choice = if std::io::stdout().is_terminal() {
+        ColorChoice::Auto
+    } else {
+        ColorChoice::Never
+    };
+    let mut out = StandardStream::stdout(choice);
 
-const CARGO_CLEAN_ALL_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-clean-all",
-    package_name: "cargo-clean-all",
-    subcommand: "clean-all",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
+    let versions: Vec<String> = reports
+        .iter()
+        .map(|r| {
+            r.installed
+                .as_ref()
+                .map_or("-".to_string(), |v| v.to_string())
+        })
+        .collect();
+    let name_width = reports.iter().map(|r| r.name.len()).max().unwrap_or(0);
+    let version_width = versions.iter().map(|v| v.len()).max().unwrap_or(0);
 
-const CARGO_DENY_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-deny",
-    package_name: "cargo-deny",
-    subcommand: "deny",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
-
-const CARGO_DUPLICATES_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-duplicates",
-    package_name: "cargo-duplicates",
-    subcommand: "duplicates",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
-
-const CARGO_EDIT_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-edit",
-    package_name: "cargo-edit",
-    subcommand: "upgrade",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
-
-const CARGO_GENERATE_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-generate",
-    package_name: "cargo-generate",
-    subcommand: "generate",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
-
-const CARGO_OUTDATED_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-outdated",
-    package_name: "cargo-outdated",
-    subcommand: "outdated",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
-
-// `cargo-sweep` keeps no state outside the `target` directories it cleans:
-// the `--stamp` timestamp file lives in the project being swept,
-// so there is nothing to remove on uninstall.
-const CARGO_SWEEP_CONFIG: CargoPluginConfig = CargoPluginConfig {
-    tool_name: "cargo-sweep",
-    package_name: "cargo-sweep",
-    subcommand: "sweep",
-    post_install_note: None,
-    post_install_action: None,
-    post_status_action: None,
-    post_uninstall_action: None,
-};
-
-fn cargo_plugin_install(config: &CargoPluginConfig) -> AnyResult<()> {
-    println!("Installing {}...", config.tool_name);
-
-    // Check if already installed
-    if let Ok(output) = std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        if output.status.success() {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("{} is already installed ({})", config.tool_name, version);
-            println!(
-                "Use 'rustmax update-tool {}' to update to the latest version",
-                config.tool_name
-            );
-            return Ok(());
+    for (report, version) in reports.iter().zip(&versions) {
+        write!(
+            out,
+            "{:name_width$}  {version:version_width$}  ",
+            report.name
+        )?;
+        let (color, text) = describe(&report.assessment);
+        out.set_color(ColorSpec::new().set_fg(Some(color)))?;
+        write!(out, "{text}")?;
+        out.reset()?;
+        if !report.notes.is_empty() {
+            out.set_color(ColorSpec::new().set_dimmed(true))?;
+            write!(out, "  ({})", report.notes.join("; "))?;
+            out.reset()?;
         }
+        writeln!(out)?;
     }
-
-    // Install using cargo install
-    println!("Running: cargo install {}", config.package_name);
-    let status = std::process::Command::new("cargo")
-        .args(["install", config.package_name])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install {} failed with exit code: {}",
-            config.package_name,
-            status
-        );
-    }
-
-    // Verify installation
-    match std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!(
-                "✓ {} installed successfully ({})",
-                config.tool_name, version
-            );
-        }
-        _ => {
-            println!("⚠️  Installation may have succeeded but could not verify version");
-        }
-    }
-
-    if let Some(note) = config.post_install_note {
-        println!("{}", note);
-    }
-
-    if let Some(action) = config.post_install_action {
-        action()?;
-    }
-
-    println!("{} installation complete!", config.tool_name);
     Ok(())
 }
 
-fn cargo_plugin_uninstall(config: &CargoPluginConfig) -> AnyResult<()> {
-    println!("Uninstalling {}...", config.tool_name);
-
-    // Check if installed first
-    match std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!(
-                "Found {} ({}), proceeding with uninstall",
-                config.tool_name, version
-            );
+fn describe(assessment: &Assessment) -> (Color, String) {
+    match assessment {
+        Assessment::NotInstalled => (Color::Red, "not installed".to_string()),
+        Assessment::MissingBins(bins) => {
+            (Color::Red, format!("missing binaries: {}", bins.join(", ")))
         }
-        _ => {
-            println!("{} is not installed", config.tool_name);
-            return Ok(());
-        }
+        Assessment::OtherSource(source) => (Color::Cyan, format!("installed from {source}")),
+        Assessment::UpToDate => (Color::Green, "up to date".to_string()),
+        Assessment::Outdated(latest) => (Color::Yellow, format!("update available: {latest}")),
+        Assessment::LatestUnknown(e) => (Color::Yellow, format!("could not check latest: {e}")),
     }
+}
 
-    // Uninstall using cargo uninstall
-    println!("Running: cargo uninstall {}", config.package_name);
-    let status = std::process::Command::new("cargo")
-        .args(["uninstall", config.package_name])
+fn installed_package(package: &str) -> AnyResult<Option<InstalledPackage>> {
+    Ok(read_default_installs()?.remove(package))
+}
+
+fn run_cargo(args: &[&str]) -> AnyResult<()> {
+    println!("Running: cargo {}", args.join(" "));
+    let status = Command::new("cargo")
+        .args(args)
         .status()
-        .context("Failed to execute cargo uninstall command")?;
-
+        .context("Failed to run cargo")?;
     if !status.success() {
-        bail!(
-            "cargo uninstall {} failed with exit code: {}",
-            config.package_name,
-            status
-        );
+        bail!("cargo {} failed: {status}", args.join(" "));
     }
-
-    // Verify uninstallation
-    match std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            println!(
-                "⚠️  {} may still be installed (uninstall verification failed)",
-                config.tool_name
-            );
-        }
-        _ => {
-            println!("✓ {} uninstalled successfully", config.tool_name);
-        }
-    }
-
-    if let Some(action) = config.post_uninstall_action {
-        action()?;
-    }
-
-    println!("{} uninstallation complete!", config.tool_name);
     Ok(())
 }
 
-fn cargo_plugin_update(config: &CargoPluginConfig) -> AnyResult<()> {
-    println!("Updating {}...", config.tool_name);
+fn cargo_install(tool: &Tool, package: &str) -> AnyResult<()> {
+    let name = tool.attrs().display_name;
+    if let Some(installed) = installed_package(package)? {
+        println!(
+            "{name} {} is already installed, use 'rustmax update-tool {}' to update it",
+            installed.version,
+            tool.cli_name()
+        );
+        return Ok(());
+    }
 
-    // Check if installed first
-    let current_version = match std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("Current version: {}", version);
-            Some(version.to_string())
-        }
-        _ => {
-            println!(
-                "{} is not installed, use 'rustmax install-tool {}' instead",
-                config.tool_name, config.tool_name
-            );
-            return Ok(());
-        }
+    run_cargo(&["install", package])?;
+    let installed = installed_package(package)?
+        .with_context(|| format!("cargo installed {package} but did not record it"))?;
+    println!("Installed {name} {}", installed.version);
+
+    if let Tool::CargoAudit = tool {
+        cargo_audit_download_db()?;
+    }
+    Ok(())
+}
+
+fn cargo_update(tool: &Tool, package: &str) -> AnyResult<()> {
+    let name = tool.attrs().display_name;
+    let Some(installed) = installed_package(package)? else {
+        println!(
+            "{name} is not installed, use 'rustmax install-tool {}' to install it",
+            tool.cli_name()
+        );
+        return Ok(());
+    };
+    if !installed.is_from_crates_io() {
+        println!(
+            "{name} was installed from {}, not updating it",
+            installed.source
+        );
+        return Ok(());
+    }
+
+    let latest = CratesIo::new()?.latest_version(package)?;
+    let missing = missing_bins(&install_root()?, &installed);
+    let target = format!("{package}@{latest}");
+    if !missing.is_empty() {
+        println!(
+            "{name} is missing binaries {}, reinstalling",
+            missing.join(", ")
+        );
+        run_cargo(&["install", "--force", &target])?;
+    } else if installed.version >= latest {
+        println!("{name} {} is up to date", installed.version);
+        return Ok(());
+    } else {
+        println!("Updating {name} {} -> {latest}", installed.version);
+        run_cargo(&["install", &target])?;
+    }
+
+    let updated = installed_package(package)?
+        .with_context(|| format!("cargo installed {package} but did not record it"))?;
+    if updated.version != latest {
+        bail!(
+            "cargo installed {package} {}, expected {latest}",
+            updated.version
+        );
+    }
+    println!("Updated {name} to {latest}");
+    Ok(())
+}
+
+fn cargo_uninstall(tool: &Tool, package: &str) -> AnyResult<()> {
+    let name = tool.attrs().display_name;
+    let Some(installed) = installed_package(package)? else {
+        println!("{name} is not installed");
+        return Ok(());
     };
 
-    // Update using cargo install --force
-    println!("Running: cargo install --force {}", config.package_name);
-    let status = std::process::Command::new("cargo")
-        .args(["install", "--force", config.package_name])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install --force {} failed with exit code: {}",
-            config.package_name,
-            status
-        );
+    run_cargo(&["uninstall", package])?;
+    if installed_package(package)?.is_some() {
+        bail!("cargo uninstalled {package} but still records it as installed");
     }
+    println!("Uninstalled {name} {}", installed.version);
 
-    // Verify update
-    match std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let new_version = String::from_utf8_lossy(&output.stdout);
-            let new_version = new_version.trim();
-
-            if let Some(old_version) = current_version {
-                if old_version != new_version {
-                    println!(
-                        "✓ {} updated: {} → {}",
-                        config.tool_name, old_version, new_version
-                    );
-                } else {
-                    println!(
-                        "✓ {} is already up to date ({})",
-                        config.tool_name, new_version
-                    );
-                }
-            } else {
-                println!("✓ {} updated to {}", config.tool_name, new_version);
-            }
-        }
-        _ => {
-            println!("⚠️  Update may have succeeded but could not verify version");
-        }
+    if let Tool::CargoAudit = tool {
+        cargo_audit_remove_db()?;
     }
-
-    println!("{} update complete!", config.tool_name);
     Ok(())
 }
 
-fn cargo_plugin_status(config: &CargoPluginConfig) -> AnyResult<()> {
-    println!("{} status:", config.tool_name);
-
-    // Check binary installation and version
-    match std::process::Command::new("cargo")
-        .args([config.subcommand, "--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            if version.is_empty() {
-                // Empty stdout but successful exit - this shouldn't happen for cargo plugins
-                println!("  Binary: Installed (version unknown)");
-            } else {
-                println!("  Binary: Installed ({})", version);
-            }
-        }
-        Ok(output) => {
-            // Command ran but failed - check stderr for "no such command"
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            if stderr.contains("no such command") {
-                println!("  Binary: Not installed");
-            } else {
-                println!("  Binary: Installed (version unknown)");
-            }
-        }
-        Err(_) => {
-            println!("  Binary: Not installed");
-        }
-    }
-
-    if let Some(action) = config.post_status_action {
-        action()?;
-    }
-
-    Ok(())
+fn advisory_db_path() -> AnyResult<PathBuf> {
+    Ok(cargo_home()?.join("advisory-db"))
 }
-
-/////////
 
 fn cargo_audit_download_db() -> AnyResult<()> {
-    // Download advisory database on first install
-    println!("Downloading advisory database...");
-    let db_status = std::process::Command::new("cargo")
-        .args(["audit", "--stale"]) // This will download the DB if not present
-        .output();
-
-    match db_status {
-        Ok(_) => println!("✓ Advisory database ready"),
-        Err(_) => println!("⚠️  Could not initialize advisory database"),
-    }
-    Ok(())
-}
-
-fn cargo_audit_status_db() -> AnyResult<()> {
-    // Check advisory database status
-    let advisory_db_path = std::env::var("HOME")
-        .map(|home| format!("{}/.cargo/advisory-db", home))
-        .unwrap_or_else(|_| "~/.cargo/advisory-db".to_string());
-
-    if std::path::Path::new(&advisory_db_path).exists() {
-        println!("  Advisory DB: Present at {}", advisory_db_path);
+    // The audit itself fails outside a cargo project,
+    // so judge by whether the database appeared rather than by exit status.
+    println!("Fetching the advisory database...");
+    Command::new("cargo")
+        .args(["audit", "--stale"])
+        .output()
+        .context("Failed to run cargo audit")?;
+    let path = advisory_db_path()?;
+    if path.exists() {
+        println!("Advisory database is at {}", path.display());
     } else {
-        println!("  Advisory DB: Not found, run 'cargo audit' to download");
+        println!(
+            "Could not fetch the advisory database, run 'cargo audit' in a project to fetch it"
+        );
     }
     Ok(())
 }
 
 fn cargo_audit_remove_db() -> AnyResult<()> {
-    // Remove advisory database on uninstall
-    let advisory_db_path = std::env::var("HOME")
-        .map(|home| format!("{}/.cargo/advisory-db", home))
-        .unwrap_or_else(|_| "~/.cargo/advisory-db".to_string());
-
-    if std::path::Path::new(&advisory_db_path).exists() {
-        println!("Removing advisory database at {}...", advisory_db_path);
-        match std::fs::remove_dir_all(&advisory_db_path) {
-            Ok(_) => println!("✓ Advisory database removed"),
-            Err(e) => println!("⚠️  Failed to remove advisory database: {}", e),
-        }
-    } else {
-        println!("Advisory database not found, nothing to remove");
+    let path = advisory_db_path()?;
+    if path.exists() {
+        println!("Removing advisory database at {}", path.display());
+        std::fs::remove_dir_all(&path)
+            .with_context(|| format!("Failed to remove {}", path.display()))?;
     }
     Ok(())
 }
 
-struct CargoToolConfig {
-    tool_name: &'static str,
-    package_name: &'static str,
-    post_install_note: Option<&'static str>,
-    post_install_action: Option<fn() -> AnyResult<()>>,
-    post_uninstall_action: Option<fn() -> AnyResult<()>>,
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-fn cargo_tool_install(config: &CargoToolConfig) -> AnyResult<()> {
-    println!("Installing {}...", config.tool_name);
-
-    // Check if already installed
-    if let Ok(output) = std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        if output.status.success() {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("{} is already installed ({})", config.tool_name, version);
-            println!(
-                "Use 'rustmax update-tool {}' to update to the latest version",
-                config.tool_name
-            );
-            return Ok(());
-        }
+    #[test]
+    fn cli_names() {
+        assert_eq!(Tool::Ripgrep.cli_name(), "ripgrep");
+        assert_eq!(Tool::CargoAudit.cli_name(), "cargo-audit");
     }
 
-    // Install using cargo install
-    println!("Running: cargo install {}", config.package_name);
-    let status = std::process::Command::new("cargo")
-        .args(["install", config.package_name])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install {} failed with exit code: {}",
-            config.package_name,
-            status
-        );
-    }
-
-    // Verify installation
-    match std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!(
-                "✓ {} installed successfully ({})",
-                config.tool_name, version
-            );
-        }
-        _ => {
-            println!("⚠️  Installation may have succeeded but could not verify version");
-        }
-    }
-
-    if let Some(note) = config.post_install_note {
-        println!("{}", note);
-    }
-
-    if let Some(action) = config.post_install_action {
-        action()?;
-    }
-
-    println!("{} installation complete!", config.tool_name);
-    Ok(())
-}
-
-fn cargo_tool_uninstall(config: &CargoToolConfig) -> AnyResult<()> {
-    println!("Uninstalling {}...", config.tool_name);
-
-    // Check if installed first
-    match std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!(
-                "Found {} ({}), proceeding with uninstall",
-                config.tool_name, version
-            );
-        }
-        _ => {
-            println!("{} is not installed", config.tool_name);
-            return Ok(());
-        }
-    }
-
-    // Uninstall using cargo uninstall
-    println!("Running: cargo uninstall {}", config.package_name);
-    let status = std::process::Command::new("cargo")
-        .args(["uninstall", config.package_name])
-        .status()
-        .context("Failed to execute cargo uninstall command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo uninstall {} failed with exit code: {}",
-            config.package_name,
-            status
-        );
-    }
-
-    // Verify uninstallation
-    match std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            println!(
-                "⚠️  {} may still be installed (uninstall verification failed)",
-                config.tool_name
-            );
-        }
-        _ => {
-            println!("✓ {} uninstalled successfully", config.tool_name);
-        }
-    }
-
-    if let Some(action) = config.post_uninstall_action {
-        action()?;
-    }
-
-    println!("{} uninstallation complete!", config.tool_name);
-    Ok(())
-}
-
-fn cargo_tool_update(config: &CargoToolConfig) -> AnyResult<()> {
-    println!("Updating {}...", config.tool_name);
-
-    // Check if installed first
-    let current_version = match std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            println!("Current version: {}", version);
-            Some(version.to_string())
-        }
-        _ => {
-            println!(
-                "{} is not installed, use 'rustmax install-tool {}' instead",
-                config.tool_name, config.tool_name
-            );
-            return Ok(());
-        }
-    };
-
-    // Update using cargo install --force
-    println!("Running: cargo install --force {}", config.package_name);
-    let status = std::process::Command::new("cargo")
-        .args(["install", "--force", config.package_name])
-        .status()
-        .context("Failed to execute cargo install command")?;
-
-    if !status.success() {
-        bail!(
-            "cargo install --force {} failed with exit code: {}",
-            config.package_name,
-            status
-        );
-    }
-
-    // Verify update
-    match std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let new_version = String::from_utf8_lossy(&output.stdout);
-            let new_version = new_version.trim();
-
-            if let Some(old_version) = current_version {
-                if old_version != new_version {
-                    println!(
-                        "✓ {} updated: {} → {}",
-                        config.tool_name, old_version, new_version
-                    );
-                } else {
-                    println!(
-                        "✓ {} is already up to date ({})",
-                        config.tool_name, new_version
-                    );
-                }
-            } else {
-                println!("✓ {} updated to {}", config.tool_name, new_version);
+    #[test]
+    fn every_complete_tool_has_an_installer() {
+        for tool in enum_iterator::all::<Tool>() {
+            if tool.attrs().impl_complete {
+                tool.installer();
             }
         }
-        _ => {
-            println!("⚠️  Update may have succeeded but could not verify version");
-        }
     }
 
-    println!("{} update complete!", config.tool_name);
-    Ok(())
-}
-
-fn cargo_tool_status(config: &CargoToolConfig) -> AnyResult<()> {
-    println!("{} status:", config.tool_name);
-
-    // Check binary installation and version
-    match std::process::Command::new(config.tool_name)
-        .args(["--version"])
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            let version = String::from_utf8_lossy(&output.stdout);
-            let version = version.trim();
-            if version.is_empty() {
-                println!("  Binary: Installed (version unknown)");
-            } else {
-                println!("  Binary: Installed ({})", version);
-            }
-        }
-        Ok(_) => {
-            println!("  Binary: Not installed or version command failed");
-        }
-        Err(_) => {
-            println!("  Binary: Not installed");
-        }
+    #[test]
+    fn describes_outdated() {
+        let latest = Version::parse("1.2.3").unwrap();
+        let (color, text) = describe(&Assessment::Outdated(latest));
+        assert_eq!(color, Color::Yellow);
+        assert_eq!(text, "update available: 1.2.3");
     }
-
-    Ok(())
 }
-
-const BASIC_HTTP_SERVER_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "basic-http-server",
-    package_name: "basic-http-server",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const DU_DUST_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "dust",
-    package_name: "du-dust",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const FD_FIND_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "fd",
-    package_name: "fd-find",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const GIST_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "gist",
-    package_name: "gist",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const JSONXF_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "jsonxf",
-    package_name: "jsonxf",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const JAQ_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "jaq",
-    package_name: "jaq",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const JUST_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "just",
-    package_name: "just",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const MDBOOK_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "mdbook",
-    package_name: "mdbook",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const RIPGREP_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "rg",
-    package_name: "ripgrep",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const SD_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "sd",
-    package_name: "sd",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
-
-const TOKEI_CONFIG: CargoToolConfig = CargoToolConfig {
-    tool_name: "tokei",
-    package_name: "tokei",
-    post_install_note: None,
-    post_install_action: None,
-    post_uninstall_action: None,
-};
