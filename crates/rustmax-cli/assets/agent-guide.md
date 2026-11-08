@@ -1,7 +1,7 @@
 # Rustmax for coding agents
 
 This guide is for coding agents working in a Rust project that uses
-`rustmax`. It describes rustmax 0.0.12. The same text is printed by
+`rustmax`. It describes rustmax 0.0.13. The same text is printed by
 `rustmax agents` and published at <https://rustmax.net/agent-guide.md>.
 
 `rustmax` is a single crate that re-exports a curated set of
@@ -22,7 +22,7 @@ The workspace `Cargo.toml` declares it, usually renamed to `rmx`:
 ```toml
 [workspace.dependencies]
 rmx.package = "rustmax"
-rmx.version = "0.0.12"
+rmx.version = "0.0.13"
 rmx.features = [
   "rmx-profile-portable",
 ]
@@ -161,12 +161,17 @@ struct Config {
 }
 ```
 
-It knows the derives of serde, clap, derive_more, num_enum and
-thiserror. Where derive_more and the standard library share a name
-(`Debug`, `PartialEq`), the built-in one wins. Write
+It makes the derives of serde, clap, derive_more and num_enum work
+through rustmax. Where derive_more and the standard library share a
+name (`Debug`, `PartialEq`), the built-in one wins. Write
 `derive_more::Debug` to get the other.
 
-`#[rmx::derive]` was added in rustmax 0.0.12. Older projects use the
+thiserror is the exception. A bare `Error` in `#[rmx::derive]` means
+thiserror's `Error`, which only compiles when `thiserror` is a direct
+dependency; without one it is a compile error. Use
+`derive_more::Error` to stay within rustmax (see below).
+
+`#[rmx::derive]` was added in rustmax 0.0.11. Older projects use the
 workarounds below, and they keep working:
 
 - serde: `#[derive(Serialize)]` plus `#[serde(crate = "rmx::serde")]`
