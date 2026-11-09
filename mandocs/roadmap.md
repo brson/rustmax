@@ -5,17 +5,16 @@
 
 ## In progress
 
-- crate examples
-
-
+- rustmax browse
 
 
 ## On deck
 
-- crate doc improvement
-- book chapter search
-- rmxbook compatibility
-- library extension
+- rustmax inspect
+- style guide
+- out-of-repo build
+- plain-text build/search
+- cli cleanup
 
 
 

@@ -19,3 +19,8 @@
 ## Making the Rustmax crate practical to use
 
 
+## Useful additions
+
+- rustmax browse
+
+

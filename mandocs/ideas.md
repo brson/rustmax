@@ -70,7 +70,3 @@
   - manage system packages
   - set up system for cross-compiling
   - cargo-zigbuild?
-
-# Tips
-
-- solving "()" is not an Iterator / Future for `todo!()`'s implementing return impl traits
