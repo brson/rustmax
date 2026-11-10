@@ -178,6 +178,8 @@ but that are not yet part of Rustmax.
   Maintained fork of `memmap`.
 - [`home`](https://docs.rs/home).
   Find the user's home directory.
+- [`dirs`](https://docs.rs/dirs).
+  Platform-specific standard directories for config, cache, data, etc.
 - [`xdg`](https://docs.rs/xdg).
   XDG base directories.
 - [`dotenvy`](https://docs.rs/dotenvy).
