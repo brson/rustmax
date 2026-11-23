@@ -1,3 +1,4 @@
+mod analytics;
 mod books;
 mod cargo_install;
 mod highlight;
@@ -101,6 +102,9 @@ enum CliCmd {
 
     /// Validate that link substitutions resolve in the built site.
     ValidateLinks(CliCmdValidateLinks),
+
+    /// Add the production analytics tracker to every page of the built site.
+    AddAnalytics(CliCmdAddAnalytics),
 
     /// Summarize the topic index.
     SummarizeTopics(CliCmdSummarizeTopics),
@@ -247,6 +251,13 @@ struct CliCmdValidateLinks {
 }
 
 #[derive(clap::Args)]
+struct CliCmdAddAnalytics {
+    /// Path to the built site.
+    #[arg(default_value = "out")]
+    site: String,
+}
+
+#[derive(clap::Args)]
 struct CliCmdSummarizeTopics {
     /// Path to the topics directory.
     #[arg(default_value = "src/topics")]
@@ -378,6 +389,7 @@ impl CliOpts {
             CliCmd::Browse(cmd) => cmd.run(),
             CliCmd::ValidateTopics(cmd) => cmd.run(),
             CliCmd::ValidateLinks(cmd) => cmd.run(),
+            CliCmd::AddAnalytics(cmd) => cmd.run(),
             CliCmd::SummarizeTopics(cmd) => cmd.run(),
             CliCmd::ExportSearchIndex(cmd) => cmd.run(),
             CliCmd::Search(cmd) => cmd.run(),
@@ -668,6 +680,15 @@ impl CliCmdValidateLinks {
         } else {
             bail!("link validation failed")
         }
+    }
+}
+
+impl CliCmdAddAnalytics {
+    fn run(&self) -> AnyResult<()> {
+        let site = Path::new(&self.site);
+        let count = analytics::add_to_site(site)?;
+        println!("added analytics to {count} pages under {}", site.display());
+        Ok(())
     }
 }
 

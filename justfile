@@ -69,6 +69,10 @@ lint:
 
 build: doc-build
 
+# The site as deployed to rustmax.net, with analytics.
+build-production: build
+    cargo run -p rustmax-cli --release -- add-analytics out
+
 maint-outdated:
     cargo outdated
 
