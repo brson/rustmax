@@ -26,7 +26,7 @@ One of the coolest features of Rust is how it automatically manages resources fo
 Because Rust is a different kind of programming language, it might be difficult to understand what I mean, so let me be perfectly clear:
 
 * In Rust, as in garbage collected languages, you never explicitly free memory
-* In Rust, unlike in garbage collected languages, you never<sup><a href="#user-content-never">1</a></sup> explicitly close or release resources like files, sockets and locks
+* In Rust, unlike in garbage collected languages, you never<sup><a href="#never">1</a></sup> explicitly close or release resources like files, sockets and locks
 * Rust achieves both of these features without runtime costs (garbage collection or reference counting), and without sacrificing safety.
 
 If you've ever leaked a socket or a file, or used an abstraction that leaked these resources, you know how big of a deal this is.
@@ -398,6 +398,6 @@ Do you want to learn more about the performance of your Rails app? Sign up for a
 
 >
 >
-> <sup><a name="user-content-never">1</a></sup> When I say "never", I mean very, very rarely. In garbage collected languages, you sometimes end up directly managing memory, and in Rust, you occasionally end up directly managing resources. In both cases, the dominant programming model is that the language manages resources for you, and that's what's important.
+> <sup><a name="never">1</a></sup> When I say "never", I mean very, very rarely. In garbage collected languages, you sometimes end up directly managing memory, and in Rust, you occasionally end up directly managing resources. In both cases, the dominant programming model is that the language manages resources for you, and that's what's important.
 >
 >
