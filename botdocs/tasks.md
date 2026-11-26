@@ -58,9 +58,12 @@ The build reports success whenever `index.html` is produced,
 so also check the output itself.
 `out/library` holds the previous build if `just doc-build` has been run,
 which makes it easy to compare page counts per book.
-rmxbook does not expand `{{#include}}` and friends,
-so those appear verbatim in trpl, rust-cookbook and others;
-that is a known limitation, not a regression.
+Run `just doc-check-library-links` before and after;
+it reports broken links and anchors per book.
+The counts at the last audit are in `botdocs/library-audit.md`,
+and the ones left there are broken upstream too.
+A jump in a book's count usually means it started using
+some mdbook or preprocessor feature rmxbook doesn't handle.
 
 
 # Task: task-upgrade-crates

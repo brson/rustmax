@@ -4,10 +4,12 @@ mod cargo_install;
 mod highlight;
 mod impls;
 mod library_gen;
+mod library_linkcheck;
 mod linkcheck;
 mod moldman;
 mod rmxbook;
 mod rmxdoc;
+mod rustc_lints;
 mod search;
 mod tools;
 mod topics;
@@ -71,6 +73,8 @@ enum CliCmd {
     RefreshLibrary(CliCmdRefreshLibrary),
     /// Generate the library.html page.
     GenerateLibraryPage(CliCmdGenerateLibraryPage),
+    /// Report broken links within the rendered library.
+    CheckLibraryLinks(CliCmdCheckLibraryLinks),
 
     /// Build a book using the rmxbook renderer.
     Rmxbook(CliCmdRmxbook),
@@ -178,6 +182,16 @@ struct CliCmdRefreshLibrary {
 
 #[derive(clap::Args)]
 struct CliCmdGenerateLibraryPage {}
+
+#[derive(clap::Args)]
+struct CliCmdCheckLibraryLinks {
+    /// Path to the rendered library.
+    #[arg(long, default_value = "work/library")]
+    library: String,
+    /// List every broken link, not just the counts.
+    #[arg(long)]
+    verbose: bool,
+}
 
 
 #[derive(clap::Args)]
@@ -373,6 +387,7 @@ impl CliOpts {
             CliCmd::BuildLibrary(cmd) => cmd.run(),
             CliCmd::RefreshLibrary(cmd) => cmd.run(),
             CliCmd::GenerateLibraryPage(cmd) => cmd.run(),
+            CliCmd::CheckLibraryLinks(cmd) => cmd.run(),
 
             CliCmd::Rmxbook(cmd) => cmd.run(),
 
@@ -521,12 +536,40 @@ impl CliCmdGenerateLibraryPage {
     }
 }
 
+impl CliCmdCheckLibraryLinks {
+    fn run(&self) -> AnyResult<()> {
+        let library = Path::new(&self.library);
+        if !library.is_dir() {
+            bail!("no library at {}; run `just doc-library` first", library.display());
+        }
+        let reports = library_linkcheck::check(library)?;
+        println!("{:24} {:>8} {:>8} {:>8}", "book", "checked", "missing", "anchors");
+        for (book, report) in &reports {
+            let anchors = report.bad.iter().filter(|b| b.missing_anchor).count();
+            println!(
+                "{book:24} {:>8} {:>8} {anchors:>8}",
+                report.checked,
+                report.bad.len() - anchors,
+            );
+        }
+        if self.verbose {
+            for report in reports.values() {
+                for bad in &report.bad {
+                    let what = if bad.missing_anchor { "no anchor" } else { "missing" };
+                    println!("{what}: {} -> {}", bad.page, bad.link);
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
 impl CliCmdRmxbook {
     fn run(&self) -> AnyResult<()> {
         let input = Path::new(&self.input);
         let output = Path::new(&self.output);
         println!("Building {} -> {}", input.display(), output.display());
-        rmxbook::build(input, output)?;
+        rmxbook::build(input, output, None)?;
         println!("Done");
         Ok(())
     }

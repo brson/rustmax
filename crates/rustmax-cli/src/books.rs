@@ -15,6 +15,7 @@ struct Book {
     slug: String,
     name: String,
     repo: String,
+    upstream_url: String,
     #[serde(default)]
     book_path: Option<String>,
     #[serde(default)]
@@ -38,7 +39,7 @@ pub fn list_library(root: &Path) -> AnyResult<()> {
 
 pub fn build_library(root: &Path, no_fetch: bool, generate_library: bool) -> AnyResult<()> {
     let books = load(root)?.books;
-    let results = build_books(&books, no_fetch);
+    let results = build_books(&books, &books, no_fetch);
     copy_books_to_library(&books)?;
     if generate_library {
         crate::library_gen::generate_library_page()?;
@@ -47,15 +48,12 @@ pub fn build_library(root: &Path, no_fetch: bool, generate_library: bool) -> Any
 }
 
 pub fn build_one_book(root: &Path, slug: &str, no_fetch: bool) -> AnyResult<()> {
-    let book: Vec<Book> = load(root)?
-        .books
-        .into_iter()
-        .filter(|b| b.slug == slug)
-        .collect();
+    let all = load(root)?.books;
+    let book: Vec<Book> = all.iter().filter(|b| b.slug == slug).cloned().collect();
     if book.is_empty() {
         return Err(anyhow!("unknown book '{slug}'"));
     }
-    let results = build_books(&book, no_fetch);
+    let results = build_books(&book, &all, no_fetch);
     copy_books_to_library(&book)?;
     check_results(&results)
 }
@@ -92,7 +90,8 @@ pub fn refresh_one_book(root: &Path, slug: &str) -> AnyResult<()> {
     Ok(())
 }
 
-fn build_books(books: &[Book], no_fetch: bool) -> Vec<BookBuildResult> {
+/// Build `books`, which are some or all of the library's `all` books.
+fn build_books(books: &[Book], all: &[Book], no_fetch: bool) -> Vec<BookBuildResult> {
     let mut results: Vec<BookBuildResult> = Vec::new();
 
     // Step 1: Clone/update repos (unless skipped).
@@ -140,7 +139,7 @@ fn build_books(books: &[Book], no_fetch: bool) -> Vec<BookBuildResult> {
             continue;
         }
 
-        match build_book(book) {
+        match build_book(book, all) {
             Ok(_) => {
                 results.push(BookBuildResult {
                     book: book.clone(),
@@ -192,7 +191,7 @@ fn book_out_dir(book: &Book) -> String {
     }
 }
 
-fn build_book(book: &Book) -> AnyResult<()> {
+fn build_book(book: &Book, all: &[Book]) -> AnyResult<()> {
     let ref src_dir = book_src_dir(book);
     let book_subdir = book.book_path.as_deref().unwrap_or("");
     let ref build_dir = if book_subdir.is_empty() {
@@ -216,13 +215,30 @@ fn build_book(book: &Book) -> AnyResult<()> {
     let input = Path::new(build_dir);
     let output = Path::new(&output_dir);
 
-    crate::rmxbook::build(input, output)?;
+    let library = crate::rmxbook::LibraryBook {
+        name: book.name.clone(),
+        upstream_url: with_trailing_slash(&book.upstream_url),
+        source_url: match &book.book_path {
+            Some(path) => format!("{}/tree/{}/{path}", book.repo, book.commit),
+            None => format!("{}/tree/{}", book.repo, book.commit),
+        },
+        commit: book.commit.clone(),
+        books: all
+            .iter()
+            .map(|b| (with_trailing_slash(&b.upstream_url), b.slug.clone()))
+            .collect(),
+    };
+    crate::rmxbook::build(input, output, Some(&library))?;
 
     if !fs::exists(format!("{}/index.html", output_dir))? {
         return Err(anyhow!("Build failed - index.html not found"));
     }
 
     Ok(())
+}
+
+fn with_trailing_slash(url: &str) -> String {
+    format!("{}/", url.trim_end_matches('/'))
 }
 
 /// Fail unless the book's checkout is at its pinned commit.
@@ -312,6 +328,7 @@ fn prepare_book(book: &Book) -> AnyResult<()> {
         "rfcs" => prepare_rfcs_book(book),
         "bindgen" => prepare_bindgen_book(book),
         "mdbook" => prepare_mdbook_book(book),
+        "rustc-book" => prepare_rustc_book(book),
         _ => Ok(())
     }
 }
@@ -408,6 +425,16 @@ pub fn copy_dir_contents(from: &Path, to: &Path) -> AnyResult<()> {
     }
 
     Ok(())
+}
+
+/// Fill in the lint listing pages, which rustc's build generates.
+fn prepare_rustc_book(book: &Book) -> AnyResult<()> {
+    println!("  Preparing rustc book - generating lint listings");
+    let repo = PathBuf::from(book_src_dir(book));
+    crate::rustc_lints::generate(
+        &repo.join("compiler"),
+        &repo.join("src/doc/rustc/src/lints/listing"),
+    )
 }
 
 fn prepare_bindgen_book(book: &Book) -> AnyResult<()> {

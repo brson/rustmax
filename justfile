@@ -112,6 +112,11 @@ doc-library:
     fi
     cargo run --release -- build-library --generate-library-page
 
+# Report broken links within the rendered library. Upstream books have some
+# of their own, so this reports rather than fails; pass --verbose for the list.
+doc-check-library-links *args:
+    cargo run -p rustmax-cli --release -- check-library-links {{args}}
+
 export-search-index:
     cargo run -p rustmax-cli --release -- export-search-index
 

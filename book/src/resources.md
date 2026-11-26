@@ -4,12 +4,12 @@ These are not part of Rustmax.
 
 ## Must know URLS
 
-- [rust-lang.org](`https://rust-lang.org`)
-- [std.rs](`https://std.rs`)
-- [docs.rs](`https://docs.rs`)
-- [crates.io](`https://crates.io`)
-- [rustup.org](`https://rustup.org`)
-- [play.rust-lang.org](`https://play.rust-lang.org`)
+- [rust-lang.org](https://rust-lang.org)
+- [std.rs](https://std.rs)
+- [docs.rs](https://docs.rs)
+- [crates.io](https://crates.io)
+- [rustup.org](https://rustup.org)
+- [play.rust-lang.org](https://play.rust-lang.org)
 
 
 ## Tier 1 - looks good

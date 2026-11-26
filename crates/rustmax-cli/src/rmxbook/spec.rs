@@ -14,12 +14,12 @@
 //!   reference definition whose destination is the identifier.
 //! - Admonitions. Blockquotes headed by `> [!NOTE]`, `> [!WARNING]`,
 //!   `> [!EXAMPLE]`, or `> [!EDITION-2021]` become styled callouts.
+//! - Grammar productions, in the `grammar` module.
 //!
-//! Two features are deliberately left out. Grammar blocks (` ```grammar `
-//! fences) are rendered as plain code rather than as cross-linked productions
-//! and railroad diagrams, because that needs the Reference's grammar parser.
-//! Links into the standard library are left unresolved, because upstream
-//! resolves them by running rustdoc.
+//! Left out are railroad diagrams of the grammar, the "Tests with this rule"
+//! lists and test summary, which need a `rust-lang/rust` checkout, and exact
+//! links into the standard library, which upstream resolves by running
+//! rustdoc. Those links go to a search of the standard library docs instead.
 
 use rmx::regex::{Captures, Regex};
 use std::collections::BTreeMap;
@@ -27,12 +27,27 @@ use std::sync::LazyLock;
 
 use super::{Book, Chapter};
 
+mod grammar;
+
+pub use grammar::CSS as GRAMMAR_CSS;
+
 /// A rule identifier on a line by itself, like `r[expr.array]`.
 static RULE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?m)^r\[([^]]+)]$").unwrap());
 
 /// A link reference definition, like `[the label]: some-destination`.
 static LINK_DEF_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?m)^\[(?<label>[^]]+)]: +(?<dest>.*)").unwrap());
+
+/// A link destination naming a standard library item the way rustdoc's
+/// intra-doc links do, like `std`, `proc_macro::TokenStream`, `mod@test`
+/// or `pointer#method.offset`. Rule identifiers contain dots, so never match.
+static STD_ITEM_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(?:[a-z]+@)?(?<path>[a-z_][\w]*(?:::[\w]+)*)(?:#[\w.]+)?$").unwrap()
+});
+
+/// The destination of an inline link, like `[text](destination)`.
+static INLINE_DEST_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\]\((?<dest>[^()\s]+)\)").unwrap());
 
 /// A blockquote headed by an admonition marker, like `> [!NOTE]`.
 static ADMONITION_RE: LazyLock<Regex> = LazyLock::new(|| {
@@ -44,6 +59,7 @@ pub struct Spec {
     /// Rule identifier to the page defining it, as a path relative to the
     /// book's source directory with an `.html` extension and `/` separators.
     rules: BTreeMap<String, String>,
+    grammar: grammar::Grammar,
 }
 
 /// Whether a book is authored against the Reference's `spec` preprocessor.
@@ -57,6 +73,7 @@ impl Spec {
     /// Find every rule defined in the book and the page that defines it.
     pub fn collect(book: &Book, read_chapter: impl Fn(&Chapter) -> Option<String>) -> Spec {
         let mut rules = BTreeMap::new();
+        let mut grammar = grammar::Grammar::default();
 
         for chapter in super::flatten_chapters(&book.chapters) {
             let Some(path) = &chapter.path else {
@@ -65,13 +82,14 @@ impl Spec {
             let Some(content) = read_chapter(chapter) else {
                 continue;
             };
-            let page = path.with_extension("html").display().to_string().replace('\\', "/");
+            let page = super::url_path(&super::html_path(path));
             for caps in RULE_RE.captures_iter(&content) {
                 rules.insert(caps[1].to_string(), page.clone());
             }
+            grammar.collect_page(&page, &content);
         }
 
-        Spec { rules }
+        Spec { rules, grammar }
     }
 
     /// The link a rule identifier resolves to, relative to the current page.
@@ -88,23 +106,74 @@ impl Spec {
     pub fn preprocess(&self, content: &str, path_to_root: &str) -> String {
         let content = admonitions(content);
         let content = self.rule_link_definitions(&content, path_to_root);
-        rule_definitions(&content)
+        let content = std_inline_links(&content);
+        let content = rule_definitions(&content);
+        // Upstream fills this in from the compiler's test suite.
+        let content = content.replace(
+            "{{summary-table}}",
+            "<p class=\"generated-elsewhere\">The test summary is generated from the \
+             rust-lang/rust test suite, which the Rustmax library does not have. \
+             See the upstream page, linked below.</p>",
+        );
+        self.grammar.preprocess(&content, path_to_root)
     }
 
     /// Point link reference definitions that name a rule at that rule.
     ///
     /// The Reference writes these as `[zero-sized]: glossary.zst`, where the
-    /// destination is a rule identifier rather than a URL.
+    /// destination is a rule identifier rather than a URL. Destinations naming
+    /// a grammar production, as `grammar-Name` or `Name`, link to it.
+    /// Destinations naming
+    /// a standard library item, which upstream resolves by running rustdoc,
+    /// become a search of the standard library docs.
     fn rule_link_definitions(&self, content: &str, path_to_root: &str) -> String {
         LINK_DEF_RE
             .replace_all(content, |caps: &Captures<'_>| {
-                match self.rule_link(path_to_root, &caps["dest"]) {
-                    Some(url) => format!("[{}]: {url}", &caps["label"]),
+                let dest = &caps["dest"];
+                if let Some(url) = self.rule_link(path_to_root, dest) {
+                    return format!("[{}]: {url}", &caps["label"]);
+                }
+                let production = dest.trim().strip_prefix("grammar-").unwrap_or(dest.trim());
+                if let Some(url) = self.grammar.link(path_to_root, production, false) {
+                    return format!("[{}]: {url}", &caps["label"]);
+                }
+                match STD_ITEM_RE.captures(dest.trim()) {
+                    Some(item) => format!("[{}]: {}", &caps["label"], std_search(&item)),
                     None => caps[0].to_string(),
                 }
             })
             .into_owned()
     }
+}
+
+/// The search of the standard library docs standing in for a rustdoc link.
+fn std_search(item: &Captures<'_>) -> String {
+    format!("https://doc.rust-lang.org/std/index.html?search={}", &item["path"])
+}
+
+/// Point inline links whose destination names a standard library item, like
+/// `[`bool`](bool)`, at a search for it.
+///
+/// Code blocks are left alone, where `f[0](x)` is a call, not a link.
+fn std_inline_links(content: &str) -> String {
+    let mut out = String::with_capacity(content.len());
+    let mut in_code = false;
+    for line in content.split_inclusive('\n') {
+        if line.trim_start().starts_with("```") {
+            in_code = !in_code;
+        }
+        if in_code {
+            out.push_str(line);
+            continue;
+        }
+        out.push_str(&INLINE_DEST_RE.replace_all(line, |caps: &Captures<'_>| {
+            match STD_ITEM_RE.captures(&caps["dest"]) {
+                Some(item) => format!("]({})", std_search(&item)),
+                None => caps[0].to_string(),
+            }
+        }));
+    }
+    out
 }
 
 /// Turn each `r[rule.id]` line into an anchor that can be linked to.
@@ -204,9 +273,6 @@ h1, h2, h3, h4, h5, h6, pre, table, blockquote, .alert { clear: right; }
 .alert-edition > blockquote { border-left-style: dotted; }
 .alert-title-edition { font: var(--rmx-font-code); }
 
-/* Grammar productions, which we render as plain text rather than as the
-   cross-linked railroad diagrams the Reference's own tooling produces. */
-code.language-grammar { font-size: 0.85em; }
 "#;
 
 #[cfg(test)]
@@ -261,6 +327,7 @@ mod tests {
                 ("expr.array".to_string(), "expressions/array-expr.html".to_string()),
                 ("glossary.zst".to_string(), "glossary.html".to_string()),
             ]),
+            grammar: grammar::Grammar::default(),
         }
     }
 
@@ -281,6 +348,29 @@ mod tests {
     fn test_link_definitions_naming_a_rule_are_rewritten() {
         let md = spec().rule_link_definitions("[zero-sized]: glossary.zst\n", "../");
         assert_eq!(md, "[zero-sized]: ../glossary.html#r-glossary.zst\n");
+    }
+
+    #[test]
+    fn test_std_item_link_definitions_search_the_std_docs() {
+        let md = spec().rule_link_definitions(
+            "[`TokenStream`]: proc_macro::TokenStream\n[test]: mod@test\n[offset]: pointer#method.offset\n",
+            "",
+        );
+        assert!(md.contains("[`TokenStream`]: https://doc.rust-lang.org/std/index.html?search=proc_macro::TokenStream\n"), "{md}");
+        assert!(md.contains("[test]: https://doc.rust-lang.org/std/index.html?search=test\n"), "{md}");
+        assert!(md.contains("[offset]: https://doc.rust-lang.org/std/index.html?search=pointer\n"), "{md}");
+    }
+
+    #[test]
+    fn test_std_item_inline_links_search_the_std_docs() {
+        let md = std_inline_links("[`bool`](bool) and [x](../x.md) and [y](mod@test)");
+        assert_eq!(
+            md,
+            "[`bool`](https://doc.rust-lang.org/std/index.html?search=bool) and [x](../x.md) \
+             and [y](https://doc.rust-lang.org/std/index.html?search=test)"
+        );
+        let code = "```rust\nlet y = f[0](x);\n```\n";
+        assert_eq!(std_inline_links(code), code);
     }
 
     #[test]
