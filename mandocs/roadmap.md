@@ -15,7 +15,7 @@
 - out-of-repo build
 - plain-text build/search
 - cli cleanup
-
+- website icon
 
 
 
