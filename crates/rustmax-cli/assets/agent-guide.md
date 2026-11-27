@@ -1,7 +1,7 @@
 # Rustmax for coding agents
 
 This guide is for coding agents working in a Rust project that uses
-`rustmax`. It describes rustmax 0.0.13. The same text is printed by
+`rustmax`. It describes rustmax 0.0.14. The same text is printed by
 `rustmax agents` and published at <https://rustmax.net/agent-guide.md>.
 
 `rustmax` is a single crate that re-exports a curated set of
@@ -22,7 +22,7 @@ The workspace `Cargo.toml` declares it, usually renamed to `rmx`:
 ```toml
 [workspace.dependencies]
 rmx.package = "rustmax"
-rmx.version = "0.0.13"
+rmx.version = "0.0.14"
 rmx.features = [
   "rmx-profile-portable",
 ]
@@ -55,19 +55,24 @@ which crates exist under `rmx::` (see "Profiles" below).
 
 ## The prelude
 
-`use rmx::prelude::*` brings in the standard prelude plus, when the
-corresponding crate is enabled:
+`use rmx::prelude::*` brings in, when the corresponding crate is
+enabled:
 
 - From anyhow: `AnyResult`, `AnyError`, `bail!`, `anyhow!`, and the
   `Context` trait (so `.context(..)` and `.with_context(..)` work).
 - From log: `trace!`, `debug!`, `info!`, `warn!`, `error!`.
 - Extension traits, imported anonymously so their methods work:
   `Itertools`, rand's `Rng`, `RngExt`, `SeedableRng` and `Fill`.
-- From futures: `futures::prelude::*`, `block_on` and `Either`.
+- From futures: `block_on` and `Either`.
 - `cfg_if!` and `#[extension_trait]`.
-- `core::cmp::Ordering`.
-- From rustmax itself: `default()`, `bug!`, and the powerletters
-  methods `.C()`, `.O()`, `.S()`, `.I()` and `.X()`.
+- From rustmax itself: `default()`, `bug!`, `fmt!` (an alias for
+  `format!`), and the powerletters methods `.C()`, `.O()`, `.S()`,
+  `.I()` and `.X()`.
+
+It does not include the standard prelude, which the compiler already
+provides outside `no_std` crates. Since 0.0.14 it also no longer
+includes `core::cmp::Ordering` or `futures::prelude::*`; import those
+directly.
 
 Because the prelude is a glob import, a local item with the same
 name as one of these (an enum variant called `Either`, a function
@@ -429,6 +434,10 @@ even if nothing calls them.
   feature of a re-exported crate").
 - A method from an extension trait is missing (`.sorted()`,
   `.random_range()`, `.context()`): add `use rmx::prelude::*;`.
+- After upgrading from 0.0.13 or older, `cannot find type 'Ordering'`
+  or a missing futures method (`.next()` on a stream, `.boxed()`,
+  `.then()`): the prelude no longer re-exports these. Add
+  `use std::cmp::Ordering;` or `use rmx::futures::prelude::*;`.
 
 
 ## Upgrading rustmax
